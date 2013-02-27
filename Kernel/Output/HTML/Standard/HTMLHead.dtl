@@ -101,4 +101,7 @@ if (RefreshSeconds) {
 
 $Include{"HTMLHeadBlockEvents"}
 
+<script src ="$Config{"Frontend::WebPath"}js/thirdparty/lightbox/js/jquery-1.7.2.min.js"></script>
+<script src ="$Config{"Frontend::WebPath"}js/thirdparty/lightbox/js/lightbox.js"></script>
+<link href="$Config{"Frontend::WebPath"}js/thirdparty/lightbox/css/lightbox.css" rel="stylesheet" />
 </head>
