@@ -1,4 +1,5 @@
 .project
+grabupstream.sh
 .externalToolBuilders
 .gnupg
 .settings

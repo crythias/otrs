@@ -459,6 +459,12 @@ my @NeededModules = (
         Module   => 'YAML::XS',
         Required => 1,
     },
+    {
+        Module   => 'Captcha::reCAPTCHA',
+        Required => 0,
+        Comment  => 'Not required for OTRS. Required for reCAPTCHA for Create Account',
+    },
+
 );
 
 # if we're on Windows we need some additional modules
