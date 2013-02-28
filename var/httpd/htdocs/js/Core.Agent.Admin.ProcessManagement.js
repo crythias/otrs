@@ -893,6 +893,12 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                                      FieldConfig.Config = {};
                                  }
                                  FieldConfig.Config.ArticleType = $('#ArticleType').val();
+
+                                 // show error if internal article type is set for an interface different than AgentInterface
+                                 if ($('Interface') !=='AgentInterface' && $('#ArticleType').val().match(/int/i)){
+                                     alert(Core.Agent.Admin.ProcessManagement.Localization.WrongArticleTypeMsg);
+                                     return;
+                                 }
                              }
 
                              $Element.closest('li').data('config', Core.JSON.Stringify(FieldConfig));

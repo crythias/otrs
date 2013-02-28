@@ -977,7 +977,12 @@ sub _Mask {
 
             # we don't need the whole Activity config,
             # just the Activity Dialogs of the current Activity
-            %{$NextActivityDialogs} = %{ $NextActivityDialogs->{ActivityDialog} };
+            if ( IsHashRefWithData( $NextActivityDialogs->{ActivityDialog} ) ) {
+                %{$NextActivityDialogs} = %{ $NextActivityDialogs->{ActivityDialog} };
+            }
+            else {
+                $NextActivityDialogs = {};
+            }
 
             # ACL Check is done in the initial "Run" statement
             # so here we can just pick the possibly reduced Activity Dialogs
@@ -1401,6 +1406,14 @@ sub _Mask {
                 ContentType => "$Article{MimeType}; charset=$Article{Charset}",
                 Content     => $Article{Body},
             );
+        }
+    }
+
+    # fallback to ticket info if there is no article
+    if ( !IsHashRefWithData( \%Article ) ) {
+        %Article = %Param;
+        if ( !$Article{StateID} ) {
+            $Article{StateID} = $Param{TicketStateID}
         }
     }
 
