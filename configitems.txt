@@ -1,0 +1,1176 @@
+### Ticket::Hook
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/CustomerTicketPrint.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Output/HTML/CustomerHeaderMetaTicketSearch.pm
+Kernel/Output/HTML/HeaderMetaTicketSearch.pm
+Kernel/Output/HTML/Standard/CustomerTicketPrint.dtl
+Kernel/Output/HTML/Standard/AgentTicketSearch.dtl
+Kernel/Output/HTML/Standard/AgentTicketHistory.dtl
+Kernel/Output/HTML/Standard/AgentTicketOverviewPreview.dtl
+Kernel/Output/HTML/Standard/AgentTicketSearchOpenSearchDescriptionTicketNumber.dtl
+Kernel/Output/HTML/Standard/AgentTicketOverviewMedium.dtl
+Kernel/Output/HTML/Standard/CustomerTicketOverview.dtl
+Kernel/Output/HTML/Standard/CustomerTicketSearchOpenSearchDescription.dtl
+Kernel/Output/HTML/Standard/AgentTicketOverviewSmall.dtl
+Kernel/Output/HTML/Standard/CustomerTicketMessage.dtl
+Kernel/Output/HTML/Standard/AgentTicketPrint.dtl
+Kernel/Output/HTML/Standard/AdminGenericAgent.dtl
+Kernel/Output/HTML/Standard/CustomerTicketSearch.dtl
+Kernel/Output/HTML/Standard/CustomerTicketSearchResultShort.dtl
+Kernel/Output/HTML/Standard/AgentTicketBulk.dtl
+Kernel/Output/HTML/Standard/AgentTicketSearchResultPrint.dtl
+Kernel/Output/HTML/Standard/AgentTicketMerge.dtl
+Kernel/Output/HTML/Standard/CustomerTicketSearchResultPrint.dtl
+Kernel/Output/HTML/Standard/AgentTicketPlain.dtl
+Kernel/Output/HTML/LinkObjectTicket.pm
+Kernel/System/Ticket/Number/AutoIncrement.pm
+Kernel/System/Ticket/Number/DateChecksum.pm
+Kernel/System/Ticket/Number/Random.pm
+Kernel/System/Ticket/Number/Date.pm
+Kernel/System/Ticket.pm
+Kernel/System/Stats/Dynamic/TicketList.pm
+scripts/test/Ticket/TicketSubject.t
+scripts/test/GenericAgent.t
+scripts/test/PostMaster.t
+### Ticket::HookDivider
+Kernel/System/Ticket/Number/AutoIncrement.pm
+Kernel/System/Ticket/Number/DateChecksum.pm
+Kernel/System/Ticket/Number/Random.pm
+Kernel/System/Ticket/Number/Date.pm
+Kernel/System/Ticket.pm
+### Ticket::SubjectSize
+Kernel/System/Ticket.pm
+### Ticket::SubjectRe
+Kernel/System/Ticket.pm
+scripts/test/Ticket/TicketSubject.t
+### Ticket::SubjectFwd
+Kernel/System/Ticket.pm
+scripts/test/Ticket/TicketSubject.t
+### Ticket::SubjectFormat
+Kernel/System/Ticket.pm
+scripts/test/Ticket/NumberGenerator.t
+scripts/test/Ticket/TicketSubject.t
+scripts/test/PostMaster.t
+### Ticket::CustomQueue
+Kernel/Modules/AgentTicketQueue.pm
+### Ticket::NewArticleIgnoreSystemSender
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/System/Ticket/Event/TicketNewMessageUpdate.pm
+### Ticket::ChangeOwnerToEveryone
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+### Ticket::Responsible
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/CustomerTicketPrint.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Modules/AdminGenericAgent.pm
+Kernel/Output/HTML/ToolBarTicketResponsible.pm
+Kernel/Output/HTML/TicketMenuResponsible.pm
+Kernel/Output/HTML/DashboardTicketGeneric.pm
+Kernel/System/Ticket/Article.pm
+Kernel/System/Ticket/Permission/ResponsibleCheck.pm
+Kernel/System/Ticket/Event/ResponsibleAutoSet.pm
+bin/otrs.PendingJobs.pl
+### Ticket::ResponsibleAutoSet
+Kernel/System/Ticket/Event/ResponsibleAutoSet.pm
+### Ticket::Type
+Kernel/Modules/CustomerTicketMessage.pm
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AdminProcessManagementActivityDialog.pm
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/CustomerTicketPrint.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Modules/AdminNotificationEvent.pm
+Kernel/Modules/AdminGenericAgent.pm
+Kernel/Output/HTML/TicketOverviewMedium.pm
+Kernel/Output/HTML/TicketOverviewPreview.pm
+Kernel/GenericInterface/Operation/Ticket/TicketCreate.pm
+Kernel/System/ProcessManagement/TransitionAction/TicketTypeSet.pm
+Kernel/System/Stats/Dynamic/Ticket.pm
+Kernel/System/Stats/Dynamic/TicketSolutionResponseTime.pm
+Kernel/System/Stats/Dynamic/TicketList.pm
+Kernel/System/Stats/Dynamic/TicketAccountedTime.pm
+scripts/test/ProcessManagement/TransitionAction/TicketTypeSet.t
+scripts/test/GenericInterface/Operation/Ticket/TicketCreate.t
+### Ticket::Service
+Kernel/Modules/CustomerTicketMessage.pm
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AdminProcessManagementActivityDialog.pm
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/CustomerTicketPrint.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AdminSLA.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AdminService.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Modules/AdminNotificationEvent.pm
+Kernel/Modules/AdminGenericAgent.pm
+Kernel/Output/HTML/TicketOverviewMedium.pm
+Kernel/Output/HTML/TicketOverviewPreview.pm
+Kernel/System/Service.pm
+Kernel/System/Ticket.pm
+Kernel/System/Stats/Dynamic/Ticket.pm
+Kernel/System/Stats/Dynamic/TicketSolutionResponseTime.pm
+Kernel/System/Stats/Dynamic/TicketList.pm
+Kernel/System/Stats/Dynamic/TicketAccountedTime.pm
+### Ticket::Service::Default::UnknownCustomer
+Kernel/Modules/CustomerTicketMessage.pm
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/System/Service.pm
+### Ticket::ArchiveSystem
+Kernel/Modules/CustomerTicketSearch.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/CustomerTicketOverview.pm
+Kernel/Modules/AdminGenericAgent.pm
+Kernel/Output/HTML/DashboardCustomerIDStatus.pm
+Kernel/GenericInterface/Operation/Ticket/TicketSearch.pm
+Kernel/System/TicketSearch.pm
+Kernel/System/Ticket/Event/ArchiveRestore.pm
+Kernel/System/Ticket.pm
+Kernel/System/GenericAgent.pm
+UPGRADING.md
+bin/otrs.CleanTicketArchive.pl
+bin/otrs.CleanupTicketMetadata.pl
+scripts/test/Ticket/ArchiveSystem.t
+### Ticket::ArchiveSystem::RemoveSeenFlags
+Kernel/System/Ticket.pm
+UPGRADING.md
+bin/otrs.CleanupTicketMetadata.pl
+scripts/test/Ticket/ArchiveSystem.t
+### Ticket::ArchiveSystem::RemoveTicketWatchers
+Kernel/System/Ticket.pm
+UPGRADING.md
+bin/otrs.CleanupTicketMetadata.pl
+scripts/test/Ticket/ArchiveSystem.t
+### Ticket::CustomerArchiveSystem
+Kernel/Modules/CustomerTicketSearch.pm
+Kernel/Modules/CustomerTicketOverview.pm
+### Ticket::NumberGenerator
+Kernel/System/Ticket/Number/AutoIncrement.pm
+Kernel/System/Ticket/Number/DateChecksum.pm
+Kernel/System/Ticket/Number/Random.pm
+Kernel/System/Ticket/Number/Date.pm
+Kernel/System/Ticket.pm
+Kernel/System/SysConfig.pm
+scripts/test/Ticket/NumberGenerator.t
+scripts/test/Ticket/TicketSubject.t
+scripts/test/GenericAgent.t
+scripts/test/PostMaster.t
+### Ticket::NumberGenerator::MinCounterSize
+Kernel/System/Ticket/Number/AutoIncrement.pm
+### Ticket::NumberGenerator::CheckSystemID
+Kernel/System/Ticket/Number/AutoIncrement.pm
+Kernel/System/Ticket/Number/DateChecksum.pm
+Kernel/System/Ticket/Number/Random.pm
+Kernel/System/Ticket/Number/Date.pm
+### Ticket::CounterLog
+Kernel/System/Ticket/Number/AutoIncrement.pm
+Kernel/System/Ticket/Number/DateChecksum.pm
+Kernel/System/Ticket/Number/Date.pm
+### Ticket::IndexModule
+Kernel/System/Ticket.pm
+bin/otrs.CleanTicketIndex.pl
+scripts/test/Ticket/IndexAccelerator.t
+### Ticket::StorageModule
+Kernel/System/Ticket.pm
+scripts/test/Ticket/ArticleStorageSwitch.t
+scripts/test/Ticket/ArticleStorage.t
+scripts/test/PostMaster.t
+### ArticleDir
+Kernel/System/Ticket/ArticleStorageDB.pm
+Kernel/System/Ticket/ArticleStorageFS.pm
+scripts/backup.pl
+scripts/restore.pl
+### Ticket::EventModulePost###100-ArchiveRestore
+### Ticket::EventModulePost###110-AcceleratorUpdate
+### Ticket::EventModulePost###120-ForceOwnerResetOnMove
+### Ticket::EventModulePost###130-ForceStateChangeOnLock
+### Ticket::EventModulePost###140-ResponsibleAutoSet
+### Ticket::EventModulePost###150-TicketPendingTimeReset
+### Ticket::EventModulePost###500-NotificationEvent
+### Ticket::EventModulePost###900-EscalationIndex
+### OTRSEscalationEvents::DecayTime
+Kernel/System/GenericAgent/TriggerEscalationStartEvents.pm
+scripts/test/Event/Escalations.t
+### Ticket::EventModulePost###900-EscalationStopEvents
+### Ticket::EventModulePost###910-ForceUnlockOnMove
+### Ticket::EventModulePost###920-TicketArticleNewMessageUpdate
+### Ticket::CustomModule###001-CustomModule
+### Ticket::SearchIndexModule
+Kernel/System/Ticket.pm
+scripts/test/Ticket/ArticleDynamicFieldSearch.t
+scripts/test/Ticket/ArticleSearchIndex.t
+### Ticket::SearchIndex::Attribute
+Kernel/System/Ticket/ArticleSearchIndex/StaticDB.pm
+### Ticket::EventModulePost###98-ArticleSearchIndex
+### Ticket::Frontend::Overview###Small
+### Ticket::Frontend::OverviewSmall###ColumnHeader
+### Ticket::Frontend::Overview###Medium
+### Ticket::Frontend::Overview###Preview
+### Ticket::Frontend::Overview::PreviewArticleSenderTypes
+Kernel/Output/HTML/TicketOverviewPreview.pm
+### Ticket::Frontend::Overview::PreviewArticleTypeExpanded
+Kernel/Output/HTML/TicketOverviewPreview.pm
+### Ticket::Frontend::CustomerSearchAutoComplete###Active
+### Ticket::Frontend::CustomerSearchAutoComplete###MinQueryLength
+### Ticket::Frontend::CustomerSearchAutoComplete###QueryDelay
+### Ticket::Frontend::CustomerSearchAutoComplete###MaxResultsDisplayed
+### Ticket::Frontend::CustomerSearchAutoComplete::DynamicWidth
+Kernel/Output/HTML/Standard/AgentCustomerSearch.dtl
+### Ticket::Frontend::PendingDiffTime
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketForward.pm
+Kernel/Modules/AgentTicketCompose.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+### Ticket::Frontend::MaxQueueLevel
+Kernel/Modules/AdminQueue.pm
+### Ticket::Frontend::ListType
+Kernel/Modules/CustomerTicketMessage.pm
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/CustomerTicketProcess.pm
+Kernel/Modules/AdminQueue.pm
+Kernel/Output/HTML/LayoutTicket.pm
+### Ticket::Watcher
+Kernel/Modules/AgentTicketWatchView.pm
+Kernel/Modules/AgentTicketSearch.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Modules/AgentTicketWatcher.pm
+Kernel/Output/HTML/LayoutTicket.pm
+Kernel/Output/HTML/TicketMenuTicketWatcher.pm
+Kernel/Output/HTML/PreferencesTicketWatcher.pm
+Kernel/Output/HTML/ToolBarTicketWatcher.pm
+Kernel/Output/HTML/DashboardTicketGeneric.pm
+Kernel/System/Ticket/Permission/WatcherCheck.pm
+Kernel/System/Ticket.pm
+bin/otrs.CleanupTicketMetadata.pl
+scripts/test/Ticket/ArchiveSystem.t
+### Ticket::WatcherGroup
+Kernel/Modules/AgentTicketWatchView.pm
+Kernel/Modules/AgentTicketWatcher.pm
+Kernel/Output/HTML/TicketMenuTicketWatcher.pm
+Kernel/Output/HTML/PreferencesTicketWatcher.pm
+Kernel/Output/HTML/ToolBarTicketWatcher.pm
+### Ticket::Frontend::BulkFeature
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Output/HTML/TicketOverviewMedium.pm
+Kernel/Output/HTML/TicketOverviewSmall.pm
+Kernel/Output/HTML/TicketOverviewPreview.pm
+### Ticket::Frontend::BulkFeatureGroup
+Kernel/Output/HTML/TicketOverviewMedium.pm
+Kernel/Output/HTML/TicketOverviewSmall.pm
+Kernel/Output/HTML/TicketOverviewPreview.pm
+### Ticket::Frontend::PlainView
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::ZoomExpand
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::ZoomExpandSort
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::ZoomAttachmentDisplayCount
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::ZoomTimeDisplay
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::UseArticleColors
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::TicketArticleFilter
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::HistoryOrder
+Kernel/Modules/AgentTicketHistory.pm
+### Ticket::Frontend::TextAreaEmail
+Kernel/Output/HTML/LayoutTicket.pm
+Kernel/Output/HTML/Standard/AgentTicketEmail.dtl
+Kernel/Output/HTML/Standard/AgentTicketCompose.dtl
+Kernel/Output/HTML/Standard/AgentTicketBounce.dtl
+Kernel/Output/HTML/Standard/AgentTicketForward.dtl
+### Ticket::Frontend::TextAreaNote
+Kernel/Modules/CustomerTicketMessage.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/CustomerTicketZoom.pm
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketMerge.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+Kernel/Output/HTML/Standard/AgentTicketMove.dtl
+Kernel/Output/HTML/Standard/AgentTicketPhone.dtl
+Kernel/Output/HTML/Standard/AgentTicketActionCommon.dtl
+Kernel/Output/HTML/Standard/AgentTicketPhoneCommon.dtl
+Kernel/Output/HTML/Standard/ProcessManagement/Article.dtl
+Kernel/Output/HTML/Standard/CustomerTicketZoom.dtl
+Kernel/Output/HTML/Standard/CustomerTicketMessage.dtl
+Kernel/Output/HTML/Standard/AgentTicketBulk.dtl
+Kernel/Output/HTML/Standard/AgentTicketMerge.dtl
+### Ticket::Frontend::InformAgentMaxSize
+Kernel/Modules/AgentTicketActionCommon.pm
+### Ticket::Frontend::InvolvedAgentMaxSize
+Kernel/Modules/AgentTicketActionCommon.pm
+### Ticket::Frontend::CustomerInfoCompose
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentCustomerSearch.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+Kernel/Modules/AgentTicketCustomer.pm
+### Ticket::Frontend::CustomerInfoComposeMaxSize
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentCustomerSearch.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+Kernel/Modules/AgentTicketCustomer.pm
+### Ticket::Frontend::CustomerInfoZoom
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::CustomerInfoZoomMaxSize
+Kernel/Modules/AgentTicketZoom.pm
+### Ticket::Frontend::CustomerTicketOverviewSortable
+Kernel/Output/HTML/Standard/CustomerTicketOverview.dtl
+Kernel/Output/HTML/Standard/CustomerTicketSearchResultShort.dtl
+### Ticket::Frontend::CustomerTicketOverviewCustomEmptyText
+Kernel/Modules/CustomerTicketOverview.pm
+### Ticket::Frontend::CustomerTicketOverview###ColumnHeader
+### Ticket::Frontend::CustomerTicketOverview###Owner
+### Ticket::Frontend::CustomerTicketOverview###Queue
+### Ticket::Frontend::CustomerTicketOverview###DynamicField
+### Ticket::Frontend::AgentTicketQueue###StripEmptyLines
+### Ticket::Frontend::AgentTicketQueue###ViewAllPossibleTickets
+### Ticket::Frontend::AgentTicketQueue###HighlightAge1
+### Ticket::Frontend::AgentTicketQueue###HighlightAge2
+### Ticket::Frontend::AgentTicketQueue###Blink
+### Ticket::Frontend::AgentTicketQueue###QueueSort
+### Ticket::Frontend::AgentTicketQueue###SortBy::Default
+### Ticket::Frontend::AgentTicketQueue###PreSort::ByPriority
+### Ticket::Frontend::AgentTicketQueue###Order::Default
+### Ticket::Frontend::AccountTime
+Kernel/Modules/AgentTicketPrint.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketForward.pm
+Kernel/Modules/AgentTicketCompose.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+Kernel/GenericInterface/Operation/Ticket/TicketUpdate.pm
+Kernel/GenericInterface/Operation/Ticket/TicketCreate.pm
+scripts/test/GenericInterface/Operation/Ticket/TicketCreate.t
+### Ticket::Frontend::TimeUnits
+Kernel/Output/HTML/Standard/AgentTicketMove.dtl
+Kernel/Output/HTML/Standard/AgentTicketPhone.dtl
+Kernel/Output/HTML/Standard/AgentTicketActionCommon.dtl
+Kernel/Output/HTML/Standard/AgentTicketPhoneCommon.dtl
+Kernel/Output/HTML/Standard/AgentTicketEmail.dtl
+Kernel/Output/HTML/Standard/AgentTicketCompose.dtl
+Kernel/Output/HTML/Standard/AdminGenericAgent.dtl
+Kernel/Output/HTML/Standard/AgentTicketBulk.dtl
+Kernel/Output/HTML/Standard/AgentTicketForward.dtl
+bin/otrs.CreateTranslationFile.pl
+### Ticket::Frontend::NeedAccountedTime
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketActionCommon.pm
+Kernel/Modules/AgentTicketForward.pm
+Kernel/Modules/AgentTicketCompose.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketBulk.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+Kernel/GenericInterface/Operation/Ticket/TicketUpdate.pm
+Kernel/GenericInterface/Operation/Ticket/TicketCreate.pm
+scripts/test/GenericInterface/Operation/Ticket/TicketCreate.t
+### Ticket::Frontend::BulkAccountedTime
+Kernel/Modules/AgentTicketBulk.pm
+### Ticket::Frontend::NeedSpellCheck
+### Ticket::Frontend::AgentTicketStatusView###ViewableTicketsPage
+### Ticket::Frontend::AgentTicketStatusView###SortBy::Default
+### Ticket::Frontend::AgentTicketStatusView###Order::Default
+### Ticket::Frontend::AgentTicketEscalationView###TicketPermission
+### Ticket::Frontend::AgentTicketEscalationView###ViewableTicketsPage
+### Ticket::Frontend::AgentTicketEscalationView###SortBy::Default
+### Ticket::Frontend::AgentTicketEscalationView###Order::Default
+### Ticket::Frontend::AgentTicketSearch###ExtendedSearchCondition
+### Ticket::Frontend::AgentTicketSearch###SearchLimit
+### Ticket::Frontend::AgentTicketSearch###SearchPageShown
+### Ticket::Frontend::AgentTicketSearch###SearchViewableTicketLines
+### Ticket::Frontend::AgentTicketSearch###SortBy::Default
+### Ticket::Frontend::AgentTicketSearch###Order::Default
+### Ticket::Frontend::AgentTicketSearch###SearchArticleCSVTree
+### Ticket::Frontend::AgentTicketSearch###SearchCSVData
+### Ticket::Frontend::AgentTicketSearch###ArticleCreateTime
+### Ticket::Frontend::AgentTicketSearch###Defaults###Fulltext
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketNumber
+### Ticket::Frontend::AgentTicketSearch###Defaults###Title
+### Ticket::Frontend::AgentTicketSearch###Defaults###From
+### Ticket::Frontend::AgentTicketSearch###Defaults###To
+### Ticket::Frontend::AgentTicketSearch###Defaults###Cc
+### Ticket::Frontend::AgentTicketSearch###Defaults###Subject
+### Ticket::Frontend::AgentTicketSearch###Defaults###Body
+### Ticket::Frontend::AgentTicketSearch###Defaults###CustomerID
+### Ticket::Frontend::AgentTicketSearch###Defaults###CustomerUserLogin
+### Ticket::Frontend::AgentTicketSearch###Defaults###StateIDs
+### Ticket::Frontend::AgentTicketSearch###Defaults###QueueIDs
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketCreateTimePoint
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketCreateTimeSlot
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimePoint
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketChangeTimeSlot
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketCloseTimePoint
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketCloseTimeSlot
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketEscalationTimePoint
+### Ticket::Frontend::AgentTicketSearch###Defaults###TicketEscalationTimeSlot
+### Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimePoint
+### Ticket::Frontend::AgentTicketSearch###Defaults###ArticleCreateTimeSlot
+### Ticket::Frontend::AgentTicketSearch###Defaults###SearchInArchive
+### Frontend::Search###Ticket
+### Ticket::Frontend::AgentTicketLockedView###SortBy::Default
+### Ticket::Frontend::AgentTicketLockedView###Order::Default
+### Ticket::Frontend::AgentTicketResponsibleView###SortBy::Default
+### Ticket::Frontend::AgentTicketResponsibleView###Order::Default
+### Ticket::Frontend::AgentTicketWatchView###SortBy::Default
+### Ticket::Frontend::AgentTicketWatchView###Order::Default
+### Ticket::Frontend::AgentTicketFreeText###Permission
+### Ticket::Frontend::AgentTicketFreeText###RequiredLock
+### Ticket::Frontend::AgentTicketFreeText###TicketType
+### Ticket::Frontend::AgentTicketFreeText###Service
+### Ticket::Frontend::AgentTicketFreeText###Queue
+### Ticket::Frontend::AgentTicketFreeText###Owner
+### Ticket::Frontend::AgentTicketFreeText###OwnerMandatory
+### Ticket::Frontend::AgentTicketFreeText###Responsible
+### Ticket::Frontend::AgentTicketFreeText###State
+### Ticket::Frontend::AgentTicketFreeText###StateType
+### Ticket::Frontend::AgentTicketFreeText###StateDefault
+### Ticket::Frontend::AgentTicketFreeText###Note
+### Ticket::Frontend::AgentTicketFreeText###Subject
+### Ticket::Frontend::AgentTicketFreeText###Body
+### Ticket::Frontend::AgentTicketFreeText###InvolvedAgent
+### Ticket::Frontend::AgentTicketFreeText###InformAgent
+### Ticket::Frontend::AgentTicketFreeText###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketFreeText###ArticleTypes
+### Ticket::Frontend::AgentTicketFreeText###Priority
+### Ticket::Frontend::AgentTicketFreeText###PriorityDefault
+### Ticket::Frontend::AgentTicketFreeText###Title
+### Ticket::Frontend::AgentTicketFreeText###HistoryType
+### Ticket::Frontend::AgentTicketFreeText###HistoryComment
+### Ticket::Frontend::AgentTicketPhoneOutbound###Permission
+### Ticket::Frontend::AgentTicketPhoneOutbound###RequiredLock
+### Ticket::Frontend::AgentTicketPhoneOutbound###ArticleType
+### Ticket::Frontend::AgentTicketPhoneOutbound###SenderType
+### Ticket::Frontend::AgentTicketPhoneOutbound###Subject
+### Ticket::Frontend::AgentTicketPhoneOutbound###Body
+### Ticket::Frontend::AgentTicketPhoneOutbound###State
+### Ticket::Frontend::AgentTicketPhoneOutbound###StateType
+### Ticket::Frontend::AgentTicketPhoneOutbound###HistoryType
+### Ticket::Frontend::AgentTicketPhoneOutbound###HistoryComment
+### Ticket::Frontend::AgentTicketPhoneInbound###Permission
+### Ticket::Frontend::AgentTicketPhoneInbound###RequiredLock
+### Ticket::Frontend::AgentTicketPhoneInbound###ArticleType
+### Ticket::Frontend::AgentTicketPhoneInbound###SenderType
+### Ticket::Frontend::AgentTicketPhoneInbound###Subject
+### Ticket::Frontend::AgentTicketPhoneInbound###Body
+### Ticket::Frontend::AgentTicketPhoneInbound###State
+### Ticket::Frontend::AgentTicketPhoneInbound###StateType
+### Ticket::Frontend::AgentTicketPhoneInbound###HistoryType
+### Ticket::Frontend::AgentTicketPhoneInbound###HistoryComment
+### Ticket::Frontend::NewOwnerSelection
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+### Ticket::Frontend::NewResponsibleSelection
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+### Ticket::Frontend::NewQueueSelectionType
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+### Ticket::Frontend::NewQueueSelectionString
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+### Ticket::Frontend::NewQueueOwnSelection
+Kernel/Modules/AgentTicketProcess.pm
+Kernel/Modules/AgentTicketEmail.pm
+Kernel/Modules/AgentTicketPhone.pm
+Kernel/Modules/AgentTicketPhoneCommon.pm
+### Ticket::Frontend::ShowCustomerTickets
+Kernel/Output/HTML/Standard/AgentCustomerSearch.dtl
+### NewTicketInNewWindow::Enabled
+Kernel/Output/HTML/Layout.pm
+### Ticket::Frontend::AgentTicketPhone###Priority
+### Ticket::Frontend::AgentTicketPhone###ArticleType
+### Ticket::Frontend::AgentTicketPhone###SenderType
+### Ticket::Frontend::AgentTicketPhone::AllowMultipleFrom
+Kernel/Output/HTML/Standard/AgentCustomerSearch.dtl
+var/httpd/htdocs/js/Core.Agent.CustomerSearch.js
+### Ticket::Frontend::AgentTicketPhone###Subject
+### Ticket::Frontend::AgentTicketPhone###Body
+### Ticket::Frontend::AgentTicketPhone###StateDefault
+### Ticket::Frontend::AgentTicketPhone###StateType
+### Ticket::Frontend::AgentTicketPhone###HistoryType
+### Ticket::Frontend::AgentTicketPhone###HistoryComment
+### Ticket::Frontend::AgentTicketPhone###SplitLinkType
+### Ticket::Frontend::AgentTicketEmail###Priority
+### Ticket::Frontend::AgentTicketEmail###ArticleType
+### Ticket::Frontend::AgentTicketEmail###SenderType
+### Ticket::Frontend::AgentTicketEmail###Subject
+### Ticket::Frontend::AgentTicketEmail###Body
+### Ticket::Frontend::AgentTicketEmail###StateDefault
+### Ticket::Frontend::AgentTicketEmail###StateType
+### Ticket::Frontend::AgentTicketEmail###HistoryType
+### Ticket::Frontend::AgentTicketEmail###HistoryComment
+### Ticket::Frontend::AgentTicketClose###Permission
+### Ticket::Frontend::AgentTicketClose###RequiredLock
+### Ticket::Frontend::AgentTicketClose###TicketType
+### Ticket::Frontend::AgentTicketClose###Service
+### Ticket::Frontend::AgentTicketClose###Queue
+### Ticket::Frontend::AgentTicketClose###Owner
+### Ticket::Frontend::AgentTicketClose###OwnerMandatory
+### Ticket::Frontend::AgentTicketClose###Responsible
+### Ticket::Frontend::AgentTicketClose###State
+### Ticket::Frontend::AgentTicketClose###StateType
+### Ticket::Frontend::AgentTicketClose###StateDefault
+### Ticket::Frontend::AgentTicketClose###Note
+### Ticket::Frontend::AgentTicketClose###Subject
+### Ticket::Frontend::AgentTicketClose###Body
+### Ticket::Frontend::AgentTicketClose###InvolvedAgent
+### Ticket::Frontend::AgentTicketClose###InformAgent
+### Ticket::Frontend::AgentTicketClose###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketClose###ArticleTypes
+### Ticket::Frontend::AgentTicketClose###Priority
+### Ticket::Frontend::AgentTicketClose###PriorityDefault
+### Ticket::Frontend::AgentTicketClose###Title
+### Ticket::Frontend::AgentTicketClose###HistoryType
+### Ticket::Frontend::AgentTicketClose###HistoryComment
+### Ticket::Frontend::AgentTicketNote###Permission
+### Ticket::Frontend::AgentTicketNote###RequiredLock
+### Ticket::Frontend::AgentTicketNote###TicketType
+### Ticket::Frontend::AgentTicketNote###Service
+### Ticket::Frontend::AgentTicketNote###Queue
+### Ticket::Frontend::AgentTicketNote###Owner
+### Ticket::Frontend::AgentTicketNote###OwnerMandatory
+### Ticket::Frontend::AgentTicketNote###Responsible
+### Ticket::Frontend::AgentTicketNote###State
+### Ticket::Frontend::AgentTicketNote###StateType
+### Ticket::Frontend::AgentTicketNote###StateDefault
+### Ticket::Frontend::AgentTicketNote###Note
+### Ticket::Frontend::AgentTicketNote###Subject
+### Ticket::Frontend::AgentTicketNote###Body
+### Ticket::Frontend::AgentTicketNote###InvolvedAgent
+### Ticket::Frontend::AgentTicketNote###InformAgent
+### Ticket::Frontend::AgentTicketNote###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketNote###ArticleTypes
+### Ticket::Frontend::AgentTicketNote###Priority
+### Ticket::Frontend::AgentTicketNote###PriorityDefault
+### Ticket::Frontend::AgentTicketNote###Title
+### Ticket::Frontend::AgentTicketNote###HistoryType
+### Ticket::Frontend::AgentTicketNote###HistoryComment
+### Ticket::Frontend::AgentTicketOwner###Permission
+### Ticket::Frontend::AgentTicketOwner###RequiredLock
+### Ticket::Frontend::AgentTicketOwner###TicketType
+### Ticket::Frontend::AgentTicketOwner###Service
+### Ticket::Frontend::AgentTicketOwner###Queue
+### Ticket::Frontend::AgentTicketOwner###Owner
+### Ticket::Frontend::AgentTicketOwner###OwnerMandatory
+### Ticket::Frontend::AgentTicketOwner###Responsible
+### Ticket::Frontend::AgentTicketOwner###State
+### Ticket::Frontend::AgentTicketOwner###StateType
+### Ticket::Frontend::AgentTicketOwner###StateDefault
+### Ticket::Frontend::AgentTicketOwner###Note
+### Ticket::Frontend::AgentTicketOwner###Subject
+### Ticket::Frontend::AgentTicketOwner###Body
+### Ticket::Frontend::AgentTicketOwner###InvolvedAgent
+### Ticket::Frontend::AgentTicketOwner###InformAgent
+### Ticket::Frontend::AgentTicketOwner###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketOwner###ArticleTypes
+### Ticket::Frontend::AgentTicketOwner###Priority
+Kernel/System/SysConfig.pm
+### Ticket::Frontend::AgentTicketOwner###PriorityDefault
+Kernel/System/SysConfig.pm
+### Ticket::Frontend::AgentTicketOwner###Title
+### Ticket::Frontend::AgentTicketOwner###HistoryType
+### Ticket::Frontend::AgentTicketOwner###HistoryComment
+### Ticket::Frontend::AgentTicketPending###Permission
+### Ticket::Frontend::AgentTicketPending###RequiredLock
+### Ticket::Frontend::AgentTicketPending###TicketType
+### Ticket::Frontend::AgentTicketPending###Service
+### Ticket::Frontend::AgentTicketPending###Queue
+### Ticket::Frontend::AgentTicketPending###Owner
+### Ticket::Frontend::AgentTicketPending###OwnerMandatory
+### Ticket::Frontend::AgentTicketPending###Responsible
+### Ticket::Frontend::AgentTicketPending###State
+### Ticket::Frontend::AgentTicketPending###StateType
+### Ticket::Frontend::AgentTicketPending###StateDefault
+### Ticket::Frontend::AgentTicketPending###Note
+### Ticket::Frontend::AgentTicketPending###Subject
+### Ticket::Frontend::AgentTicketPending###Body
+### Ticket::Frontend::AgentTicketPending###InvolvedAgent
+### Ticket::Frontend::AgentTicketPending###InformAgent
+### Ticket::Frontend::AgentTicketPending###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketPending###ArticleTypes
+### Ticket::Frontend::AgentTicketPending###Priority
+### Ticket::Frontend::AgentTicketPending###PriorityDefault
+### Ticket::Frontend::AgentTicketPending###Title
+### Ticket::Frontend::AgentTicketPending###HistoryType
+### Ticket::Frontend::AgentTicketPending###HistoryComment
+### Ticket::Frontend::AgentTicketPriority###Permission
+### Ticket::Frontend::AgentTicketPriority###RequiredLock
+### Ticket::Frontend::AgentTicketPriority###TicketType
+### Ticket::Frontend::AgentTicketPriority###Service
+### Ticket::Frontend::AgentTicketPriority###Queue
+### Ticket::Frontend::AgentTicketPriority###Owner
+### Ticket::Frontend::AgentTicketPriority###OwnerMandatory
+### Ticket::Frontend::AgentTicketPriority###Responsible
+### Ticket::Frontend::AgentTicketPriority###State
+### Ticket::Frontend::AgentTicketPriority###StateType
+### Ticket::Frontend::AgentTicketPriority###StateDefault
+### Ticket::Frontend::AgentTicketPriority###Note
+### Ticket::Frontend::AgentTicketPriority###Subject
+### Ticket::Frontend::AgentTicketPriority###Body
+### Ticket::Frontend::AgentTicketPriority###InvolvedAgent
+### Ticket::Frontend::AgentTicketPriority###InformAgent
+### Ticket::Frontend::AgentTicketPriority###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketPriority###ArticleTypes
+### Ticket::Frontend::AgentTicketPriority###Priority
+### Ticket::Frontend::AgentTicketPriority###PriorityDefault
+### Ticket::Frontend::AgentTicketPriority###Title
+### Ticket::Frontend::AgentTicketPriority###HistoryType
+### Ticket::Frontend::AgentTicketPriority###HistoryComment
+### Ticket::Frontend::AgentTicketResponsible###Permission
+### Ticket::Frontend::AgentTicketResponsible###RequiredLock
+### Ticket::Frontend::AgentTicketResponsible###TicketType
+### Ticket::Frontend::AgentTicketResponsible###Service
+### Ticket::Frontend::AgentTicketResponsible###Queue
+### Ticket::Frontend::AgentTicketResponsible###Owner
+### Ticket::Frontend::AgentTicketResponsible###OwnerMandatory
+### Ticket::Frontend::AgentTicketResponsible###Responsible
+### Ticket::Frontend::AgentTicketResponsible###State
+### Ticket::Frontend::AgentTicketResponsible###StateType
+### Ticket::Frontend::AgentTicketResponsible###StateDefault
+### Ticket::Frontend::AgentTicketResponsible###Note
+### Ticket::Frontend::AgentTicketResponsible###Subject
+### Ticket::Frontend::AgentTicketResponsible###Body
+### Ticket::Frontend::AgentTicketResponsible###InvolvedAgent
+### Ticket::Frontend::AgentTicketResponsible###InformAgent
+### Ticket::Frontend::AgentTicketResponsible###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketResponsible###ArticleTypes
+### Ticket::Frontend::AgentTicketResponsible###Priority
+### Ticket::Frontend::AgentTicketResponsible###PriorityDefault
+### Ticket::Frontend::AgentTicketResponsible###Title
+### Ticket::Frontend::AgentTicketResponsible###HistoryType
+### Ticket::Frontend::AgentTicketResponsible###HistoryComment
+### Ticket::Frontend::AgentTicketBulk###RequiredLock
+### Ticket::Frontend::AgentTicketBulk###TicketType
+### Ticket::Frontend::AgentTicketBulk###Owner
+### Ticket::Frontend::AgentTicketBulk###Responsible
+### Ticket::Frontend::AgentTicketBulk###State
+### Ticket::Frontend::AgentTicketBulk###StateType
+### Ticket::Frontend::AgentTicketBulk###StateDefault
+### Ticket::Frontend::AgentTicketBulk###Priority
+### Ticket::Frontend::AgentTicketBulk###PriorityDefault
+### Ticket::Frontend::AgentTicketBulk###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketBulk###ArticleTypes
+### Ticket::Frontend::MoveType
+Kernel/Modules/AgentTicketMove.pm
+Kernel/Modules/AgentTicketZoom.pm
+Kernel/Output/HTML/TicketOverviewMedium.pm
+Kernel/Output/HTML/TicketMenuMove.pm
+### Ticket::Frontend::AgentTicketMove###State
+### Ticket::DefaultNextMoveStateType
+### Ticket::Frontend::AgentTicketMove###Priority
+### Ticket::Frontend::AgentTicketBounce###Permission
+### Ticket::Frontend::AgentTicketBounce###RequiredLock
+### Ticket::Frontend::AgentTicketBounce###StateDefault
+### Ticket::Frontend::AgentTicketBounce###StateType
+### Ticket::Frontend::BounceText
+Kernel/Modules/AgentTicketBounce.pm
+### Ticket::Frontend::AgentTicketCompose###Permission
+### Ticket::Frontend::AgentTicketCompose###RequiredLock
+### Ticket::Frontend::AgentTicketCompose###StateDefault
+### Ticket::Frontend::AgentTicketCompose###StateType
+### Ticket::Frontend::ResponseFormat
+Kernel/Modules/AgentTicketCompose.pm
+### Ticket::Frontend::Quote
+Kernel/Modules/AgentTicketForward.pm
+Kernel/Modules/AgentTicketCompose.pm
+### Ticket::Frontend::ComposeAddCustomerAddress
+Kernel/Modules/AgentTicketCompose.pm
+### Ticket::Frontend::ComposeReplaceSenderAddress
+Kernel/Modules/AgentTicketCompose.pm
+### Ticket::Frontend::ComposeExcludeCcRecipients
+Kernel/Modules/AgentTicketCompose.pm
+### Ticket::Frontend::AgentTicketForward###Permission
+### Ticket::Frontend::AgentTicketForward###RequiredLock
+### Ticket::Frontend::AgentTicketForward###StateDefault
+### Ticket::Frontend::AgentTicketForward###StateType
+### Ticket::Frontend::AgentTicketForward###ArticleTypeDefault
+### Ticket::Frontend::AgentTicketForward###ArticleTypes
+### Ticket::Frontend::AgentTicketMerge###Permission
+### Ticket::Frontend::AgentTicketMerge###RequiredLock
+### Ticket::Frontend::AgentTicketCustomer###Permission
+### Ticket::Frontend::AgentTicketCustomer###RequiredLock
+### Ticket::Frontend::MergeText
+Kernel/Modules/AgentTicketMerge.pm
+### Ticket::Frontend::AutomaticMergeText
+Kernel/System/Ticket.pm
+### Ticket::ViewableSenderTypes
+Kernel/Modules/AgentTicketQueue.pm
+Kernel/Modules/CustomerTicketOverview.pm
+### Ticket::ViewableLocks
+Kernel/System/Lock.pm
+### Ticket::ViewableStateType
+Kernel/System/State.pm
+### Ticket::UnlockStateType
+Kernel/System/State.pm
+### Ticket::PendingNotificationOnlyToOwner
+bin/otrs.PendingJobs.pl
+### Ticket::PendingNotificationNotToResponsible
+bin/otrs.PendingJobs.pl
+### Ticket::PendingReminderStateType
+Kernel/Output/HTML/DashboardCalendar.pm
+Kernel/System/Ticket/Event/TicketPendingTimeReset.pm
+### Ticket::PendingAutoStateType
+Kernel/System/Ticket/Event/TicketPendingTimeReset.pm
+### Ticket::StateAfterPending
+bin/otrs.PendingJobs.pl
+### CustomerDBLink
+Kernel/Output/HTML/Standard/AgentTicketOverviewPreview.dtl
+Kernel/Output/HTML/Standard/AgentTicketOverviewMedium.dtl
+Kernel/Output/HTML/Standard/AgentTicketZoom.dtl
+### CustomerDBLinkTarget
+Kernel/Output/HTML/Standard/AgentTicketOverviewPreview.dtl
+Kernel/Output/HTML/Standard/AgentTicketOverviewMedium.dtl
+Kernel/Output/HTML/Standard/AgentTicketZoom.dtl
+### CustomerDBLinkClass
+Kernel/Output/HTML/Standard/AgentTicketZoom.dtl
+### Frontend::ToolBarModule###1-Ticket::AgentTicketQueue
+### Frontend::ToolBarModule###2-Ticket::AgentTicketStatus
+### Frontend::ToolBarModule###3-Ticket::AgentTicketEscalation
+### Frontend::ToolBarModule###4-Ticket::AgentTicketPhone
+### Frontend::ToolBarModule###5-Ticket::AgentTicketEmail
+### Frontend::ToolBarModule###6-Ticket::TicketResponsible
+### Frontend::ToolBarModule###7-Ticket::TicketWatcher
+### Frontend::ToolBarModule###8-Ticket::TicketLocked
+### Frontend::ToolBarModule###9-Ticket::TicketSearchProfile
+### Frontend::ToolBarModule###10-Ticket::TicketSearchFulltext
+scripts/DBUpdate-to-3.2.pl
+### Frontend::ToolBarModule###11-CICSearchCustomerID
+### Frontend::ToolBarModule###11-CICSearchCustomerUser
+### Frontend::HeaderMetaModule###2-TicketSearch
+### Frontend::NotifyModule###5-Ticket::TicketEscalation
+### Frontend::CustomerUser::Item###15-OpenTickets
+### Frontend::CustomerUser::Item###16-OpenTicketsForCustomerUserLogin
+### Frontend::CustomerUser::Item###17-ClosedTickets
+### Frontend::CustomerUser::Item###18-ClosedTicketsForCustomerUserLogin
+### Ticket::Frontend::ArticleViewModule###1-PGP
+### Ticket::Frontend::ArticleViewModule###1-SMIME
+### Ticket::Frontend::ArticlePreViewModule###1-PGP
+### Ticket::Frontend::ArticlePreViewModule###1-SMIME
+### Ticket::Frontend::ArticleComposeModule###1-SignEmail
+### Ticket::Frontend::ArticleComposeModule###2-CryptEmail
+### Ticket::Frontend::ArticleAttachmentModule###1-Download
+### Ticket::Frontend::ArticleAttachmentModule###2-HTML-Viewer
+### Ticket::Frontend::MenuModule###000-Back
+### Ticket::Frontend::MenuModule###100-Lock
+### Ticket::Frontend::MenuModule###200-History
+### Ticket::Frontend::MenuModule###210-Print
+### Ticket::Frontend::MenuModule###300-Priority
+### Ticket::Frontend::MenuModule###310-FreeText
+### Ticket::Frontend::MenuModule###320-Link
+### Ticket::Frontend::MenuModule###400-Owner
+### Ticket::Frontend::MenuModule###410-Responsible
+### Ticket::Frontend::MenuModule###420-Customer
+### Ticket::Frontend::MenuModule###420-Note
+### Ticket::Frontend::MenuModule###425-Phone Call Outbound
+### Ticket::Frontend::MenuModule###426-Phone Call Inbound
+### Ticket::Frontend::MenuModule###430-Merge
+### Ticket::Frontend::MenuModule###440-Pending
+### Ticket::Frontend::MenuModule###448-Watch
+### Ticket::Frontend::MenuModule###450-Close
+### Ticket::Frontend::MenuModule###460-Delete
+### Ticket::Frontend::MenuModule###470-Spam
+### Ticket::Frontend::PreMenuModule###100-Lock
+### Ticket::Frontend::PreMenuModule###200-Zoom
+### Ticket::Frontend::PreMenuModule###210-History
+### Ticket::Frontend::PreMenuModule###300-Priority
+### Ticket::Frontend::PreMenuModule###420-Note
+### Ticket::Frontend::PreMenuModule###440-Close
+### Ticket::Frontend::PreMenuModule###445-Move
+### Ticket::Frontend::PreMenuModule###450-Delete
+### Ticket::Frontend::PreMenuModule###460-Spam
+### System::Permission
+Kernel/Modules/AdminProcessManagementActivityDialog.pm
+Kernel/Modules/AdminUserGroup.pm
+Kernel/Modules/AdminRoleGroup.pm
+Kernel/System/Auth/Sync/LDAP.pm
+Kernel/System/Ticket.pm
+Kernel/System/Group.pm
+### Ticket::Permission###1-OwnerCheck
+### Ticket::Permission###2-ResponsibleCheck
+### Ticket::Permission###3-GroupCheck
+### Ticket::Permission###4-WatcherCheck
+### CustomerTicket::Permission###1-GroupCheck
+### CustomerTicket::Permission###2-CustomerUserIDCheck
+### CustomerTicket::Permission###3-CustomerIDCheck
+### Ticket::DefineEmailFrom
+Kernel/System/TemplateGenerator.pm
+### Ticket::DefineEmailFromSeparator
+Kernel/System/TemplateGenerator.pm
+### DashboardBackend###0100-TicketPendingReminder
+### DashboardBackend###0110-TicketEscalation
+### DashboardBackend###0120-TicketNew
+### DashboardBackend###0130-TicketOpen
+### DashboardBackend###0250-TicketStats
+### DashboardBackend###0260-TicketCalendar
+### AgentCustomerInformationCenter::Backend###0050-CIC-CustomerUserList
+### AgentCustomerInformationCenter::Backend###0100-CIC-TicketPendingReminder
+### AgentCustomerInformationCenter::Backend###0110-CIC-TicketEscalation
+### AgentCustomerInformationCenter::Backend###0120-CIC-TicketNew
+### AgentCustomerInformationCenter::Backend###0130-CIC-TicketOpen
+### AgentCustomerInformationCenter::Backend###0500-CIC-CustomerIDStatus
+### PreferencesGroups###NewTicketNotify
+### PreferencesGroups###FollowUpNotify
+### PreferencesGroups###LockTimeoutNotify
+### PreferencesGroups###MoveNotify
+### PreferencesGroups###WatcherNotify
+### PreferencesGroups###CustomQueue
+### PreferencesGroups###RefreshTime
+### PreferencesGroups###TicketOverviewSmallPageShown
+### PreferencesGroups###TicketOverviewMediumPageShown
+### PreferencesGroups###TicketOverviewPreviewPageShown
+### PreferencesGroups###CreateNextMask
+### QueuePreferences###Comment2
+### ServicePreferences###Comment2
+### SLAPreferences###Comment2
+### CustomerNotifyJustToRealCustomer
+Kernel/System/Ticket/Article.pm
+Kernel/System/Ticket/Event/NotificationEvent.pm
+### AgentSelfNotifyOnAction
+Kernel/System/Ticket/Article.pm
+Kernel/System/Ticket/Event/NotificationEvent.pm
+### Ticket::Frontend::CustomerTicketMessage###NextScreenAfterNewTicket
+### Ticket::Frontend::CustomerTicketMessage###Priority
+### Ticket::Frontend::CustomerTicketMessage###PriorityDefault
+### Ticket::Frontend::CustomerTicketMessage###Queue
+### Ticket::Frontend::CustomerTicketMessage###QueueDefault
+### Ticket::Frontend::CustomerTicketMessage###TicketType
+### Ticket::Frontend::CustomerTicketMessage###TicketTypeDefault
+### Ticket::Frontend::CustomerTicketMessage###Service
+### Ticket::Frontend::CustomerTicketMessage###SLA
+### Ticket::Frontend::CustomerTicketMessage###StateDefault
+### Ticket::Frontend::CustomerTicketMessage###ArticleType
+### Ticket::Frontend::CustomerTicketMessage###SenderType
+### Ticket::Frontend::CustomerTicketMessage###HistoryType
+### Ticket::Frontend::CustomerTicketMessage###HistoryComment
+### CustomerPanelSelectionType
+Kernel/Output/HTML/CustomerNewTicketQueueSelectionGeneric.pm
+### CustomerPanelSelectionString
+Kernel/Output/HTML/CustomerNewTicketQueueSelectionGeneric.pm
+### CustomerPanelOwnSelection
+Kernel/Output/HTML/CustomerNewTicketQueueSelectionGeneric.pm
+### CustomerPanel::NewTicketQueueSelectionModule
+Kernel/Modules/CustomerTicketMessage.pm
+### Ticket::Frontend::CustomerTicketZoom###NextScreenAfterFollowUp
+### Ticket::Frontend::CustomerTicketZoom###ArticleType
+### Ticket::Frontend::CustomerTicketZoom###SenderType
+### Ticket::Frontend::CustomerTicketZoom###HistoryType
+### Ticket::Frontend::CustomerTicketZoom###HistoryComment
+### Ticket::Frontend::CustomerTicketZoom###Priority
+### Ticket::Frontend::CustomerTicketZoom###PriorityDefault
+### Ticket::Frontend::CustomerTicketZoom###State
+### Ticket::Frontend::CustomerTicketZoom###StateDefault
+### Ticket::Frontend::CustomerTicketZoom###StateType
+### Ticket::Frontend::CustomerTicketZoom###AttributesView
+### Ticket::CustomerTicketSearch::SearchLimit
+Kernel/Modules/CustomerTicketSearch.pm
+### Ticket::CustomerTicketSearch::SearchPageShown
+Kernel/Modules/CustomerTicketSearch.pm
+### Ticket::CustomerTicketSearch::SortBy::Default
+Kernel/Modules/CustomerTicketSearch.pm
+### Ticket::CustomerTicketSearch::Order::Default
+Kernel/Modules/CustomerTicketSearch.pm
+### Ticket::Frontend::CustomerTicketSearch###ExtendedSearchCondition
+### Ticket::Frontend::CustomerTicketSearch###SearchArticleCSVTree
+### Ticket::Frontend::CustomerTicketSearch###SearchCSVData
+### CustomerPreferencesGroups###ShownTickets
+### CustomerPreferencesGroups###RefreshTime
+### Frontend::CommonObject###QueueObject
+### Frontend::CommonObject###TicketObject
+### Frontend::CommonParam###Action
+### Frontend::CommonParam###QueueID
+### Frontend::CommonParam###TicketID
+### CustomerFrontend::CommonObject###QueueObject
+### CustomerFrontend::CommonObject###TicketObject
+### CustomerFrontend::CommonParam###Action
+### CustomerFrontend::CommonParam###TicketID
+### CustomerFrontend::HeaderMetaModule###2-TicketSearch
+### Frontend::Module###AgentTicketQueue
+### Frontend::Module###AgentTicketPhone
+### Frontend::Module###AgentTicketPhoneOutbound
+### Frontend::Module###AgentTicketPhoneInbound
+### Frontend::Module###AgentTicketEmail
+### Frontend::Module###AgentTicketSearch
+### Frontend::Module###AgentTicketLockedView
+### Frontend::Module###AgentTicketResponsibleView
+### Frontend::Module###AgentTicketWatchView
+### Frontend::Module###AgentCustomerSearch
+### Frontend::Module###AgentTicketStatusView
+### Frontend::Module###AgentTicketEscalationView
+### Frontend::Module###AgentZoom
+### Frontend::Module###AgentTicketZoom
+### Frontend::Module###AgentTicketAttachment
+### Frontend::Module###AgentTicketPlain
+### Frontend::Module###AgentTicketNote
+### Frontend::Module###AgentTicketMerge
+### Frontend::Module###AgentTicketPending
+### Frontend::Module###AgentTicketWatcher
+### Frontend::Module###AgentTicketPriority
+### Frontend::Module###AgentTicketLock
+### Frontend::Module###AgentTicketMove
+### Ticket::Frontend::AgentTicketMove###NextScreen
+### Ticket::Frontend::AgentTicketMove###Subject
+### Ticket::Frontend::AgentTicketMove###Body
+### Frontend::Module###AgentTicketHistory
+### Frontend::Module###AgentTicketOwner
+### Frontend::Module###AgentTicketResponsible
+### Frontend::Module###AgentTicketCompose
+### Frontend::Module###AgentTicketBounce
+### Frontend::Module###AgentTicketForward
+### Frontend::Module###AgentTicketCustomer
+### Frontend::Module###AgentTicketClose
+### Frontend::Module###AgentTicketFreeText
+### Frontend::Module###AgentTicketPrint
+### Frontend::Module###AgentTicketBulk
+### Frontend::Module###AdminQueue
+### Frontend::Module###AdminResponse
+### Frontend::Module###AdminQueueResponses
+### Frontend::Module###AdminAutoResponse
+### Frontend::Module###AdminQueueAutoResponse
+### Frontend::Module###AdminAttachment
+### Frontend::Module###AdminResponseAttachment
+### Frontend::Module###AdminSalutation
+### Frontend::Module###AdminSignature
+### Frontend::Module###AdminSystemAddress
+### Frontend::Module###AdminNotification
+### Frontend::Module###AdminNotificationEvent
+### Frontend::Module###AdminService
+### Frontend::Module###AdminSLA
+### Frontend::Module###AdminType
+### Frontend::Module###AdminState
+### Frontend::Module###AdminPriority
+### Frontend::Module###AdminGenericAgent
+### CustomerFrontend::Module###CustomerTicketOverview
+### CustomerFrontend::Module###CustomerTicketMessage
+### CustomerFrontend::Module###CustomerTicketZoom
+### CustomerFrontend::Module###CustomerTicketPrint
+### CustomerFrontend::Module###CustomerTicketAttachment
+### CustomerFrontend::Module###CustomerTicketSearch
+### Ticket::Acl::Module###1-Ticket::Acl::Module
+### TicketACL::Default::Action
+Kernel/System/Ticket.pm
+### PostmasterMaxEmails
+Kernel/System/PostMaster/LoopProtection/DB.pm
+Kernel/System/PostMaster/LoopProtection/FS.pm
+### PostMasterMaxEmailSize
+Kernel/System/MailAccount/POP3.pm
+Kernel/System/MailAccount/IMAPS.pm
+Kernel/System/MailAccount/IMAP.pm
+Kernel/System/MailAccount/POP3S.pm
+Kernel/System/MailAccount/IMAPTLS.pm
+### PostMasterReconnectMessage
+Kernel/System/MailAccount/POP3.pm
+Kernel/System/MailAccount/IMAPS.pm
+Kernel/System/MailAccount/IMAP.pm
+Kernel/System/MailAccount/POP3S.pm
+Kernel/System/MailAccount/IMAPTLS.pm
+### LoopProtectionModule
+Kernel/System/PostMaster/LoopProtection.pm
+scripts/test/PostMaster/LoopProtection.t
+### LoopProtectionLog
+Kernel/System/PostMaster/LoopProtection/FS.pm
+### PostmasterAutoHTML2Text
+Kernel/System/EmailParser.pm
+### PostmasterFollowUpSearchInReferences
+Kernel/System/PostMaster.pm
+### PostmasterFollowUpSearchInBody
+Kernel/System/PostMaster.pm
+### PostmasterFollowUpSearchInAttachment
+Kernel/System/PostMaster.pm
+### PostmasterFollowUpSearchInRaw
+Kernel/System/PostMaster.pm
+### PostmasterUserID
+Kernel/System/PostMaster.pm
+Kernel/System/Ticket.pm
+### PostmasterDefaultQueue
+Kernel/Output/HTML/Standard/Test.dtl
+Kernel/System/PostMaster/DestQueue.pm
+### PostmasterDefaultPriority
+Kernel/System/PostMaster/NewTicket.pm
+### PostmasterDefaultState
+Kernel/System/PostMaster/NewTicket.pm
+scripts/test/PostMaster.t
+### PostmasterFollowUpState
+Kernel/System/PostMaster/FollowUp.pm
+scripts/test/PostMaster.t
+### PostmasterFollowUpStateClosed
+Kernel/System/PostMaster/FollowUp.pm
+scripts/test/PostMaster.t
+### PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner
+Kernel/System/Ticket/Article.pm
+### PostmasterX-Header
+Kernel/Modules/AdminPostMasterFilter.pm
+Kernel/System/PostMaster.pm
+scripts/test/PostMaster.t
+### PostMaster::PreFilterModule###1-Match
+### PostMaster::PreFilterModule###2-Match
+### PostMaster::PreFilterModule###3-NewTicketReject
+### PostMaster::PreFilterModule::NewTicketReject::Sender
+Kernel/System/PostMaster/Filter/NewTicketReject.pm
+### PostMaster::PreFilterModule::NewTicketReject::Subject
+Kernel/System/PostMaster/Filter/NewTicketReject.pm
+### PostMaster::PreFilterModule::NewTicketReject::Body
+Kernel/System/PostMaster/Filter/NewTicketReject.pm
+### PostMaster::PreFilterModule###4-CMD
+### PostMaster::PreFilterModule###5-SpamAssassin
+### PostMaster::PreFilterModule###6-SpamAssassin
+### PostMaster::PreFilterModule###000-MatchDBSource
+### PostMaster::PostFilterModule###000-FollowUpArticleTypeCheck
+### SendNoAutoResponseRegExp
+Kernel/System/Ticket/Article.pm
+### LinkObject::PossibleLink###0200
+### LinkObject::PossibleLink###0201
+### Stats::DynamicObjectRegistration###Ticket
+### Stats::DynamicObjectRegistration###TicketList
+### Stats::DynamicObjectRegistration###TicketAccountedTime
+### Stats::DynamicObjectRegistration###TicketSolutionResponseTime
+### Ticket::Frontend::HTMLArticleHeightDefault
+Kernel/Output/HTML/Standard/AgentTicketZoom.dtl
+var/httpd/htdocs/js/Core.Agent.TicketZoom.js
+### Ticket::Frontend::HTMLArticleHeightMax
+Kernel/Output/HTML/Standard/AgentTicketZoom.dtl
+var/httpd/htdocs/js/Core.Agent.TicketZoom.js
+### Ticket::Frontend::ZoomRichTextForce
+Kernel/Modules/AgentTicketZoom.pm
+### Frontend::Module###AdminDynamicField
+### PreferencesGroups###DynamicFieldsOverviewPageShown
+### Frontend::Module###AdminDynamicFieldText
+### Frontend::Module###AdminDynamicFieldCheckbox
+### Frontend::Module###AdminDynamicFieldDropdown
+### Frontend::Module###AdminDynamicFieldDateTime
+### Frontend::Module###AdminDynamicFieldMultiselect
+### DynamicFields::ObjectType###Ticket
+### DynamicFields::ObjectType###Article
+### DynamicFields::Backend###Text
+### DynamicFields::Backend###TextArea
+### DynamicFields::Backend###Checkbox
+### DynamicFields::Backend###Dropdown
+### DynamicFields::Backend###DateTime
+### DynamicFields::Backend###Date
+### DynamicFields::Backend###Multiselect
+### Ticket::Frontend::AgentTicketClose###DynamicField
+### Ticket::Frontend::AgentTicketCompose###DynamicField
+### Ticket::Frontend::AgentTicketEmail###DynamicField
+### Ticket::Frontend::AgentTicketFreeText###DynamicField
+### Ticket::Frontend::AgentTicketForward###DynamicField
+### Ticket::Frontend::AgentTicketMove###DynamicField
+### Ticket::Frontend::AgentTicketNote###DynamicField
+### Ticket::Frontend::AgentTicketOwner###DynamicField
+### Ticket::Frontend::AgentTicketPending###DynamicField
+### Ticket::Frontend::AgentTicketPhone###DynamicField
+### Ticket::Frontend::AgentTicketPhoneInbound###DynamicField
+### Ticket::Frontend::AgentTicketPhoneOutbound###DynamicField
+### Ticket::Frontend::AgentTicketPriority###DynamicField
+### Ticket::Frontend::AgentTicketResponsible###DynamicField
+### Ticket::Frontend::CustomerTicketMessage###DynamicField
+### Ticket::Frontend::OverviewSmall###DynamicField
+### Ticket::Frontend::OverviewMedium###DynamicField
+### Ticket::Frontend::OverviewPreview###DynamicField
+### Ticket::Frontend::AgentTicketZoom###DynamicField
+### Ticket::Frontend::CustomerTicketZoom###DynamicField
+### Ticket::Frontend::CustomerTicketZoom###FollowUpDynamicField
+### Ticket::Frontend::AgentTicketPrint###DynamicField
+### Ticket::Frontend::CustomerTicketPrint###DynamicField
+### Ticket::Frontend::AgentTicketSearch###DynamicField
+### Ticket::Frontend::AgentTicketSearch###Defaults###DynamicField
+### Ticket::Frontend::AgentTicketSearch###SearchCSVDynamicField
+### Ticket::Frontend::CustomerTicketSearch###DynamicField
+### Ticket::Frontend::CustomerTicketSearch###SearchOverviewDynamicField
+### Ticket::Frontend::CustomerTicketSearch###SearchCSVDynamicField
+### Ticket::EventModulePost###TicketDynamicFieldDefault
+scripts/test/ProcessManagement/TransitionAction/TicketTypeSet.t
+scripts/test/PostMaster.t
+### Ticket::TicketDynamicFieldDefault###Element1
+### Ticket::TicketDynamicFieldDefault###Element2
+### Ticket::TicketDynamicFieldDefault###Element3
+### Ticket::TicketDynamicFieldDefault###Element4
+### Ticket::TicketDynamicFieldDefault###Element5
+### Ticket::TicketDynamicFieldDefault###Element6
+### Ticket::TicketDynamicFieldDefault###Element7
+### Ticket::TicketDynamicFieldDefault###Element8
+### Ticket::TicketDynamicFieldDefault###Element9
+### Ticket::TicketDynamicFieldDefault###Element10
+### Ticket::TicketDynamicFieldDefault###Element11
+### Ticket::TicketDynamicFieldDefault###Element12
+### Ticket::TicketDynamicFieldDefault###Element13
+### Ticket::TicketDynamicFieldDefault###Element14
+### Ticket::TicketDynamicFieldDefault###Element15
+### Ticket::TicketDynamicFieldDefault###Element16
+### Ticket::Frontend::AgentTicketNote###RichTextWidth
+### Ticket::Frontend::AgentTicketNote###RichTextHeight
+### Ticket::Frontend::AgentTicketOwner###RichTextWidth
+### Ticket::Frontend::AgentTicketOwner###RichTextHeight
+### Ticket::Frontend::AgentTicketPending###RichTextWidth
+### Ticket::Frontend::AgentTicketPending###RichTextHeight
+### Ticket::Frontend::AgentTicketEmail###RichTextWidth
+### Ticket::Frontend::AgentTicketEmail###RichTextHeight
+### Ticket::Frontend::AgentTicketPhone###RichTextWidth
+### Ticket::Frontend::AgentTicketPhone###RichTextHeight
+### Ticket::Frontend::AgentTicketPhoneInbound###RichTextWidth
+### Ticket::Frontend::AgentTicketPhoneInbound###RichTextHeight
+### Ticket::Frontend::AgentTicketPhoneOutbound###RichTextWidth
+### Ticket::Frontend::AgentTicketPhoneOutbound###RichTextHeight
+### Ticket::Frontend::AgentTicketClose###RichTextWidth
+### Ticket::Frontend::AgentTicketClose###RichTextHeight
+### Ticket::Frontend::AgentTicketFreeText###RichTextWidth
+### Ticket::Frontend::AgentTicketFreeText###RichTextHeight
+### Ticket::Frontend::AgentTicketPriority###RichTextWidth
+### Ticket::Frontend::AgentTicketPriority###RichTextHeight
+### Ticket::Frontend::AgentTicketResponsible###RichTextWidth
+### Ticket::Frontend::AgentTicketResponsible###RichTextHeight
+### Ticket::Frontend::AgentTicketForward###RichTextWidth
+### Ticket::Frontend::AgentTicketForward###RichTextHeight
+### Ticket::Frontend::AgentTicketMerge###RichTextWidth
+### Ticket::Frontend::AgentTicketMerge###RichTextHeight
