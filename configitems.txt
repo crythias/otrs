@@ -1,3 +1,13 @@
+# This file was gathered by the following script:
+# grep "ConfigItem Name" Kernel/Config/Files/Ticket.xml | cut -d \" -f 2 | xargs -I%  sh -c '{ echo "###" %; grep -Fsrl % *;}' | grep -v "CHANGES" | grep -v "Kernel\/Config" | grep -v "Kernel\/Language" > configitems.txt
+# Every entry with ### is a ConfigItem in Ticket.xml
+# Any file that follows directly references the ConfigItem.
+# Groups of ConfigItems that do not have files may or may not be orphaned. It
+# is possible that certain code iterates through subsections of like
+# ConfigItems, and therefore does not explicitly reference a given ConfigItem
+# by name.
+#
+
 ### Ticket::Hook
 Kernel/Modules/AgentTicketPrint.pm
 Kernel/Modules/CustomerTicketPrint.pm
