@@ -48,18 +48,12 @@ sub Run {
     if ( $Type =~ /inline/i ) {
         $Target = 'target="attachment" ';
     }
-    my $EncodedFilename = $Self->{LayoutObject}->LinkEncode( $Param{File}->{Filename} || '' );
-
-    my $rel = '';
-    if (lc $EncodedFilename =~ /\.(tif|jpg|png|gif|jpeg|tiff)$/i) {
-       $rel = '" rel="lightbox';
-    }
 
     return (
         %{ $Param{File} },
         Action => 'Download',
         Link =>
-            "\$Env{\"Baselink\"}Action=AgentTicketAttachment;ArticleID=$Param{Article}->{ArticleID};FileID=$Param{File}->{FileID}" . $rel,
+            "\$Env{\"Baselink\"}Action=AgentTicketAttachment;ArticleID=$Param{Article}->{ArticleID};FileID=$Param{File}->{FileID}",
         Image  => 'disk-s.png',
         Target => $Target,
     );

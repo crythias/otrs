@@ -55,11 +55,6 @@ $Include{"CustomerHeader"}
                         </div>
 <!-- dtl:block:LostPasswordLink -->
                     </div>
-<!-- dtl:block:reCAPTCHA -->
-                    <div>
-                    $Data{"reCAPTCHA"}
-                    </div>
-<!-- dtl:block:reCAPTCHA -->
                     <div>
                         <button type="submit" value="$Text{"Log In"}" disabled="disabled">$Text{"Log In"}</button>
                     </div>
