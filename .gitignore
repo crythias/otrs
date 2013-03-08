@@ -7,9 +7,10 @@ grabupstream.sh
 .DS_Store
 
 # OTRS
-Custom/
-Custom/README
 doc/manual/en
+Kernel/Config/Files/ZZZ*.pm
+Kernel/Config/GenericAgent.pm
+Kernel/Config.pm
 Kernel/Language/*.old
 bin/cgi-bin/.htaccess
 var/virtualfs
@@ -34,6 +35,7 @@ var/articles/*
 # Fred
 Fred.sopm
 CHANGES-Fred
+doc/en/Fred.xml
 Kernel/Output/HTML/OutputFilterFred.pm
 Kernel/Output/HTML/LayoutFred.pm
 Kernel/Output/HTML/OutputFilterPostShowSystemNameInHeader.pm
@@ -55,11 +57,6 @@ Kernel/Config/Files/Support.xml
 Kernel/cpan-lib/Archive/*
 Kernel/cpan-lib/Linux/*
 Kernel/Language/*_Support.pm
-Kernel/Config/Files/ZZZAAuto.pm
-Kernel/Config/Files/ZZZAuto.pm
-Kernel/Config/Files/ZZZProcessManagement.pm
-Kernel/Config/GenericAgent.pm
-Kernel/Config.pm
 Kernel/System/Support
 var/httpd/htdocs/skins/Agent/default/css/Support.Default.css
 
