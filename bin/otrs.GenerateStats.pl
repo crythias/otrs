@@ -29,7 +29,6 @@ use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
 use vars qw($VERSION);
-$VERSION = qw($Revision: 1.20 $) [1];
 
 use Getopt::Long;
 
@@ -350,7 +349,7 @@ if ( $Format eq 'Print' && $CommonObject{PDFObject} ) {
     # return the document
     my $PDFString = $CommonObject{PDFObject}->DocumentOutput();
 
-    # save the csv with the title and timestamp as filename, or read it from param
+    # save the pdf with the title and timestamp as filename, or read it from param
     my $Filename;
     if ( $Opts{F} ) {
         $Filename = $Opts{F};

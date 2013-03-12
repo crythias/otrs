@@ -17,7 +17,6 @@ use Encode::Locale;
 use IO::Interactive qw(is_interactive);
 
 use vars qw(@ISA $VERSION);
-$VERSION = qw($Revision: 1.53 $) [1];
 
 =head1 NAME
 
@@ -56,13 +55,14 @@ sub new {
     # check if the encodeobject is used from the command line
     # if so, we need to decode @ARGV
     if ( !is_interactive() ) {
+
         # encode STDOUT and STDERR
         $Self->SetIO( \*STDOUT, \*STDERR );
     }
     else {
         # use "locale" as an arg to encode/decode
         if ( is_interactive(*STDIN) ) {
-            @ARGV = map { decode(locale => $_, 1) } @ARGV;
+            @ARGV = map { decode( locale => $_, 1 ) } @ARGV;
         }
         if ( is_interactive(*STDOUT) ) {
             binmode STDOUT, ":encoding(console_out)";
@@ -367,9 +367,5 @@ the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
 
 =cut
-
-=head1 VERSION
-
-$Revision: 1.53 $ $Date: 2013-01-28 12:36:04 $
 
 =cut

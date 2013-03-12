@@ -15,6 +15,7 @@ Kernel/Language/*.old
 bin/cgi-bin/.htaccess
 var/virtualfs
 var/run
+var/log
 var/log/*.log
 var/OPM
 var/Stats
@@ -36,6 +37,7 @@ var/articles/*
 Fred.sopm
 CHANGES-Fred
 doc/en/Fred.xml
+doc/en/Fred.pdf
 Kernel/Output/HTML/OutputFilterFred.pm
 Kernel/Output/HTML/LayoutFred.pm
 Kernel/Output/HTML/OutputFilterPostShowSystemNameInHeader.pm
