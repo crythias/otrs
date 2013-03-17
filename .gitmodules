@@ -1,3 +1,0 @@
-[submodule "var/httpd/htdocs/js/thirdparty/lightbox"]
-	path = var/httpd/htdocs/js/thirdparty/lightbox
-	url = https://github.com/crythias/lightbox2.git
