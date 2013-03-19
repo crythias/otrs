@@ -18,8 +18,6 @@ use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
 
-use vars qw($VERSION);
-
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -495,10 +493,10 @@ sub _SendNotificationToRecipients {
         # do not send email to self if AgentSelfNotification is set to No
         if (
             !$Self->{ConfigObject}->Get('AgentSelfNotifyOnAction')
-            && $Recipient->{Email} eq $CurrentUser{UserEmail}
+            && lc($Recipient->{Email}) eq lc($CurrentUser{UserEmail})
             )
         {
-            next RECIPIENT
+            next RECIPIENT;
         }
 
         $Self->_SendNotification(

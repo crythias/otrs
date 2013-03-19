@@ -24,8 +24,6 @@ use Kernel::System::ProcessManagement::DB::Process::State;
 use Kernel::System::ProcessManagement::DB::Transition;
 use Kernel::System::ProcessManagement::DB::TransitionAction;
 
-use vars qw($VERSION);
-
 =head1 NAME
 
 Kernel::System::ProcessManagement::DB::Process.pm
@@ -838,7 +836,7 @@ Returns:
             Activities    => ['A1','A2','A3'],
             CreateTime    => '2012-07-04 15:08:00',
             ChangeTime    => '2012-07-04 15:08:00',
-        }
+        },
         {
             ID            => 456,
             EntityID      => 'P2',
@@ -850,7 +848,7 @@ Returns:
             Activities    => ['A3','A4','A5'],
             CreateTime    => '2012-07-04 15:10:00',
             ChangeTime    => '2012-07-04 15:10:00',
-        }
+        },
     ];
 
 =cut
