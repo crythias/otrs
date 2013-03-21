@@ -734,7 +734,7 @@ sub Run {
                             $Values{Config} =~ s{\s+\{}{\{}xms;
                         }
 
-                        for my $Key ( keys %Values ) {
+                        for my $Key ( sort keys %Values ) {
 
                             if ( $Key eq 'Display' ) {
                                 $Values{$Key} = $BooleanMapping->{ $Values{$Key} };
@@ -782,7 +782,7 @@ sub Run {
                         Name => 'Condition',
                     );
 
-                    for my $Condition ( keys %{ $Config->{Condition} } ) {
+                    for my $Condition ( sort keys %{ $Config->{Condition} } ) {
 
                         $Self->{LayoutObject}->Block(
                             Name => 'ConditionRow',
@@ -793,7 +793,7 @@ sub Run {
 
                         my %Values = %{ $Config->{Condition}->{$Condition} };
 
-                        for my $Key ( keys %Values ) {
+                        for my $Key ( sort keys %Values ) {
 
                             if ( $Values{$Key} ) {
 
@@ -806,7 +806,7 @@ sub Run {
                                         },
                                     );
 
-                                    for my $SubKey ( keys %{ $Values{$Key} } ) {
+                                    for my $SubKey ( sort keys %{ $Values{$Key} } ) {
 
                                         if ( ref $Values{$Key}->{$SubKey} eq 'HASH' ) {
 
@@ -817,7 +817,7 @@ sub Run {
                                                 },
                                             );
 
-                                            for my $SubSubKey ( keys %{ $Values{$Key}->{$SubKey} } )
+                                            for my $SubSubKey ( sort keys %{ $Values{$Key}->{$SubKey} } )
                                             {
 
                                                 $Self->{LayoutObject}->Block(
@@ -889,7 +889,7 @@ sub Run {
                     );
 
                     CONFIGITEM:
-                    for my $ConfigItem ( keys %{$Config} ) {
+                    for my $ConfigItem ( sort keys %{$Config} ) {
 
                         next CONFIGITEM if !$ConfigItem;
 
@@ -935,7 +935,7 @@ sub Run {
 
         for my $Activity (@Path) {
 
-            for my $Transition ( keys %{ $ProcessData->{Process}->{Config}->{Path}->{$Activity} } )
+            for my $Transition ( sort keys %{ $ProcessData->{Process}->{Config}->{Path}->{$Activity} } )
             {
                 my $TransitionActionString;
                 if (

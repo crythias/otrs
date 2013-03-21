@@ -87,6 +87,7 @@ EOF
         exit 0;
     }
 }
+
 my $DestDir = $ARGV[0];
 
 # check params
@@ -125,12 +126,20 @@ print "Setting permissions on $DestDir\n";
 if ($Secure) {
 
     # In secure mode, make files read-only by default
-    find( \&MakeReadOnly, $DestDir );
+    find( \&MakeReadOnly, $DestDir . "/" ); # append / to follow symlinks
+
+    # Also change the toplevel directory/symlink itself
+    $_ = $DestDir;
+    MakeReadOnly();
 }
 else {
 
     # set all files writeable for webserver user (needed for package manager)
-    find( \&MakeWritable, $DestDir );
+    find( \&MakeWritable, $DestDir . "/" ); # append / to follow symlinks
+
+    # Also change the toplevel directory/symlink itself
+    $_ = $DestDir;
+    MakeWritable();
 
     # set the $HOME to the OTRS user
     if ( !$NotRoot ) {
@@ -217,6 +226,7 @@ exit(0);
 
 sub MakeReadOnly {
     my $File = $_;
+
     if ( !$NotRoot ) {
         SafeChown( $AdminUserID, $AdminGroupID, $File );
     }
