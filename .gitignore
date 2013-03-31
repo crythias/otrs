@@ -4,6 +4,8 @@
 .settings
 .includepath
 .DS_Store
+*.swp
+*.swo
 
 # OTRS
 doc/manual/en
@@ -14,7 +16,6 @@ Kernel/Language/*.old
 bin/cgi-bin/.htaccess
 var/virtualfs
 var/run
-var/log
 var/log/*.log
 var/OPM
 var/Stats
