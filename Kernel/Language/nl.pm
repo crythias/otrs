@@ -244,7 +244,7 @@ sub Data {
         'Database' => 'Database',
         'Configure Mail' => 'Configureer mail',
         'Database deleted.' => 'Database verwijderd.',
-        'Database setup succesful!' => 'Database-installatie afgerond.',
+        'Database setup successful!' => 'Database-installatie afgerond.',
         'Login is needed!' => 'Inloggen is nodig.',
         'Password is needed!' => 'Een wachtwoord is vereist.',
         'Take this Customer' => 'Selecteer deze klant',
@@ -816,6 +816,7 @@ sub Data {
         'History::SystemRequest' => 'SystemRequest: "%s"',
         'History::ResponsibleUpdate' => 'Nieuwe verantwoordelijke is "%s" (ID=%s).',
         'History::ArchiveFlagUpdate' => 'Archiefstatus veranderd: "%s"',
+        'History::TitleUpdate' => 'Title gewijzigd van "%s" naar "%s"',
 
         # Template: AAAWeekDay
         'Sun' => 'zo',

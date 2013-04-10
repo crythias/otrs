@@ -13,12 +13,15 @@ use strict;
 use warnings;
 
 use DBI;
+use Net::Domain qw(hostfqdn);
+
 use Kernel::System::DB;
 use Kernel::System::Email;
 use Kernel::System::JSON;
 use Kernel::System::MailAccount;
 use Kernel::System::ReferenceData;
 use Kernel::System::SysConfig;
+use Kernel::System::User;
 use Kernel::System::XML;
 
 use vars qw(%INC);
@@ -311,6 +314,9 @@ sub Run {
 
         my $DBType = $Self->{ParamObject}->GetParam( Param => 'DBType' );
 
+        # use non-instantiated module to generate a password
+        my $GeneratedPassword = Kernel::System::User->GenerateRandomPassword( Size => 16 );
+
         if ( $DBType eq 'mysql' ) {
             my $Output =
                 $Self->{LayoutObject}->Header(
@@ -320,9 +326,10 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabaseMySQL',
                 Data => {
-                    Item => 'Configure MySQL',
-                    Step => $StepCounter,
-                    }
+                    Item     => 'Configure MySQL',
+                    Step     => $StepCounter,
+                    Password => $GeneratedPassword,
+                },
             );
             $Output .= $Self->{LayoutObject}->Output(
                 TemplateFile => 'Installer',
@@ -344,8 +351,9 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabaseMSSQL',
                 Data => {
-                    Item => 'Database',
-                    Step => $StepCounter,
+                    Item     => 'Database',
+                    Step     => $StepCounter,
+                    Password => $GeneratedPassword,
                 },
             );
 
@@ -368,8 +376,9 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabasePostgreSQL',
                 Data => {
-                    Item => 'Database',
-                    Step => $StepCounter,
+                    Item     => 'Database',
+                    Step     => $StepCounter,
+                    Password => $GeneratedPassword,
                 },
             );
 
@@ -600,7 +609,6 @@ sub Run {
 
             $Self->{LayoutObject}->Block(
                 Name => 'DatabaseResultItemDone',
-                Data => {},
             );
 
         }
@@ -618,7 +626,6 @@ sub Run {
 
         $Self->{LayoutObject}->Block(
             Name => 'DatabaseResultItemDone',
-            Data => {},
         );
 
         # if running under PerlEx, reload the application (and thus the configuration)
@@ -631,26 +638,19 @@ sub Run {
         }
 
         $Self->{LayoutObject}->Block(
-            Name => 'DatabaseResultItemMessage',
-            Data => {
-                Message => $Self->{LayoutObject}->{LanguageObject}->Get(
-                    'Database setup successful!'
-                ),
-            },
+            Name => 'DatabaseResultSuccess',
         );
         $Self->{LayoutObject}->Block(
             Name => 'DatabaseResultNext',
-            Data => {},
         );
         $Output .= $Self->{LayoutObject}->Output(
             TemplateFile => 'Installer',
-            Data         => {},
         );
         $Output .= $Self->{LayoutObject}->Footer();
         return $Output;
     }
 
-    # do system settings
+    # show system settings page, pre-install packages
     elsif ( $Self->{Subaction} eq 'System' ) {
 
         # create new DB object in order to setup sysconfig object
@@ -677,10 +677,11 @@ sub Run {
         }
 
         my @SystemIDs = map { sprintf "%02d", $_ } ( 0 .. 99 );
+
         $Param{SystemIDString} = $Self->{LayoutObject}->BuildSelection(
             Data       => \@SystemIDs,
             Name       => 'SystemID',
-            SelectedID => $Self->{ConfigObject}->Get('SystemID'),
+            SelectedID => $SystemIDs[ int( rand(100) ) ],    # random system ID
         );
         $Param{LanguageString} = $Self->{LayoutObject}->BuildSelection(
             Data       => $Self->{ConfigObject}->Get('DefaultUsedLanguages'),
@@ -688,17 +689,8 @@ sub Run {
             HTMLQuote  => 0,
             SelectedID => $Self->{LayoutObject}->{UserLanguage},
         );
-        $Param{LogModuleString} = $Self->{LayoutObject}->BuildSelection(
-            Data => {
-                'Kernel::System::Log::SysLog' => 'Syslog',
-                'Kernel::System::Log::File'   => 'File',
-            },
-            Name       => 'LogModule',
-            HTMLQuote  => 0,
-            SelectedID => $Self->{ConfigObject}->Get('LogModule'),
-        );
 
-        # build the select field for the InstallerDBStart.dtl
+        # build the selection field for the MX check
         $Param{SelectCheckMXRecord} = $Self->{LayoutObject}->BuildSelection(
             Data => {
                 1 => 'Yes',
@@ -708,11 +700,15 @@ sub Run {
             SelectedID => '1',
         );
 
+        # read FQDN using Net::Domain and prepopulate the field
+        $Param{FQDN} = hostfqdn();
+
         my $Output =
             $Self->{LayoutObject}->Header(
             Title => "$Title - "
                 . $Self->{LayoutObject}->{LanguageObject}->Get('System Settings')
             );
+
         $Self->{LayoutObject}->Block(
             Name => 'System',
             Data => {
@@ -721,6 +717,24 @@ sub Run {
                 %Param,
             },
         );
+
+        if ( !$Self->{Options}->{SkipLog} ) {
+            warn "Skipping log";
+            $Param{LogModuleString} = $Self->{LayoutObject}->BuildSelection(
+                Data => {
+                    'Kernel::System::Log::SysLog' => 'Syslog',
+                    'Kernel::System::Log::File'   => 'File',
+                },
+                Name       => 'LogModule',
+                HTMLQuote  => 0,
+                SelectedID => $Self->{ConfigObject}->Get('LogModule'),
+            );
+            $Self->{LayoutObject}->Block(
+                Name => 'LogModule',
+                Data => \%Param,
+            );
+        }
+
         $Output .= $Self->{LayoutObject}->Output(
             TemplateFile => 'Installer',
             Data         => {},
@@ -950,6 +964,14 @@ MAILTEXT
             };
         }
 
+        # set a generated password for the 'root@localhost' account
+        $Self->{UserObject} = Kernel::System::User->new( %{$Self} );
+        my $Password = $Self->{UserObject}->GenerateRandomPassword( Size => 16 );
+        $Self->{UserObject}->SetPassword(
+            UserLogin => 'root@localhost',
+            PW        => $Password,
+        );
+
         # remove installer file with preconfigured options
         if ( -f "$Self->{Path}/var/tmp/installer.json" ) {
             unlink "$Self->{Path}/var/tmp/installer.json";
@@ -997,6 +1019,7 @@ MAILTEXT
                 Host       => $ENV{HTTP_HOST} || $Self->{ConfigObject}->Get('FQDN'),
                 OTRSHandle => $OTRSHandle,
                 Webserver  => $Webserver,
+                Password   => $Password,
             },
         );
         if ($Webserver) {
@@ -1054,8 +1077,16 @@ sub ReConfigure {
 
             # replace config with %Param
             for my $Key ( sort keys %Param ) {
-                $NewConfig =~
-                    s/(\$Self->{("|'|)$Key("|'|)} =.+?('|"));/\$Self->{'$Key'} = "$Param{$Key}";/g;
+
+             # database passwords can contain characters like '@' or '$' and should be single-quoted
+                if ( $Key eq 'DatabasePw' ) {
+                    $NewConfig =~
+                        s/(\$Self->{("|'|)$Key("|'|)} =.+?('|"));/\$Self->{'$Key'} = '$Param{$Key}';/g;
+                }
+                else {
+                    $NewConfig =~
+                        s/(\$Self->{("|'|)$Key("|'|)} =.+?('|"));/\$Self->{'$Key'} = "$Param{$Key}";/g;
+                }
             }
             $Config .= $NewConfig;
         }
