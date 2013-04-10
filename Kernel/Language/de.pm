@@ -238,7 +238,7 @@ sub Data {
         'Database' => 'Datenbank',
         'Configure Mail' => 'E-Mail konfigurieren',
         'Database deleted.' => 'Datenbank ausgewählt.',
-        'Database setup succesful!' => 'Datenbankeinrichtung erfolgreich!',
+        'Database setup successful!' => 'Datenbankeinrichtung erfolgreichi configuriert!',
         'Login is needed!' => 'Login wird benötigt!',
         'Password is needed!' => 'Passwort wird benötigt!',
         'Take this Customer' => 'Kunden übernehmen',
@@ -1666,6 +1666,8 @@ sub Data {
         'The Start Event cannot loose the Start Transition!' => 'Das Startereignis kann den Start-Übergang nicht verlieren.',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
             'Es sind noch keine Dialoge zugewiesen. Wählen Sie einfach einen Aktivitäts-Dialog in der linken Liste aus und ziehen Sie ihn in die rechte Liste.',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
+            'Auf der Zeichenfläche ist ein nicht verbundener Übergang vorhanden. Bitte verbinden Sie diesen Übergang zuerst, bevor Sie einen weiteren Übergang platzieren.',
 
         # Template: AdminProcessManagementProcessNew
         'In this screen, you can create a new process. In order to make the new process available to users, please make sure to set its state to \'Active\' and synchronize after completing your work.' =>
@@ -2383,7 +2385,7 @@ sub Data {
         'Linked Objects' => 'Verknüpfte Objekte',
         'Article(s)' => 'Beitrag/Beiträge',
         'Change Queue' => 'Queue ändern',
-        'There are currently no steps available for this process.' => 'Derzeit sind in diesem Prozess keine Schritte verfügbar.',
+        'There are no dialogs available at this point in the process.' => 'Für diesen Prozess stehen derzeit keine Dialoge zur Verfügung.',
         'This item has no articles yet.' => 'Dieser Eintrag hat noch keine Artikel',
         'Article Filter' => 'Artikelfilter',
         'Add Filter' => 'Filter hinzufügen',

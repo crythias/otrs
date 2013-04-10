@@ -50,7 +50,7 @@
 
                 <fieldset class="TableLike Hidden HideMe">
                     <h4>
-                        $Text{"Database-User"} ($Text{"New"})
+                        $Text{"Database User"} ($Text{"New"})
                     </h4>
 
                     <label for="OTRSDBUser">$Text{"User"}:</label>
@@ -64,9 +64,15 @@
 
                     <label for="OTRSDBPassword">$Text{"Password"}:</label>
                     <div class="Field">
-                        <input type="password" id="OTRSDBPassword" name="OTRSDBPassword" value="hot" class="W50pc" autocomplete="off"/>
+                        <input type="password" id="OTRSDBPassword" name="OTRSDBPassword" value="$QData{"Password"}" class="W50pc" autocomplete="off"/>
+                    </div>
+                    <div class="Clear"></div>
+
+                    <label for="RepeatOTRSDBPassword">$Text{"Repeat Password"}:</label>
+                    <div class="Field">
+                        <input type="password" id="RepeatOTRSDBPassword" name="RepeatOTRSDBPassword" value="$QData{"Password"}" class="W50pc" autocomplete="off"/>
                         <p class="FieldExplanation">
-                            $Text{"default 'hot'"}
+                            $Text{"Generated password"}: $QData{"Password"}
                         </p>
                     </div>
                     <div class="Clear"></div>
@@ -92,8 +98,9 @@
                     <div class="Clear"></div>
                 </fieldset>
 
-                <div class="Hidden Center HideMe">
-                    <button class="Primary" type="submit" id="FormDBSubmit" disabled="disabled">$Text{"Next"}</button>
+                <div class="Center">
+                    <button type="button" id="ButtonBack">$Text{"Back"}</button>
+                    <button class="Primary HideMe" type="submit" id="FormDBSubmit" disabled="disabled">$Text{"Next"}</button>
                 </div>
             </div>
         </div>
@@ -103,6 +110,9 @@
 <!--dtl:js_on_document_complete-->
 <script type="text/javascript">//<![CDATA[
     $('#ButtonCheckDB').bind('click',Core.Installer.CheckDBData);
+    $('#ButtonBack').bind('click', function() {
+        parent.history.back();
+    });
 //]]></script>
 <!--dtl:js_on_document_complete-->
 <!-- dtl:block:DatabaseMSSQL -->

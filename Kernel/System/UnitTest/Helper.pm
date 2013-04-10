@@ -287,10 +287,19 @@ time will be used again.
 =cut
 
 sub FixedTimeSet {
-    my ($Self, $TimeToSave) = @_;
+    my ( $Self, $TimeToSave ) = @_;
 
-    $TimeToSave = CORE::time() if (!defined $TimeToSave);
+    $TimeToSave = CORE::time() if ( !defined $TimeToSave );
     $FixedTime = $TimeToSave;
+
+    # This is needed to reload the time object to get a hold of the overrides.
+    if ( $INC{'Kernel/System/Time.pm'} ) {
+        no warnings 'redefine';
+        delete $INC{'Kernel/System/Time.pm'};
+        $Self->{MainObject}->Require('Kernel::System::Time');
+    }
+
+    return $FixedTime;
 }
 
 =item FixedTimeUnset()
@@ -303,6 +312,8 @@ sub FixedTimeUnset {
     my ($Self) = @_;
 
     undef $FixedTime;
+
+    return;
 }
 
 =item FixedTimeAddSeconds()
@@ -313,9 +324,9 @@ set by FixedTimeSet(). You can pass a negative value to go back in time.
 =cut
 
 sub FixedTimeAddSeconds {
-    my ($Self, $SecondsToAdd) = @_;
+    my ( $Self, $SecondsToAdd ) = @_;
 
-    return if (!defined $FixedTime);
+    return if ( !defined $FixedTime );
 
     $FixedTime += $SecondsToAdd;
 }
@@ -327,17 +338,17 @@ BEGIN {
     };
     *CORE::GLOBAL::localtime = sub {
         my ($Time) = @_;
-        if (!defined $Time) {
+        if ( !defined $Time ) {
             $Time = defined $FixedTime ? $FixedTime : CORE::time();
         }
         return CORE::localtime($Time);
     };
     *CORE::GLOBAL::gmtime = sub {
         my ($Time) = @_;
-        if (!defined $Time) {
+        if ( !defined $Time ) {
             $Time = defined $FixedTime ? $FixedTime : CORE::time();
         }
-        return CORE::gmtime($Time);;
+        return CORE::gmtime($Time);
     };
 }
 
@@ -411,7 +422,6 @@ sub DESTROY {
         }
     }
 }
-
 
 1;
 
