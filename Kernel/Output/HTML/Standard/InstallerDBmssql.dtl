@@ -8,7 +8,7 @@
 # --
 
 <!-- dtl:block:DatabaseMSSQL -->
-<div class="W50pc SpacingTop SpacingBottom CenterBox">
+<div class="W950px SpacingTop SpacingBottom CenterBox">
     <form action="$Env{"CGIHandle"}" method="post" id="FormDB">
         <input type="hidden" name="Action"    value="Installer"/>
         <input type="hidden" name="Subaction" value="DBCreate"/>
@@ -98,7 +98,7 @@
                     <div class="Clear"></div>
                 </fieldset>
 
-                <div class="Center">
+                <div class="Spacing Right">
                     <button type="button" id="ButtonBack">$Text{"Back"}</button>
                     <button class="Primary HideMe" type="submit" id="FormDBSubmit" disabled="disabled">$Text{"Next"}</button>
                 </div>

@@ -8,7 +8,7 @@
 # --
 
 <!-- dtl:block:Registration -->
-<div class="W50pc SpacingTop SpacingBottom CenterBox">
+<div class="W950px SpacingTop SpacingBottom CenterBox">
     <form action="$Env{"CGIHandle"}" method="post" id="Registration">
         <input type="hidden" name="Action"    value="Installer"/>
         <input type="hidden" name="Subaction" value="Finish"/>
@@ -47,7 +47,7 @@
 
                     <label for="Email" class="Mandatory"><span class="Marker">*</span> $Text{"Email"}:</label>
                     <div class="Field">
-                        <input type="text" id="Email" name="Email" value="" class="W50pc"/>
+                        <input type="email" id="Email" name="Email" value="" class="W50pc"/>
                     </div>
                     <div class="Clear"></div>
 
