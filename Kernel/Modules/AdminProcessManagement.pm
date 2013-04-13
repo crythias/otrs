@@ -415,26 +415,37 @@ sub Run {
             }
         }
 
+        # Try to find Entities correctly in YAML
+        my $DelimiterBefore = '(^|\s|\'|"|:)';
+        my $DelimiterAfter  = '($|\s|\'|"|:)';
+
         # layout: search and replace ocurrences of old Activity ids by the new ones
         my $Layout = $Self->{YAMLObject}->Dump( Data => $ProcessData->{Process}->{Layout} );
-        for my $OldEntityID ( sort keys %ActivityMapping ) {
-            $Layout =~ s{\Q$OldEntityID\E}{$ActivityMapping{$OldEntityID}}xmsg;
+        # Process all mapping entries at once with one big regex. Otherwise there might be errors
+        #   with duplicated keys like ( A4 => A6, A6 => A11). In this case, A4 would also incorrectly
+        #   be converted to A11.
+        if (%ActivityMapping) {
+            my $OldEntityIDs = '(' . join('|', map { quotemeta($_) } sort keys %ActivityMapping ) . ')';
+            $Layout =~ s{
+                $DelimiterBefore
+                $OldEntityIDs
+                $DelimiterAfter
+            }{$1$ActivityMapping{$2}$3}xmsg;
         }
         $Layout = $Self->{YAMLObject}->Load( Data => $Layout );
 
         # config: search and replace ocurrences of old object ids by the new ones
         my $Config = $Self->{YAMLObject}->Dump( Data => $ProcessData->{Process}->{Config} );
-        for my $OldEntityID ( sort keys %ActivityMapping ) {
-            $Config =~ s{\Q$OldEntityID\E}{$ActivityMapping{$OldEntityID}}xmsg;
-        }
-        for my $OldEntityID ( sort keys %ActivityDialogMapping ) {
-            $Config =~ s{\Q$OldEntityID\E}{$ActivityDialogMapping{$OldEntityID}}xmsg;
-        }
-        for my $OldEntityID ( sort keys %TransitionMapping ) {
-            $Config =~ s{\Q$OldEntityID\E}{$TransitionMapping{$OldEntityID}}xmsg;
-        }
-        for my $OldEntityID ( sort keys %TransitionActionMapping ) {
-            $Config =~ s{\Q$OldEntityID\E}{$TransitionActionMapping{$OldEntityID}}xmsg;
+        # Process all mappings at once: see comment above.
+        my %Mapping = (%ActivityMapping, %ActivityDialogMapping,
+            %TransitionMapping, %TransitionActionMapping);
+        if (%Mapping) {
+            my $OldEntityIDs = '(' . join('|', map { quotemeta($_) } sort keys %Mapping ) . ')';
+            $Config =~ s{
+                $DelimiterBefore
+                $OldEntityIDs
+                $DelimiterAfter
+            }{$1$Mapping{$2}$3}xmsg;
         }
         $Config = $Self->{YAMLObject}->Load( Data => $Config );
 
