@@ -1,4 +1,4 @@
-3.3.0.beta1 2013-??-??
+#3.3.0.beta1 2013-??-??
  - 2013-04-08 Fixed bug#[8490](http://bugs.otrs.org/show_bug.cgi?id=8490) - No History record added when changing ticket title.
  - 2013-04-08 Removed File::Temp as it is core in perl 5.6.1 and up.
  - 2013-04-03 Removed Digest::SHA::PurePerl as Digest::SHA is core in perl 5.10.
@@ -9,10 +9,10 @@
  - 2013-03-27 Fixed bug#[8962](http://bugs.otrs.org/show_bug.cgi?id=8962) - RequestObject GetUploadAll Source 'File' option is unused
     and hard-coded to use /tmp.
 
-3.2.7 2013-??.??
+#3.2.7 2013-??.??
  - 2013-04-18 Fixed bug#[8599](http://bugs.otrs.org/show_bug.cgi?id=8599) - Problem with "[]" characters in name of attachment file.
 
-3.2.6 2013-04-23
+#3.2.6 2013-04-23
  - 2013-04-18 Fixed bug#[9310](http://bugs.otrs.org/show_bug.cgi?id=9310) - AgentTicketProcess has the same shortkey "o" as AgentTicketQueue.
  - 2013-04-18 Fixed bug#[9280](http://bugs.otrs.org/show_bug.cgi?id=9280) - Database upgrade procedure problems when upgrading database to 3.2 that
     has been upgraded from 2.4 previously.
@@ -37,7 +37,7 @@
  - 2013-04-08 Fixed bug#[9314](http://bugs.otrs.org/show_bug.cgi?id=9314) - Process Management: Unexpected redirection after creating a new process.
  - 2013-04-08 Fixed bug#[9312](http://bugs.otrs.org/show_bug.cgi?id=9312) - LinkObject permission check problem.
 
-3.2.5 2013-04-09
+#3.2.5 2013-04-09
  - 2013-04-04 Fixed bug#[9313](http://bugs.otrs.org/show_bug.cgi?id=9313) - No such file or directory in otrs.SetPermission.pl.
  - 2013-04-04 Updated Brazilian Portugese translation, thanks to Alexandre!
  - 2013-04-04 Fixed bug#[9306](http://bugs.otrs.org/show_bug.cgi?id=9306) - Auto Response fails when ticket is created from Customer Interface and
@@ -49,7 +49,7 @@
  - 2013-03-27 Fixed bug#[9295](http://bugs.otrs.org/show_bug.cgi?id=9295) - Article dynamic field is not searchable.
  - 2013-03-27 Fixed bug#[9288](http://bugs.otrs.org/show_bug.cgi?id=9288) - DynamicField Content overwrites TicketTitle for Links from Dynamic Fields.
 
-3.2.4 2013-04-02
+#3.2.4 2013-04-02
  - 2013-03-21 Fixed bug#[9279](http://bugs.otrs.org/show_bug.cgi?id=9279) - Inaccurate German translation of ,,Priority Update''.
  - 2013-03-21 Fixed bug#[9257](http://bugs.otrs.org/show_bug.cgi?id=9257) - No notifications to agents with out-of-office set but period not reached.
  - 2013-03-21 Fixed bug#[1689](http://bugs.otrs.org/show_bug.cgi?id=1689) - Allow bin/SetPermissions.sh to follow symlink for OTRS_HOME.
