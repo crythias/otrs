@@ -5416,7 +5416,7 @@
     ALTER TABLE ticket ADD freetime2 DATETIME;
 ```
 
-    new config options are:  
+new config options are:  
 
 ```
     $Self->{"TicketFreeTimeKey1"} = 'Termin1';
@@ -5465,6 +5465,7 @@
  - 2005-05-07 fixed bug#[647](http://bugs.otrs.org/show_bug.cgi?id=647) - Allow setting of default language for FAQs
  - 2005-05-07 fixed bug#[686](http://bugs.otrs.org/show_bug.cgi?id=686) - defect attachments on download with firefox
  - 2005-05-07 added html access keys for nav bar  
+
 ```
     general:
     h = home
@@ -5647,6 +5648,7 @@
     will be longer accessable till the module is registry. For example
     a registered frontend module with navigation icon in Agent nav bar
     (navigation bar will be build automatically, based on permissions):
+
 ```
     [Kernel/Config.pm]
     $Self->{'Frontend::Module'}->{'AgentPhone'} = {
@@ -5672,6 +5674,7 @@
     if there is an follow up from the customer and the ticket is unlocked.
     This is different to OTRS \<= 1.3. So if you don't want this, you can
     use the following config option to disable this (link in OTRS 1.3)
+
 ```
     [Kernel/Config.pm]
      $Self->{PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner} = 1;
@@ -5771,6 +5774,7 @@
 #1.3.0 beta1 2004-08-18
  - 2004-08-11 added feature to send fulltext reqests to a
     mirror database
+
 ```
     [Kernel/Config.pm]
     # AgentUtil::DB::*
@@ -5799,6 +5803,7 @@
  - 2004-08-01 fixed bug#[460](http://bugs.otrs.org/show_bug.cgi?id=460) - Patch to add params hash to LDAP bind
     in Kernel/System/User.pm.
  - 2004-07-30 added references, in-reply-to follow up check
+
 ```
     [Kernel/Config.pm]
     # PostmasterFollowUpSearchInReferences
@@ -5962,6 +5967,7 @@
     (http://bugs.otrs.org/show_bug.cgi?id=192)
  - 2004-01-23 fixed customer-user \<-\> group problem added the following
     to Kernel/Config.pm
+
 ```
     # CustomerGroupSupport (0 = compat. to OTRS 1.1 or lower)
     # (if this is 1, the you need to set the group \<-\> customer user
@@ -6024,6 +6030,7 @@
     agent preferences option (5|10|15|20|25).
  - 2003-12-03 added QueueListType config option [tree|list] to
     show the QueueSelection in a tree (default) or just in a list
+
 ```
  Example:  Tree:        List:
               QueueA       QueueA
@@ -6040,6 +6047,7 @@
     Kernel/Output/HTML/NotificationCharsetCheck.pm  
     Kernel/Output/HTML/NotificationUIDCheck.pm  
     are default modules to configure over Kernel/Config.pm
+
 ```
     $Self->{'Frontend::NotifyModule'}->{'1-CharsetCheck'} = {
         Module => 'Kernel::Output::HTML::NotificationCharsetCheck',
@@ -6061,6 +6069,7 @@
     Example: Don't allow agents to change the priority if the state
     of the ticket is 'open' and in a specific queue.  
     Example ofKernel/Config.pm: 
+
 ```
     # Module Name: 1-OwnerCheck
     # (if the current owner is already the user, grant access)
@@ -6083,6 +6092,7 @@
  - 2003-11-02 improved GenericAgent.pl to work also with ticket
     priorities (search and change).  
     Example for Kernel/Config/GenericAgent.pm:
+
 ```
     # ---
     # [name of job] -\> move all tickets from abc to experts and change priority
@@ -6101,6 +6111,7 @@
  - 2003-11-02 added delete option to Admin-\>StdAttachment menu
  - 2003-11-01 added PostMaster(POP3).pl filter options like procmail.  
     Example for Kernel/Config.pm:
+
 ```
     # Job Name: 1-Match
     # (block/ignore all spam email with From: noreply@)
@@ -6133,6 +6144,7 @@
     as variable for new ticket state in composed message.
  - 2003-08-28 improved GenericAgent to use From, To, Cc, Subject and
     Body for ticket selection - example:
+
 ```
     [...]
    'delete all tickets with subject "VIRUS 32" in queue abc' => {
@@ -6165,6 +6177,7 @@
     required)
  - 2003-05-20 added array for source queue selection to bin/GenericAgent.pl
     for example, use this job for more queues:
+
 ```
     [...]
     'move tickets from tricky to experts' => {
