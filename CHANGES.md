@@ -5408,12 +5408,12 @@
 
 #2.0.0 beta4 2005-07-03
  - 2005-07-03 added ticket free time feature - take care, you need to
-    alter the ticket table:
+    alter the ticket table:  
 ```
     ALTER TABLE ticket ADD freetime1 DATETIME;
     ALTER TABLE ticket ADD freetime2 DATETIME;
 ```
-    new config options are:
+    new config options are:  
 ```
     $Self->{"TicketFreeTimeKey1"} = 'Termin1';
     $Self->{"TicketFreeTimeDiff1"} = 0;
@@ -5460,7 +5460,7 @@
  - 2005-05-07 fixed language translation files
  - 2005-05-07 fixed bug#[647](http://bugs.otrs.org/show_bug.cgi?id=647) - Allow setting of default language for FAQs
  - 2005-05-07 fixed bug#[686](http://bugs.otrs.org/show_bug.cgi?id=686) - defect attachments on download with firefox
- - 2005-05-07 added html access keys for nav bar
+ - 2005-05-07 added html access keys for nav bar  
 ```
     general:
     h = home
@@ -5508,7 +5508,7 @@
     (berated by user, created in queue)
  - 2004-12-04 moved PGP and SMIME stuff to Kernel/System/Email.pm
     to be more generic
- - 2004-11-27 added config option TicketHookDivider
+ - 2004-11-27 added config option TicketHookDivider  
 ```
     [Kernel/Config.pm]
     # (the divider between TicketHook# and number)
@@ -5541,7 +5541,7 @@
     Kernel/System/Web/Request.pm
  - 2004-11-07 added LOWER() in sql like queries to search, now searches
     are case insensitive in postgresql and maxdb
- - 2004-11-04 added new feature so show ticket history reverse
+ - 2004-11-04 added new feature so show ticket history reverse  
 ```
     [Kernel/Config.pm]
     # Agent::HistoryOrder
@@ -5550,7 +5550,7 @@
 #    $Self->{'Agent::HistoryOrder'} = 'reverse';
     [...]
 ```
- - 2004-11-04 added "show no escalation" group feature
+ - 2004-11-04 added "show no escalation" group feature  
 ```
     [Kernel/Config.pm]
     # AgentNoEscalationGroup
@@ -5574,7 +5574,7 @@
  - 2004-10-06 reworked all agent and customer notifications in database
     (use scripts/DBUpdate-to-2.0.\*.sql)
  - 2004-10-06 added new config options for email address check
- ```
+```
     # CheckEmailValidAddress
     # (regexp of valid email addresses)
     $Self->{CheckEmailValidAddress} = '^(root@localhost|admin@localhost)$';
@@ -5840,11 +5840,9 @@
  - 2004-04-14 ticket history rewritten and added i18n feature
  - 2004-04-14 reworked/renamed Kernel::System::Ticket::Article
     and sub module functions and added added pod docu, see
-    http://dev.otrs.org/
-
+    http://dev.otrs.org/  
     Note: Kernel::System::Ticket are not longer compat. to OTRS 1.2
      or lower!
-
  - 2004-04-07 added config option SessionUseCookieAfterBrowserClose
     for session config stuff to keep cookies in browser (after closing
     the browser) till expiration of session (default is 0).
@@ -5898,7 +5896,7 @@
  - 2004-03-25 fixed quote bug in AgentPhoneView, AgentEmail and
     AgentCompose.
  - 2004-03-08 fixed bug#[341](http://bugs.otrs.org/show_bug.cgi?id=341) Wrong results searching for time ranges
-    http://bugs.otrs.org/show\_bug.cgi?id=341
+    http://bugs.otrs.org/show_bug.cgi?id=341
  - 2004-02-29 fixed language quoting in customer login screen
  - 2004-02-27 fixed missing "internal (agent)" agent search faq
  - 2004-02-27 fixed possible owner selection in AgentPhone/AgentEmaill
@@ -5906,15 +5904,15 @@
 #1.2.2 2004-02-23
  - 2004-02-17 changed screen after moved ticket (like OTRS 1.1)
  - 2004-02-17 added null option to search options
-    http://bugs.otrs.org/show\_bug.cgi?id=321
+    http://bugs.otrs.org/show_bug.cgi?id=321
  - 2004-02-17 fixed double quote bug in GetIdOfArticle()/CreateArticle()
-    http://bugs.otrs.org/show\_bug.cgi?id=319
+    http://bugs.otrs.org/show_bug.cgi?id=319
  - 2004-02-17 fixed bug#[317](http://bugs.otrs.org/show_bug.cgi?id=317) - Return Path set to invalid email
-    http://bugs.otrs.org/show\_bug.cgi?id=317
+    http://bugs.otrs.org/show_bug.cgi?id=317
 
 #1.2.1 2004-02-14
  - 2004-02-14 fixed escalation bug#[290](http://bugs.otrs.org/show_bug.cgi?id=290) -
-    http://bugs.otrs.org/show\_bug.cgi?id=290
+    http://bugs.otrs.org/show_bug.cgi?id=290
  - 2004-02-14 updated spanish translation. Thanks to Jorge Becerra!
  - 2004-02-14 updated czech translation. Thanks to Petr Ocasek
     (BENETA.cz, s.r.o.)!
@@ -5929,7 +5927,7 @@
 
 #1.2.0 beta3 2004-02-09
  - 2004-02-09 fixed bug#[249](http://bugs.otrs.org/show_bug.cgi?id=249) Editing system email addresses with
-    quotations in name field - http://bugs.otrs.org/show\_bug.cgi?id=249
+    quotations in name field - http://bugs.otrs.org/show_bug.cgi?id=249
  - 2004-02-09 added contact customer (create ticket) feature
  - 2004-02-08 added multi customer map/source support
  - 2004-02-08 added GenericAgent module support
@@ -5946,15 +5944,15 @@
  - 2004-02-01 fixed uncounted unlocktime calcualtion in bin/UnlockTickets.pl
  - 2004-01-27 added Bcc field for agent address book and agent compose
  - 2004-01-24 fixed bug#[280](http://bugs.otrs.org/show_bug.cgi?id=280) - group\_customer\_user table
-    (http://bugs.otrs.org/show\_bug.cgi?id=280)
+    (http://bugs.otrs.org/show_bug.cgi?id=280)
  - 2004-01-23 fixed bug#[219](http://bugs.otrs.org/show_bug.cgi?id=219) - GenericAgent and adding notes
-    (http://bugs.otrs.org/show\_bug.cgi?id=219)
+    (http://bugs.otrs.org/show_bug.cgi?id=219)
  - 2004-01-23 fixed bug#[215](http://bugs.otrs.org/show_bug.cgi?id=215) - Bug in search URL - wrong link to next page
-    (http://bugs.otrs.org/show\_bug.cgi?id=215)
+    (http://bugs.otrs.org/show_bug.cgi?id=215)
  - 2004-01-23 fixed bug#[213](http://bugs.otrs.org/show_bug.cgi?id=213) - Does not update replies with the correct name
-    (http://bugs.otrs.org/show\_bug.cgi?id=213)
+    (http://bugs.otrs.org/show_bug.cgi?id=213)
  - 2004-01-23 fixed bug#[192](http://bugs.otrs.org/show_bug.cgi?id=192) - rename queue with Sub-queue
-    (http://bugs.otrs.org/show\_bug.cgi?id=192)
+    (http://bugs.otrs.org/show_bug.cgi?id=192)
  - 2004-01-23 fixed customer-user \<-\> group problem added the following
     to Kernel/Config.pm
 ```
@@ -6201,7 +6199,7 @@
  - 2003-07-01 added SMTP module port patch of Jeroen Boomgaardt
  - 2003-06-22 fixed bug#[144](http://bugs.otrs.org/show_bug.cgi?id=144) - PostMasterPOP3.pl is exiting
     "Attached .eml file causes bug in EmailParser.pm"
-    http://bugs.otrs.org/show\_bug.cgi?id=144
+    http://bugs.otrs.org/show_bug.cgi?id=144
  - 2003-06-04 fixed legend colors of stats pics
 
 #1.1.2 2003-05-31
@@ -6220,7 +6218,7 @@
     -=\> no apache reload is needed when perl modules is updated on disk \<=-
  - 2003-05-29 fixed create ticket (without priority selection) via
     customer panel and changed priority names.
- - 2003-05-26 fixed pic.pl bug - http://bugs.otrs.org/show\_bug.cgi?id=149
+ - 2003-05-26 fixed pic.pl bug - http://bugs.otrs.org/show_bug.cgi?id=149
  - 2003-05-19 improved text formatting of "long" messages in QueueView
     TicketZoom, TicketPlain and TicketSearch
  - 2003-05-18 fixed small logic bugs in Kernel/System/PostMaster\*
@@ -6242,7 +6240,7 @@
     login! To be able to have more pop3 accounts with the same
     login name.
  - 2003-05-01 fixed bug#[134](http://bugs.otrs.org/show_bug.cgi?id=134) - Title shows "Select box" instead
-    of "Admin Log" - http://bugs.otrs.org/show\_bug.cgi?id=134
+    of "Admin Log" - http://bugs.otrs.org/show_bug.cgi?id=134
  - 2003-05-01 fixed Kernel/System/AuthSession/\*.pm to be able
     to store 0 values
 
@@ -6250,7 +6248,7 @@
  - 2003-04-30 removed agent notify about new note because new
     owner got ticket assigned to you notify!
  - 2003-04-29 fixed bug#[131](http://bugs.otrs.org/show_bug.cgi?id=131) - QueueView shows wrong queue in
-    drop-downs - http://bugs.otrs.org/show\_bug.cgi?id=131
+    drop-downs - http://bugs.otrs.org/show_bug.cgi?id=131
  - 2003-04-29 added min. counter size option (default 5) for
     Kernel::System::Ticket::Number::AutoIncrement module.
  - 2003-04-25 removed shown customer id in 'MyTickets' from
@@ -6267,7 +6265,7 @@
     of attachments using Kernel/System/Ticket/ArticleStorageFS.pm
     (http://lists.otrs.org/pipermail/otrs/2003-April/001491.html)
  - 2003-04-22 fixed bug#[123](http://bugs.otrs.org/show_bug.cgi?id=123) - Email address with simple quote
-    http://bugs.otrs.org/show\_bug.cgi?id=123
+    http://bugs.otrs.org/show_bug.cgi?id=123
  - 2003-04-18 added RH8 IPC (shm id 0) workaround (create dummy shm)
  - 2003-04-17 fixed AgentStatusView (1st ticket is actually the 2nd)
  - 2003-04-17 added Firstname/Lastname of agents to ticket history
@@ -6289,9 +6287,9 @@
  - 2003-04-09 improved AdminEmail feature with group recipient
  - 2003-04-08 added ticket split option in article zoom.
  - 2003-04-08 fixed bug#[109](http://bugs.otrs.org/show_bug.cgi?id=109) - Attachments not being forwarded on
-    http://bugs.otrs.org/show\_bug.cgi?id=109
+    http://bugs.otrs.org/show_bug.cgi?id=109
  - 2003-04-08 fixed bug#[111](http://bugs.otrs.org/show_bug.cgi?id=111) - Inability to forward on anything from:
-    'agent email(external)' - http://bugs.otrs.org/show\_bug.cgi?id=110
+    'agent email(external)' - http://bugs.otrs.org/show_bug.cgi?id=110
  - 2003-03-24 improved user-auth and customer-auth ldap interface
     with 'UserAttr' (UID for posixGroups objectclass and DN for non
     posixGroups objectclass) on group access check. Config options now:
@@ -6402,11 +6400,11 @@
  - 2003-01-19 added CustomerUser LDAP backend - Thanks to Wiktor Wodecki!
  - 2003-01-19 fixed CustomerUser backend (config options)
  - 2003-01-18 fixed bug#[61](http://bugs.otrs.org/show_bug.cgi?id=61) (ArticleStorageInit error ) -
-    http://bugs.otrs.org/show\_bug.cgi?id=61
+    http://bugs.otrs.org/show_bug.cgi?id=61
  - 2003-01-17 fixed bug#[68](http://bugs.otrs.org/show_bug.cgi?id=68) on FreeBSD 4.7 (trying to "compose email" from
-    the agent interface) - http://bugs.otrs.org/show\_bug.cgi?id=68
+    the agent interface) - http://bugs.otrs.org/show_bug.cgi?id=68
  - 2003-01-16 fixed bug#[62](http://bugs.otrs.org/show_bug.cgi?id=62) (not working command line utilitity) -
-    http://bugs.otrs.org/show\_bug.cgi?id=62
+    http://bugs.otrs.org/show_bug.cgi?id=62
  - 2003-01-16 added bin/otrs.checkModules to check installed and
     required cpan modules
  - 2003-01-15 updated finnish translation! Thanks to Antti Kï¿½mï¿½rï¿½inen!
@@ -6415,7 +6413,7 @@
     http://lists.otrs.org/pipermail/dev/2003-January/000074.html
     Thanks to Wiktor Wodecki!
  - 2003-01-14 fixed bug#[59](http://bugs.otrs.org/show_bug.cgi?id=59) (Bug in SELECT statement on empty search form) -
-    http://bugs.otrs.org/show\_bug.cgi?id=59
+    http://bugs.otrs.org/show_bug.cgi?id=59
  - 2003-01-14 updated french translation! Thanks to Nicolas Goralski!
  - 2003-01-12 added spanisch translation! Thanks to Jorge Becerra!
  - 2003-01-11 fixed AgentPhone bug of Time() in subject -
@@ -6441,11 +6439,9 @@
     of people have problems with the file permissions of the local otrs
     and webserver user (often incoming emails are shown some times again).  
     TicketStorageModule in Kernel/Config.pm.  
-```
      * Kernel::System::Ticket::ArticleStorageDB -\> (default)
      * Kernel::System::Ticket::ArticleStorageFS -\> (faster but webserver
         user should be the otrs user - use it for larger setups!)
-```
  - 2002-12-19 attachment support (send and view) for customer panel!
  - 2002-12-18 added config option CheckEmailAddresses and CheckMXRecord.
     CheckMXRecord is useful for pre checks of valid/invalid senders (
@@ -6475,7 +6471,7 @@
     http://lists.otrs.org/pipermail/dev/2002-November/000043.html.
     Thanks Wiktor!
  - 2002-11-28 fixed bug#[39](http://bugs.otrs.org/show_bug.cgi?id=39) - added mime encode for attachment file names
-    http://bugs.otrs.org/show\_bug.cgi?id=39 - Thanks to Christoph Kaulich!
+    http://bugs.otrs.org/show_bug.cgi?id=39 - Thanks to Christoph Kaulich!
  - 2002-11-27 added backend modules for loop protection of PostMaster.pl
     "LoopProtectionModule" in Kernel/Config.pm (default is DB) -
     Kernel::System::PostMaster::LoopProtection::(DB|FS).
@@ -6491,7 +6487,7 @@
     because the web-installer needs this stuff in this location. %doc isn't
     consistent on different linux distributions!
  - 2002-11-15 fixed bug#[48](http://bugs.otrs.org/show_bug.cgi?id=48) custom modules don't work/load -
-    http://bugs.otrs.org/show\_bug.cgi?id=48
+    http://bugs.otrs.org/show_bug.cgi?id=48
  - 2002-11-15 added Dutch translation! Thanks to Fred van Dijk!
  - 2002-11-14 added Bulgarian translation! Thanks to Vladimir Gerdjikov!
  - 2002-11-11 added new config file as Kernel/Config.pm.dist (will be used
@@ -6572,13 +6568,13 @@
  - added backup and restore script (scripts/(backup|restore).sh)
  - moved Kernel::System::Article to Kernel::System::Ticket::Article! The
     ArticleObject exists not longer in Kernel::Modules::\*, use TicketObject.
- - fixed bug#[25](http://bugs.otrs.org/show_bug.cgi?id=25) Error on bounce of ticket - http://bugs.otrs.org/show\_bug.cgi?id=25
+ - fixed bug#[25](http://bugs.otrs.org/show_bug.cgi?id=25) Error on bounce of ticket - http://bugs.otrs.org/show_bug.cgi?id=25
  - fixed bug#[27](http://bugs.otrs.org/show_bug.cgi?id=27) Let the fields "new message" and "Locked tickets" be more visible -
-    http://bugs.otrs.org/show\_bug.cgi?id=27
- - fixed bug#[23](http://bugs.otrs.org/show_bug.cgi?id=23) little menu logic mistake - http://bugs.otrs.org/show\_bug.cgi?id=23
- - fixed bug#[30](http://bugs.otrs.org/show_bug.cgi?id=30) Kernel/System/DB.pm - DB quoting http://bugs.otrs.org/show\_bug.cgi?id=30
+    http://bugs.otrs.org/show_bug.cgi?id=27
+ - fixed bug#[23](http://bugs.otrs.org/show_bug.cgi?id=23) little menu logic mistake - http://bugs.otrs.org/show_bug.cgi?id=23
+ - fixed bug#[30](http://bugs.otrs.org/show_bug.cgi?id=30) Kernel/System/DB.pm - DB quoting http://bugs.otrs.org/show_bug.cgi?id=30
     Thanks to Marc Scheuffler!
- - fixed bug#[28](http://bugs.otrs.org/show_bug.cgi?id=28) Base64 Encoded mail fails - http://bugs.otrs.org/show\_bug.cgi?id=28
+ - fixed bug#[28](http://bugs.otrs.org/show_bug.cgi?id=28) Base64 Encoded mail fails - http://bugs.otrs.org/show_bug.cgi?id=28
     Thanks to Christoph Kaulich!
  - fixed rpm bug for SuSE Linux 7.3 (Installer) - Thanks to Schirott Frank!
 
@@ -6628,15 +6624,15 @@
          like 100057866352 and 103745394596.
  - added UPGRADING file
  - updated redhat init script (Thanks to Pablo Ruiz Garcia)
- - fixed bug#[21](http://bugs.otrs.org/show_bug.cgi?id=21) " in email addresses are missing - http://bugs.otrs.org/show\_bug.cgi?id=21
+ - fixed bug#[21](http://bugs.otrs.org/show_bug.cgi?id=21) " in email addresses are missing - http://bugs.otrs.org/show_bug.cgi?id=21
     (Thanks to Christoph Kaulich)
- - fixed bug#[19](http://bugs.otrs.org/show_bug.cgi?id=19) Responses sort randomly - http://bugs.otrs.org/show\_bug.cgi?id=19
+ - fixed bug#[19](http://bugs.otrs.org/show_bug.cgi?id=19) Responses sort randomly - http://bugs.otrs.org/show_bug.cgi?id=19
  - fixed SetPermissions.sh (permission for var/log/TicketCounter.log) (Thanks to
     Pablo Ruiz Garcia)
- - fixed bug#[16](http://bugs.otrs.org/show_bug.cgi?id=16) Attachment download - http://bugs.otrs.org/show\_bug.cgi?id=16
+ - fixed bug#[16](http://bugs.otrs.org/show_bug.cgi?id=16) Attachment download - http://bugs.otrs.org/show_bug.cgi?id=16
     (Thanks to Christoph Kaulich)
  - fixed bug#[15](http://bugs.otrs.org/show_bug.cgi?id=15) typo in suse-rcotrs (redhat-rcotrs is not affected) -
-    http://bugs.otrs.org/show\_bug.cgi?id=15
+    http://bugs.otrs.org/show_bug.cgi?id=15
 
 #0.5 BETA6 2002-06-17
  - added AgentBounce module
@@ -6660,11 +6656,11 @@
  - added display support for HTML-only emails
  - added generic database and webserver to scripts/suse-rcotrs script
  - added PostgreSQL (7.2 or higher) support (use OpenTRS-schema.postgresql.sql)
- - fixed bug[12] fetchmail lock problem - http://bugs.otrs.org/show\_bug.cgi?id=12
- - fixed bug[11] typos - http://bugs.otrs.org/show\_bug.cgi?id=11
- - fixed bug[10] user\_preferences table  - http://bugs.otrs.org/show\_bug.cgi?id=10
+ - fixed bug[12] fetchmail lock problem - http://bugs.otrs.org/show_bug.cgi?id=12
+ - fixed bug[11] typos - http://bugs.otrs.org/show_bug.cgi?id=11
+ - fixed bug[10] user\_preferences table  - http://bugs.otrs.org/show_bug.cgi?id=10
  - fixed bug[9] LoopProtection!!! Can't open'/opt/OpenTRS/var/log/LoopProtection-xyz.log':
-    No such file or directory! - http://bugs.otrs.org/show\_bug.cgi?id=9
+    No such file or directory! - http://bugs.otrs.org/show_bug.cgi?id=9
  - fixed HTML table bug in AdminArea::Queue (just with Netscape)
  - fixed SQL table preferences bug (use script/DBUpdate.mysql.sql)
 
@@ -6679,7 +6675,7 @@
      * added bin/UnlockTickets.pl with --timeout and --all options
  - added command line tool (bin/DeleteSessionIDs.pl) to delete expired or all session
     ids via command line or cron - options are --help, --expired and --all
- - fixed bug[7] (http://bugs.otrs.org/show\_bug.cgi?id=7 - space in Installer.pm
+ - fixed bug[7] (http://bugs.otrs.org/show_bug.cgi?id=7 - space in Installer.pm
     lets creating of database otrs in MySQL fail) by Stefan Schmidt.
  - added URL (screen) recovery after session timeout and possibility to send
     links without session id. Example: Shows you the ticket after OTRS
@@ -6708,7 +6704,7 @@
  - added Kernel::Modules::AdminStatus.pm
  - added Kernel::Modules::AdminLanguages.pm
  - added mod\_perl stuff to README.webserver and scripts/suse-httpd.include.conf
- - fixed bug[6] (http://bugs.otrs.org/show\_bug.cgi?id=6 - user is a reserved word in
+ - fixed bug#[6](http://bugs.otrs.org/show_bug.cgi?id=6) - user is a reserved word in
     SQL) reported by Charles Wimmer. Added some variables for table names and columns
     to Kernel/Config.pm. Important: For existing installations you have to change the
     Config.pm or to rename the "user" table to "system\_user"!
