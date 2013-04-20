@@ -996,7 +996,9 @@
  - 2011-09-16 Added new legacy driver for PostgreSQL 8.1 or earlier. This
     needs to be activated for such older installations in Kernel/Config.pm
     as follows:
+```
     $Self-\>{DatabasePostgresqlBefore82} = 1;
+```
  - 2011-09-09 Updated CPAN module Mozilla::CA to version 20110904.
  - 2011-09-06 Converted all translation files to utf-8.
  - 2011-09-01 Changed Postgresql driver to also use standard\_conforming\_strings
@@ -3055,7 +3057,7 @@
     with alternative parts and inline images.
  - 2009-04-09 Added enhancement bug#[3514](http://bugs.otrs.org/show_bug.cgi?id=3514) - RegExp support in ACLs. Now you
     can use RegExp in ACLs like the followin example:
-
+```
     $Self-\>{TicketAcl}-\>{'ACL-Name-1'} = {
        # match properties
        Properties =\> {
@@ -3072,7 +3074,7 @@
            },
        },
     };
-
+```
     Starting with "[RegExp]" in value area means the following will be a regexp
     content.
 
@@ -3155,7 +3157,7 @@
     back to old behavior.
  - 2009-01-05 Moved to new auth sync layer. Splited auth and agent
     sync into two module layers. For example:
-
+```
     [Kernel/Config.pm]
 
     # agent authentication against http basic auth
@@ -3175,7 +3177,7 @@
         UserEmail     =\> 'mail',
     };
     [...]
-
+```
  - 2008-12-28 Added daemon support to bin/PostMasterMailbox.pl and
     bin/GenericAgent.pl by using "-b \<BACKGROUND\_INTERVAL\_IN\_MIN\>".
  - 2008-12-22 Improved ticket escalation notification, moved to .dtl support
@@ -3530,7 +3532,7 @@
     Example you can use customer user attributes in ACL properties in
     this case to create an list of possible queues in the customer
     interface for creating or moving tickets.
-
+```
     $Self-\>{TicketAcl}-\>{'ACL-Name-Test'} = {
         # match properties
         Properties =\> {
@@ -3545,7 +3547,7 @@
             },
         },
     };
-
+```
  - 2008-06-23 Fixed bug#[3013](http://bugs.otrs.org/show_bug.cgi?id=3013) - Freetext fields show wrong on AJAX update
     in phone and email ticket when queue is changed.
  - 2008-06-23 Updated cpan module TEXT::CSV to version 1.06.
@@ -3601,7 +3603,7 @@
  - 2008-06-01 Fixed bug#[2956](http://bugs.otrs.org/show_bug.cgi?id=2956) - Not working ticket escalation by using SLAs.
  - 2008-06-01 Added sub sorting to Kernel::System::Ticket::TicketSearch()
     and improved unit test. Example:
-    my @TicketIDs = $Self-\>{TicketObject}-\>TicketSearch(
+```    my @TicketIDs = $Self-\>{TicketObject}-\>TicketSearch(
         Result  =\> 'ARRAY',
         Title   =\> '%sort/order by test%',
         Queues  =\> ['Raw'],
@@ -3609,6 +3611,7 @@
         SortBy  =\> ['Priority', 'Age'],
         UserID  =\> 1,
     );
+```
  - 2008-05-28 Fixed bug#[2891](http://bugs.otrs.org/show_bug.cgi?id=2891) - Typo in Bounce Customer notification
     'information'.
  - 2008-05-22 Upgraded Mail::Tools from version 2.02 to 2.03 from CPAN.
@@ -3717,13 +3720,13 @@
  - 2008-03-25 Added enhancement for agent and customer HTTPBasicAuth to strip
     parts of REMOTE\_USER or HTTP\_REMOTE\_USER by using a regexp. Example to
     strip @example.com of login.
-
+```
     [Kernel/Config.pm]
 
     # In case you need to replace some part of the REMOTE\_USER, you can
     # use the following RegExp ($1 will be new login).
     $Self-\>{'AuthModule::HTTPBasicAuth::ReplaceRegExp'} = '^(.+?)@.+?$';
-
+```
  - 2008-03-21 Added enhancement bug#[2773](http://bugs.otrs.org/show_bug.cgi?id=2773) - HTTPBasicAuth fails when only
     HTTP\_REMOTE\_USER is populated (not REMOTE\_USER).
  - 2008-03-18 Fixed mssql/sybase/freetds database problem
@@ -3733,7 +3736,7 @@
     So the database customer is now improved to set all database attributes
     in CustomerUser config. For example this is the solution to prevent
     the sybase error message:
-
+```
     $Self-\>{CustomerUser} = {
         Name   =\> 'Database Backend',
         Module =\> 'Kernel::System::CustomerUser::DB',
@@ -3745,7 +3748,7 @@
             Attribute =\> {},
         },
     [...]
-
+```
     For more info see: http://www.perlmonks.org/index.pl?node\_id=663835
  - 2008-03-17 Fixed bug#[2197](http://bugs.otrs.org/show_bug.cgi?id=2197) - utf8 problems with auto generated
     Kernel/Config/Files/ZZZAuto.pm and Kernel/Config/Files/ZZZAAuto.pm
@@ -3845,12 +3848,12 @@
  - 2007-12-11 Fixed bug#[2479](http://bugs.otrs.org/show_bug.cgi?id=2479) - Unable to retrieve attachments bigger than
     3Mb (on Oracle DB). Changed default read size from 4 MB to 40 MB in
     Kernel/System/DB/oracle.pm:
-
+```
     $Self-\>{'DB::Attribute'}      = {
         LongTruncOk =\> 1,
         LongReadLen =\> 40 \* 1024 \* 1024,
     };
-
+```
  - 2007-12-10 Updated MIME::Tools to current CPAN version 5.425.
  - 2007-12-06 Fixed bug#[2568](http://bugs.otrs.org/show_bug.cgi?id=2568) - Problems with attachment downloads if the
     active element filter is enabled.
@@ -4100,12 +4103,12 @@
  - 2007-12-11 Fixed bug#[2479](http://bugs.otrs.org/show_bug.cgi?id=2479) - Unable to retrieve attachments bigger than
     3 MB (on Oracle DB). Changed default read size from 4 MB to 15 MB in
     Kernel/System/DB/oracle.pm:
-
+```
     $Self-\>{'DB::Attribute'}      = {
         LongTruncOk =\> 1,
         LongReadLen =\> 15 \* 1024 \* 1024,
     };
-
+```
  - 2007-12-10 Fixed bug#[1428](http://bugs.otrs.org/show_bug.cgi?id=1428) - Whitespaces remove from email subject
     (notification and new tickets creation) if utf-8 is used (specifically
     in Russian, Chinese  and Japanese).
@@ -4292,21 +4295,23 @@
     If you use UserSyncLDAPMap you need to reconfigure it!
 
     Old style (till 2.1):
+```
     $Self-\>{UserSyncLDAPMap} = {
         # DB -\> LDAP
         Firstname =\> 'givenName',
         Lastname =\> 'sn',
         Email =\> 'mail',
     };
-
+```
     New style (beginning with 2.2):
+```
     $Self-\>{UserSyncLDAPMap} = {
         # DB -\> LDAP
         UserFirstname =\> 'givenName',
         UserLastname =\> 'sn',
         UserEmail =\> 'mail',
     };
-
+```
  - 2007-07-25 Added missing OTRS 2.2 sql update scripts for mssql and maxdb
     (scripts/DBUpdate-to-2.2.maxdb.sql and scripts/DBUpdate-to-2.2.mssql.sql).
  - 2007-07-23 Fixed bug#[2068](http://bugs.otrs.org/show_bug.cgi?id=2068) - Date problem with non en installations of
@@ -4521,21 +4526,23 @@
     Note If you use UserSyncLDAPMap you need to reconfigure it!
 
     Old:
+```
     $Self-\>{UserSyncLDAPMap} = {
         # DB -\> LDAP
         Firstname =\> 'givenName',
         Lastname =\> 'sn',
         Email =\> 'mail',
     };
-
+```
     New:
+```
     $Self-\>{UserSyncLDAPMap} = {
         # DB -\> LDAP
         UserFirstname =\> 'givenName',
         UserLastname =\> 'sn',
         UserEmail =\> 'mail',
     };
-
+```
  - 2007-03-14 Fixed not shown optional ticket free time option fields in
     customer panel.
  - 2007-03-11 Added enhancement bug#[1102](http://bugs.otrs.org/show_bug.cgi?id=1102) - restore.pl should check for
@@ -5033,8 +5040,9 @@
     from otrs to otrs-x.x.x
  - 2005-11-20 added multi pre application module support, just
     define it like:
+```
     $Self-\>{PreApplicationModule}-\>{AgentInfo} = 'Kernel::Modules::AgentInfo';
-
+```
 #2.0.5 2007-05-22
  - 2007-05-22 fixed bug#[1842](http://bugs.otrs.org/show_bug.cgi?id=1842) - Cross-Site Scripting Vulnerability
  - 2007-01-11 fixed bug#[1515](http://bugs.otrs.org/show_bug.cgi?id=1515) - Some GenericAgent names don't work
@@ -5271,9 +5279,9 @@
     \<-\> User
  - 2005-08-19 Added new config parameter to include a envelope from
     header in outgoing notifications for customer and agents:
-
+```
    $Self-\>{"SendmailNotificationEnvelopeFrom"} = '';
-
+```
  - 2005-08-19 fixed bug#[846](http://bugs.otrs.org/show_bug.cgi?id=846) - empty envelope from on notifications
  - 2005-08-19 fixed bug#[879](http://bugs.otrs.org/show_bug.cgi?id=879) - "Wide character in subroutine" - mails with
     attachments in utf-8 mode
@@ -5394,17 +5402,17 @@
 #2.0.0 beta4 2005-07-03
  - 2005-07-03 added ticket free time feature - take care, you need to
     alter the ticket table:
-
+```
     ALTER TABLE ticket ADD freetime1 DATETIME;
     ALTER TABLE ticket ADD freetime2 DATETIME;
-
+```
     new config options are:
-
+```
     $Self-\>{"TicketFreeTimeKey1"} = 'Termin1';
     $Self-\>{"TicketFreeTimeDiff1"} = 0;
     $Self-\>{"TicketFreeTimeKey2"} = 'Termin2';
     $Self-\>{"TicketFreeTimeDiff2"} = 0;
-
+```
  - 2005-07-03 fixed bug#[797](http://bugs.otrs.org/show_bug.cgi?id=797) - renamed AdminEmail to Admin Notification
     in admin interface.
  - 2005-07-03 rewritten faq customer and public area
@@ -5446,6 +5454,7 @@
  - 2005-05-07 fixed bug#[647](http://bugs.otrs.org/show_bug.cgi?id=647) - Allow setting of default language for FAQs
  - 2005-05-07 fixed bug#[686](http://bugs.otrs.org/show_bug.cgi?id=686) - defect attachments on download with firefox
  - 2005-05-07 added html access keys for nav bar
+```
     general:
     h = home
     l = logout
@@ -5464,6 +5473,7 @@
     e = email ticket
     k = locked ticket list
     m = new messages in locked ticket list
+```
  - 2005-05-07 fixed bug#[719](http://bugs.otrs.org/show_bug.cgi?id=719) - Timezone setting (US EDT -4) causes
     "Session Timeout"
  - 2005-05-04 removed html wrap from ticket text areas
@@ -5492,11 +5502,13 @@
  - 2004-12-04 moved PGP and SMIME stuff to Kernel/System/Email.pm
     to be more generic
  - 2004-11-27 added config option TicketHookDivider
+```
     [Kernel/Config.pm]
     # (the divider between TicketHook# and number)
     $Self-\>{TicketHookDivider} = ': ';
 #    $Self-\>{TicketHookDivider} = '';
     [...]
+```
  - 2004-11-24 renamed from bin/SendStats.pl to bin/mkStats.pl and added
     fs output e. g.
     shell\> bin/mkStats.pl -m NewTickets -p 'Month=1&Year=2003' -r me@host.com -b text
@@ -5520,19 +5532,23 @@
  - 2004-11-07 added LOWER() in sql like queries to search, now searches
     are case insensitive in postgresql and maxdb
  - 2004-11-04 added new feature so show ticket history reverse
+```
     [Kernel/Config.pm]
     # Agent::HistoryOrder
     # (show history order reverse) [normal|reverse]
-    $Self-\>{'Agent::HistoryOrder'} = 'normal';
-#    $Self-\>{'Agent::HistoryOrder'} = 'reverse';
+    $Self->{'Agent::HistoryOrder'} = 'normal';
+#    $Self->{'Agent::HistoryOrder'} = 'reverse';
     [...]
+```
  - 2004-11-04 added "show no escalation" group feature
+```
     [Kernel/Config.pm]
     # AgentNoEscalationGroup
     # (don't show escalated tickets in frontend for agents who are writable
     # in this group)
-    $Self-\>{AgentNoEscalationGroup} = 'some\_group';
+    $Self->{AgentNoEscalationGroup} = 'some_group';
     [...]
+```
  - 2004-11-04 renamed session to sessions table (oracle compat.)
  - 2004-11-04 updated to CGI 3.05
  - 2004-11-04 switched to session db module as default because
@@ -5548,6 +5564,7 @@
  - 2004-10-06 reworked all agent and customer notifications in database
     (use scripts/DBUpdate-to-2.0.\*.sql)
  - 2004-10-06 added new config options for email address check
+ ```
     # CheckEmailValidAddress
     # (regexp of valid email addresses)
     $Self-\>{CheckEmailValidAddress} = '^(root@localhost|admin@localhost)$';
@@ -5555,9 +5572,10 @@
     # CheckEmailInvalidAddress
     # (regexp of invalid email addresses)
     $Self-\>{CheckEmailInvalidAddress} = '@(anywhere|demo|example|foo)\.(..|...)$';
-
+```
  - 2004-10-01 added global working time configuration for escalation
     and unlock calculation:
+```
     [Kernel/Config.pm]
     # TimeWorkingHours
     # (counted hours for working time used)
@@ -5602,6 +5620,7 @@
         },
     };
     [...]
+```
  - 2004-10-01 improved ticket escalation, added new ticket table col.
     use scripts/DBUpdate-to-2.0.\*.sql
  - 2004-09-29 fixed bug#[310](http://bugs.otrs.org/show_bug.cgi?id=310) - System-ID "09" is not working
@@ -5611,6 +5630,7 @@
     will be longer accessable till the module is registry. For example
     a registered frontend module with navigation icon in Agent nav bar
     (navigation bar will be build automatically, based on permissions):
+```
     [Kernel/Config.pm]
     $Self-\>{'Frontend::Module'}-\>{'AgentPhone'} = {
         Group =\> ['users', 'admin'],
@@ -5625,7 +5645,7 @@
          },
        ],
     };
-
+```
  - 2004-09-16 added Kernel::System::PID to start bin/PostMaster.pl just
     once (new table, process\_id is needed)
  - 2004-09-15 added date check on set pending time, don't set pending
@@ -5635,9 +5655,11 @@
     if there is an follow up from the customer and the ticket is unlocked.
     This is different to OTRS \<= 1.3. So if you don't want this, you can
     use the following config option to disable this (link in OTRS 1.3)
+```
     [Kernel/Config.pm]
      $Self-\>{PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner} = 1;
     [...]
+```
  - 2004-09-10 added Kernel::System::SearchProfile to manage object
     search profiles
  - 2004-09-09 added role/profile feature
@@ -5732,6 +5754,7 @@
 #1.3.0 beta1 2004-08-18
  - 2004-08-11 added feature to send fulltext reqests to a
     mirror database
+```
     [Kernel/Config.pm]
     # AgentUtil::DB::\*
     # (if you want to use a mirror database for agent ticket fulltext search)
@@ -5739,7 +5762,7 @@
     $Self-\>{'AgentUtil::DB::User'} = "some\_user";
     $Self-\>{'AgentUtil::DB::Password'} = "some\_password";
     [...]
-
+```
  - 2004-08-10 added Radius auth modules for agent and customer
     interface
  - 2004-08-10 improved Kernel::System::CustomerAuth::DB to use
@@ -5759,12 +5782,13 @@
  - 2004-08-01 fixed bug#[460](http://bugs.otrs.org/show_bug.cgi?id=460) - Patch to add params hash to LDAP bind
     in Kernel/System/User.pm.
  - 2004-07-30 added references, in-reply-to follow up check
+```
     [Kernel/Config.pm]
     # PostmasterFollowUpSearchInReferences
     # (If no ticket number in subject, otrs also looks in In-Reply-To
     # and References for follow up checks)
     $Self-\>{PostmasterFollowUpSearchInReferences} = 0;
-
+```
  - 2004-07-17 fixed generic agent Schedule web interface
  - 2004-07-16 added multi attachment support for attachments
  - 2004-06-28 improved Kernel/Modules/AdminSelectBox.pm module
@@ -5778,10 +5802,10 @@
     bin/CryptPassword.pl to crypt passwords).
  - 2004-06-10 added generic agent web interface
  - 2004-06-03 improved language translation with custom translation
-    files:
-    Kernel/Language/$Locale.pm (default)
+    files:  
+    Kernel/Language/$Locale.pm (default)  
     Kernel/Language/$Locale\_$Action.pm (translation for otrs modules like
-     file manager, calendar, ...)
+     file manager, calendar, ...)  
     Kernel/Language/$Locale\_Custom.pm (own changes,updates)
  - 2004-05-18 added html application output filter option, e. g. to
     filter java script of the application or to manipulate the html
@@ -5923,22 +5947,23 @@
     (http://bugs.otrs.org/show\_bug.cgi?id=192)
  - 2004-01-23 fixed customer-user \<-\> group problem added the following
     to Kernel/Config.pm
+```
     # CustomerGroupSupport (0 = compat. to OTRS 1.1 or lower)
     # (if this is 1, the you need to set the group \<-\> customer user
     # relations! http://host/otrs/index.pl?Action=AdminCustomerUserGroup
     # otherway, each user is ro/rw in each group!)
-    $Self-\>{CustomerGroupSupport} = 0;
+    $Self->{CustomerGroupSupport} = 0;
 
     # CustomerGroupAlwaysGroups
     # (if CustomerGroupSupport is true and you don't want to manage
     # each customer user for this groups, then put the groups
     # for all customer user in there)
-    $Self-\>{CustomerGroupAlwaysGroups} = ['users', 'info'];
+    $Self->{CustomerGroupAlwaysGroups} = ['users', 'info'];
  - 2004-01-23 changed Kernel::System::Ticket-\>SearchTicket() to
     return false if on param (e. g. Queue or State) doesn't exist
     (problem was, that if a queue name dosn't exist, then the
     GenericAgent gets tickets from all queues!).
-
+```
 #1.2.0 beta1 2004-01-22
  - 2004-01-22 internationalization of agent notification messages
     configurable over admin interface (attention, agent notificatins
@@ -5994,78 +6019,84 @@
                 Queue2     QueueB::Queue2
  - 2003-12-02 added remove of session cookie after closing the
     browser in agent interface
- - 2003-11-27 added modules for agent notifications
-    Kernel/Output/HTML/NotificationCharsetCheck.pm
-    Kernel/Output/HTML/NotificationUIDCheck.pm
+ - 2003-11-27 added modules for agent notifications  
+    Kernel/Output/HTML/NotificationCharsetCheck.pm  
+    Kernel/Output/HTML/NotificationUIDCheck.pm  
     are default modules to configure over Kernel/Config.pm
+```
     $Self-\>{'Frontend::NotifyModule'}-\>{'1-CharsetCheck'} = {
         Module =\> 'Kernel::Output::HTML::NotificationCharsetCheck',
     };
     $Self-\>{'Frontend::NotifyModule'}-\>{'2-UID-Check'} = {
         Module =\> 'Kernel::Output::HTML::NotificationUIDCheck',
     };
+```
     So it's alos possible to create your own agent notifications
     like motd od escalation infos.
  - 2003-11-26 added group \<-\> customer user support - so it's
     possible that you can define the customer queues for new tickets
- - 2003-11-26 added modules for ticket permission checks
-    Kernel/System/Ticket/Permission/OwnerCheck.pm
-    Kernel/System/Ticket/Permission/GroupCheck.pm
-    Kernel/System/Ticket/CustomerPermission/CustomerIDCheck.pm
-    Kernel/System/Ticket/CustomerPermission/GroupCheck.pm
-    So it's possible to write own perission check modules!
+ - 2003-11-26 added modules for ticket permission checks  
+    Kernel/System/Ticket/Permission/OwnerCheck.pm  
+    Kernel/System/Ticket/Permission/GroupCheck.pm  
+    Kernel/System/Ticket/CustomerPermission/CustomerIDCheck.pm  
+    Kernel/System/Ticket/CustomerPermission/GroupCheck.pm  
+    So it's possible to write own perission check modules!  
     Example: Don't allow agents to change the priority if the state
-    of the ticket is 'open' and in a specific queue.
+    of the ticket is 'open' and in a specific queue.  
     Example ofKernel/Config.pm:
-
+```
     # Module Name: 1-OwnerCheck
     # (if the current owner is already the user, grant access)
-    $Self-\>{'Ticket::Permission'}-\>{'1-OwnerCheck'} = {
+    $Self->{'Ticket::Permission'}->{'1-OwnerCheck'} = {
         Module =\> 'Kernel::System::Ticket::Permission::OwnerCheck',
         Required =\> 0,
     };
     # Module Name: 2-GroupCheck
     # (if the user is in this group with type ro|rw|..., grant access)
-    $Self-\>{'Ticket::Permission'}-\>{'2-GroupCheck'} = {
+    $Self->{'Ticket::Permission'}->{'2-GroupCheck'} = {
         Module =\> 'Kernel::System::Ticket::Permission::GroupCheck',
         Required =\> 0,
     };
-
+```
  - 2003-11-19 improved group sub system, added create, move\_into, owner
     and priority permissions to groups (DBUpdate-to-1.2.\*.sql is required!).
  - 2003-11-05 added agent preferences option "Screen after new phone
     ticket". So you can select the next screen after creating a new
     phone ticket.
  - 2003-11-02 improved GenericAgent.pl to work also with ticket
-    priorities (search and change).
+    priorities (search and change).  
     Example for Kernel/Config/GenericAgent.pm:
+```
     # ---
     # [name of job] -\> move all tickets from abc to experts and change priority
     # ---
     'move all abc priority "3 normal" tickets to experts and change priority'=\> {
       # get all tickets with these properties
-      Queue =\> 'abc',
-      Priorities =\> ['3 normal'],
+      Queue => 'abc',
+      Priorities => ['3 normal'],
       # new ticket properties
-      New =\> {
-        Queue =\> 'experts',
-        Priority =\> '4 high',
+      New => {
+        Queue => 'experts',
+        Priority => '4 high',
       },
     },
+```
  - 2003-11-02 added delete option to Admin-\>StdAttachment menu
- - 2003-11-01 added PostMaster(POP3).pl filter options like procmail.
+ - 2003-11-01 added PostMaster(POP3).pl filter options like procmail.  
     Example for Kernel/Config.pm:
+```
     # Job Name: 1-Match
     # (block/ignore all spam email with From: noreply@)
-    $Self-\>{'PostMaster::PreFilterModule'}-\>{'1-Match'} = {
-        Module =\> 'Kernel::System::PostMaster::Filter::Match',
-        Match =\> {
-            From =\> 'noreply@',
+    $Self->{'PostMaster::PreFilterModule'}->{'1-Match'} = {
+        Module => 'Kernel::System::PostMaster::Filter::Match',
+        Match => {
+            From => 'noreply@',
         },
-        Set =\> {
-            'X-OTRS-Ignore' =\> 'yes',
+        Set => {
+            'X-OTRS-Ignore' => 'yes',
         },
     };
+```
     Available modules are Kernel::System::PostMaster::Filter::Match
     and Kernel::System::PostMaster::Filter::CMD. See more to use it
     on http://doc.otrs.org/.
@@ -6077,26 +6108,28 @@
     (Kernel::Config::GenericAgent) job file. For example you will be
     able to have Kernel::Config::Delete and Kernel::Config::Move or
     other job files to execute it on different times.
- - 2003-10-14 changed phone default settings:
-    \* new tickets are unlocked (not locked)
+ - 2003-10-14 changed phone default settings:  
+    \* new tickets are unlocked (not locked)  
     \* subject and body is empty as default
  - 2003-09-28 improved next screen management after closing tickts
  - 2003-09-28 added \<OTRS\_TICKET\_STATE\> to agent compose answer screen
     as variable for new ticket state in composed message.
  - 2003-08-28 improved GenericAgent to use From, To, Cc, Subject and
     Body for ticket selection - example:
-   [...]
-   'delete all tickets with subject "VIRUS 32" in queue abc' =\> {
+```
+    [...]
+   'delete all tickets with subject "VIRUS 32" in queue abc' => {
       # get all tickets with this properties
-      Queue =\> 'abc',
-      Subject =\> '%VIRUS%',
+      Queue => 'abc',
+      Subject => '%VIRUS%',
       # new ticket properties
-      New =\> {
+      New => {
         # DELETE!
-        Delete =\> 1,
+        Delete => 1,
       },
    },
    [...]
+```
  - 2003-07-31 added "Show closed Ticket/Don't show closed Ticket" link
     to customer panel show my tickets overview
  - 2003-07-14 added last owner selection to Kernel/Modules/AgentOwner.pm
@@ -6115,13 +6148,15 @@
     required)
  - 2003-05-20 added array for source queue selection to bin/GenericAgent.pl
     for example, use this job for more queues:
+```
     [...]
-    'move tickets from tricky to experts' =\> {
+    'move tickets from tricky to experts' => {
       # get all tickets with this properties
-      Queue =\> ['tricky', 'tricky1'],
-      States =\> ['new', 'open'],
-      Locks =\> ['unlock'],
+      Queue => ['tricky', 'tricky1'],
+      States => ['new', 'open'],
+      Locks => ['unlock'],
     [...]
+```
  - 2003-05-13 removed UNIQUE (not needed!) in pop3\_account table
 
 #1.1.4 (2003/??/??)
@@ -6245,6 +6280,7 @@
  - 2003-03-24 improved user-auth and customer-auth ldap interface
     with 'UserAttr' (UID for posixGroups objectclass and DN for non
     posixGroups objectclass) on group access check. Config options now:
+```
     [...]
     $Self-\>{'AuthModule::LDAP::GroupDN'} = 'cn=otrsallow,ou=posixGroups,dc=example,dc=com';
     $Self-\>{'AuthModule::LDAP::AccessAttr'} = 'memberUid';
@@ -6253,6 +6289,7 @@
     # for non ldap posixGroups objectclass (with full user dn)
     $Self-\>{'AuthModule::LDAP::UserAttr'} = 'DN';
     [...]
+```
  - 2003-03-24 added agent feature to be also customer of one ticket
  - 2003-03-24 added UncountedUnlockTime config options - e.g. don't
     count Fri 16:00 - Mon 8:00 as unlock time.
@@ -6280,6 +6317,7 @@
     Use "scripts/DBUpdate-to-1.1.(mysql|postgresql).sql".
  - 2003-03-05 added sendmail backends (Kernel::System::Email::Sendmail
     and Kernel::System::Email::SMTP) - for win32 user. New config options:
+```
     [...]
       $Self-\>{'SendmailModule'} = 'Kernel::System::Email::Sendmail';
       $Self-\>{'SendmailModule::CMD'} = '/usr/sbin/sendmail -t -i -f ';
@@ -6289,6 +6327,7 @@
       $Self-\>{'SendmailModule::AuthUser'} = '';
       $Self-\>{'SendmailModule::AuthPassword'} = '';
     [...]
+```
  - 2003-03-05 added "view all articles" config option for ticket zoom
     view (TicketZoomExpand default is 0) - new dtl templates for ticket
     zoom Kernel/Output/HTML/\*/AgentZoom\*.dtl (removed TicketZoom\*.dtl)
@@ -6468,6 +6507,7 @@
  - added AgentStatusView module (overview of all open tickets) - (Thanks to Phil Davis)!
  - added support of generic session id name (e. g. SessionID, OTRS, ...)
  - added more flexibility for option string in Kernel::Modules::AgentPhone
+```
     [Kernel::Config::Phone]
       # PhoneViewASP -\> useful for ASP
       # (Possible to create in all queue? Not only queue which
@@ -6488,6 +6528,7 @@
         '2' =\> 'Second Queue!',
       };
     [...]
+```
  - added attachment support for agent compose answer
  - added Kernel::Modules::AdminEmail feature - a admin can send (via admin
     interface) info to one or more agents.
@@ -6673,5 +6714,3 @@
 
 #0.5 BETA1 2002-03-11
  - first official release
-
-EOF
