@@ -173,6 +173,7 @@ sub LoadDefaults {
         ja      => 'Japanese (&#x65e5;&#x672c;&#x8a9e)',
         lt      => 'Lietuvi&#371; kalba',
         lv      => 'Latvijas',
+        ms      => 'Malay',
         nl      => 'Nederlands',
         nb_NO   => 'Norsk bokm&aring;l',
         pt_BR   => 'Portugu&ecirc;s Brasileiro',
@@ -756,8 +757,8 @@ sub LoadDefaults {
     # Web Settings
     # --------------------------------------------------- #
     # WebMaxFileUpload
-    # (Max size for browser file uploads - default 16 MB)
-    $Self->{WebMaxFileUpload} = 1024 * 1024 * 16;
+    # (Max size for browser file uploads - default ~ 24 MB)
+    $Self->{WebMaxFileUpload} = 24000000;
 
     # WebUploadCacheModule
     # (select you WebUploadCacheModule module, default DB [DB|FS])
