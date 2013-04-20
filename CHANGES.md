@@ -5048,8 +5048,9 @@
  - 2005-11-20 added multi pre application module support, just
     define it like:
 ```
-    $Self-\>{PreApplicationModule}-\>{AgentInfo} = 'Kernel::Modules::AgentInfo';
+    $Self->{PreApplicationModule}->{AgentInfo} = 'Kernel::Modules::AgentInfo';
 ```
+
 #2.0.5 2007-05-22
  - 2007-05-22 fixed bug#[1842](http://bugs.otrs.org/show_bug.cgi?id=1842) - Cross-Site Scripting Vulnerability
  - 2007-01-11 fixed bug#[1515](http://bugs.otrs.org/show_bug.cgi?id=1515) - Some GenericAgent names don't work
@@ -5409,17 +5410,20 @@
 #2.0.0 beta4 2005-07-03
  - 2005-07-03 added ticket free time feature - take care, you need to
     alter the ticket table:  
+
 ```
     ALTER TABLE ticket ADD freetime1 DATETIME;
     ALTER TABLE ticket ADD freetime2 DATETIME;
 ```
+
     new config options are:  
+
 ```
     $Self->{"TicketFreeTimeKey1"} = 'Termin1';
     $Self->{"TicketFreeTimeDiff1"} = 0;
     $Self->{"TicketFreeTimeKey2"} = 'Termin2';
     $Self->{"TicketFreeTimeDiff2"} = 0;
-```
+```  
  - 2005-07-03 fixed bug#[797](http://bugs.otrs.org/show_bug.cgi?id=797) - renamed AdminEmail to Admin Notification
     in admin interface.
  - 2005-07-03 rewritten faq customer and public area
@@ -5509,6 +5513,7 @@
  - 2004-12-04 moved PGP and SMIME stuff to Kernel/System/Email.pm
     to be more generic
  - 2004-11-27 added config option TicketHookDivider  
+
 ```
     [Kernel/Config.pm]
     # (the divider between TicketHook# and number)
@@ -5542,6 +5547,7 @@
  - 2004-11-07 added LOWER() in sql like queries to search, now searches
     are case insensitive in postgresql and maxdb
  - 2004-11-04 added new feature so show ticket history reverse  
+
 ```
     [Kernel/Config.pm]
     # Agent::HistoryOrder
@@ -5551,6 +5557,7 @@
     [...]
 ```
  - 2004-11-04 added "show no escalation" group feature  
+
 ```
     [Kernel/Config.pm]
     # AgentNoEscalationGroup
