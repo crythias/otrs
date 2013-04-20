@@ -1,4 +1,70 @@
-#3.2.4 2013-??-??
+3.3.0.beta1 2013-??-??
+ - 2013-04-08 Fixed bug#[8490](http://bugs.otrs.org/show_bug.cgi?id=8490) - No History record added when changing ticket title.
+ - 2013-04-08 Removed File::Temp as it is core in perl 5.6.1 and up.
+ - 2013-04-03 Removed Digest::SHA::PurePerl as Digest::SHA is core in perl 5.10.
+ - 2013-04-02 Changed required perl version to 5.10.0.
+ - 2013-03-29 Fixed bug#[8967](http://bugs.otrs.org/show_bug.cgi?id=8967) - Can't use Date or Timestamps in LinkObject.
+ - 2013-03-29 Fixed bug#[9058](http://bugs.otrs.org/show_bug.cgi?id=9058) - AgentLinkObject.pm refers to non-existing dtl blocks.
+ - 2013-03-29 Fixed bug#[7716](http://bugs.otrs.org/show_bug.cgi?id=7716) - Improve permissions on OTRS files.
+ - 2013-03-27 Fixed bug#[8962](http://bugs.otrs.org/show_bug.cgi?id=8962) - RequestObject GetUploadAll Source 'File' option is unused
+    and hard-coded to use /tmp.
+
+3.2.7 2013-??.??
+ - 2013-04-18 Fixed bug#[8599](http://bugs.otrs.org/show_bug.cgi?id=8599) - Problem with "[]" characters in name of attachment file.
+
+3.2.6 2013-04-23
+ - 2013-04-18 Fixed bug#[9310](http://bugs.otrs.org/show_bug.cgi?id=9310) - AgentTicketProcess has the same shortkey "o" as AgentTicketQueue.
+ - 2013-04-18 Fixed bug#[9280](http://bugs.otrs.org/show_bug.cgi?id=9280) - Database upgrade procedure problems when upgrading database to 3.2 that
+    has been upgraded from 2.4 previously.
+ - 2013-04-16 Updated Hungarian translation, thanks to Csaba Németh!
+ - 2013-04-15 Added Malay translation.
+ - 2013-04-12 Fixed bug#[9264](http://bugs.otrs.org/show_bug.cgi?id=9264) - Dynamic ticket text fields are displayed with value "1" if enabled
+    and displayed by default in ticket search screen.
+ - 2013-04-12 Fixed bug#[8960](http://bugs.otrs.org/show_bug.cgi?id=8960) - AgentTicketSearch.pm SearchProfile problem.
+ - 2013-04-12 Fixed bug#[9328](http://bugs.otrs.org/show_bug.cgi?id=9328) - Notification event does not work on process ticket.
+ - 2013-04-11 Fixed broken process import.
+ - 2013-04-11 Follow-up for bug#[9215](http://bugs.otrs.org/show_bug.cgi?id=9215) - Process import always creates new process.
+    The overwrite optionwas removed again because of logical problems.
+ - 2013-04-09 Added parameter "-t dbonly" to backup.pl to only backup the database
+    (if files are backed up otherwise).
+ - 2013-04-09 Fixed bug#[9302](http://bugs.otrs.org/show_bug.cgi?id=9302) - Process Management: Misleading description for activities without dialogs.
+ - 2013-04-08 Fixed bug#[9182](http://bugs.otrs.org/show_bug.cgi?id=9182) - Customer Search Function -\> If you go into a ticket and go back you got not the search results
+ - 2013-04-08 Fixed bug#[9297](http://bugs.otrs.org/show_bug.cgi?id=9297) - customer information widget losing data
+ - 2013-04-08 Fixed bug#[9244](http://bugs.otrs.org/show_bug.cgi?id=9244) - Process Management: Transitions on Activities does not scale well
+ - 2013-04-08 Fixed bug#[9287](http://bugs.otrs.org/show_bug.cgi?id=9287) - Process Management: strange placement of target point for new transitions.
+ - 2013-04-08 Fixed bug#[9294](http://bugs.otrs.org/show_bug.cgi?id=9294) - Process Management: Activity hover window not displayed properly if
+    activity is very close to bottom canvas border.
+ - 2013-04-08 Fixed bug#[9314](http://bugs.otrs.org/show_bug.cgi?id=9314) - Process Management: Unexpected redirection after creating a new process.
+ - 2013-04-08 Fixed bug#[9312](http://bugs.otrs.org/show_bug.cgi?id=9312) - LinkObject permission check problem.
+
+3.2.5 2013-04-09
+ - 2013-04-04 Fixed bug#[9313](http://bugs.otrs.org/show_bug.cgi?id=9313) - No such file or directory in otrs.SetPermission.pl.
+ - 2013-04-04 Updated Brazilian Portugese translation, thanks to Alexandre!
+ - 2013-04-04 Fixed bug#[9306](http://bugs.otrs.org/show_bug.cgi?id=9306) - Auto Response fails when ticket is created from Customer Interface and
+    last name contains a comma.
+ - 2013-04-04 Fixed bug#[9308](http://bugs.otrs.org/show_bug.cgi?id=9308) - Impossible to create a new stats report with absolute period.
+ - 2013-04-03 Fixed bug#[9307](http://bugs.otrs.org/show_bug.cgi?id=9307) - Packages not compatible with 3.2.4 listed as available in Package Manager.
+ - 2013-04-02 Fixed bug#[9198](http://bugs.otrs.org/show_bug.cgi?id=9198) - Linked search with fulltext AND additional attributes.
+ - 2013-03-28 Fixed bug#[9298](http://bugs.otrs.org/show_bug.cgi?id=9298) - version.pm not found on perl 5.8.x.
+ - 2013-03-27 Fixed bug#[9295](http://bugs.otrs.org/show_bug.cgi?id=9295) - Article dynamic field is not searchable.
+ - 2013-03-27 Fixed bug#[9288](http://bugs.otrs.org/show_bug.cgi?id=9288) - DynamicField Content overwrites TicketTitle for Links from Dynamic Fields.
+
+3.2.4 2013-04-02
+ - 2013-03-21 Fixed bug#[9279](http://bugs.otrs.org/show_bug.cgi?id=9279) - Inaccurate German translation of ,,Priority Update''.
+ - 2013-03-21 Fixed bug#[9257](http://bugs.otrs.org/show_bug.cgi?id=9257) - No notifications to agents with out-of-office set but period not reached.
+ - 2013-03-21 Fixed bug#[1689](http://bugs.otrs.org/show_bug.cgi?id=1689) - Allow bin/SetPermissions.sh to follow symlink for OTRS_HOME.
+ - 2013-03-21 Fixed bug#[8981](http://bugs.otrs.org/show_bug.cgi?id=8981) - Tickets reopened via customer interface are locked to invalid agents.
+ - 2013-03-19 Fixed bug#[9242](http://bugs.otrs.org/show_bug.cgi?id=9242) - ProcessManagement: TransitionAction TicketStateSet does not allow to set a pending time.
+ - 2013-03-19 Fixed bug#[9247](http://bugs.otrs.org/show_bug.cgi?id=9247) - ProcessManagement: Transitions Actions always use actual user permissions.
+ - 2013-03-18 Fixed bug#[9254](http://bugs.otrs.org/show_bug.cgi?id=9254) - No Sorting in Accordion for Activties, Activity Dialog, Transitions and Transition Actions.
+ - 2013-03-18 Improved permission checks in LinkObject.
+ - 2013-03-18 Fixed bug#[9252](http://bugs.otrs.org/show_bug.cgi?id=9252) - Type of linking displayed wrong and also updated wrong in transitions.
+ - 2013-03-18 Fixed bug#[9255](http://bugs.otrs.org/show_bug.cgi?id=9255) - Email is sent to customer, when agents email address is similar
+    but not identical.
+ - 2013-03-18 Updated Norwegian translation, thanks to Espen Stefansen.
+ - 2013-03-18 Updated Czech translation, thanks to Peter Pruchnerovic.
+ - 2013-03-18 Fixed bug#[9215](http://bugs.otrs.org/show_bug.cgi?id=9215) - Process import always creates new process. Now there is a new option
+    "overwrite existing entities" for the process import.
  - 2013-03-15 Fixed bug#[4716](http://bugs.otrs.org/show_bug.cgi?id=4716) - Logout page should use ProductName instead of 'OTRS'.
  - 2013-03-15 Fixed bug#[9249](http://bugs.otrs.org/show_bug.cgi?id=9249) - Warning not to use internal articles in customer frontend
     shown on agent interface also.
