@@ -10,6 +10,7 @@
     and hard-coded to use /tmp.
 
 #3.2.7 2013-??.??
+ - 2013-04-22 Fixed bug#[9353](http://bugs.otrs.org/show_bug.cgi?id=9353) - Customer Ticket Zoom shows owner login name instead of full name.
  - 2013-04-18 Fixed bug#[8599](http://bugs.otrs.org/show_bug.cgi?id=8599) - Problem with "[]" characters in name of attachment file.
 
 #3.2.6 2013-04-23
@@ -1061,7 +1062,7 @@
     for HTTP::Response and LWP::UserAgent.
  - 2011-09-16 Added new legacy driver for PostgreSQL 8.1 or earlier. This
     needs to be activated for such older installations in Kernel/Config.pm
-    as follows:  
+    as follows:
 ```
     $Self->{DatabasePostgresqlBefore82} = 1;
 ```
@@ -4169,7 +4170,7 @@
     is copied from webinterface into new email subject.
  - 2007-12-11 Fixed bug#[2479](http://bugs.otrs.org/show_bug.cgi?id=2479) - Unable to retrieve attachments bigger than
     3 MB (on Oracle DB). Changed default read size from 4 MB to 15 MB in
-    Kernel/System/DB/oracle.pm:  
+    Kernel/System/DB/oracle.pm:
 
 ```
       $Self->{'DB::Attribute'}      = {
@@ -4464,53 +4465,53 @@
  - 2007-05-21 Improved check of needed stuff in SLAAdd() function in
     Kernel/System/SLA.pm.
  - 2007-05-21 Sync HTML style of admin masks. No functionality changed.
-    Kernel/Output/HTML/Standard/AdminAttachmentForm.dtl  
-    Kernel/Output/HTML/Standard/AdminAutoResponseForm.dtl  
-    Kernel/Output/HTML/Standard/AdminCustomerCompanyForm.dtl  
-    Kernel/Output/HTML/Standard/AdminCustomerUserForm.dtl  
-    Kernel/Output/HTML/Standard/AdminGenericAgent.dtl  
-    Kernel/Output/HTML/Standard/AdminGroupForm.dtl  
-    Kernel/Output/HTML/Standard/AdminLog.dtl  
-    Kernel/Output/HTML/Standard/AdminNotificationForm.dtl  
-    Kernel/Output/HTML/Standard/AdminPGPForm.dtl  
-    Kernel/Output/HTML/Standard/AdminPOP3.dtl  
-    Kernel/Output/HTML/Standard/AdminPackageManager.dtl  
-    Kernel/Output/HTML/Standard/AdminPerformanceLog.dtl  
-    Kernel/Output/HTML/Standard/AdminPostMasterFilter.dtl  
-    Kernel/Output/HTML/Standard/AdminQueueForm.dtl  
-    Kernel/Output/HTML/Standard/AdminResponseForm.dtl  
-    Kernel/Output/HTML/Standard/AdminRoleForm.dtl  
-    Kernel/Output/HTML/Standard/AdminSLA.dtl  
-    Kernel/Output/HTML/Standard/AdminSMIMEForm.dtl  
-    Kernel/Output/HTML/Standard/AdminSalutationForm.dtl  
-    Kernel/Output/HTML/Standard/AdminService.dtl  
-    Kernel/Output/HTML/Standard/AdminSession.dtl  
-    Kernel/Output/HTML/Standard/AdminSignatureForm.dtl  
-    Kernel/Output/HTML/Standard/AdminStateForm.dtl  
-    Kernel/Output/HTML/Standard/AdminSysConfig.dtl  
-    Kernel/Output/HTML/Standard/AdminSystemAddressForm.dtl  
-    Kernel/Output/HTML/Standard/AdminTypeForm.dtl  
-    Kernel/Output/HTML/Standard/AdminUserForm.dtl  
+    Kernel/Output/HTML/Standard/AdminAttachmentForm.dtl
+    Kernel/Output/HTML/Standard/AdminAutoResponseForm.dtl
+    Kernel/Output/HTML/Standard/AdminCustomerCompanyForm.dtl
+    Kernel/Output/HTML/Standard/AdminCustomerUserForm.dtl
+    Kernel/Output/HTML/Standard/AdminGenericAgent.dtl
+    Kernel/Output/HTML/Standard/AdminGroupForm.dtl
+    Kernel/Output/HTML/Standard/AdminLog.dtl
+    Kernel/Output/HTML/Standard/AdminNotificationForm.dtl
+    Kernel/Output/HTML/Standard/AdminPGPForm.dtl
+    Kernel/Output/HTML/Standard/AdminPOP3.dtl
+    Kernel/Output/HTML/Standard/AdminPackageManager.dtl
+    Kernel/Output/HTML/Standard/AdminPerformanceLog.dtl
+    Kernel/Output/HTML/Standard/AdminPostMasterFilter.dtl
+    Kernel/Output/HTML/Standard/AdminQueueForm.dtl
+    Kernel/Output/HTML/Standard/AdminResponseForm.dtl
+    Kernel/Output/HTML/Standard/AdminRoleForm.dtl
+    Kernel/Output/HTML/Standard/AdminSLA.dtl
+    Kernel/Output/HTML/Standard/AdminSMIMEForm.dtl
+    Kernel/Output/HTML/Standard/AdminSalutationForm.dtl
+    Kernel/Output/HTML/Standard/AdminService.dtl
+    Kernel/Output/HTML/Standard/AdminSession.dtl
+    Kernel/Output/HTML/Standard/AdminSignatureForm.dtl
+    Kernel/Output/HTML/Standard/AdminStateForm.dtl
+    Kernel/Output/HTML/Standard/AdminSysConfig.dtl
+    Kernel/Output/HTML/Standard/AdminSystemAddressForm.dtl
+    Kernel/Output/HTML/Standard/AdminTypeForm.dtl
+    Kernel/Output/HTML/Standard/AdminUserForm.dtl
  - 2007-05-21 Changes max shown escalated tickets in queue view to 30
     (to improved spped of escalation view in queue view).
  - 2007-05-21 Fixed double ContentType in ArticleAttachment() of attachment
     backends (Kernel/System/Ticket/ArticleStorage(DB|FS).pm).
  - 2007-05-21 Sync of all configurable frontend modules. No functionality
     changed.
-    Kernel/Modules/AgentTicketClose.pm  
-    Kernel/Modules/AgentTicketFreeText.pm  
-    Kernel/Modules/AgentTicketNote.pm  
-    Kernel/Modules/AgentTicketOwner.pm  
-    Kernel/Modules/AgentTicketPending.pm  
-    Kernel/Modules/AgentTicketPriority.pm  
-    Kernel/Modules/AgentTicketResponsible.pm  
-    Kernel/Output/HTML/Standard/AgentTicketClose.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketFreeText.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketNote.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketOwner.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketPending.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketPriority.dtl  
-    Kernel/Output/HTML/Standard/AgentTicketResponsible.dtl  
+    Kernel/Modules/AgentTicketClose.pm
+    Kernel/Modules/AgentTicketFreeText.pm
+    Kernel/Modules/AgentTicketNote.pm
+    Kernel/Modules/AgentTicketOwner.pm
+    Kernel/Modules/AgentTicketPending.pm
+    Kernel/Modules/AgentTicketPriority.pm
+    Kernel/Modules/AgentTicketResponsible.pm
+    Kernel/Output/HTML/Standard/AgentTicketClose.dtl
+    Kernel/Output/HTML/Standard/AgentTicketFreeText.dtl
+    Kernel/Output/HTML/Standard/AgentTicketNote.dtl
+    Kernel/Output/HTML/Standard/AgentTicketOwner.dtl
+    Kernel/Output/HTML/Standard/AgentTicketPending.dtl
+    Kernel/Output/HTML/Standard/AgentTicketPriority.dtl
+    Kernel/Output/HTML/Standard/AgentTicketResponsible.dtl
  - 2007-05-21 Fixed bug#[1898](http://bugs.otrs.org/show_bug.cgi?id=1898) - Invalid services and slas was shown in agent
     masks.
  - 2007-05-16 Improved check of needed Charset param in Send() function to
@@ -4618,7 +4619,7 @@
  - 2007-03-11 Added enhancement bug#[1664](http://bugs.otrs.org/show_bug.cgi?id=1664) - increase max. WebMaxFileUpload
     size.
  - 2007-03-08 Improved Prepare() of Kernel::System::DB to fetch also rows
-   between 10 and 30 (with start option of result). For example:  
+   between 10 and 30 (with start option of result). For example:
 ```
    $DBObject-\>Prepare(
        SQL =\> "SELECT id, name FROM table",
@@ -4630,14 +4631,14 @@
     in xml attribut is not longer allowed, use the content instead. Now it's
     also possible to use new lines (\n) or more lines as content.
 
-    Old style:  
-```    
+    Old style:
+```
     <Insert Table="table_name">
         <Data Key="name_a" Value="Some Message A." Type="Quote"/>
         <Data Key="name_b" Value="Some Message B." Type="Quote"/>
     </Insert>
 ```
-    New style:  
+    New style:
 ```
     <Insert Table="table_name">
         <Data Key="name_a" Type="Quote">Some Message A.</Data>
@@ -5475,21 +5476,21 @@
 
 #2.0.0 beta4 2005-07-03
  - 2005-07-03 added ticket free time feature - take care, you need to
-    alter the ticket table:  
+    alter the ticket table:
 
 ```
     ALTER TABLE ticket ADD freetime1 DATETIME;
     ALTER TABLE ticket ADD freetime2 DATETIME;
 ```
 
-new config options are:  
+new config options are:
 
 ```
     $Self->{"TicketFreeTimeKey1"} = 'Termin1';
     $Self->{"TicketFreeTimeDiff1"} = 0;
     $Self->{"TicketFreeTimeKey2"} = 'Termin2';
     $Self->{"TicketFreeTimeDiff2"} = 0;
-```  
+```
  - 2005-07-03 fixed bug#[797](http://bugs.otrs.org/show_bug.cgi?id=797) - renamed AdminEmail to Admin Notification
     in admin interface.
  - 2005-07-03 rewritten faq customer and public area
@@ -5530,7 +5531,7 @@ new config options are:
  - 2005-05-07 fixed language translation files
  - 2005-05-07 fixed bug#[647](http://bugs.otrs.org/show_bug.cgi?id=647) - Allow setting of default language for FAQs
  - 2005-05-07 fixed bug#[686](http://bugs.otrs.org/show_bug.cgi?id=686) - defect attachments on download with firefox
- - 2005-05-07 added html access keys for nav bar  
+ - 2005-05-07 added html access keys for nav bar
 
 ```
     general:
@@ -5579,7 +5580,7 @@ new config options are:
     (berated by user, created in queue)
  - 2004-12-04 moved PGP and SMIME stuff to Kernel/System/Email.pm
     to be more generic
- - 2004-11-27 added config option TicketHookDivider  
+ - 2004-11-27 added config option TicketHookDivider
 
 ```
     [Kernel/Config.pm]
@@ -5613,7 +5614,7 @@ new config options are:
     Kernel/System/Web/Request.pm
  - 2004-11-07 added LOWER() in sql like queries to search, now searches
     are case insensitive in postgresql and maxdb
- - 2004-11-04 added new feature so show ticket history reverse  
+ - 2004-11-04 added new feature so show ticket history reverse
 
 ```
     [Kernel/Config.pm]
@@ -5623,7 +5624,7 @@ new config options are:
 #    $Self->{'Agent::HistoryOrder'} = 'reverse';
     [...]
 ```
- - 2004-11-04 added "show no escalation" group feature  
+ - 2004-11-04 added "show no escalation" group feature
 
 ```
     [Kernel/Config.pm]
@@ -5890,10 +5891,10 @@ new config options are:
     bin/CryptPassword.pl to crypt passwords).
  - 2004-06-10 added generic agent web interface
  - 2004-06-03 improved language translation with custom translation
-    files:  
-    Kernel/Language/$Locale.pm (default)  
+    files:
+    Kernel/Language/$Locale.pm (default)
     Kernel/Language/$Locale\_$Action.pm (translation for otrs modules like
-     file manager, calendar, ...)  
+     file manager, calendar, ...)
     Kernel/Language/$Locale\_Custom.pm (own changes,updates)
  - 2004-05-18 added html application output filter option, e. g. to
     filter java script of the application or to manipulate the html
@@ -5918,7 +5919,7 @@ new config options are:
  - 2004-04-14 ticket history rewritten and added i18n feature
  - 2004-04-14 reworked/renamed Kernel::System::Ticket::Article
     and sub module functions and added added pod docu, see
-    http://dev.otrs.org/  
+    http://dev.otrs.org/
     Note: Kernel::System::Ticket are not longer compat. to OTRS 1.2
      or lower!
  - 2004-04-07 added config option SessionUseCookieAfterBrowserClose
@@ -6109,9 +6110,9 @@ new config options are:
 ```
  - 2003-12-02 added remove of session cookie after closing the
     browser in agent interface
- - 2003-11-27 added modules for agent notifications  
-    Kernel/Output/HTML/NotificationCharsetCheck.pm  
-    Kernel/Output/HTML/NotificationUIDCheck.pm  
+ - 2003-11-27 added modules for agent notifications
+    Kernel/Output/HTML/NotificationCharsetCheck.pm
+    Kernel/Output/HTML/NotificationUIDCheck.pm
     are default modules to configure over Kernel/Config.pm
 
 ```
@@ -6126,15 +6127,15 @@ new config options are:
     like motd od escalation infos.
  - 2003-11-26 added group \<-\> customer user support - so it's
     possible that you can define the customer queues for new tickets
- - 2003-11-26 added modules for ticket permission checks  
-    Kernel/System/Ticket/Permission/OwnerCheck.pm  
-    Kernel/System/Ticket/Permission/GroupCheck.pm  
-    Kernel/System/Ticket/CustomerPermission/CustomerIDCheck.pm  
-    Kernel/System/Ticket/CustomerPermission/GroupCheck.pm  
-    So it's possible to write own perission check modules!  
+ - 2003-11-26 added modules for ticket permission checks
+    Kernel/System/Ticket/Permission/OwnerCheck.pm
+    Kernel/System/Ticket/Permission/GroupCheck.pm
+    Kernel/System/Ticket/CustomerPermission/CustomerIDCheck.pm
+    Kernel/System/Ticket/CustomerPermission/GroupCheck.pm
+    So it's possible to write own perission check modules!
     Example: Don't allow agents to change the priority if the state
-    of the ticket is 'open' and in a specific queue.  
-    Example ofKernel/Config.pm: 
+    of the ticket is 'open' and in a specific queue.
+    Example ofKernel/Config.pm:
 
 ```
     # Module Name: 1-OwnerCheck
@@ -6156,7 +6157,7 @@ new config options are:
     ticket". So you can select the next screen after creating a new
     phone ticket.
  - 2003-11-02 improved GenericAgent.pl to work also with ticket
-    priorities (search and change).  
+    priorities (search and change).
     Example for Kernel/Config/GenericAgent.pm:
 
 ```
@@ -6175,7 +6176,7 @@ new config options are:
     },
 ```
  - 2003-11-02 added delete option to Admin-\>StdAttachment menu
- - 2003-11-01 added PostMaster(POP3).pl filter options like procmail.  
+ - 2003-11-01 added PostMaster(POP3).pl filter options like procmail.
     Example for Kernel/Config.pm:
 
 ```
@@ -6202,8 +6203,8 @@ new config options are:
     (Kernel::Config::GenericAgent) job file. For example you will be
     able to have Kernel::Config::Delete and Kernel::Config::Move or
     other job files to execute it on different times.
- - 2003-10-14 changed phone default settings:  
-    * new tickets are unlocked (not locked)  
+ - 2003-10-14 changed phone default settings:
+    * new tickets are unlocked (not locked)
     * subject and body is empty as default
  - 2003-09-28 improved next screen management after closing tickts
  - 2003-09-28 added \<OTRS\_TICKET\_STATE\> to agent compose answer screen
@@ -6271,7 +6272,7 @@ new config options are:
  - 2003-07-12 fixed bug#[182](http://bugs.otrs.org/show_bug.cgi?id=182) - Error when modify an queue without a queue-name
  - 2003-07-12 removed "PerlInitHandler Apache::StatINC" (Reload %INC files
      perl modules) from scripts/apache-httpd.include.conf because of many error
-      message in apache error log  
+      message in apache error log
     -=\> apache reload is still needed when perl modules changed on disk \<=-
  - 2003-07-12 improved performance of Kernel/System/Ticket/ArticleStorageDB.pm
     with large objects
@@ -6297,10 +6298,10 @@ new config options are:
  - 2003-06-01 added Resent-To email header check for queue sorting of
     new ticket - http://lists.otrs.org/pipermail/otrs/2003-May/001845.html
  - 2003-05-30 added "PerlInitHandler Apache::Reload" (Reload %INC files
-     perl modules) to scripts/apache2-httpd.include.conf  
+     perl modules) to scripts/apache2-httpd.include.conf
     -=\> no apache reload is needed when perl modules is updated on disk \<=-
  - 2003-05-30 added "PerlInitHandler Apache::StatINC" (Reload %INC files
-     perl modules) to scripts/apache-httpd.include.conf  
+     perl modules) to scripts/apache-httpd.include.conf
     -=\> no apache reload is needed when perl modules is updated on disk \<=-
  - 2003-05-29 fixed create ticket (without priority selection) via
     customer panel and changed priority names.
@@ -6308,7 +6309,7 @@ new config options are:
  - 2003-05-19 improved text formatting of "long" messages in QueueView
     TicketZoom, TicketPlain and TicketSearch
  - 2003-05-18 fixed small logic bugs in Kernel/System/PostMaster\*
-    improved debug options for bin/PostMaster.pl and bin/PostMasterPOP3.pl  
+    improved debug options for bin/PostMaster.pl and bin/PostMasterPOP3.pl
      -=\> just used -d1 (1-3) for debug level of Kernel/System/PostMaster\*
  - 2003-05-18 added customer data lookup for PostMaster\*.pl based on
     senders email address (set customer id and customer user)
@@ -6394,7 +6395,7 @@ new config options are:
  - 2003-03-24 added UncountedUnlockTime config options - e.g. don't
     count Fri 16:00 - Mon 8:00 as unlock time.
  - 2003-03-23 added generic module/group permission concept for
-    Kernel/Modules/\*.pm modules.  
+    Kernel/Modules/\*.pm modules.
     -=\> add "$Self-\>{'Module::Permission'}-\>{'module'} = 'group';"
     to Kernel/Config.pm like
      "$Self-\>{'Module::Permission'}-\>{'AdminAutoResponse'} = 'users';"
@@ -6523,8 +6524,8 @@ new config options are:
     for attachments in database or fs (needs to update the database
     (scripts/DBUpdate.(mysql|postgesql).sql)! The main reason is a lot
     of people have problems with the file permissions of the local otrs
-    and webserver user (often incoming emails are shown some times again).  
-    TicketStorageModule in Kernel/Config.pm.  
+    and webserver user (often incoming emails are shown some times again).
+    TicketStorageModule in Kernel/Config.pm.
      * Kernel::System::Ticket::ArticleStorageDB -\> (default)
      * Kernel::System::Ticket::ArticleStorageFS -\> (faster but webserver
         user should be the otrs user - use it for larger setups!)
@@ -6578,7 +6579,7 @@ new config options are:
  - 2002-11-14 added Bulgarian translation! Thanks to Vladimir Gerdjikov!
  - 2002-11-11 added new config file as Kernel/Config.pm.dist (will be used
     for \>= OTRS 5.0 Beta9) if you want to test it with 0.5, use Kernel/Config.pm.dist
-    as Kernel/Config.pm (cp Kernel/Config.pm.dist Kernel/Config.pm)!  
+    as Kernel/Config.pm (cp Kernel/Config.pm.dist Kernel/Config.pm)!
     Kernel/Config/Defaults.pm is the config file with all defaults. If you want
     to change this settings, add the needed entry to Kernel/Config.pm(.dist)
     and the Kernel/Config/Defaults.pm will be overwrite. Updates will be much
@@ -6645,9 +6646,9 @@ new config options are:
     Kernel/Config/Phone.pm and Kernel/Config/Notification.pm and renamed some
     config variables to get a better overview.
  - added new/current french translation - Thanks to Bernard Choppy!
- - added module support for log (Kernel/Config.pm --\> $Self-\>{LogModule})  
-     * "Kernel::System::Log::SysLog" for syslogd (default)  
-     * "Kernel::System::Log::File" for log file  
+ - added module support for log (Kernel/Config.pm --\> $Self-\>{LogModule})
+     * "Kernel::System::Log::SysLog" for syslogd (default)
+     * "Kernel::System::Log::File" for log file
  - added alternate login and logout URL feature (Kernel/Config.pm --\>
     $Self-\>{LoginURL}, $Self-\>{LogoutURL}) and added two example alternate
     login pages scripts/login.pl (Perl) and scripts/login.php (PHP)
