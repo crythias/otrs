@@ -1,4 +1,6 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-04-30 Added possibility to specify relative dates for X-OTRS-State-PendingTime and X-OTRS-FollowUp-State-PendingTime in postmaster filters.
+ - 2013-04-29 Fixed bug#[9339](http://bugs.otrs.org/show_bug.cgi?id=9339) - Poor stat generation preformance with dynamic fields.
  - 2013-04-24 Added support to bin/otrs.SetPassword.pl to set passwords for customers
     and to generate passwords for logins.
  - 2013-04-08 Fixed bug#[8490](http://bugs.otrs.org/show_bug.cgi?id=8490) - No History record added when changing ticket title.
@@ -12,6 +14,13 @@
     and hard-coded to use /tmp.
 
 #3.2.7 2013-??.??
+ - 2013-04-30 Fixed bug#[9374](http://bugs.otrs.org/show_bug.cgi?id=9374) - Add more functions to rich text editor.
+ - 2013-04-30 Fixed postmaster filter edit screen layout.
+ - 2013-04-30 Fixed bug#[9358](http://bugs.otrs.org/show_bug.cgi?id=9358) - Date/Time DynamicFields are broken in CustomerInterface.
+ - 2013-04-30 Fixed bug#[9384](http://bugs.otrs.org/show_bug.cgi?id=9384) - Problem with Method ServiceParentsGet of ServiceObject.
+ - 2013-04-29 Fixed bug#[9371](http://bugs.otrs.org/show_bug.cgi?id=9371) - UserSalutation field in LDAP.pm fix.
+ - 2013-04-29 Fixed bug#[8997](http://bugs.otrs.org/show_bug.cgi?id=8997) - Owner warnings translatable.
+ - 2013-04-29 Fixed bug#[9375](http://bugs.otrs.org/show_bug.cgi?id=9375) - Extra colon at the end of recipient lists in forwarded message.
  - 2013-04-29 Updated Polish translation file, thanks to ib.pl!
  - 2013-04-29 Fixed bug#[9040](http://bugs.otrs.org/show_bug.cgi?id=9040) - CustomerTicketPrint crashes when no attributes are configured to be printed.
  - 2013-04-26 Added UnitTest for case sensivity parameter of customer databases
