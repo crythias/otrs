@@ -132,6 +132,7 @@
                 <Item Key="ja">Japanese (&amp;#x65e5;&amp;#x672c;&amp;#x8a9e)</Item>
                 <Item Key="lt">Lietuvi&#371; kalba</Item>
                 <Item Key="lv">Latvijas</Item>
+                <Item Key="ms">Malay</Item>
                 <Item Key="nl">Nederlands</Item>
                 <Item Key="nb_NO">Norsk bokm&amp;aring;l</Item>
                 <Item Key="pt_BR">Portugu&amp;ecirc;s Brasileiro</Item>
@@ -2419,7 +2420,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
-            <String Regex="^[0-9]{1,11}$">16777216</String>
+            <String Regex="^[0-9]{1,11}$">24000000</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="WebUploadCacheModule" Required="1" Valid="1" ConfigLevel="200">

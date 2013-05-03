@@ -15,11 +15,9 @@ use warnings;
 use File::Path qw();
 use MIME::Base64 qw();
 use Time::HiRes qw();
+use Unicode::Normalize qw();
 
 use Kernel::System::VariableCheck qw(:all);
-
-# to get it writable for the otrs group (just in case)
-umask 002;
 
 sub ArticleStorageInit {
     my ( $Self, %Param ) = @_;
@@ -40,7 +38,7 @@ sub ArticleStorageInit {
     my $PermissionCheckDirectory
         = "check_permissions_${$}_" . ( int rand 1_000_000_000 ) . "_${Seconds}_${Microseconds}";
     my $Path = "$Self->{ArticleDataDir}/$Self->{ArticleContentPath}/" . $PermissionCheckDirectory;
-    if ( File::Path::mkpath( $Path, 0, 0775 ) ) {    ## no critic
+    if ( File::Path::mkpath( $Path, 0, 0770 ) ) {    ## no critic
         rmdir $Path;
     }
     else {
@@ -243,14 +241,14 @@ sub ArticleWritePlain {
     }
 
     # write article to fs 1:1
-    File::Path::mkpath( [$Path], 0, 0775 );    ## no critic
+    File::Path::mkpath( [$Path], 0, 0770 );    ## no critic
 
     # write article to fs
     my $Success = $Self->{MainObject}->FileWrite(
         Location   => "$Path/plain.txt",
         Mode       => 'binmode',
         Content    => \$Param{Email},
-        Permission => '664',
+        Permission => '660',
     );
     return if !$Success;
 
@@ -281,6 +279,14 @@ sub ArticleWriteAttachment {
 
     # strip dots from filenames
     $Param{Filename} =~ s/^\.//g;
+
+    # Perform FilenameCleanup here already to check for
+    #   conflicting existing attachment files correctly
+    $Param{Filename} = $Self->{MainObject}->FilenameCleanUp(
+        Filename => $Param{Filename},
+        Type     => 'Local',
+    );
+
     my $NewFileName = $Param{Filename};
     my %UsedFile;
     my %Index = $Self->ArticleAttachmentIndex(
@@ -288,11 +294,15 @@ sub ArticleWriteAttachment {
         UserID    => $Param{UserID},
     );
     if ( !$Param{Force} ) {
+
+       # Normalize filenames to find file names which are identical but in a different unicode form.
+       #   This is needed because Mac OS (HFS+) converts all filenames to NFD internally.
+       #   Without this, the same file might be overwritten because the strings are not equal.
         for ( sort keys %Index ) {
-            $UsedFile{ $Index{$_}->{Filename} } = 1;
+            $UsedFile{ Unicode::Normalize::NFC( $Index{$_}->{Filename} ) } = 1;
         }
         for ( my $i = 1; $i <= 50; $i++ ) {
-            if ( exists $UsedFile{$NewFileName} ) {
+            if ( exists $UsedFile{ Unicode::Normalize::NFC($NewFileName) } ) {
                 if ( $Param{Filename} =~ /^(.*)\.(.+?)$/ ) {
                     $NewFileName = "$1-$i.$2";
                 }
@@ -307,7 +317,7 @@ sub ArticleWriteAttachment {
 
     # write attachment to backend
     if ( !-d $Param{Path} ) {
-        if ( !File::Path::mkpath( [ $Param{Path} ], 0, 0775 ) ) {    ## no critic
+        if ( !File::Path::mkpath( [ $Param{Path} ], 0, 0770 ) ) {    ## no critic
             $Self->{LogObject}->Log(
                 Priority => 'error',
                 Message  => "Can't create $Param{Path}: $!",
@@ -322,7 +332,7 @@ sub ArticleWriteAttachment {
         Filename   => "$Param{Filename}.content_type",
         Mode       => 'binmode',
         Content    => \$Param{ContentType},
-        Permission => '664',
+        Permission => 660,
     );
     return if !$SuccessContentType;
 
@@ -338,7 +348,7 @@ sub ArticleWriteAttachment {
             Filename   => "$Param{Filename}.content_id",
             Mode       => 'binmode',
             Content    => \$Param{ContentID},
-            Permission => '664',
+            Permission => 660,
         );
     }
 
@@ -349,7 +359,7 @@ sub ArticleWriteAttachment {
             Filename   => "$Param{Filename}.content_alternative",
             Mode       => 'binmode',
             Content    => \$Param{ContentAlternative},
-            Permission => '664',
+            Permission => 660,
         );
     }
 
@@ -359,7 +369,7 @@ sub ArticleWriteAttachment {
         Filename   => $Param{Filename},
         Mode       => 'binmode',
         Content    => \$Param{Content},
-        Permission => '664',
+        Permission => 660,
     );
     return if !$SuccessContent;
 

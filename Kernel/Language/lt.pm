@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:21
+    # Last translation file sync: 2013-04-18 14:11:31
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,6 @@ sub Data {
         'There is no acount with that user name.' => 'Nėra paskyros su tokiu naudotojo vardu.',
         'Please contact your administrator' => 'Prašome susisiekti su savo administratoriumi',
         'Logout' => 'Atsijungti',
-        'Logout successful. Thank you for using OTRS!' => 'Sėkmingai atsijungta! Ačiū, kad naudojatės OTRS!',
         'Logout successful. Thank you for using %s!' => 'Sėkmingai atsijungta! Ačiū, kad naudojatės %s!',
         'Feature not active!' => 'Funkcija/ypatybė neaktyvuota!',
         'Agent updated!' => 'Agentas atnaujintas!',
@@ -239,7 +238,8 @@ sub Data {
         'Database' => 'Duomenų bazė',
         'Configure Mail' => '',
         'Database deleted.' => '',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Reikia prisijungimo vardo!',
         'Password is needed!' => 'Reikia slaptažodžio!',
         'Take this Customer' => 'Imti šį klientą',
@@ -1456,7 +1456,7 @@ sub Data {
         'Install' => 'Įdiegti',
         'Install Package' => 'Įdiegti paketą',
         'Update repository information' => 'Atnaujinti saugyklos informaciją',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Prieinamos (įjungtos) saugyklos',
         'Vendor' => 'Tiekėjas/pardavėjas',
@@ -1665,6 +1665,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2249,7 +2251,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Keisti trikties klientą',
-        'Customer Data' => 'Kliento duomenys',
         'Customer user' => 'Kliento naudotojas',
 
         # Template: AgentTicketEmail
@@ -2348,6 +2349,8 @@ sub Data {
         'Output' => 'Išvestis',
         'Fulltext' => 'Visas tekstas',
         'Remove' => 'Pašalinti',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Kliento naudotojo prisijungimas',
         'Created in Queue' => 'Sukurti eilėje',
         'Lock state' => 'Užrakinimo būsena',
@@ -2381,7 +2384,8 @@ sub Data {
         'Linked Objects' => 'Susieti objektai',
         'Article(s)' => 'Straipsnis(-iai)',
         'Change Queue' => 'Pakeisti eilę',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Straipsnių Filtras',
         'Add Filter' => 'Pridėti filtrą',
@@ -2503,7 +2507,6 @@ sub Data {
         'Expand article' => 'Išplėsti straipsnį',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Atsakyti',
 
         # Template: CustomerWarning
@@ -4527,6 +4530,8 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
+        'Customer Data' => 'Kliento duomenys',
+        'Logout successful. Thank you for using OTRS!' => 'Sėkmingai atsijungta! Ačiū, kad naudojatės OTRS!',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Norint įdiegti iš naujo, naudojant web-diegyklę, saugus režimas turi būti išjungtas.',
 

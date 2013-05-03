@@ -266,7 +266,7 @@ sub Download {
 
 upload of config changes. Pass the contents of
 the file Kernel/Config/Files/ZZZAuto.pm here, as
-read by L<Download()>.
+read by L</Download()>.
 
 Warning: this will replace the existing user
 configuration changes.
@@ -2335,7 +2335,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

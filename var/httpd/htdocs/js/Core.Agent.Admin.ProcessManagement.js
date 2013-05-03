@@ -369,6 +369,19 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             }
         }
 
+        // Check if any transition has a dummy endpoint
+        function DummyActivityConnected(ProcessEntityID) {
+            var DummyFound = false;
+            $.each(TargetNS.ProcessData.Process[ProcessEntityID].Path, function (Activity, ActivityData) {
+                $.each(ActivityData, function (Transition, TransitionData) {
+                    if (typeof TransitionData.ActivityEntityID === 'undefined') {
+                        DummyFound = true;
+                    }
+                });
+            });
+            return DummyFound;
+        }
+
         function AddTransitionToCanvas(Event, UI) {
             var Position = GetPositionOnCanvas(Event),
                 EntityID = $(UI.draggable).data('entity'),
@@ -376,6 +389,13 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 ProcessEntityID = $('#ProcessEntityID').val(),
                 Activity,
                 Path = TargetNS.ProcessData.Process[ProcessEntityID].Path;
+
+            // if a dummy activity exists, another transition was placed to the canvas but not yet
+            // connected to an end point. One cannot place to unconnected transitions on the canvas.
+            if ($('#Dummy').length && DummyActivityConnected(ProcessEntityID)) {
+              alert(Core.Agent.Admin.ProcessManagement.Localization.UnconnectedTransition);
+              return;
+            }
 
             if (typeof Entity !== 'undefined') {
                 // Check if mouse position is within an activity
@@ -392,7 +412,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
 
                 if (Activity) {
                     // Create dummy activity to use for initial transition
-                    TargetNS.Canvas.CreateActivityDummy();
+                    TargetNS.Canvas.CreateActivityDummy(Activity);
 
                     // Create transition between this Activity and DummyElement
                     TargetNS.Canvas.CreateTransition(Activity, 'Dummy', EntityID);

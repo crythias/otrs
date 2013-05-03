@@ -11,7 +11,6 @@ package Kernel::System::Cache::FileStorable;
 
 use strict;
 use warnings;
-umask 002;
 
 use Storable qw();
 use Digest::MD5 qw();
@@ -38,7 +37,7 @@ sub new {
     for my $Directory ( $TempDir, $Self->{CacheDirectory} ) {
         if ( !-e $Directory ) {
             ## no critic
-            if ( !mkdir( $Directory, 0775 ) ) {
+            if ( !mkdir( $Directory, 0770 ) ) {
                 ## use critic
                 $Self->{LogObject}->Log(
                     Priority => 'error',
@@ -75,9 +74,12 @@ sub Set {
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
     if ( !-e $CacheDirectory ) {
-        ## no critic
-        if ( !File::Path::mkpath( $CacheDirectory, 0, 0775 ) ) {
-            ## use critic
+
+        # Create directory. This could fail if another process creates the
+        #   same directory, so don't use the return value.
+        File::Path::mkpath( $CacheDirectory, 0, 0770 );    ## no critic
+
+        if ( !-e $CacheDirectory ) {
             $Self->{LogObject}->Log(
                 Priority => 'error',
                 Message  => "Can't create directory '$CacheDirectory': $!",
@@ -91,7 +93,7 @@ sub Set {
         Content    => \$Dump,
         Type       => 'Local',
         Mode       => 'binmode',
-        Permission => '664',
+        Permission => '660',
     );
 
     return if !$FileLocation;

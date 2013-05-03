@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:11
+    # Last translation file sync: 2013-04-18 14:11:20
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,7 @@ sub Data {
         'There is no acount with that user name.' => '',
         'Please contact your administrator' => '',
         'Logout' => 'Lahku',
-        'Logout successful. Thank you for using OTRS!' => 'Lahkusid OTRSist, täname kasutamise eest!',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Omadus ei ole aktiveeritud!',
         'Agent updated!' => 'Agent uuendatud!',
         'Create Database' => 'Tekita andmebaas',
@@ -238,7 +238,8 @@ sub Data {
         'Database' => 'Andmebaas',
         'Configure Mail' => '',
         'Database deleted.' => '',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Esmalt logi sisse!',
         'Password is needed!' => 'Sisesta parool!',
         'Take this Customer' => 'Kasuta seda klienti',
@@ -1455,7 +1456,7 @@ sub Data {
         'Install' => 'Paigalda',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Võrguallikas',
         'Vendor' => 'Tootja',
@@ -1664,6 +1665,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2248,7 +2251,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Muuda intsidendiga seotud klienti',
-        'Customer Data' => 'Kliendi andmed',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2347,6 +2349,8 @@ sub Data {
         'Output' => 'Tulemuste formaat',
         'Fulltext' => 'Täistekst',
         'Remove' => 'Eemalda',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Kliendi kasutajanimi',
         'Created in Queue' => 'Loodud järjekorras',
         'Lock state' => 'Luku seisund',
@@ -2380,7 +2384,8 @@ sub Data {
         'Linked Objects' => 'Seotud objektid',
         'Article(s)' => '',
         'Change Queue' => 'Muuda järjekorda',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => 'Filtri lisamine',
@@ -2502,7 +2507,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => '',
 
         # Template: CustomerWarning
@@ -4527,6 +4531,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (tööühikud)',
+        'Customer Data' => 'Kliendi andmed',
+        'Logout successful. Thank you for using OTRS!' => 'Lahkusid OTRSist, täname kasutamise eest!',
 
     };
     # $$STOP$$

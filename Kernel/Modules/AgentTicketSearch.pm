@@ -83,14 +83,9 @@ sub new {
     # get the dynamic fields for ticket object
     $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
         Valid       => 1,
-        ObjectType  => ['Ticket'],
+        ObjectType  => [ 'Ticket', 'Article' ],
         FieldFilter => $Self->{DynamicFieldFilter} || {},
     );
-    for my $Field ( sort keys %{ $Self->{DynamicFieldFilter} } ) {
-        if ( $Self->{DynamicFieldFilter}->{$Field} == 2 ) {
-            $Self->{Config}->{Defaults}->{ 'Search_DynamicField_' . $Field } = 1;
-        }
-    }
 
     # get the ticket dynamic fields for CSV display
     $Self->{CSVDynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
@@ -365,7 +360,7 @@ sub Run {
 
             # insert new profile params
             for my $Key ( sort keys %GetParam ) {
-                next if !$GetParam{$Key};
+                next if !defined $GetParam{$Key};
                 $Self->{SearchProfileObject}->SearchProfileAdd(
                     Base      => 'TicketSearch',
                     Name      => $Self->{Profile},
@@ -2062,7 +2057,7 @@ sub Run {
             ArticleTimeSearchType    => 'ArticleCreate',
         );
         for my $Key ( sort keys %Map ) {
-            next if !$GetParamBackup{$Key};
+            next if !defined $GetParamBackup{$Key};
             if ( $GetParamBackup{$Key} eq 'TimePoint' ) {
                 $GetParamBackup{ $Map{$Key} . 'TimePoint' } = 1;
             }
@@ -2110,10 +2105,21 @@ sub Run {
 
         # if no attribute is shown, show fulltext search
         if ( !$Profile ) {
-            if ( $Self->{Config}->{Defaults} ) {
-                for my $Key ( sort keys %{ $Self->{Config}->{Defaults} } ) {
+
+            # Merge regular show/hide settings and the settings for the dynamic fields
+            my %Defaults = %{ $Self->{Config}->{Defaults} || {} };
+            for my $DynamicField ( sort keys %{ $Self->{Config}->{DynamicField} || {} } ) {
+                if ( $Self->{Config}->{DynamicField}->{$DynamicField} == 2 ) {
+                    $Defaults{"Search_DynamicField_$DynamicField"} = 1;
+                }
+            }
+
+            if (%Defaults) {
+                for my $Key ( sort keys %Defaults ) {
+                    next if $Key eq 'DynamicField';    # Ignore entry for DF config
                     next if $AlreadyShown{$Key};
                     $AlreadyShown{$Key} = 1;
+
                     $Self->{LayoutObject}->Block(
                         Name => 'SearchAJAXShow',
                         Data => {

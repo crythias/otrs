@@ -60,13 +60,13 @@ The functions can be grouped as follows:
 
 =over 4
 
-=item L<IsString()>
+=item * L</IsString()>
 
-=item L<IsStringWithData()>
+=item * L</IsStringWithData()>
 
-=item L<IsArrayRefWithData()>
+=item * L</IsArrayRefWithData()>
 
-=item L<IsHashRefWithData()>
+=item * L</IsHashRefWithData()>
 
 =back
 
@@ -74,11 +74,11 @@ The functions can be grouped as follows:
 
 =over 4
 
-=item L<IsNumber()>
+=item * L</IsNumber()>
 
-=item L<IsInteger()>
+=item * L</IsInteger()>
 
-=item L<IsPositiveInteger()>
+=item * L</IsPositiveInteger()>
 
 =back
 
@@ -86,11 +86,11 @@ The functions can be grouped as follows:
 
 =over 4
 
-=item L<IsIPv4Address()>
+=item * L</IsIPv4Address()>
 
-=item L<IsIPv6Address()>
+=item * L</IsIPv6Address()>
 
-=item L<IsMD5Sum()>
+=item * L</IsMD5Sum()>
 
 =back
 
@@ -284,7 +284,7 @@ sub IsIPv4Address {
 
         # allow numbers 0 to 255, no leading zeroes
         return if $Part !~ m{
-            \A (?: \d | [1-9] \d | [1] \d\{2\} | [2][0-4]\d | [2][5][0-5] ) \z
+            \A (?: \d | [1-9] \d | [1] \d{2} | [2][0-4]\d | [2][5][0-5] ) \z
         }xms;
     }
 
@@ -537,7 +537,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

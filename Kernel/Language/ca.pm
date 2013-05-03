@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:03
+    # Last translation file sync: 2013-04-18 14:11:12
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,7 @@ sub Data {
         'There is no acount with that user name.' => 'No hi ha cap compta amb aquest nom d\'usuari.',
         'Please contact your administrator' => 'Per favor contacti amb el seu administrador',
         'Logout' => 'Desconnectar-se',
-        'Logout successful. Thank you for using OTRS!' => 'Desconnexió reeixida. Gràcies per utilitzar OTRS!',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Característica no activa',
         'Agent updated!' => 'Agent actualitzat!',
         'Create Database' => 'Crear Base de dades',
@@ -238,7 +238,8 @@ sub Data {
         'Database' => 'Base de dades',
         'Configure Mail' => 'Configurar el correu',
         'Database deleted.' => 'Base de dades esborrada.',
-        'Database setup succesful!' => 'Base de dades de configurada amb èxit!',
+        'Database setup successful!' => 'Base de dades de configurada amb èxit!',
+        'Generated password' => '',
         'Login is needed!' => 'Es requereix login',
         'Password is needed!' => 'Falta la contrasenya!',
         'Take this Customer' => 'Utilitzar aquest client',
@@ -1455,7 +1456,7 @@ sub Data {
         'Install' => 'Instal·lar',
         'Install Package' => 'Instal·lar paquet',
         'Update repository information' => 'Actualització de la informació del repositori',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Repositori en línia',
         'Vendor' => 'Venedor',
@@ -1664,6 +1665,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2248,7 +2251,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Canviar client del tiquet',
-        'Customer Data' => 'Informació del client',
         'Customer user' => 'Usuari del client',
 
         # Template: AgentTicketEmail
@@ -2347,6 +2349,8 @@ sub Data {
         'Output' => 'Formulari de resultats',
         'Fulltext' => 'Text Complet',
         'Remove' => 'Eliminar',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Identificador del client',
         'Created in Queue' => 'Creat en Cua',
         'Lock state' => 'Estat de bloqueig',
@@ -2380,7 +2384,8 @@ sub Data {
         'Linked Objects' => 'Objectes vinculats',
         'Article(s)' => 'Article(s)',
         'Change Queue' => 'Caviar cua',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Filtre d\'article',
         'Add Filter' => 'Afegir filtre',
@@ -2502,7 +2507,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Resposta',
 
         # Template: CustomerWarning
@@ -4529,6 +4533,8 @@ sub Data {
         ' (work units)' => ' (unitats de treball)',
         'Allows extended search conditions in ticket search of the agent interface. With this feature you can search w. g. with this kind of conditions like "(key1&&key2)" or "(key1||key2)".' =>
             'Permet condicions de recerca ampliades en la recerca de tiquets de la interfície de l\'agent. Amb aquesta funció pot buscar amb condicions com "(clau1&&clau2)" o "(clau1||clau2)".',
+        'Customer Data' => 'Informació del client',
+        'Logout successful. Thank you for using OTRS!' => 'Desconnexió reeixida. Gràcies per utilitzar OTRS!',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'El mode segur ha d\'estar desactivat per tornar a instal·lar mitjançant la pàgina d\'instal·lació.',
 

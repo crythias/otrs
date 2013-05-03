@@ -17,28 +17,42 @@ accompanying [COPYING](COPYING) file for more details.
 
 Documentation
 =============
-You can find quick documentation in README.* and the long version online at
-http://doc.otrs.org/.
+You can find quick documentation in README.* and the long version
+[online](http://doc.otrs.org/). The source code of OTRS and its public extension
+modules is available on [github](http://otrs.github.io).
 
 
 Professional Services
 =====================
-[OTRS Group](http://www.otrs.com), the source code owner, provides world-wide enterprise support, consulting and engineering
-including process design, implementation, customization, application support, and fully managed service.
+
+Whether you need help in configuring or customizing OTRS or you want to be on the safe side,
+don't hesitate to contact us: We offer a wide range of professional services such as
+world-wide enterprise support, consulting and engineering including process design,
+implementation, customization, application support, and fully managed service.
+
+Our [Service Contracts](http://www.otrs.com/en/solutions/service-contracts/) guarantee instant help
+and professional support as well as support assessment and last but not least free access to
+[OTRS Feature Add-ons](http://www.otrs.com/en/solutions/subscriptions/otrsfeatureadd-ons/) -
+useful additional features for your OTRS.
+
+The [OTRS Group](http://www.otrs.com/) offers specific
+[training programs](http://www.otrs.com/en/solutions/training/) in different countries.
+You can either participate in one of our public OTRS Administrator trainings which take place regularly,
+or benefit from an inhouse training that covers all the specific needs of your company.
 
 
 Software requirements
 =====================
 Perl
-* Perl 5.8.8 or higher
+* Perl 5.10.0 or higher
 
 Webserver
 * Webserver with CGI support (CGI is not recommended)
-* Apache2+mod_perl2 or higher (recommended, mod_perl is really fast!)
+* Apache2 + mod_perl2 or higher (recommended, mod_perl is really fast!)
 * IIS6 or higher
 
 Databases
-* MySQL 4.1 or higher
+* MySQL 5.0 or higher
 * PostgreSQL 8.0 or higher
 * Oracle 10g or higher
 * Microsoft SQL Server 2005 or higher

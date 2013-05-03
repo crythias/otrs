@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:06
+    # Last translation file sync: 2013-04-18 14:11:15
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,6 @@ sub Data {
         'There is no acount with that user name.' => 'Es gibt kein Benutzerkonto mit diesem Benutzernamen.',
         'Please contact your administrator' => 'Bitte kontaktieren Sie Ihren Administrator',
         'Logout' => 'Abmelden',
-        'Logout successful. Thank you for using OTRS!' => 'Abmeldung erfolgreich! Danke für die Benutzung von  OTRS!',
         'Logout successful. Thank you for using %s!' => 'Abmeldung erfolgreich! Danke für die Benutzung von  %s!',
         'Feature not active!' => 'Funktion nicht aktiviert!',
         'Agent updated!' => 'Agent aktualisiert!',
@@ -239,7 +238,8 @@ sub Data {
         'Database' => 'Datenbank',
         'Configure Mail' => 'E-Mail konfigurieren',
         'Database deleted.' => 'Datenbank ausgewählt.',
-        'Database setup succesful!' => 'Datenbankeinrichtung erfolgreich!',
+        'Database setup successful!' => 'Datenbankeinrichtung erfolgreich!',
+        'Generated password' => 'Generiertes Passwort',
         'Login is needed!' => 'Login wird benötigt!',
         'Password is needed!' => 'Passwort wird benötigt!',
         'Take this Customer' => 'Kunden übernehmen',
@@ -543,7 +543,7 @@ sub Data {
         'Queues' => 'Queues',
         'Priority' => 'Priorität',
         'Priorities' => 'Prioritäten',
-        'Priority Update' => 'Priorität aktualisieren',
+        'Priority Update' => 'Änderung der Priorität',
         'Priority added!' => 'Priorität hinzugefügt!',
         'Priority updated!' => 'Priorität aktualisiert!',
         'Signature added!' => 'Signatur hinzugefügt!',
@@ -650,6 +650,7 @@ sub Data {
         'You don\'t have write access to this ticket.' => 'Sie haben keinen Schreibzugriff auf dieses Ticket.',
         'Sorry, you need to be the ticket owner to perform this action.' =>
             'Entschuldigung, Sie müssen Ticketbesitzer sein, um diese Aktion ausführen zu können.',
+        'Please change the owner first.' => 'Bitte ändern Sie zunächst den Besitzer.',
         'Ticket selected.' => 'Ticket ausgewählt.',
         'Ticket is locked by another agent.' => 'Das Ticket ist für einen anderen Agenten gesperrt!',
         'Ticket locked.' => 'Ticket gesperrt.',
@@ -1456,8 +1457,8 @@ sub Data {
         'Install' => 'Installieren',
         'Install Package' => 'Paket installieren',
         'Update repository information' => 'Verzeichnis aktualisieren',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
-            'Der Turbo für Ihr OTRS - Exklusive Feature Add-Ons für Subscription-Kunden:',
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
+            'Der Turbo für Ihr OTRS - Exklusive Feature Add-Ons für Kunden mit Wartungsvertrag:',
         'Online Repository' => 'Online-Verzeichnis',
         'Vendor' => 'Anbieter',
         'Module documentation' => 'Moduldokumentation',
@@ -1666,6 +1667,8 @@ sub Data {
         'The Start Event cannot loose the Start Transition!' => 'Das Startereignis kann den Start-Übergang nicht verlieren.',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
             'Es sind noch keine Dialoge zugewiesen. Wählen Sie einfach einen Aktivitäts-Dialog in der linken Liste aus und ziehen Sie ihn in die rechte Liste.',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
+            'Auf der Zeichenfläche ist ein nicht verbundener Übergang vorhanden. Bitte verbinden Sie diesen Übergang zuerst, bevor Sie einen weiteren Übergang platzieren.',
 
         # Template: AdminProcessManagementProcessNew
         'In this screen, you can create a new process. In order to make the new process available to users, please make sure to set its state to \'Active\' and synchronize after completing your work.' =>
@@ -2249,7 +2252,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Ändern des Kundenkontakts des Tickets',
-        'Customer Data' => 'Kunden-/Kontakt-Daten',
         'Customer user' => 'Kontakt',
 
         # Template: AgentTicketEmail
@@ -2348,6 +2350,8 @@ sub Data {
         'Output' => 'Ausgabe',
         'Fulltext' => 'Volltext',
         'Remove' => 'Entfernen',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            'Sucht in den Attributen Von, Cc, Betreff, Artikelinhalt und überschreibt Attribute mit dem selben Namen.',
         'Customer User Login' => 'Anmeldung Kundenkontakt',
         'Created in Queue' => 'Erstellt in Queue',
         'Lock state' => 'Status Sperre',
@@ -2381,7 +2385,8 @@ sub Data {
         'Linked Objects' => 'Verknüpfte Objekte',
         'Article(s)' => 'Beitrag/Beiträge',
         'Change Queue' => 'Queue ändern',
-        'There are currently no steps available for this process.' => 'Derzeit sind in diesem Prozess keine Schritte verfügbar.',
+        'There are no dialogs available at this point in the process.' =>
+            'Für diesen Prozess stehen derzeit keine Dialoge zur Verfügung.',
         'This item has no articles yet.' => 'Dieser Eintrag hat noch keine Artikel',
         'Article Filter' => 'Artikelfilter',
         'Add Filter' => 'Filter hinzufügen',
@@ -2503,7 +2508,6 @@ sub Data {
         'Expand article' => 'Artikel aufklappen',
         'Information' => 'Information',
         'Next Steps' => 'Nächste Schritte',
-        'There are no further steps in this process' => 'Es gibt keine weiteren Schritte in diesem Prozess.',
         'Reply' => 'Antworten',
 
         # Template: CustomerWarning
@@ -4530,13 +4534,19 @@ sub Data {
         ' (work units)' => ' (Arbeitseinheiten)',
         'Changes to the Processes here only affect the behaviour of the system, if you synchronize the Process data. By synchronizing the Processes, the newly made changes will be written to the Configuration.' =>
             'Änderungen an den Prozessen wirken sich erst dann aus, wenn Sie die Prozesskonfiguration synchronisieren. Dabei werden alle Änderungen in die Systemkonfiguration übernommen.',
+        'Customer Data' => 'Kunden-/Kontakt-Daten',
+        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+            'Der Turbo für Ihr OTRS - Exklusive Feature Add-Ons für Subscription-Kunden:',
         'Historic Time Range' => 'Historischer Zeitraum',
+        'Logout successful. Thank you for using OTRS!' => 'Abmeldung erfolgreich! Danke für die Benutzung von  OTRS!',
         'New email ticket for %s' => 'Neues E-Mail-Ticket für %s',
         'New phone ticket for %s' => 'Neues Telefonticket für %s',
+        'Overwrite existing entities' => 'Bestehende Einträge überschreiben',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Der Sicherheitsmodus muss ausgeschaltet werden, um mit Hilfe des Web-Installers erneut zu installieren.',
         'State Historic' => 'Historischer Status',
         'State Type Historic' => 'Historischer Status-Typ',
+        'There are no further steps in this process' => 'Es gibt keine weiteren Schritte in diesem Prozess.',
         'Transition Validation Module' => 'Modul zur Übergangsvalidierung',
 
     };

@@ -15,7 +15,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:37
+    # Last translation file sync: 2013-04-18 14:11:47
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -224,7 +224,6 @@ sub Data {
         'There is no acount with that user name.' => '',
         'Please contact your administrator' => '',
         'Logout' => 'Đăng xuất',
-        'Logout successful. Thank you for using OTRS!' => 'Đăng xuất thành công! Cảm ơn bạn đã sử dụng OTRS!',
         'Logout successful. Thank you for using %s!' => 'Đăng xuất thành công! Cảm ơn bạn đã sử dụng %s!',
         'Feature not active!' => 'Tính năng không hoạt động!',
         'Agent updated!' => '',
@@ -238,7 +237,8 @@ sub Data {
         'Database' => 'Cơ sở dữ liệu',
         'Configure Mail' => '',
         'Database deleted.' => '',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Cần đăng nhập!',
         'Password is needed!' => 'Cần mật khẩu!',
         'Take this Customer' => 'Chấp nhận khách hàng này',
@@ -1455,7 +1455,7 @@ sub Data {
         'Install' => 'Cài đặt',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Kho trực tuyến',
         'Vendor' => 'Người bán',
@@ -1664,6 +1664,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2248,7 +2250,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Thay đổi khách hàng của thẻ',
-        'Customer Data' => 'Dữ liệu khách hàng',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2347,6 +2348,8 @@ sub Data {
         'Output' => 'Kết quả từ',
         'Fulltext' => 'Toàn bộ văn bản',
         'Remove' => '',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Đăng nhập người dùng khách hàng',
         'Created in Queue' => 'Đã tạo trong hàng đợi',
         'Lock state' => '',
@@ -2380,7 +2383,8 @@ sub Data {
         'Linked Objects' => '',
         'Article(s)' => '',
         'Change Queue' => '',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => '',
@@ -2502,7 +2506,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => '',
 
         # Template: CustomerWarning
@@ -4527,6 +4530,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (các đơn vị làm việc)',
+        'Customer Data' => 'Dữ liệu khách hàng',
+        'Logout successful. Thank you for using OTRS!' => 'Đăng xuất thành công! Cảm ơn bạn đã sử dụng OTRS!',
 
     };
     # $$STOP$$

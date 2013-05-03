@@ -17,7 +17,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:05
+    # Last translation file sync: 2013-04-18 14:11:14
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -226,7 +226,6 @@ sub Data {
         'There is no acount with that user name.' => 'Der er ingen konto med det brugernavn.',
         'Please contact your administrator' => 'Kontakt venligst din administrator',
         'Logout' => 'Log ud',
-        'Logout successful. Thank you for using OTRS!' => 'Du er nu logget ud. Tak fordi du bruger OTRS.',
         'Logout successful. Thank you for using %s!' => 'Du er nu logget ud. Tak fordi du bruger %s.',
         'Feature not active!' => 'Funktionen er ikke aktiv',
         'Agent updated!' => 'Agent opdateret',
@@ -240,7 +239,8 @@ sub Data {
         'Database' => 'Database',
         'Configure Mail' => 'Konfigurer Mail',
         'Database deleted.' => 'Database slettet.',
-        'Database setup succesful!' => 'Database konfigureret!',
+        'Database setup successful!' => 'Database konfigureret!',
+        'Generated password' => '',
         'Login is needed!' => 'Login er påkrævet',
         'Password is needed!' => 'Adgangskode er påkrævet',
         'Take this Customer' => 'Tag denne kunde',
@@ -1457,7 +1457,7 @@ sub Data {
         'Install' => 'Installation',
         'Install Package' => 'Installer pakke',
         'Update repository information' => 'Opdater information i repositoriet',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Online lagerdepot',
         'Vendor' => 'Leverandør',
@@ -1666,6 +1666,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2250,7 +2252,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Skift sagens kunde',
-        'Customer Data' => 'Kundedata',
         'Customer user' => 'Kundebruger',
 
         # Template: AgentTicketEmail
@@ -2349,6 +2350,8 @@ sub Data {
         'Output' => 'Output',
         'Fulltext' => 'Fritekst',
         'Remove' => 'Fjern',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Kundebrugers login',
         'Created in Queue' => 'Oprettet i kø',
         'Lock state' => 'Tildelt/fri',
@@ -2382,7 +2385,8 @@ sub Data {
         'Linked Objects' => 'Sammenkædede objekter',
         'Article(s)' => 'Indlæg',
         'Change Queue' => 'Skift kø',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Filtrer indlæg',
         'Add Filter' => 'Tilføj filter',
@@ -2504,7 +2508,6 @@ sub Data {
         'Expand article' => 'Fold indlæg ud',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Svar',
 
         # Template: CustomerWarning
@@ -4529,6 +4532,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (arbejdsenheder)',
+        'Customer Data' => 'Kundedata',
+        'Logout successful. Thank you for using OTRS!' => 'Du er nu logget ud. Tak fordi du bruger OTRS.',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Secure Mode skal deaktiveres, hvis OTRS skal geninstalleres med web-installeren.',
 

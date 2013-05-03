@@ -20,9 +20,11 @@ use strict;
 use warnings;
 use utf8;
 
-# Perl 5.8.6 is the required minimum version to use OTRS.
-# Do not use require VERSION as it leaks variables.
-use 5.008_006;
+# Perl 5.10.0 is the required minimum version to use OTRS.
+use 5.010_000;
+
+# make any created files readable by owner and group, not by others
+umask 0007;
 
 # prepend '../Custom', '../Kernel/cpan-lib' and '../' to the module search path @INC
 use File::Basename;
@@ -171,6 +173,7 @@ sub LoadDefaults {
         ja      => 'Japanese (&#x65e5;&#x672c;&#x8a9e)',
         lt      => 'Lietuvi&#371; kalba',
         lv      => 'Latvijas',
+        ms      => 'Malay',
         nl      => 'Nederlands',
         nb_NO   => 'Norsk bokm&aring;l',
         pt_BR   => 'Portugu&ecirc;s Brasileiro',
@@ -754,8 +757,8 @@ sub LoadDefaults {
     # Web Settings
     # --------------------------------------------------- #
     # WebMaxFileUpload
-    # (Max size for browser file uploads - default 16 MB)
-    $Self->{WebMaxFileUpload} = 1024 * 1024 * 16;
+    # (Max size for browser file uploads - default ~ 24 MB)
+    $Self->{WebMaxFileUpload} = 24000000;
 
     # WebUploadCacheModule
     # (select you WebUploadCacheModule module, default DB [DB|FS])
@@ -1938,7 +1941,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

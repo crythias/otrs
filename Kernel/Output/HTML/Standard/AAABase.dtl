@@ -214,6 +214,7 @@ $Text{"Logout"}
 $Text{"Logout successful. Thank you for using %s!"}
 $Text{"Feature not active!"}
 $Text{"Agent updated!"}
+$Text{"Database Selection"}
 $Text{"Create Database"}
 $Text{"System Settings"}
 $Text{"Mail Configuration"}
@@ -222,13 +223,10 @@ $Text{"Install OTRS"}
 $Text{"Intro"}
 $Text{"License"}
 $Text{"Error"}
-$Text{"Create Database"}
 $Text{"Database"}
-$Text{"System Settings"}
 $Text{"Configure Mail"}
 $Text{"Finished"}
 $Text{"Database deleted."}
-$Text{"Database setup succesful!"}
 
 # misc
 $Text{"Login is needed!"}

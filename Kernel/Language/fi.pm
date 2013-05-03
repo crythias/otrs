@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:13
+    # Last translation file sync: 2013-04-18 14:11:22
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -227,7 +227,7 @@ sub Data {
         'There is no acount with that user name.' => 'Käyttäjätunnusta ei löydy.',
         'Please contact your administrator' => 'Ota yhteys ylläpitoon',
         'Logout' => 'Kirjaudu ulos',
-        'Logout successful. Thank you for using OTRS!' => 'Uloskirjautuminen onnistui. Kiitos kun käytit OTRS-järjestelmää',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Ominaisuus ei käytössä!',
         'Agent updated!' => 'Agentti päivitetty!',
         'Create Database' => 'Luo tietokanta',
@@ -240,7 +240,8 @@ sub Data {
         'Database' => 'Tietokanta',
         'Configure Mail' => 'Sähköpostin asetukset',
         'Database deleted.' => 'Tietokanta poistettu.',
-        'Database setup succesful!' => 'Tietokanta asennettu onnistuneesti!',
+        'Database setup successful!' => 'Tietokanta asennettu onnistuneesti!',
+        'Generated password' => '',
         'Login is needed!' => 'Käyttäjätunnus on pakollinen!',
         'Password is needed!' => 'Salasana on pakollinen!',
         'Take this Customer' => 'Valitse tämä asiakas',
@@ -1457,7 +1458,7 @@ sub Data {
         'Install' => 'Asenna',
         'Install Package' => 'Asenna paketti',
         'Update repository information' => 'Päivitä',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Online ohjelmistojakelu',
         'Vendor' => 'Valmistaja',
@@ -1666,6 +1667,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2250,7 +2253,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Vaihda tiketin asiakasta',
-        'Customer Data' => 'Asiakastieto',
         'Customer user' => 'Asiakaskäyttäjä',
 
         # Template: AgentTicketEmail
@@ -2349,6 +2351,8 @@ sub Data {
         'Output' => 'Vastausmuoto',
         'Fulltext' => 'Kokosana',
         'Remove' => 'Poista',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Asiakkaan kirjautumistunnus',
         'Created in Queue' => 'Luotu jonossa',
         'Lock state' => 'Lukitustila',
@@ -2382,7 +2386,8 @@ sub Data {
         'Linked Objects' => 'Aiheeseen liittyvät',
         'Article(s)' => 'Artikkelit',
         'Change Queue' => 'Vaihda jonoa',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Artikkelisuodatin',
         'Add Filter' => 'Lisää suodatin',
@@ -2504,7 +2509,6 @@ sub Data {
         'Expand article' => 'Laajenna artikkeli',
         'Information' => 'Tiedot',
         'Next Steps' => 'Seuraavat vaiheet',
-        'There are no further steps in this process' => 'Tässä prosessissa ei ole enempää vaiheita',
         'Reply' => 'Vastaus',
 
         # Template: CustomerWarning
@@ -4529,6 +4533,9 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (esim. minuutteina)',
+        'Customer Data' => 'Asiakastieto',
+        'Logout successful. Thank you for using OTRS!' => 'Uloskirjautuminen onnistui. Kiitos kun käytit OTRS-järjestelmää',
+        'There are no further steps in this process' => 'Tässä prosessissa ei ole enempää vaiheita',
 
     };
     # $$STOP$$

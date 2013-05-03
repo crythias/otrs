@@ -58,6 +58,35 @@ sub Run {
         );
     }
 
+    # check if this is a temporary ticket link used while creating a new ticket
+    my $TemporarySourceTicketLink;
+    if (
+        $Form{Mode} eq 'Temporary'
+        && $Form{SourceObject} eq 'Ticket'
+        && $Form{SourceKey} =~ m{ \A \d+ \. \d+ }xms
+        )
+    {
+        $TemporarySourceTicketLink = 1;
+    }
+
+   # do the permission check only if it is no temporary ticket link used while creating a new ticket
+    if ( !$TemporarySourceTicketLink ) {
+
+        # permission check
+        my $Permission = $Self->{LinkObject}->ObjectPermission(
+            Object => $Form{SourceObject},
+            Key    => $Form{SourceKey},
+            UserID => $Self->{UserID},
+        );
+
+        if ( !$Permission ) {
+            return $Self->{LayoutObject}->NoPermission(
+                Message    => 'You need ro permission!',
+                WithHeader => 'yes',
+            );
+        }
+    }
+
     # get form params
     $Form{TargetIdentifier} = $Self->{ParamObject}->GetParam( Param => 'TargetIdentifier' )
         || $Form{SourceObject};
@@ -134,6 +163,14 @@ sub Run {
                 next IDENTIFIER if !$Target[0];    # TargetObject
                 next IDENTIFIER if !$Target[1];    # TargetKey
                 next IDENTIFIER if !$Target[2];    # LinkType
+
+                my $DeletePermission = $Self->{LinkObject}->ObjectPermission(
+                    Object => $Target[0],
+                    Key    => $Target[1],
+                    UserID => $Self->{UserID},
+                );
+
+                next IDENTIFIER if !$DeletePermission;
 
                 # delete link from database
                 my $Success = $Self->{LinkObject}->LinkDelete(
@@ -331,6 +368,30 @@ sub Run {
                         $TargetKey    = $TargetKeyOrg;
                     }
 
+                    # check if this is a temporary ticket link used while creating a new ticket
+                    my $TemporaryTargetTicketLink;
+                    if (
+                        $Form{Mode} eq 'Temporary'
+                        && $TargetObject eq 'Ticket'
+                        && $TargetKey =~ m{ \A \d+ \. \d+ }xms
+                        )
+                    {
+                        $TemporaryTargetTicketLink = 1;
+                    }
+
+                    # do the permission check only if it is no temporary ticket link
+                    # used while creating a new ticket
+                    if ( !$TemporaryTargetTicketLink ) {
+
+                        my $AddPermission = $Self->{LinkObject}->ObjectPermission(
+                            Object => $TargetObject,
+                            Key    => $TargetKey,
+                            UserID => $Self->{UserID},
+                        );
+
+                        next TARGETKEYORG if !$AddPermission;
+                    }
+
                     # add links to database
                     my $Success = $Self->{LinkObject}->LinkAdd(
                         SourceObject => $SourceObject,
@@ -497,44 +558,8 @@ sub Run {
             }
         }
 
-        my %LinkMenuOutput;
-        if ( $Form{Mode} eq 'Normal' ) {
-            $LinkMenuOutput{Back} = 1;
-        }
-        if ( $LinkListWithData && %{$LinkListWithData} ) {
-            $LinkMenuOutput{Delete} = 1;
-        }
-
-        # output link menu
-        if (%LinkMenuOutput) {
-
-            # output the link menu block
-            $Self->{LayoutObject}->Block(
-                Name => 'LinkMenu',
-            );
-        }
-
-        # output back link
-        if ( $LinkMenuOutput{Back} ) {
-
-            # output the link menu back block
-            $Self->{LayoutObject}->Block(
-                Name => 'LinkMenuBack',
-                Data => \%Form,
-            );
-        }
-
-        # output link seperator
-        if ( $LinkMenuOutput{Back} && $LinkMenuOutput{Delete} ) {
-
-            # output the link menu seperator block
-            $Self->{LayoutObject}->Block(
-                Name => 'LinkMenuSeperator',
-            );
-        }
-
         # output delete link
-        if ( $LinkMenuOutput{Delete} ) {
+        if ( $LinkListWithData && %{$LinkListWithData} ) {
 
             # output the link menu delete block
             $Self->{LayoutObject}->Block(

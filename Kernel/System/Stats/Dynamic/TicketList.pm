@@ -558,6 +558,26 @@ sub GetObjectAttributes {
         push @ObjectAttributes, \%ObjectAttribute;
     }
 
+    if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+
+        my %ObjectAttribute = (
+            Name             => 'Archive Search',
+            UseAsXvalue      => 0,
+            UseAsValueSeries => 0,
+            UseAsRestriction => 1,
+            Element          => 'SearchInArchive',
+            Block            => 'SelectField',
+            Translation      => 1,
+            Values           => {
+                ArchivedTickets    => 'Archived tickets',
+                NotArchivedTickets => 'Unarchived tickets',
+                AllTickets         => 'All tickets',
+            },
+        );
+
+        push @ObjectAttributes, \%ObjectAttribute;
+    }
+
     # cycle trough the activated Dynamic Fields for this screen
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
@@ -736,6 +756,19 @@ sub GetStatTable {
     my $UnixTimeStart = 0;
     my $UnixTimeEnd   = $Self->{TimeObject}->SystemTime();
 
+    if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+        $Param{Restrictions}->{SearchInArchive} ||= '';
+        if ( $Param{Restrictions}->{SearchInArchive} eq 'AllTickets' ) {
+            $Param{Restrictions}->{ArchiveFlags} = [ 'y', 'n' ];
+        }
+        elsif ( $Param{Restrictions}->{SearchInArchive} eq 'ArchivedTickets' ) {
+            $Param{Restrictions}->{ArchiveFlags} = ['y'];
+        }
+        else {
+            $Param{Restrictions}->{ArchiveFlags} = ['n'];
+        }
+    }
+
     if ( $Param{Restrictions}->{HistoricTimeRangeTimeNewerDate} ) {
 
         # Find tickets that were closed before the start of our
@@ -747,6 +780,7 @@ sub GetStatTable {
             Result                   => 'ARRAY',
             Permission               => 'ro',
             TicketCloseTimeOlderDate => $Param{Restrictions}->{HistoricTimeRangeTimeNewerDate},
+            ArchiveFlags             => $Param{Restrictions}->{ArchiveFlags},
             Limit                    => 100_000_000,
         );
         %OlderTicketsExclude = map { $_ => 1 } @OldToExclude;
@@ -765,6 +799,7 @@ sub GetStatTable {
             Result                    => 'ARRAY',
             Permission                => 'ro',
             TicketCreateTimeNewerDate => $Param{Restrictions}->{HistoricTimeRangeTimeOlderDate},
+            ArchiveFlags              => $Param{Restrictions}->{ArchiveFlags},
             Limit                     => 100_000_000,
         );
         %NewerTicketsExclude = map { $_ => 1 } @NewToExclude;
@@ -969,6 +1004,12 @@ sub GetStatTable {
         TicketAttributes => \%TicketAttributes,
     );
 
+    # find out if dynamic fields are required
+    my $NeedDynamicFields = 0;
+    for my $ParameterName ( sort keys %TicketAttributes ) {
+        $NeedDynamicFields = 1 if ( $ParameterName =~ m{\A DynamicField_ }xms );
+    }
+
     # generate the ticket list
     my @StatArray;
     for my $TicketID (@TicketIDs) {
@@ -977,7 +1018,7 @@ sub GetStatTable {
             TicketID      => $TicketID,
             UserID        => 1,
             Extended      => $Extended,
-            DynamicFields => 1,
+            DynamicFields => $NeedDynamicFields,
         );
 
         # add the accounted time if needed

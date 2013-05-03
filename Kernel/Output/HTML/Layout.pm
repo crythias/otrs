@@ -1764,7 +1764,7 @@ convert ascii to html string
 also string ref is possible
 
     my $HTMLStringRef = $LayoutObject->Ascii2Html(
-        Text => \$Sting,
+        Text => \$String,
     );
 
 =cut
@@ -3076,11 +3076,7 @@ sub BuildDateSelection {
 
     # month
     if ( $DateInputStyle eq 'Option' ) {
-        my %Month;
-        for ( 1 .. 12 ) {
-            my $Tmp = sprintf( "%02d", $_ );
-            $Month{$_} = $Tmp;
-        }
+        my %Month = map { $_ => sprintf( "%02d", $_ ); } ( 1 .. 12 );
         $Param{Month} = $Self->BuildSelection(
             Name        => $Prefix . 'Month',
             Data        => \%Month,
@@ -3112,11 +3108,7 @@ sub BuildDateSelection {
 
     # day
     if ( $DateInputStyle eq 'Option' ) {
-        my %Day;
-        for ( 1 .. 31 ) {
-            my $Tmp = sprintf( "%02d", $_ );
-            $Day{$_} = $Tmp;
-        }
+        my %Day = map { $_ => sprintf( "%02d", $_ ); } ( 1 .. 31 );
         $Param{Day} = $Self->BuildSelection(
             Name        => $Prefix . 'Day',
             Data        => \%Day,
@@ -3139,11 +3131,7 @@ sub BuildDateSelection {
 
         # hour
         if ( $DateInputStyle eq 'Option' ) {
-            my %Hour;
-            for ( 0 .. 23 ) {
-                my $Tmp = sprintf( "%02d", $_ );
-                $Hour{$_} = $Tmp;
-            }
+            my %Hour = map { $_ => sprintf( "%02d", $_ ); } ( 0 .. 23 );
             $Param{Hour} = $Self->BuildSelection(
                 Name       => $Prefix . 'Hour',
                 Data       => \%Hour,
@@ -3171,11 +3159,7 @@ sub BuildDateSelection {
 
         # minute
         if ( $DateInputStyle eq 'Option' ) {
-            my %Minute;
-            for ( 0 .. 59 ) {
-                my $Tmp = sprintf( "%02d", $_ );
-                $Minute{$_} = $Tmp;
-            }
+            my %Minute = map { $_ => sprintf( "%02d", $_ ); } ( 0 .. 59 );
             $Param{Minute} = $Self->BuildSelection(
                 Name       => $Prefix . 'Minute',
                 Data       => \%Minute,
@@ -4152,10 +4136,10 @@ sub RichTextDocumentServe {
             $End = '"' . $End;
         }
 
-        # find matching attachment and replace it with runtlime url to image
+        # find matching attachment and replace it with runtime url to image
         for my $AttachmentID (  sort keys %{ $Param{Attachments} }) {
             next if lc $Param{Attachments}->{$AttachmentID}->{ContentID} ne lc "<$ContentID>";
-            $ContentID = $AttachmentLink . $AttachmentID . ';' . $SessionID;
+            $ContentID = $AttachmentLink . $AttachmentID . $SessionID;
             last;
         }
 
@@ -4192,7 +4176,7 @@ sub RichTextDocumentServe {
         }
 
         # return new runtime url
-        $ContentID = $AttachmentLink . $AttachmentID . ';' . $SessionID;
+        $ContentID = $AttachmentLink . $AttachmentID . $SessionID;
         $Start . $ContentID . $End;
     }egxi;
     }

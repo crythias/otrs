@@ -99,7 +99,7 @@ sub new {
 
 sets a dynamic field value. This is represented by one or more rows in the dynamic_field_value
 table, each storing one text, date and int field. Please see how they will be returned by
-L<ValueGet()>.
+L</ValueGet()>.
 
     my $Success = $DynamicFieldValueObject->ValueSet(
         FieldID  => $FieldID,                 # ID of the dynamic field
@@ -255,21 +255,28 @@ sub ValueGet {
         Key  => $CacheKey,
     );
 
-    # Check if a cache entry exists for the given FieldID
-    if ( ref $Cache eq 'HASH' && exists $Cache->{ $Param{FieldID} } ) {
-        return $Cache->{ $Param{FieldID} };
+    # Check if a cache entry exists
+    if ( ref $Cache eq 'HASH' ) {
+
+        if ( exists $Cache->{ $Param{FieldID} } ) {
+            return $Cache->{ $Param{FieldID} };
+        }
+        return [];
     }
 
+    # We'll populate cache with all object's dynamic fields to reduce
+    # number of db accesses (only one db query for all dynamic fields till
+    # cache expiration); return only specified one dynamic field
     return if !$Self->{DBObject}->Prepare(
         SQL =>
-            'SELECT id, value_text, value_date, value_int
+            'SELECT id, value_text, value_date, value_int, field_id
             FROM dynamic_field_value
-            WHERE field_id = ? AND object_id = ?
+            WHERE object_id = ?
             ORDER BY id',
-        Bind => [ \$Param{FieldID}, \$Param{ObjectID} ],
+        Bind => [ \$Param{ObjectID} ],
     );
 
-    my @Result;
+    my %CacheData;
 
     while ( my @Data = $Self->{DBObject}->FetchrowArray() ) {
 
@@ -282,7 +289,7 @@ sub ValueGet {
             $Data[2] =~ s/^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})\..+?$/$1/;
         }
 
-        push @Result, {
+        push @{ $CacheData{ $Data[4] } }, {
             ID            => $Data[0],
             ValueText     => $Data[1],
             ValueDateTime => $Data[2],
@@ -290,28 +297,19 @@ sub ValueGet {
         };
     }
 
-    if ( ref $Cache eq 'HASH' ) {
-
-        # Cache file for ObjectID already exists, add field data.
-        $Cache->{ $Param{FieldID} } = \@Result;
-    }
-    else {
-
-        # Create new cache file.
-        $Cache = {
-            $Param{FieldID} => \@Result,
-        };
-    }
-
     # set cache
     $Self->{CacheObject}->Set(
         Type  => 'DynamicFieldValue',
         Key   => $CacheKey,
-        Value => $Cache,
+        Value => \%CacheData,
         TTL   => $Self->{CacheTTL},
     );
 
-    return \@Result;
+    if (exists $CacheData{ $Param{FieldID} }) {
+        return $CacheData{ $Param{FieldID} }
+    }
+
+    return [];
 }
 
 =item ValueDelete()
@@ -583,7 +581,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

@@ -20,7 +20,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:30
+    # Last translation file sync: 2013-04-18 14:11:41
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -229,7 +229,7 @@ sub Data {
         'There is no acount with that user name.' => 'Račun s tem uporabniškem imenom ne obstaja.',
         'Please contact your administrator' => 'Prosimo, obrnite se na vašega skrbnika',
         'Logout' => 'Odjava',
-        'Logout successful. Thank you for using OTRS!' => 'Odjava uspešna.',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Funkcija ni aktivna!',
         'Agent updated!' => 'Posodobljen zaposlen',
         'Create Database' => 'Kreiraj bazo podatkov',
@@ -242,7 +242,8 @@ sub Data {
         'Database' => 'Baza podatkov (DB)',
         'Configure Mail' => 'Konfiguracija e-pošte',
         'Database deleted.' => 'Baza podatkov izbrisana',
-        'Database setup succesful!' => 'Baza podatkov uspešno nameščena',
+        'Database setup successful!' => 'Baza podatkov uspešno nameščena',
+        'Generated password' => '',
         'Login is needed!' => 'Potrebna je prijava!',
         'Password is needed!' => 'Potrebno je vpisati geslo!',
         'Take this Customer' => 'Vzemite tega uporabnika',
@@ -1459,7 +1460,7 @@ sub Data {
         'Install' => 'Namestite',
         'Install Package' => 'Namesti paket',
         'Update repository information' => 'Posodobi informacije o skladišču',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Spletno skladišče',
         'Vendor' => 'Prodajalec',
@@ -1668,6 +1669,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2252,7 +2255,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Sprememba stranke na zahtevku',
-        'Customer Data' => 'Podatki o stranki',
         'Customer user' => 'Stranka',
 
         # Template: AgentTicketEmail
@@ -2351,6 +2353,8 @@ sub Data {
         'Output' => 'Pregled rezultatov',
         'Fulltext' => 'Besedilo',
         'Remove' => 'Odstrani',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Prijava uporabnika',
         'Created in Queue' => 'Ustvarjeno v vrsti',
         'Lock state' => 'Stanje zapore',
@@ -2384,7 +2388,8 @@ sub Data {
         'Linked Objects' => 'Povezani objekti',
         'Article(s)' => 'interakcij',
         'Change Queue' => 'Spremeni vrsto',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Filter za članke',
         'Add Filter' => 'Dodaj filter',
@@ -2506,7 +2511,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Odgovori',
 
         # Template: CustomerWarning
@@ -4530,6 +4534,8 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
+        'Customer Data' => 'Podatki o stranki',
+        'Logout successful. Thank you for using OTRS!' => 'Odjava uspešna.',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Varni način mora biti onemogočen zaradi ponovne instalacije preko weba.',
 

@@ -741,7 +741,6 @@ sub Run {
             if ( $Uploadfile = $Self->{ParamObject}->GetParam( Param => 'file_upload' ) ) {
                 my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
                     Param    => 'file_upload',
-                    Source   => 'string',
                     Encoding => 'Raw'
                 );
                 if ( $UploadStuff{Content} =~ m{<otrs_stats>}x ) {
@@ -950,7 +949,6 @@ sub Run {
                             "%04d-%02d-%02d %02d:%02d:%02d",
                             $Time{ $Limit . 'Year' },
                             $Time{ $Limit . 'Month' },
-                            $Time{ $Limit . 'Week' },
                             $Time{ $Limit . 'Day' },
                             $Time{ $Limit . 'Hour' },
                             $Time{ $Limit . 'Minute' },

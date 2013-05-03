@@ -205,6 +205,9 @@ sub DynamicFieldAdd {
     $Self->{CacheObject}->CleanUp(
         Type => 'DynamicField',
     );
+    $Self->{CacheObject}->CleanUp(
+        Type => 'DynamicFieldValue',
+    );
 
     my $DynamicField = $Self->DynamicFieldGet(
         Name => $Param{Name},
@@ -439,6 +442,9 @@ sub DynamicFieldUpdate {
     $Self->{CacheObject}->CleanUp(
         Type => 'DynamicField',
     );
+    $Self->{CacheObject}->CleanUp(
+        Type => 'DynamicFieldValue',
+    );
 
     # re-order field list if a change in the order was made
     if ( $Reorder && $ChangedOrder ) {
@@ -504,6 +510,9 @@ sub DynamicFieldDelete {
     # delete cache
     $Self->{CacheObject}->CleanUp(
         Type => 'DynamicField',
+    );
+    $Self->{CacheObject}->CleanUp(
+        Type => 'DynamicFieldValue',
     );
 
     return 1;
@@ -1300,7 +1309,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

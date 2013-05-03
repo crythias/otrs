@@ -22,7 +22,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:24
+    # Last translation file sync: 2013-04-18 14:11:35
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -231,7 +231,6 @@ sub Data {
         'There is no acount with that user name.' => 'Deze gebruikersnaam is niet bekend.',
         'Please contact your administrator' => 'Neem contact op met uw beheerder',
         'Logout' => 'Uitloggen',
-        'Logout successful. Thank you for using OTRS!' => 'U bent afgemeld. Bedankt voor het gebruiken van OTRS.',
         'Logout successful. Thank you for using %s!' => 'U bent afgemeld. Bedankt voor het gebruiken van %s.',
         'Feature not active!' => 'Deze functie is niet actief.',
         'Agent updated!' => 'Behandelaar aangepast.',
@@ -245,7 +244,8 @@ sub Data {
         'Database' => 'Database',
         'Configure Mail' => 'Configureer mail',
         'Database deleted.' => 'Database verwijderd.',
-        'Database setup succesful!' => 'Database-installatie afgerond.',
+        'Database setup successful!' => 'Database-installatie afgerond.',
+        'Generated password' => '',
         'Login is needed!' => 'Inloggen is nodig.',
         'Password is needed!' => 'Een wachtwoord is vereist.',
         'Take this Customer' => 'Selecteer deze klant',
@@ -1462,8 +1462,8 @@ sub Data {
         'Install' => 'Installeer',
         'Install Package' => 'Installeer pakket',
         'Update repository information' => 'Vernieuw repository gegevens',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
-            'Heeft u een feature niet kunnen vinden? De OTRS Groep levert add-ons voor klanten met een subscription:',
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
+            '',
         'Online Repository' => 'Online Repository',
         'Vendor' => 'Leverancier',
         'Module documentation' => 'Moduledocumentatie',
@@ -1672,6 +1672,8 @@ sub Data {
         'The Start Event cannot loose the Start Transition!' => 'Het start-event kan niet de start-transitie kwijtraken.',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
             'Er zijn nog geen dialogen toegewezen. Kies een dialoog uit de lijst en sleep deze hiernaartoe.',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
+            '',
 
         # Template: AdminProcessManagementProcessNew
         'In this screen, you can create a new process. In order to make the new process available to users, please make sure to set its state to \'Active\' and synchronize after completing your work.' =>
@@ -2255,7 +2257,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Wijzig klant van een ticket',
-        'Customer Data' => 'Klantgegevens',
         'Customer user' => 'Klant',
 
         # Template: AgentTicketEmail
@@ -2354,6 +2355,8 @@ sub Data {
         'Output' => 'Uitvoeren naar',
         'Fulltext' => 'Volledig',
         'Remove' => 'Verwijderen',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Klant login',
         'Created in Queue' => 'Aangemaakt in wachtrij',
         'Lock state' => 'Vergrendeling',
@@ -2387,7 +2390,8 @@ sub Data {
         'Linked Objects' => 'Gekoppelde objecten',
         'Article(s)' => 'Interactie(s)',
         'Change Queue' => 'Wijzig wachtrij',
-        'There are currently no steps available for this process.' => 'Er zijn geen stappen beschikbaar voor dit proces.',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => 'Dit item heeft nog geen interacties.',
         'Article Filter' => 'Filter interacties',
         'Add Filter' => 'Nieuw filter',
@@ -2509,7 +2513,6 @@ sub Data {
         'Expand article' => 'Toon interactie',
         'Information' => 'Informatie',
         'Next Steps' => 'Volgende stappen',
-        'There are no further steps in this process' => 'Er zijn geen volgende stappen in dit proces',
         'Reply' => 'Beantwoord',
 
         # Template: CustomerWarning
@@ -4535,10 +4538,16 @@ sub Data {
         #
         'Changes to the Processes here only affect the behaviour of the system, if you synchronize the Process data. By synchronizing the Processes, the newly made changes will be written to the Configuration.' =>
             'Wijzigingen aangebracht aan de processen hebben alleen invloed op het systeem als u de processen synchroniseert. Door het synchroniseren van de processen worden de aangemaakte wijzigingen weggeschreven naar de configuratie.',
+        'Customer Data' => 'Klantgegevens',
+        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+            'Heeft u een feature niet kunnen vinden? De OTRS Groep levert add-ons voor klanten met een subscription:',
+        'Logout successful. Thank you for using OTRS!' => 'U bent afgemeld. Bedankt voor het gebruiken van OTRS.',
         'New email ticket for %s' => 'Nieuw e-mail-ticket voor %s',
         'New phone ticket for %s' => 'Nieuw telefoon-ticket voor %s',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Secure Mode moet gedeactiveerd worden om te kunnen herinstalleren met de web-installer.',
+        'There are currently no steps available for this process.' => 'Er zijn geen stappen beschikbaar voor dit proces.',
+        'There are no further steps in this process' => 'Er zijn geen volgende stappen in dit proces',
 
     };
     # $$STOP$$

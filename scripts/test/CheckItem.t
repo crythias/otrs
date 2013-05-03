@@ -69,11 +69,11 @@ my @Tests = (
         Valid => 0,
     },
     {
-        Email => 'foo=bar@192.1233.22.2',
+        Email => 'foo=bar@[192.1233.22.2]',
         Valid => 0,
     },
     {
-        Email => 'foo=bar@192.22.2',
+        Email => 'foo=bar@[192.22.2]',
         Valid => 0,
     },
 
@@ -123,9 +123,20 @@ my @Tests = (
         Valid => 1,
     },
     {
-        Email => 'foo=bar@192.123.22.2',
+        Email => 'foo=bar@[192.123.22.2]',
         Valid => 1,
     },
+
+    # Unicode domains
+    {
+        Email => 'mail@xn--f1aefnbl.xn--p1ai',
+        Valid => 1,
+    },
+    {
+        Email => 'mail@кц.рф',    # must be converted to IDN
+        Valid => 0,
+    },
+
 );
 
 for my $Test (@Tests) {
@@ -284,7 +295,7 @@ for my $Test (@Tests) {
     # copy string to leave the original untouched
     my $String = $Test->{String};
 
-    # start sting preparation
+    # start string preparation
     my $StringRef = $CheckItemObject->StringClean(
         StringRef => \$String,
         %{ $Test->{Params} },
@@ -371,7 +382,7 @@ for my $Test (@Tests) {
     # copy string to leave the original untouched
     my $String = $Test->{String};
 
-    # start sting preparation
+    # start string preparation
     my ( $StringRef, $Found ) = $CheckItemObject->CreditCardClean( StringRef => \$String );
 
     # check result

@@ -126,7 +126,7 @@ sub Run {
         };
     }
 
-    # log and exit succesfully
+    # log and exit successfully
     $Self->{LogObject}->Log(
         Priority => 'notice',
         Message  => 'GenericInterface task executed correctly!',
@@ -149,7 +149,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

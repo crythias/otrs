@@ -22,7 +22,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:04
+    # Last translation file sync: 2013-04-18 14:11:13
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -231,9 +231,7 @@ sub Data {
         'There is no acount with that user name.' => '',
         'Please contact your administrator' => '',
         'Logout' => 'Odhlásit',
-        'Logout successful. Thank you for using OTRS!' => 'Odhlášení bylo úspěsné. Děkujeme Vám za používání OTRS!',
-		'Logout successful. Thank you for using %s!' => 'Odhlášení bylo úspěsné. Děkujeme Vám za používání %s!',
-        'Invalid SessionID!' => 'Neplatné ID relace!',
+        'Logout successful. Thank you for using %s!' => 'Odhlášení bylo úspěsné. Děkujeme Vám za používání %s!',
         'Feature not active!' => 'Funkce je neaktivní!',
         'Agent updated!' => '',
         'Create Database' => 'Vytvořit Databazi',
@@ -246,7 +244,8 @@ sub Data {
         'Database' => 'Databáze',
         'Configure Mail' => 'Nastavit poštu',
         'Database deleted.' => 'Databáze smazána.',
-        'Database setup succesful!' => 'Databáze úspěšně nastavena!',
+        'Database setup successful!' => 'Databáze úspěšně nastavena!',
+        'Generated password' => '',
         'Login is needed!' => 'Vyžadováno přihlášení!',
         'Password is needed!' => 'Vyžadováno heslo!',
         'Take this Customer' => 'Vybrat tohoto Zákazníka',
@@ -549,7 +548,6 @@ sub Data {
         'Queue' => 'Fronta',
         'Queues' => 'Řady',
         'Priority' => 'Priorita',
-        'Due Date' => 'Datum splatnosti',
         'Priorities' => '',
         'Priority Update' => 'Oprava Priority',
         'Priority added!' => '',
@@ -695,10 +693,7 @@ sub Data {
         'Print this ticket' => 'Vytisknout tiket',
         'Print this article' => 'Vytisknout tuto zprávu',
         'Split this article' => 'Rozdelit tuto zprávu',
-        'Split' => 'Rozdělit',
         'Forward article via mail' => 'Přeposlat zprávu',
-        'Bounce Article to a different mail address' => 'Odeslat na jinou adresu',
-        'View the source for this Article' => 'Zobrazit zdroj zprávy',
         'Change the ticket priority' => 'Změna Priority tiketu',
         'Change the ticket free fields!' => 'Změna volných polí tiketu',
         'Link this ticket to other objects' => 'Spárovat Tiket s jinými objekty',
@@ -706,7 +701,6 @@ sub Data {
         'Change the  customer for this ticket' => 'Změna Zákazníka Tiketu',
         'Add a note to this ticket' => 'Přidat poznámku do Tiketu',
         'Merge into a different ticket' => 'Sloučit do jiného tiketu',
-        'Merge this ticket' => 'Sloučit Tiket',
         'Set this ticket to pending' => 'Nastavit jako čekající na vyřízení',
         'Close this ticket' => 'Uzavřít Tiket',
         'Look into a ticket!' => 'Náhled Tiketu',
@@ -751,8 +745,6 @@ sub Data {
         'Refresh QueueView after' => 'Obnovit zobrazení front po',
         'Screen after new ticket' => 'Zobrazení po Novém Tiketu',
         'Show this screen after I created a new ticket' => 'Zobraz tento pohled, když vytvořím nový tiket',
-        'CreateTicket' => 'Vytvořit Tiket',
-        'TicketZoom' => 'Zobrazení tiketu',
         'Closed Tickets' => 'Uzavřené Tikety',
         'Show closed tickets.' => 'Ukázat uzavřené tikety.',
         'Max. shown Tickets a page in QueueView.' => 'Max. zobrazených tiketů v náhledu fronty na stránku',
@@ -1069,7 +1061,6 @@ sub Data {
         'Fulltext-search in article (e. g. "Mar*in" or "Baue*").' => '',
         'Agent' => 'Řešitel',
         'Ticket lock' => '',
-        'TicketFreeFields' => 'Volná pole Tiketu',
         'Create times' => '',
         'No create time settings.' => 'Žádná nastavení Času Vytvoření.',
         'Ticket created' => 'Tiket vytvořen',
@@ -1118,6 +1109,7 @@ sub Data {
         'Archive selected tickets' => '',
         'Add Note' => 'Přidat poznámku',
         'Time units' => 'Jednotky času',
+        '(work units)' => '',
         'Ticket Commands' => '',
         'Send agent/customer notifications on changes' => 'Odeslat upozornění Řešiteli/Zákazníkovi při změně',
         'CMD' => '',
@@ -1470,7 +1462,7 @@ sub Data {
         'Install' => 'Instalovat',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Online Schránka',
         'Vendor' => 'Prodavač',
@@ -1679,6 +1671,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2263,7 +2257,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Změnit klienta tiketu',
-        'Customer Data' => 'Data Zákazníka',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2362,6 +2355,8 @@ sub Data {
         'Output' => 'Forma výsledku',
         'Fulltext' => '',
         'Remove' => 'Odstranit',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Přihlášení klienta',
         'Created in Queue' => 'Vytvořeno ve Frontě',
         'Lock state' => 'Stav zámku',
@@ -2392,11 +2387,11 @@ sub Data {
         'Save filter settings as default' => 'Uložit Filtr jako Implicitní',
         'Archive' => 'Informace o tiketu',
         'This ticket is archived.' => 'Tiket je archivován.',
-        'Ticket Information' => 'Informace o tiketu',
         'Linked Objects' => 'Připojené objekty',
         'Article(s)' => 'Zpráva(y)',
         'Change Queue' => 'Změnit frontu',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => '',
@@ -2518,9 +2513,7 @@ sub Data {
         'Expand article' => '',
         'Information' => 'Informace',
         'Next Steps' => 'Další kroky',
-        'There are no further steps in this process' => 'V tomto procesu již nejsou žádné další kroky',
         'Reply' => 'Odpovědět',
-		'empty answer' => '0_Prázdná odpověd',
 
         # Template: CustomerWarning
 
@@ -4544,8 +4537,22 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => '(jednotky práce)',
+        'Bounce Article to a different mail address' => 'Odeslat na jinou adresu',
+        'CreateTicket' => 'Vytvořit Tiket',
+        'Customer Data' => 'Data Zákazníka',
+        'Due Date' => 'Datum splatnosti',
+        'Invalid SessionID!' => 'Neplatné ID relace!',
+        'Logout successful. Thank you for using OTRS!' => 'Odhlášení bylo úspěsné. Děkujeme Vám za používání OTRS!',
+        'Merge this ticket' => 'Sloučit Tiket',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Bezpečnostní Mód musí být deaktivován za účelem Reinstalu pomocí Web-Installeru.',
+        'Split' => 'Rozdělit',
+        'There are no further steps in this process' => 'V tomto procesu již nejsou žádné další kroky',
+        'Ticket Information' => 'Informace o tiketu',
+        'TicketFreeFields' => 'Volná pole Tiketu',
+        'TicketZoom' => 'Zobrazení tiketu',
+        'View the source for this Article' => 'Zobrazit zdroj zprávy',
+        'empty answer' => '0_Prázdná odpověd',
 
     };
     # $$STOP$$

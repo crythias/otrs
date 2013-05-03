@@ -17,7 +17,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:20
+    # Last translation file sync: 2013-04-18 14:11:30
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -226,7 +226,7 @@ sub Data {
         'There is no acount with that user name.' => '該当ユーザー名のアカウントはありません。',
         'Please contact your administrator' => '管理者に連絡してください',
         'Logout' => 'ログアウト',
-        'Logout successful. Thank you for using OTRS!' => 'ログアウトしました。OTRSのご利用ありがとうございます！',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => '機能が有効になっていません！',
         'Agent updated!' => '担当者更新！',
         'Create Database' => 'データベース作成',
@@ -239,7 +239,8 @@ sub Data {
         'Database' => 'データベース',
         'Configure Mail' => '',
         'Database deleted.' => '',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'ログインしてください！',
         'Password is needed!' => 'パスワードを入力してください！',
         'Take this Customer' => 'この顧客を選択',
@@ -1456,7 +1457,7 @@ sub Data {
         'Install' => 'インストール',
         'Install Package' => 'パッケージをインストール',
         'Update repository information' => 'リポジトリ情報を更新',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'オンラインリポジトリ',
         'Vendor' => 'ベンダー',
@@ -1665,6 +1666,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2249,7 +2252,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'チケットの顧客を変更',
-        'Customer Data' => '顧客情報',
         'Customer user' => '顧客ユーザー',
 
         # Template: AgentTicketEmail
@@ -2348,6 +2350,8 @@ sub Data {
         'Output' => '出力',
         'Fulltext' => '全文',
         'Remove' => '削除',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => '顧客ユーザーログイン',
         'Created in Queue' => 'キューで作成された',
         'Lock state' => 'ロックの状態',
@@ -2381,7 +2385,8 @@ sub Data {
         'Linked Objects' => '連結済対象',
         'Article(s)' => '記事',
         'Change Queue' => 'キュー変更',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '記事フィルタ',
         'Add Filter' => 'フィルタ追加',
@@ -2503,7 +2508,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => '返信',
 
         # Template: CustomerWarning
@@ -4533,8 +4537,10 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         ' (work units)' => ' (稼働時間)',
         'Allows extended search conditions in ticket search of the agent interface. With this feature you can search w. g. with this kind of conditions like "(key1&&key2)" or "(key1||key2)".' =>
             '担当者インタフェースのチケット検索で、検索条件の拡張を許可します。この機能により、利用者はw. g.を次のような条件で検索できます"(key1&&key2)" または "(key1||key2)"。',
+        'Customer Data' => '顧客情報',
         'Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If set to "No", the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If not active, it also disables the GenericAgent, PackageManager and SQL Box (to avoid the use of destructive queries, such as DROP DATABASE, and also to steal user passwords).' =>
             'ウェブ・インストーラーを無効にし(http://yourhost.example.com/otrs/installer.pl)、システムがハイジャックされるのを防ぎます。もし、“No”に設定されている場合は、システムは再インストールすることができ、現在の基本設定がインストーラー・スクリプト内の質問に事前投入されます。もしアクティブでなれけば、Generic Agent、パッケージ・マネジャー、SQLボックスも無効にします（これは、DROP DATABASEなどの破壊的クエリーの使用を避け、ユーザ・パスワードの盗難を防ぐためです）。',
+        'Logout successful. Thank you for using OTRS!' => 'ログアウトしました。OTRSのご利用ありがとうございます！',
         'Maximum size (in characters) of the customer info table in the queue view.' =>
             'キュー・ビューにおける、顧客情報テーブル（電話およびEメール）の最大サイズ（文字）です。',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>

@@ -426,6 +426,11 @@ for my $Test (@Tests) {
             '<div  style="border:none;border-left:solid blue 1.5pt;padding:0cm 0cm 0cm 4.0pt">Some Tex<b>t</b><div  style="border:none;border-left:solid blue 1.5pt;padding:0cm 0cm 0cm 4.0pt">test</div> </div>',
         Name => 'DocumentCleanup - blockquote'
     },
+    {
+        Input => '<head><base href=3D"file:///C:\Users\dol\AppData\Local\Temp\SnipFile-%7b102B7C0B-D396-440B-9DD6-DD3342805533%7d.HTML"></head>',
+        Result => '<head></head>',
+        Name => 'DocumentCleanup - base tag',
+    }
 );
 
 for my $Test (@Tests) {
@@ -1444,6 +1449,21 @@ my $InlineImage
             Attachments => [
                 {
                     ContentType => qr|^image/gif;|,
+                },
+            ],
+            }
+    },
+    {
+        Name => 'Win7 snipping tool',
+        Body =>
+            'Snipping Tool: <img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQIAAADJCAIAAABHdavEAAAgAElEQVR4nOx9d1gUWfZ27e63O0rnUJ2ISs5BRTFhzjo65uyYc4bOIFEUM9nsmHPOihkxkaGBJphQQM="> 456',
+        Result => {
+            Success => 1,
+            Body =>
+                qr|^Snipping Tool: <img alt="" src="cid:.*?"> 456$|,
+            Attachments => [
+                {
+                    ContentType => qr|^image/png;|,
                 },
             ],
             }

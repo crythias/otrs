@@ -177,6 +177,119 @@ for my $Backend (qw(DB FS)) {
     }
 }
 
+# filename collision checks
+for my $Backend (qw(DB FS)) {
+    $ConfigObject->Set(
+        Key   => 'Ticket::StorageModule',
+        Value => 'Kernel::System::Ticket::ArticleStorage' . $Backend,
+    );
+    $TicketObject = Kernel::System::Ticket->new(
+        %{$Self},
+        ConfigObject => $ConfigObject,
+    );
+
+    # Store file 2 times
+    my $FileName = "[Terminology Guide äöß].pdf";
+    my $Content                = '123';
+    my $FileNew                = $FileName;
+    my $ArticleWriteAttachment = $TicketObject->ArticleWriteAttachment(
+        Content     => $Content,
+        Filename    => $FileNew,
+        ContentType => 'image/png',
+        ArticleID   => $ArticleID,
+        UserID      => 1,
+    );
+    $Self->True(
+        $ArticleWriteAttachment,
+        "$Backend ArticleWriteAttachment() - collision check created $FileNew",
+    );
+
+    $ArticleWriteAttachment = $TicketObject->ArticleWriteAttachment(
+        Content     => $Content,
+        Filename    => $FileNew,
+        ContentType => 'image/png',
+        ArticleID   => $ArticleID,
+        UserID      => 1,
+    );
+    $Self->True(
+        $ArticleWriteAttachment,
+        "$Backend ArticleWriteAttachment() - collision check created $FileNew second time",
+    );
+
+    my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        ArticleID => $ArticleID,
+        UserID    => 1,
+    );
+
+    my $TargetFilename = '[Terminology Guide äöß]';
+
+    if ( $Backend eq 'FS' ) {
+
+        $TargetFilename = '_Terminology_Guide_äöß_';
+
+        # Mac OS (HFS+) will store all filenames as NFD internally.
+        if ( $^O eq 'darwin' ) {
+            $TargetFilename = Unicode::Normalize::NFD($TargetFilename);
+        }
+    }
+
+    $Self->Is(
+        scalar keys %AttachmentIndex,
+        2,
+        "$Backend ArticleWriteAttachment() - collision check number of attachments",
+    );
+
+    my ($Entry1) = grep { $AttachmentIndex{$_}->{Filename} eq "$TargetFilename.pdf"} keys %AttachmentIndex;
+    my ($Entry2) = grep { $AttachmentIndex{$_}->{Filename} eq "$TargetFilename-1.pdf"} keys %AttachmentIndex;
+
+    $Self->IsDeeply(
+        $AttachmentIndex{$Entry1},
+        {
+            'ContentAlternative' => '',
+            'ContentID' => '',
+            'ContentType' => 'image/png',
+            'Filename' => "$TargetFilename.pdf",
+            'Filesize' => '3 Bytes',
+            'FilesizeRaw' => '3'
+        },
+        "$Backend ArticleAttachmentIndex - collision check entry 1",
+    );
+
+    $Self->IsDeeply(
+        $AttachmentIndex{$Entry2},
+        {
+            'ContentAlternative' => '',
+            'ContentID' => '',
+            'ContentType' => 'image/png',
+            'Filename' => "$TargetFilename-1.pdf",
+            'Filesize' => '3 Bytes',
+            'FilesizeRaw' => '3'
+        },
+        "$Backend ArticleAttachmentIndex - collision check entry 2",
+    );
+
+    my $Delete = $TicketObject->ArticleDeleteAttachment(
+        ArticleID => $ArticleID,
+        UserID    => 1,
+    );
+
+    $Self->True(
+        $Delete,
+        "$Backend ArticleDeleteAttachment()",
+    );
+
+    %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
+        ArticleID => $ArticleID,
+        UserID    => 1,
+    );
+
+    $Self->IsDeeply(
+        \%AttachmentIndex,
+        {},
+        "$Backend ArticleAttachmentIndex() after delete"
+    );
+}
+
 # the ticket is no longer needed
 $TicketObject->TicketDelete(
     TicketID => $TicketID,

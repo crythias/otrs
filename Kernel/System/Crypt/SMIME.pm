@@ -726,20 +726,20 @@ sub CertificateRemove {
         }
     }
 
-    my $Message   = "Certificate successfully removed";
-    my $Succesful = 1;
+    my $Message = "Certificate successfully removed";
+    my $Success = 1;
 
     # remove certificate
     my $Cert = unlink "$Self->{CertPath}/$Param{Filename}";
     if ( !$Cert ) {
-        $Message = "Impossible to remove certificate: $Self->{CertPath}/$Param{Filename}: $!!",
-            $Succesful = 0;
+        $Message     = "Impossible to remove certificate: $Self->{CertPath}/$Param{Filename}: $!!",
+            $Success = 0;
     }
 
-    $Message .= ". Private certificate succesfuly deleted" if ($PrivateExists);
+    $Message .= ". Private certificate successfully deleted" if ($PrivateExists);
 
     %Result = (
-        Successful => $Succesful,
+        Successful => $Success,
         Message    => $Message,
     );
     return %Result;
@@ -2507,7 +2507,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

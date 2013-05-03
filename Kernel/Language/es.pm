@@ -21,7 +21,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:08
+    # Last translation file sync: 2013-04-18 14:11:17
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -230,7 +230,6 @@ sub Data {
         'There is no acount with that user name.' => 'No hay ninguna cuenta con ese nombre de usuario',
         'Please contact your administrator' => 'Por favor, contacte con su administrador',
         'Logout' => 'Cerrar la sesión',
-        'Logout successful. Thank you for using OTRS!' => 'Sesión cerrada con éxito. ¡Gracias por utilizar OTRS!',
         'Logout successful. Thank you for using %s!' => 'Sesión cerrada con éxito. ¡Gracias por utilizar %s!',
         'Feature not active!' => '¡Característica no activa!',
         'Agent updated!' => '¡Agente actualizado!',
@@ -244,7 +243,8 @@ sub Data {
         'Database' => 'Base de datos',
         'Configure Mail' => 'Configurar el correo',
         'Database deleted.' => 'Base de datos borroada.',
-        'Database setup succesful!' => '¡Base de datos configurada con éxito!',
+        'Database setup successful!' => '¡Base de datos configurada con éxito!',
+        'Generated password' => '',
         'Login is needed!' => '¡Se requiere un nombre de usuario!',
         'Password is needed!' => '¡Se requiere una contraseña!',
         'Take this Customer' => 'Utilizar este cliente',
@@ -1461,7 +1461,7 @@ sub Data {
         'Install' => 'Instalar',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Repositorio Online',
         'Vendor' => 'Vendedor',
@@ -1670,6 +1670,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2254,7 +2256,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Cambiar el cliente del ticket',
-        'Customer Data' => 'Datos del cliente',
         'Customer user' => 'Usuario del cliente',
 
         # Template: AgentTicketEmail
@@ -2353,6 +2354,8 @@ sub Data {
         'Output' => 'Formato de Resultados',
         'Fulltext' => 'Texto Completo',
         'Remove' => 'Eliminar',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Identificador del cliente',
         'Created in Queue' => 'Creado en la cola',
         'Lock state' => 'Estado bloqueado',
@@ -2386,7 +2389,8 @@ sub Data {
         'Linked Objects' => 'Objetos enlazados',
         'Article(s)' => 'Artículo(s)',
         'Change Queue' => 'Modificar la cola',
-        'There are currently no steps available for this process.' => 'Actualmente no hay pasos disponibles para este proceso.',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => 'Este elemento todavía no tiene ningún artículo.',
         'Article Filter' => 'Filtro de artículos',
         'Add Filter' => 'Añadir un filtro',
@@ -2508,7 +2512,6 @@ sub Data {
         'Expand article' => 'Expandir el artículo',
         'Information' => 'Información',
         'Next Steps' => 'Siguientes pasos',
-        'There are no further steps in this process' => 'Este proceso no tiene más pasos.',
         'Reply' => 'Contestar',
 
         # Template: CustomerWarning
@@ -4532,6 +4535,10 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
+        'Customer Data' => 'Datos del cliente',
+        'Logout successful. Thank you for using OTRS!' => 'Sesión cerrada con éxito. ¡Gracias por utilizar OTRS!',
+        'There are currently no steps available for this process.' => 'Actualmente no hay pasos disponibles para este proceso.',
+        'There are no further steps in this process' => 'Este proceso no tiene más pasos.',
 
     };
     # $$STOP$$

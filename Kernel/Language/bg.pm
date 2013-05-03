@@ -17,7 +17,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:02
+    # Last translation file sync: 2013-04-18 14:11:11
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -226,7 +226,7 @@ sub Data {
         'There is no acount with that user name.' => '',
         'Please contact your administrator' => '',
         'Logout' => 'Изход',
-        'Logout successful. Thank you for using OTRS!' => 'Изходът е успешен. Благодарим Ви, че използвахте системата.',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Функцията не е активна',
         'Agent updated!' => '',
         'Create Database' => 'Създаване на база данни',
@@ -239,7 +239,8 @@ sub Data {
         'Database' => 'База данни',
         'Configure Mail' => '',
         'Database deleted.' => '',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Логин-а е задължителен',
         'Password is needed!' => 'Паролата е задължителна',
         'Take this Customer' => 'Използвай този клиент',
@@ -1456,7 +1457,7 @@ sub Data {
         'Install' => 'Инсталиране',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Online Repository',
         'Vendor' => 'Доставчик',
@@ -1665,6 +1666,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2249,7 +2252,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Промяна на потребителят на билета',
-        'Customer Data' => 'Данни за потребителя',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2348,6 +2350,8 @@ sub Data {
         'Output' => 'Формат на резултата',
         'Fulltext' => 'Пълнотекстово',
         'Remove' => '',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Логин на клиент-потребител',
         'Created in Queue' => 'Създаден в опашка',
         'Lock state' => '',
@@ -2381,7 +2385,8 @@ sub Data {
         'Linked Objects' => '',
         'Article(s)' => '',
         'Change Queue' => '',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => '',
@@ -2503,7 +2508,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => '',
 
         # Template: CustomerWarning
@@ -4528,6 +4532,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (работни единици)',
+        'Customer Data' => 'Данни за потребителя',
+        'Logout successful. Thank you for using OTRS!' => 'Изходът е успешен. Благодарим Ви, че използвахте системата.',
 
     };
     # $$STOP$$

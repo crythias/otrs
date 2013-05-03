@@ -4,6 +4,8 @@
 .settings
 .includepath
 .DS_Store
+*.swp
+*.swo
 
 # OTRS
 doc/manual/en
@@ -14,7 +16,6 @@ Kernel/Language/*.old
 bin/cgi-bin/.htaccess
 var/virtualfs
 var/run
-var/log
 var/log/*.log
 var/OPM
 var/Stats
@@ -29,8 +30,9 @@ var/httpd/htdocs/skins/Agent/ivory/css-cache/*
 var/httpd/htdocs/skins/Agent/slim/css-cache/*
 var/httpd/htdocs/skins/Customer/default/css-cache/*
 var/httpd/htdocs/skins/Customer/ivory/css-cache/*
-var/sessions/*
-var/articles/*
+var/sessions/Data*
+var/sessions/State*
+var/article/*
 
 # Fred
 Fred.sopm
@@ -66,3 +68,8 @@ var/httpd/htdocs/skins/Agent/default/css/Support.Default.css
 Perl/Critic
 TidyAll
 scripts/test/OTRSCodePolicy.t
+
+# ITSM
+var/stats/*.xml.installed
+bin/CodeInstall.pl
+bin/DatabaseInstall.pl

@@ -345,14 +345,18 @@ sub Signature {
 
 generate sender address (FROM string) for emails
 
-my $Sender = $TemplateGeneratorObject->Sender(
+    my $Sender = $TemplateGeneratorObject->Sender(
         QueueID    => 123,
         UserID     => 123,
     );
 
 returns:
 
-    "John Doe at Super Support <support@example.com>"
+    John Doe at Super Support <support@example.com>
+
+and it returns the quoted real name if necessary
+
+    "John Doe, Support" <support@example.tld>
 
 =cut
 
@@ -616,7 +620,7 @@ sub AutoResponse {
         chomp $Param{OrigHeader}->{$_};
     }
 
-    # format body (only if longer the 86 chars)
+    # format body (only if longer than 86 chars)
     if ( $Param{OrigHeader}->{Body} ) {
         if ( length $Param{OrigHeader}->{Body} > 86 ) {
             my @Lines = split /\n/, $Param{OrigHeader}->{Body};
@@ -834,13 +838,14 @@ sub NotificationAgent {
 
     # replace place holder stuff
     $Notification{Body} = $Self->_Replace(
-        RichText    => $Self->{RichText},
-        Text        => $Notification{Body},
-        RecipientID => $Param{RecipientID},
-        Data        => $Param{CustomerMessageParams},
-        TicketID    => $Param{TicketID},
-        UserID      => $Param{UserID},
-        Language    => $Language,
+        RichText            => $Self->{RichText},
+        Text                => $Notification{Body},
+        RecipientID         => $Param{RecipientID},
+        Data                => $Param{CustomerMessageParams},
+        TicketID            => $Param{TicketID},
+        UserID              => $Param{UserID},
+        Language            => $Language,
+        LastCustomerArticle => \%Article,
     );
     $Notification{Subject} = $Self->_Replace(
         RichText    => 0,
@@ -1321,8 +1326,29 @@ sub _Replace {
         # replace <OTRS_CUSTOMER_EMAIL[]> tags
         $Tag = $Start . 'OTRS_CUSTOMER_EMAIL';
         if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
+
+            # This tag should include the message body
+            # of the last customer message.
+            #
+            # In $Data{Body} it may happen that
+            # the currents article Body gets passed down here.
+            #
+            # So we have to use the Body of the $Param{Article}
+            # hash holding the article of the last customer message.
+            my $CustomerEmailBody = $Data{Body};
+
+            if (
+                $Param{LastCustomerArticle}
+                && ref $Param{LastCustomerArticle} eq 'HASH'
+                && $Param{LastCustomerArticle}->{Body}
+                && length $Param{LastCustomerArticle}->{Body}
+                )
+            {
+                $CustomerEmailBody = $Param{LastCustomerArticle}->{Body};
+            }
+
             my $Line       = $1;
-            my @Body       = split( /\n/, $Data{Body} );
+            my @Body       = split( /\n/, $CustomerEmailBody );
             my $NewOldBody = '';
             for ( my $i = 0; $i < $Line; $i++ ) {
 
@@ -1463,7 +1489,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

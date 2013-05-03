@@ -272,8 +272,91 @@ sub SeleniumScenariosGet {
     return $Scenarios;
 }
 
+my $FixedTime;
+
+=item FixedTimeSet()
+
+makes it possible to override the system time as long as this object lives.
+You can pass an optional time parameter that should be used, if not,
+the current system time will be used.
+
+All regular perl calls to time(), localtime() and gmtime() will use this
+fixed time afterwards. If this object goes out of scope, the 'normal' system
+time will be used again.
+
+=cut
+
+sub FixedTimeSet {
+    my ( $Self, $TimeToSave ) = @_;
+
+    $TimeToSave = CORE::time() if ( !defined $TimeToSave );
+    $FixedTime = $TimeToSave;
+
+    # This is needed to reload the time object to get a hold of the overrides.
+    if ( $INC{'Kernel/System/Time.pm'} ) {
+        no warnings 'redefine';
+        delete $INC{'Kernel/System/Time.pm'};
+        $Self->{MainObject}->Require('Kernel::System::Time');
+    }
+
+    return $FixedTime;
+}
+
+=item FixedTimeUnset()
+
+restores the regular system time behaviour.
+
+=cut
+
+sub FixedTimeUnset {
+    my ($Self) = @_;
+
+    undef $FixedTime;
+
+    return;
+}
+
+=item FixedTimeAddSeconds()
+
+adds a number of seconds to the fixed system time which was previously
+set by FixedTimeSet(). You can pass a negative value to go back in time.
+
+=cut
+
+sub FixedTimeAddSeconds {
+    my ( $Self, $SecondsToAdd ) = @_;
+
+    return if ( !defined $FixedTime );
+
+    $FixedTime += $SecondsToAdd;
+}
+
+# See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
+BEGIN {
+    *CORE::GLOBAL::time = sub {
+        return defined $FixedTime ? $FixedTime : CORE::time();
+    };
+    *CORE::GLOBAL::localtime = sub {
+        my ($Time) = @_;
+        if ( !defined $Time ) {
+            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+        }
+        return CORE::localtime($Time);
+    };
+    *CORE::GLOBAL::gmtime = sub {
+        my ($Time) = @_;
+        if ( !defined $Time ) {
+            $Time = defined $FixedTime ? $FixedTime : CORE::time();
+        }
+        return CORE::gmtime($Time);
+    };
+}
+
 sub DESTROY {
     my $Self = shift;
+
+    # Reset time freeze
+    FixedTimeUnset();
 
     #
     # Restore system configuration if needed
@@ -351,7 +434,5 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
 did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
 
 =cut

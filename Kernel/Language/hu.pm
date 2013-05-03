@@ -5,7 +5,7 @@
 # Copyright (C) 2006 Flora Szabo /szaboflora@magicnet.hu/
 # Copyright (C) 2007 Aron Ujvari <ujvari@hungary.com>
 # Copyright (C) 2009 Arnold Matyasi <arn@webma.hu>
-# Copyright (C) 2012 Csaba Németh <csaba@sopron.hu>
+# Copyright (C) 2013 Csaba Németh <csaba@sopron.hu>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -21,7 +21,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:18
+    # Last translation file sync: 2013-04-18 14:11:28
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -230,7 +230,7 @@ sub Data {
         'There is no acount with that user name.' => '',
         'Please contact your administrator' => 'Lépjen kapcsolatba a rendszergazdával',
         'Logout' => 'Kilépés',
-        'Logout successful. Thank you for using OTRS!' => 'Kilépés megtörtént! Köszönjük, hogy az OTRS-t használja!',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Képesség nem aktív!',
         'Agent updated!' => 'Ügyintéző módosítva!',
         'Create Database' => 'Adatbázis létrehozása',
@@ -243,7 +243,8 @@ sub Data {
         'Database' => 'Adatbázis',
         'Configure Mail' => '',
         'Database deleted.' => 'Adatbázis törölve.',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Belépés szükséges!',
         'Password is needed!' => 'Jelszó szükséges!',
         'Take this Customer' => 'Átveszi ez az ügyfél',
@@ -1460,7 +1461,7 @@ sub Data {
         'Install' => 'Telepítés',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'On-line csomagtároló',
         'Vendor' => 'Terjesztő',
@@ -1669,6 +1670,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2229,7 +2232,7 @@ sub Data {
         # Template: AgentTicketBulk
         'Ticket Bulk Action' => 'Csoportos jegy-művelet',
         'Send Email' => 'Email küldése',
-        'Merge to' => 'Egyesíti',
+        'Merge to' => 'Egyesítő',
         'Invalid ticket identifier!' => '',
         'Merge to oldest' => 'Legrégebbihez egyesíti',
         'Link together' => 'Összekapcsol',
@@ -2249,11 +2252,10 @@ sub Data {
         'Address book' => 'Címjegyzék',
         'Pending Date' => 'Várakozás dátuma',
         'for pending* states' => 'várakozó* státuszhoz',
-        'Date Invalid!' => '',
+        'Date Invalid!' => 'Hibás dátum!',
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'A jegyhez tartozó ügyfél megváltoztatása',
-        'Customer Data' => 'Ügyfél adatok',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2299,7 +2301,7 @@ sub Data {
 
         # Template: AgentTicketOverviewNavBar
         'Change search options' => 'Keresési beállítások módosítása',
-        'Tickets per page' => '',
+        'Tickets per page' => 'Hibajegy oldalanként',
 
         # Template: AgentTicketOverviewPreview
 
@@ -2344,7 +2346,7 @@ sub Data {
 
         # Template: AgentTicketSearch
         'Search template' => 'Kereső sablon',
-        'Create Template' => '',
+        'Create Template' => 'Sablon létrehozás',
         'Create New' => 'Új létrehozása',
         'Profile link' => '',
         'Save changes in template' => '',
@@ -2352,6 +2354,8 @@ sub Data {
         'Output' => 'Eredmény űrlap',
         'Fulltext' => 'Teljes szöveg',
         'Remove' => '',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Ügyfél felhasználó belépés',
         'Created in Queue' => 'Létrehozáskori várólista',
         'Lock state' => '',
@@ -2385,7 +2389,8 @@ sub Data {
         'Linked Objects' => 'Kapcsolt objektumok',
         'Article(s)' => '',
         'Change Queue' => '',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => 'Szűrő hozzáadása',
@@ -2507,7 +2512,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Válasz',
 
         # Template: CustomerWarning
@@ -4532,6 +4536,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (munkaegység)',
+        'Customer Data' => 'Ügyfél adatok',
+        'Logout successful. Thank you for using OTRS!' => 'Kilépés megtörtént! Köszönjük, hogy az OTRS-t használja!',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Biztonságos üzemmódot le kell tíltani ahhoz, hogy a webes telepítővel újra lehessen dolgozni.',
 

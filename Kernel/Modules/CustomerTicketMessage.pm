@@ -12,6 +12,7 @@ package Kernel::Modules::CustomerTicketMessage;
 use strict;
 use warnings;
 
+use Kernel::System::CustomerUser;
 use Kernel::System::Web::UploadCache;
 use Kernel::System::SystemAddress;
 use Kernel::System::Queue;
@@ -35,6 +36,7 @@ sub new {
     }
 
     # needed objects
+    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new(%Param);
     $Self->{StateObject}        = Kernel::System::State->new(%Param);
     $Self->{SystemAddress}      = Kernel::System::SystemAddress->new(%Param);
     $Self->{QueueObject}        = Kernel::System::Queue->new(%Param);
@@ -255,7 +257,6 @@ sub Run {
             $Error{AttachmentUpload} = 1;
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
                 Param  => 'file_upload',
-                Source => 'string',
             );
             $Self->{UploadCacheObject}->FormIDAddFile(
                 FormID => $Self->{FormID},
@@ -454,7 +455,10 @@ sub Run {
         }
 
         # create article
-        my $From      = "$Self->{UserFirstname} $Self->{UserLastname} <$Self->{UserEmail}>";
+        my $FullName = $Self->{CustomerUserObject}->CustomerName(
+            UserLogin => $Self->{UserLogin},
+        );
+        my $From      = "\"$FullName\" <$Self->{UserEmail}>";
         my $ArticleID = $Self->{TicketObject}->ArticleCreate(
             TicketID         => $TicketID,
             ArticleType      => $Self->{Config}->{ArticleType},
@@ -508,7 +512,6 @@ sub Run {
         # get submitted attachment
         my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
             Param  => 'file_upload',
-            Source => 'String',
         );
         if (%UploadStuff) {
             push @AttachmentData, \%UploadStuff;

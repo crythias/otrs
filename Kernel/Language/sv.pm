@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:33
+    # Last translation file sync: 2013-04-18 14:11:44
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -227,7 +227,6 @@ sub Data {
         'There is no acount with that user name.' => 'Det finns inget konto med det användarnamnet',
         'Please contact your administrator' => 'Vänligen kontakta din administratör',
         'Logout' => 'Logga ut',
-        'Logout successful. Thank you for using OTRS!' => 'Utloggningen lyckades.  Tack för att du använde OTRS!',
         'Logout successful. Thank you for using %s!' => 'Utloggningen lyckades.  Tack för att du använde %s!',
         'Feature not active!' => 'Funktion inte aktiverad!',
         'Agent updated!' => 'Agent uppdaterad!',
@@ -241,7 +240,8 @@ sub Data {
         'Database' => 'Databas',
         'Configure Mail' => 'Konfigurera mail',
         'Database deleted.' => 'Databas borttagen.',
-        'Database setup succesful!' => '',
+        'Database setup successful!' => '',
+        'Generated password' => '',
         'Login is needed!' => 'Inloggning krävs!',
         'Password is needed!' => 'Lösenord krävs!',
         'Take this Customer' => 'Välj denna kund',
@@ -1458,7 +1458,7 @@ sub Data {
         'Install' => 'Installera',
         'Install Package' => '',
         'Update repository information' => '',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Online Repository',
         'Vendor' => 'Leverantör',
@@ -1667,6 +1667,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2251,7 +2253,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Ändra kund för ärende',
-        'Customer Data' => 'Kunddata',
         'Customer user' => '',
 
         # Template: AgentTicketEmail
@@ -2350,6 +2351,8 @@ sub Data {
         'Output' => 'Resultatbild',
         'Fulltext' => 'Fritext',
         'Remove' => '',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'kundanvändare loginnamn',
         'Created in Queue' => 'Skapad i Kö',
         'Lock state' => '',
@@ -2383,7 +2386,8 @@ sub Data {
         'Linked Objects' => '',
         'Article(s)' => '',
         'Change Queue' => '',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => '',
         'Add Filter' => '',
@@ -2505,7 +2509,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => '',
 
         # Template: CustomerWarning
@@ -4530,6 +4533,8 @@ sub Data {
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
         ' (work units)' => ' (arbetsenheter)',
+        'Customer Data' => 'Kunddata',
+        'Logout successful. Thank you for using OTRS!' => 'Utloggningen lyckades.  Tack för att du använde OTRS!',
         'New email ticket for %s' => 'Nytt e-postärende för %s',
         'New phone ticket for %s' => 'Nytt telefonärende för %s',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>

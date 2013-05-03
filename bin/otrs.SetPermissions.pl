@@ -28,7 +28,7 @@ use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
-use File::Find;
+use File::Find qw();
 use Getopt::Long;
 
 print "bin/otrs.SetPermissions.pl - set OTRS file permissions\n";
@@ -87,6 +87,7 @@ EOF
         exit 0;
     }
 }
+
 my $DestDir = $ARGV[0];
 
 # check params
@@ -125,16 +126,28 @@ print "Setting permissions on $DestDir\n";
 if ($Secure) {
 
     # In secure mode, make files read-only by default
-    find( \&MakeReadOnly, $DestDir );
+    File::Find::find(
+        { wanted => \&MakeReadOnly, no_chdir => 1 },
+        $DestDir . "/"
+    );    # append / to follow symlinks
+
+    # Also change the toplevel directory/symlink itself
+    MakeReadOnly($DestDir);
 }
 else {
 
     # set all files writeable for webserver user (needed for package manager)
-    find( \&MakeWritable, $DestDir );
+    File::Find::find(
+        { wanted => \&MakeWritable, no_chdir => 1 },
+        $DestDir . "/"
+    );    # append / to follow symlinks
+
+    # Also change the toplevel directory/symlink itself
+    MakeWritable($DestDir);
 
     # set the $HOME to the OTRS user
     if ( !$NotRoot ) {
-        SafeChown( $OtrsUserID, $OtrsGroupID, $DestDir );
+        SafeChown( $OtrsUserID, $WebGroupID, $DestDir );
     }
 }
 
@@ -143,7 +156,7 @@ my @EmptyFiles = (
     "$DestDir/var/log/TicketCounter.log",
 );
 for my $File (@EmptyFiles) {
-    open( my $Fh, '>>', $File );    ## no critic
+    open( my $Fh, '>>', $File ) || die "Could not open $File: $!\n";    ## no critic
     print $Fh '';
     close $Fh;
 }
@@ -161,53 +174,57 @@ my @Dirs = (
     "$DestDir/var/stats",
     "$DestDir/var/sessions",
 
-    # CSS cache directories
+    # CSS and JS cache directories must be writable
     "$DestDir/var/httpd/htdocs/skins/Agent",
     "$DestDir/var/httpd/htdocs/skins/Customer",
+    "$DestDir/var/httpd/htdocs/js/js-cache",
 );
 for my $Dir (@Dirs) {
     if ( !-e $Dir ) {
         mkdir $Dir;
     }
 }
-find( \&MakeWritableSetGid, @Dirs );
+File::Find::find(
+    { wanted => \&MakeWritableSetGid, no_chdir => 1 },
+    @Dirs
+);
 
 # set all bin/* as executable
 print "Setting permissions on $DestDir/bin/*\n";
-find( \&MakeExecutable, "$DestDir/bin" );
+File::Find::find(
+    { wanted => \&MakeExecutable, no_chdir => 1 },
+    "$DestDir/bin"
+);
 
 # set all scripts/* as executable
-print "Setting permissions on $DestDir/scripts/*.pl\n";
-my @FileListScripts = glob("$DestDir/scripts/*.pl");
-for (@FileListScripts) {
-    MakeExecutable();
-}
-
-# set all scripts/tools/* as executable
-print "Setting permissions on $DestDir/scripts/tools/*.pl\n";
-my @FileListTools = glob("$DestDir/scripts/tools/*.pl");
-for (@FileListTools) {
-    MakeExecutable();
+print "Setting permissions on $DestDir/scripts/\n";
+my @FileListScripts = (
+    glob("$DestDir/scripts/*.pl"),
+    glob("$DestDir/scripts/*.sh"),
+    glob("$DestDir/scripts/tools/*.pl"),
+    glob("$DestDir/scripts/auto_build/*.pl"),
+    "$DestDir/scripts/otrs-scheduler-linux",
+    "$DestDir/scripts/suse-rcotrs",
+);
+for my $ExecutableFile (@FileListScripts) {
+    MakeExecutable($ExecutableFile);
 }
 
 # set write permission for web installer
 if ( !$Secure ) {
-    print "Setting permissions on Kernel/Config.pm\n";
-    $_ = "$DestDir/Kernel/Config.pm";
-    MakeWritable();
+    print "Setting permissions on $DestDir/Kernel/Config.pm\n";
+    MakeWritable("$DestDir/Kernel/Config.pm");
 }
 
 # set owner rw and group ro
-@Dirs = (
-    "$DestDir/",
+my @MailConfigFiles = (
     "$DestDir/.procmailrc",
     "$DestDir/.fetchmailrc",
 );
-for my $Dir (@Dirs) {
-    if ( -e $Dir ) {
-        print "Setting owner rw and group ro permissions on $Dir\n";
-        $_ = $Dir;
-        MakeReadOnly();
+for my $MailConfigFile (@MailConfigFiles) {
+    if ( -e $MailConfigFile ) {
+        print "Setting owner rw and group ro permissions on $MailConfigFile\n";
+        MakeReadOnly($MailConfigFile);
     }
 }
 
@@ -216,29 +233,32 @@ exit(0);
 ## no critic (ProhibitLeadingZeros)
 
 sub MakeReadOnly {
-    my $File = $_;
+    my $File = $File::Find::name;
+    $File = $_[0] if !defined $File;
+
     if ( !$NotRoot ) {
         SafeChown( $AdminUserID, $AdminGroupID, $File );
     }
     my $Mode;
     if ( -d $File ) {
-        $Mode = 0755;
+        $Mode = 0750;
     }
     else {
-        $Mode = 0644;
+        $Mode = 0640;
     }
     SafeChmod( $Mode, $File );
 }
 
 sub MakeWritable {
-    my $File = $_;
+    my $File = $File::Find::name;
+    $File = $_[0] if !defined $File;
     my $Mode;
 
     if ( -d $File ) {
-        $Mode = 0775;
+        $Mode = 0770;
     }
     else {
-        $Mode = 0664;
+        $Mode = 0660;
     }
     if ($NotRoot) {
         $Mode |= 2;
@@ -251,14 +271,15 @@ sub MakeWritable {
 }
 
 sub MakeWritableSetGid {
-    my $File = $_;
+    my $File = $File::Find::name;
+    $File = $_[0] if !defined $File;
     my $Mode;
 
     if ( -d $File ) {
-        $Mode = 02775;
+        $Mode = 02770;
     }
     else {
-        $Mode = 0664;
+        $Mode = 0660;
     }
     if ($NotRoot) {
         $Mode |= 2;
@@ -271,10 +292,11 @@ sub MakeWritableSetGid {
 }
 
 sub MakeExecutable {
-    my $File = $_;
+    my $File = $File::Find::name;
+    $File = $_[0] if !defined $File;
     my $Mode = ( lstat($File) )[2];
     if ( defined $Mode ) {
-        $Mode |= 0111;
+        $Mode |= 0110;
         SafeChmod( $Mode, $File );
     }
 }

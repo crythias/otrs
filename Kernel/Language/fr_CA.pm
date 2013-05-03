@@ -23,7 +23,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:15
+    # Last translation file sync: 2013-04-18 14:11:25
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -232,7 +232,6 @@ sub Data {
         'There is no acount with that user name.' => 'Le nom d\'utilisateur ne correspond à aucun compte.',
         'Please contact your administrator' => 'Veuillez contacter votre administrateur',
         'Logout' => 'Déconnexion',
-        'Logout successful. Thank you for using OTRS!' => 'Déconnexion réussie. Le groupe OTRS vous remercie!',
         'Logout successful. Thank you for using %s!' => 'Déconnexion réussie. Le groupe %s vous remercie!',
         'Feature not active!' => 'Cette fonctionnalité n\'est pas activée. ',
         'Agent updated!' => 'La mise à jour des renseignements de l\'agent a été effectuée.',
@@ -246,7 +245,8 @@ sub Data {
         'Database' => 'Base de données',
         'Configure Mail' => 'Configuration de la messagerie',
         'Database deleted.' => 'Base de données effacée.',
-        'Database setup succesful!' => 'Configuration de la base de données réussie!',
+        'Database setup successful!' => 'Configuration de la base de données réussie.',
+        'Generated password' => '',
         'Login is needed!' => 'Authentification requise !',
         'Password is needed!' => 'Le mot de passe est requis.',
         'Take this Customer' => 'Choisir ce client',
@@ -1463,8 +1463,8 @@ sub Data {
         'Install' => 'Installer',
         'Install Package' => 'Installer un paquet',
         'Update repository information' => 'Mettre à jour les informations du référentiel',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
-            'Vous ne trouvez pas la fonctionnalité recherchée? Le groupe OTRS offre à ses clients inscrits des compagnons exclusifs à l\'adresse suivante : ',
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
+            '',
         'Online Repository' => 'Référentiels en ligne',
         'Vendor' => 'Vendeur ',
         'Module documentation' => 'Documents relatifs au module',
@@ -1672,6 +1672,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2256,7 +2258,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Modifier le client de la demande no ',
-        'Customer Data' => 'Renseignements du client ',
         'Customer user' => 'Client utilisateur ',
 
         # Template: AgentTicketEmail
@@ -2355,6 +2356,8 @@ sub Data {
         'Output' => 'Format du résultat ',
         'Fulltext' => 'Texte complet ',
         'Remove' => 'Supprimer',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Nom de connexion du client',
         'Created in Queue' => 'Créée dans la file ',
         'Lock state' => 'État du verrou ',
@@ -2388,7 +2391,8 @@ sub Data {
         'Linked Objects' => 'Objets liés',
         'Article(s)' => 'Article(s)',
         'Change Queue' => 'Changer de file',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Filtre pour les articles',
         'Add Filter' => 'Ajouter un filtre',
@@ -2510,7 +2514,6 @@ sub Data {
         'Expand article' => 'Développer l\'article',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Répondre',
 
         # Template: CustomerWarning
@@ -4735,7 +4738,7 @@ sub Data {
         '-Patch' => 'Corrigé',
         '. In case you want to improve your performance, close not needed open tickets.' =>
             'Si vous souhaiteriez améliorer la performance, fermez les demandes qui ne sont pas nécessaires.',
-        '. Private certificate succesfuly deleted' => 'Certification privée supprimée',
+        '. Private certificate successfuly deleted' => 'Certification privée supprimée',
         '1 * Normal (ca. 25 sec)' => '1 * Normal (ca. 25 s)',
         '2 minutes' => '2 minutes',
         '200 (Advanced)' => '200 (Avancé)',
@@ -5198,6 +5201,7 @@ sub Data {
         'Creating tables \'otrs-schema.mysql.sql\'' => 'Créer les tables \'otrs-schema.mysql.sql\'.',
         'Croatia' => 'Croatie, République de',
         'Curacao' => 'Curacao',
+        'Customer Data' => 'Renseignements du client ',
         'Customer Move Notify' => 'Notification lors d\'un changement de file',
         'Customer Owner Notify' => 'Notification lors d\'un changement de propriétaire',
         'Customer State Notify' => 'Notification lors d\'un changement d\'état',
@@ -5239,7 +5243,6 @@ sub Data {
         'Database $Row[0] is $Row[1] large, of which $Row[2] is available.' =>
             'La base de données $Row[0] is $Row[1] large de laquelle $Row[2] provient.',
         'Database Backend' => 'Base de données de l\'arrière-plan',
-        'Database setup successful!' => 'Configuration de la base de données réussie.',
         'Database size is $Row[0] GB.' => 'La taille de la base de données est de $Row[0] Gb.',
         'DateChecksum' => 'Date de la somme de contrôle (DateChecksum)',
         'Days' => 'Jours',
@@ -5356,6 +5359,8 @@ sub Data {
             'Détermine les textes des champs « destinataire » (À : ) de la demande téléphonique et « expéditeur » (De :) de la demande par courriel dans l\'interface agent. En ce qui concerne les files « NewQueueSelectionType », le champ « <Queue> » affiche les noms des files et les champs « <Realname> <<Email>> » affichent le nom et le courriel du destinataire dans l\'adresse système (SystemAddress).',
         'Determines the strings that will be shown as receipent (To:) of the ticket in the customer interface. For Queue as CustomerPanelSelectionType, "&lt;Queue&gt;" shows the names of the queues, and for SystemAddress, "&lt;Realname&gt; &lt;&lt;Email&gt;&gt;" shows the name and email of the receipent.' =>
             'Détermine les textes des champs « destinataire » (À : ) de la demande téléphonique et « expéditeur » (De :) de la demande par courriel dans l\'interface agent. En ce qui concerne les files « NewQueueSelectionType », le champ « <Queue> » affiche les noms des files et les champs « <Realname> <<Email>> » affichent le nom et le courriel du destinataire dans l\'adresse système (SystemAddress).',
+        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+            'Vous ne trouvez pas la fonctionnalité recherchée? Le groupe OTRS offre à ses clients inscrits des compagnons exclusifs à l\'adresse suivante : ',
         'Diff' => 'Fichier Diff',
         'Directory \'$DirOfSQLFiles\' not found!' => 'Le répertoire \'$DirOfSQLFiles\' n\'a pa été trouvé.',
         'Directory \'$Self->{Path}\' doesn\'t exist!' => 'Le répertoire \'$Self->{Path}\' n\'existe pas.',
@@ -6333,6 +6338,7 @@ sub Data {
         'Login failed! Your username or password was entered incorrectly.' =>
             'La connexion a échoué. Votre nom d\'utilisateur ou votre mot de passe sont erronés.',
         'Logout of customer panel' => 'Déconnection de la page client ',
+        'Logout successful. Thank you for using OTRS!' => 'Déconnexion réussie. Le groupe OTRS vous remercie!',
         'Lookup' => 'Consulter',
         'LoopProtection' => 'Protection anti-boucle (LoopProtection)',
         'Luxembourg' => 'Luxembourg',

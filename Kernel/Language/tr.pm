@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-12 11:32:18
+    # Last translation file sync: 2013-04-18 14:11:45
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,7 @@ sub Data {
         'There is no acount with that user name.' => 'Bu kullanıcı adıyla bir hesap yok.',
         'Please contact your administrator' => 'Lütfen yöneticinizle irtibat kurun',
         'Logout' => 'Oturumu kapat',
-        'Logout successful. Thank you for using OTRS!' => 'Oturum kapatma başarılı! OTRS\'yi kullandığınız için teşekkür ederiz!',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Özellik etkin değil!',
         'Agent updated!' => 'Aracı güncellendi!',
         'Create Database' => 'Veritabanını Oluştur',
@@ -238,7 +238,8 @@ sub Data {
         'Database' => 'Veritabanı',
         'Configure Mail' => 'E-posta ayarla',
         'Database deleted.' => 'Veritabanı silindi.',
-        'Database setup succesful!' => 'Veritabanı kurulumu başarılı!',
+        'Database setup successful!' => 'Veritabanı kurulumu başarılı!',
+        'Generated password' => '',
         'Login is needed!' => 'Oturum açmanız gerekli!',
         'Password is needed!' => 'Parola gerekli!',
         'Take this Customer' => 'Bu Müşteriyi al',
@@ -1455,8 +1456,8 @@ sub Data {
         'Install' => 'Yükle',
         'Install Package' => 'Paketi yükle',
         'Update repository information' => 'Depo bilgilerini güncelle',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
-            'Gerekli özelliği bulamadınızmı? OTRS grubu üye müşterilerimize seçkin eklentileri sunar.',
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
+            '',
         'Online Repository' => 'Çevrimiçi Depo',
         'Vendor' => 'Sağlayıcı',
         'Module documentation' => '',
@@ -1664,6 +1665,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2248,7 +2251,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Biletin müşterisini değiştir',
-        'Customer Data' => 'Müşteri Verisi',
         'Customer user' => 'Müşteri hesabı',
 
         # Template: AgentTicketEmail
@@ -2347,6 +2349,8 @@ sub Data {
         'Output' => 'Sonuç Formu',
         'Fulltext' => 'Tüm metin',
         'Remove' => 'Kaldır',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Müşteri Kullanıcı Oturum Açma',
         'Created in Queue' => 'Kuyrukta Oluşturuldu',
         'Lock state' => 'Kilit durumu',
@@ -2380,7 +2384,8 @@ sub Data {
         'Linked Objects' => 'Bağlantılı Nesneler',
         'Article(s)' => 'Makale(ler)',
         'Change Queue' => 'Kuyruk Değiştir',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Makale Filtresi',
         'Add Filter' => 'Filtre ekle',
@@ -2502,7 +2507,6 @@ sub Data {
         'Expand article' => 'Makaleyi genişlet',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Cevapla',
 
         # Template: CustomerWarning
@@ -4643,6 +4647,7 @@ sub Data {
             'Farklı aracı gruplarının (örneğin satınalma bölümü, destek bölümü, satış bölümü, ...) erişim izinlerini düzenlemek için yeni grupları oluştur.',
         'CreateTicket' => 'Bilet Oluştur',
         'Current Impact Rating' => 'Şu Andaki Etki Oranı',
+        'Customer Data' => 'Müşteri Verisi',
         'Customer Move Notify' => 'Müşteri Taşıma Bildirimi',
         'Customer Owner Notify' => 'Müşteri Sahip Bildirimi',
         'Customer State Notify' => 'Müşteri Durum Bildirimi',
@@ -4667,6 +4672,8 @@ sub Data {
         'Delete old database' => 'Eski veritabanını sil',
         'Delete this ticket!' => 'Bu bileti sil!',
         'Detail' => 'Detay',
+        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+            'Gerekli özelliği bulamadınızmı? OTRS grubu üye müşterilerimize seçkin eklentileri sunar.',
         'Diff' => 'Fark',
         'Discard all changes and return to the compose screen' => 'Tüm değişiklikleri geri al ve oluşturma ekranına geri dön',
         'Do dispatch or filter incoming emails based on email X-Headers! RegExp is also possible.' =>
@@ -4756,6 +4763,7 @@ sub Data {
         'Logfile too large, you need to reset it!' => 'Günlük dosyası çok büyük, boşaltmalısınız!',
         'Login failed! Your username or password was entered incorrectly.' =>
             'Oturum açılamadı! Kullanıcı adınız veya parolanız hatalı girildi.',
+        'Logout successful. Thank you for using OTRS!' => 'Oturum kapatma başarılı! OTRS\'yi kullandığınız için teşekkür ederiz!',
         'Lookup' => 'Ara',
         'Mail Management' => 'Posta Yönetimi',
         'Mailbox' => 'Posta kutusu',

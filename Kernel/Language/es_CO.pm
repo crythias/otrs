@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-03-07 10:55:09
+    # Last translation file sync: 2013-04-18 14:11:18
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -225,7 +225,7 @@ sub Data {
         'There is no acount with that user name.' => 'No existe una cuenta para ese nombre de usuario',
         'Please contact your administrator' => 'Favor de contactar a su administrador',
         'Logout' => 'Cerrar Sesi√≥n',
-        'Logout successful. Thank you for using OTRS!' => 'Sesi√≥n terminada satisfactoriamente.',
+        'Logout successful. Thank you for using %s!' => '',
         'Feature not active!' => 'Funcionalidad inactiva.',
         'Agent updated!' => '¬°Agente actualizado!',
         'Create Database' => 'Crear Base de Datos',
@@ -238,7 +238,8 @@ sub Data {
         'Database' => 'Base de Datos',
         'Configure Mail' => 'Configurar Correo',
         'Database deleted.' => 'Base de Datos eliminada.',
-        'Database setup succesful!' => 'Base de datos configurada con √©xito!',
+        'Database setup successful!' => 'Base de datos configurada con √©xito!',
+        'Generated password' => '',
         'Login is needed!' => 'Inicio de sesi√≥n requerido.',
         'Password is needed!' => 'Contrase√±a requerida.',
         'Take this Customer' => 'Utilizar este cliente',
@@ -1455,7 +1456,7 @@ sub Data {
         'Install' => 'Instalar',
         'Install Package' => 'Instalar Paquete',
         'Update repository information' => 'Actualizar la informaci√≥n del repositorio',
-        'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
+        'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
             '',
         'Online Repository' => 'Repositorio Online',
         'Vendor' => 'Vendedor',
@@ -1664,6 +1665,8 @@ sub Data {
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
+            '',
+        'An unconnected transition is already placed on the canvas. Please connect this transition first before placing another transition.' =>
             '',
 
         # Template: AdminProcessManagementProcessNew
@@ -2248,7 +2251,6 @@ sub Data {
 
         # Template: AgentTicketCustomer
         'Change customer of ticket' => 'Cambiar cliente del ticket',
-        'Customer Data' => 'Informaci√≥n del cliente',
         'Customer user' => 'Cliente',
 
         # Template: AgentTicketEmail
@@ -2347,6 +2349,8 @@ sub Data {
         'Output' => 'Modelo de Resultados',
         'Fulltext' => 'Texto Completo',
         'Remove' => 'Quitar',
+        'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
+            '',
         'Customer User Login' => 'Nombre de inicio de sesi√≥n del cliente',
         'Created in Queue' => 'Creado en Fila',
         'Lock state' => 'Estado de bloqueo',
@@ -2380,7 +2384,8 @@ sub Data {
         'Linked Objects' => 'Objetos Enlazados',
         'Article(s)' => 'Art√≠culo(s)',
         'Change Queue' => 'Cambiar Fila',
-        'There are currently no steps available for this process.' => '',
+        'There are no dialogs available at this point in the process.' =>
+            '',
         'This item has no articles yet.' => '',
         'Article Filter' => 'Filtro de Art√≠culos',
         'Add Filter' => 'A√±adir Filtro',
@@ -2502,7 +2507,6 @@ sub Data {
         'Expand article' => '',
         'Information' => '',
         'Next Steps' => '',
-        'There are no further steps in this process' => '',
         'Reply' => 'Responder',
 
         # Template: CustomerWarning
@@ -4737,6 +4741,7 @@ sub Data {
         'Create your first Ticket' => 'Cree su primer ticket.',
         'Create/Expires' => 'Creaci√≥n/Caducidad',
         'CreateTicket' => 'CrearTicket',
+        'Customer Data' => 'Informaci√≥n del cliente',
         'Customer Move Notify' => 'Notificar al Cliente al Mover',
         'Customer Owner Notify' => 'Notificar al Propietario al Mover',
         'Customer State Notify' => 'Notificaci√≥n de estado al Cliente',
@@ -5170,6 +5175,7 @@ sub Data {
         'Logfile too large, you need to reset it!' => 'Archivo de log muy grande, necesita reinicializarlo',
         'Login failed! Your username or password was entered incorrectly.' =>
             'Inicio de sesi√≥n fallido. El nombre de usuario o contrase√±a fue introducido incorrectamente.',
+        'Logout successful. Thank you for using OTRS!' => 'Sesi√≥n terminada satisfactoriamente.',
         'Lookup' => 'Observar',
         'Mail Management' => 'Administraci√≥n de Correo',
         'Mailbox' => 'Buz√≥n',
