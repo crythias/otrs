@@ -348,7 +348,10 @@ sub Send {
     }
     for my $Key ( 'In-Reply-To', 'References' ) {
         next if !$Param{$Key};
-        $Header->replace( $Key, $Param{$Key} );
+        my $Value = $Param{$Key};
+        # Split up '<msgid><msgid>' to allow line folding (see bug#9345).
+        $Value =~ s{><}{> <}xmsg;
+        $Header->replace( $Key, $Value );
     }
 
     # add attachments to email
@@ -693,9 +696,14 @@ sub Send {
         $To .= ', ' . $SendmailBcc;
     }
 
-    # get sender
-    my @Sender   = Mail::Address->parse( $Param{From} );
-    my $RealFrom = $Sender[0]->address();
+    # set envelope sender for replies
+    my $RealFrom = $Self->{ConfigObject}->Get('SendmailEnvelopeFrom') || '';
+    if ( !$RealFrom ) {
+        my @Sender   = Mail::Address->parse( $Param{From} );
+        $RealFrom = $Sender[0]->address();
+    }
+
+    # set envelope sender for autoresponses and notifications
     if ( $Param{Loop} ) {
         $RealFrom = $Self->{ConfigObject}->Get('SendmailNotificationEnvelopeFrom') || '';
     }
