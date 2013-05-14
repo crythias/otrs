@@ -31,11 +31,18 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
     }
 
     function Redirect(CustomerID, Event) {
+        var Session = '';
 
         Event.preventDefault();
         Event.stopPropagation();
         ShowWaitingDialog();
-        window.location.href = Core.Config.Get('Baselink') + 'Action=AgentCustomerInformationCenter;CustomerID=' + encodeURIComponent(CustomerID);
+
+        // add session data, if needed
+        if (!Core.Config.Get('SessionIDCookie')) {
+            Session = ';' + Core.Config.Get('SessionName') + '=' + Core.Config.Get('SessionID');
+        }
+
+        window.location.href = Core.Config.Get('Baselink') + 'Action=AgentCustomerInformationCenter;CustomerID=' + encodeURIComponent(CustomerID) + Session;
     }
 
     /**
@@ -113,7 +120,7 @@ Core.Agent.CustomerInformationCenterSearch = (function (TargetNS) {
                     return;
                 }
 
-                Core.UI.Dialog.ShowContentDialog(HTML, Core.Config.Get('SearchMsg'), '10px', 'Center', true, undefined, true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Core.Config.Get('SearchMsg'), '10px', 'Center', true);
                 TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerID"), 'SearchCustomerID' );
                 TargetNS.InitAutocomplete( $("#AgentCustomerInformationCenterSearchCustomerUser"), 'SearchCustomerUser' );
 

@@ -1,4 +1,6 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-05-13 Improved handling of the CaseSensitive configuration. There is no CaseInsensitive configuration anymore.
+ - 2013-05-11 Fixed bug#[9246](http://bugs.otrs.org/show_bug.cgi?id=9246) - ProcessManagement: TranstionAction error messages not sufficient enough.
  - 2013-04-30 Fixed bug#[9376](http://bugs.otrs.org/show_bug.cgi?id=9376) - Configurable automatic merge subject.
  - 2013-04-30 Fixed bug#[9372](http://bugs.otrs.org/show_bug.cgi?id=9372) - Configurable envelope sender address.
  - 2013-04-30 Added article link to every article box in ticket zoom.
@@ -17,6 +19,10 @@
     and hard-coded to use /tmp.
 
 #3.2.7 2013-??.??
+ - 2013-05-14 Fixed bug#[9410](http://bugs.otrs.org/show_bug.cgi?id=9410) - SessionID isn't added to URL when using ajax customer search without cookies active.
+ - 2013-05-14 Fixed bug#[9419](http://bugs.otrs.org/show_bug.cgi?id=9419) - Process Management: List of available dialog fields lists Responsible 
+    even if feature is inactive.
+ - 2013-05-11 Fixed bug#[9246](http://bugs.otrs.org/show_bug.cgi?id=9246) - ProcessManagement: TranstionAction error messages not sufficient enough.
  - 2013-05-07 Fixed bug#[9345](http://bugs.otrs.org/show_bug.cgi?id=9345) - OTRS exceeds 998 character limit in References Line of E-Mail Header.
  - 2013-05-07 Fixed bug#[7478](http://bugs.otrs.org/show_bug.cgi?id=7478) - Got an external answer to an internal mail.
  - 2013-05-07 Improved permission checks in AgentTicketPhone.
