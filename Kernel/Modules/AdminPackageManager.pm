@@ -198,8 +198,15 @@ sub Run {
         my $Verified = $Self->{PackageObject}->PackageVerify(
             Package   => $Package,
             Structure => \%Structure,
-        );
+        ) || 'verified';
         my %VerifyInfo = $Self->{PackageObject}->PackageVerifyInfo();
+
+        # translate description
+        if ( $Self->{LayoutObject}->{LanguageObject} ) {
+            $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Get(
+                $VerifyInfo{Description}
+            );
+        }
 
         # deploy check
         my $Deployed = $Self->{PackageObject}->DeployCheck(
@@ -405,18 +412,16 @@ sub Run {
                     . $Version,
             );
         }
-        if ( !$Verified ) {
-            my %VerifyInfo = $Self->{PackageObject}->DeployCheckInfo();
+
+        if ( $Verified ne 'verified' ) {
+
             $Output .= $Self->{LayoutObject}->Notify(
                 Priority => 'Error',
-                Data =>
-                    '$Text{"Package verification failed!"} $Text{"For more info see:"} http://otrs.org/verify/',
-                Link => 'http://otrs.org/verify?Name'
-                    . $Name
-                    . ';Version='
-                    . $Version,
+                Data     => "$Name $Version - "
+                    . '$Text{"Package not verified by the OTRS Group! It is recommended not to use this package."}',
             );
         }
+
         $Output .= $Self->{LayoutObject}->Output(
             TemplateFile => 'AdminPackageManager',
         );
@@ -1002,7 +1007,7 @@ sub Run {
 
         my $FormID = $Self->{ParamObject}->GetParam( Param => 'FormID' ) || '';
         my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-            Param  => 'FileUpload',
+            Param => 'FileUpload',
         );
 
         # save package in upload cache
@@ -1179,6 +1184,13 @@ sub Run {
         );
     }
 
+    # verify packages if we have some
+    my %VerificationData;
+    if (@RepositoryList) {
+        %VerificationData = $Self->{PackageObject}->PackageVerifyAll();
+    }
+
+    my %NotVerifiedPackages;
     for my $Package (@RepositoryList) {
 
         my %Data = $Self->_MessageGet( Info => $Package->{Description} );
@@ -1251,6 +1263,14 @@ sub Run {
                 },
             );
         }
+
+        if (
+            $VerificationData{ $Package->{Name}->{Content} }
+            && $VerificationData{ $Package->{Name}->{Content} } eq 'not_verified'
+            )
+        {
+            $NotVerifiedPackages{ $Package->{Name}->{Content} } = $Package->{Version}->{Content};
+        }
     }
 
     # show file upload
@@ -1296,6 +1316,20 @@ sub Run {
                 . $NeedReinstall{$ReinstallKey},
         );
     }
+
+    VERIFICATION:
+    for my $Package ( sort keys %NotVerifiedPackages ) {
+
+        next VERIFICATION if !$Package;
+        next VERIFICATION if !$NotVerifiedPackages{$Package};
+
+        $Output .= $Self->{LayoutObject}->Notify(
+            Priority => 'Error',
+            Data     => "$Package $NotVerifiedPackages{$Package} - "
+                . '$Text{"Package not verified by the OTRS Group! It is recommended not to use this package."}',
+        );
+    }
+
     $Output .= $Self->{LayoutObject}->Output(
         TemplateFile => 'AdminPackageManager',
     );
@@ -1440,11 +1474,19 @@ sub _InstallHandling {
     my $Verified = $Self->{PackageObject}->PackageVerify(
         Package   => $Param{Package},
         Structure => \%Structure,
-    );
+    ) || 'verified';
     my %VerifyInfo = $Self->{PackageObject}->PackageVerifyInfo();
 
+    # translate description
+    if ( $Self->{LayoutObject}->{LanguageObject} ) {
+        $VerifyInfo{Description} = $Self->{LayoutObject}->{LanguageObject}->Get(
+            $VerifyInfo{Description}
+        );
+    }
+
     # vendor screen
-    if ( !$IntroInstallVendor && !$IntroInstallPre && !$Verified ) {
+    if ( !$IntroInstallVendor && !$IntroInstallPre && $Verified ne 'verified' ) {
+
         $Self->{LayoutObject}->Block(
             Name => 'Intro',
             Data => {
@@ -1456,9 +1498,11 @@ sub _InstallHandling {
                 Version   => $Structure{Version}->{Content},
             },
         );
+
         $Self->{LayoutObject}->Block(
             Name => 'IntroCancel',
         );
+
         my $Output = $Self->{LayoutObject}->Header();
         $Output .= $Self->{LayoutObject}->NavigationBar();
         $Output .= $Self->{LayoutObject}->Output(

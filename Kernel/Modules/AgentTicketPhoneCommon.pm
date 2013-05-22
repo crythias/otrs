@@ -12,6 +12,8 @@ package Kernel::Modules::AgentTicketPhoneCommon;
 use strict;
 use warnings;
 
+use Mail::Address;
+
 use Kernel::System::SystemAddress;
 use Kernel::System::CustomerUser;
 use Kernel::System::CheckItem;
@@ -20,7 +22,7 @@ use Kernel::System::State;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
-use Mail::Address;
+use Kernel::System::TemplateGenerator;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -158,8 +160,10 @@ sub Run {
                     Type  => 'Small',
                 );
                 $Output .= $Self->{LayoutObject}->Warning(
-                    Message => $Self->{LayoutObject}->{LanguageObject}->Get('Sorry, you need to be the ticket owner to perform this action.'),
-                    Comment => $Self->{LayoutObject}->{LanguageObject}->Get('Please change the owner first.'),
+                    Message => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Sorry, you need to be the ticket owner to perform this action.'),
+                    Comment => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Please change the owner first.'),
                 );
                 $Output .= $Self->{LayoutObject}->Footer(
                     Type => 'Small',
@@ -381,7 +385,7 @@ sub Run {
             %Error                   = ();
             $Error{AttachmentUpload} = 1;
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-                Param  => 'FileUpload',
+                Param => 'FileUpload',
             );
             $Self->{UploadCacheObject}->FormIDAddFile(
                 FormID => $Self->{FormID},
@@ -575,7 +579,7 @@ sub Run {
 
             # get submit attachment
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-                Param  => 'FileUpload',
+                Param => 'FileUpload',
             );
             if (%UploadStuff) {
                 push @AttachmentData, \%UploadStuff;
@@ -613,17 +617,23 @@ sub Run {
                 );
             }
 
+            my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
+            my $Sender            = $TemplateGenerator->Sender(
+                QueueID => $Ticket{QueueID},
+                UserID  => $Self->{UserID},
+            );
+
             my $ArticleID = $Self->{TicketObject}->ArticleCreate(
-                TicketID    => $Self->{TicketID},
-                ArticleType => $Self->{Config}->{ArticleType},
-                SenderType  => $Self->{Config}->{SenderType},
-                From        => "$Self->{UserFirstname} $Self->{UserLastname} <$Self->{UserEmail}>",
-                Subject     => $GetParam{Subject},
-                Body        => $GetParam{Body},
-                MimeType    => $MimeType,
-                Charset     => $Self->{LayoutObject}->{UserCharset},
-                UserID      => $Self->{UserID},
-                HistoryType => $Self->{Config}->{HistoryType},
+                TicketID       => $Self->{TicketID},
+                ArticleType    => $Self->{Config}->{ArticleType},
+                SenderType     => $Self->{Config}->{SenderType},
+                From           => $Sender,
+                Subject        => $GetParam{Subject},
+                Body           => $GetParam{Body},
+                MimeType       => $MimeType,
+                Charset        => $Self->{LayoutObject}->{UserCharset},
+                UserID         => $Self->{UserID},
+                HistoryType    => $Self->{Config}->{HistoryType},
                 HistoryComment => $Self->{Config}->{HistoryComment} || '%%',
             );
 
