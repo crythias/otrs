@@ -88,7 +88,7 @@ sub Run {
 
         # get submit attachment
         my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-            Param  => 'file_upload',
+            Param => 'file_upload',
         );
         if ( !%UploadStuff ) {
             return $Self->{LayoutObject}->ErrorScreen( Message => 'Need File!', );
@@ -398,7 +398,6 @@ sub Run {
                 );
                 my @LoaderFileTypes = (
                     'CSS',
-                    'CSS_IE7',
                     'CSS_IE8',
                     'JavaScript',
                 );
@@ -1360,7 +1359,6 @@ sub ListConfigItem {
         # Define array with keys for the Loader
         my %LoaderTypes = (
             'CSS'        => 1,
-            'CSS_IE7'    => 1,
             'CSS_IE8'    => 1,
             'JavaScript' => 1,
         );

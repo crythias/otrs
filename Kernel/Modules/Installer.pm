@@ -228,8 +228,7 @@ sub Run {
             mysql      => "MySQL",
             postgresql => "PostgreSQL",
             mssql      => "SQL Server (Microsoft)",
-
-            #            oracle     => "Oracle",
+            oracle     => "Oracle",
         );
 
         # OTRS can only run on SQL Server if OTRS is on Windows as well
@@ -274,7 +273,9 @@ sub Run {
         # check DB requirements
         if ( $CheckMode eq 'DB' ) {
             my %DBCredentials;
-            for my $Param (qw ( DBUser DBPassword DBHost DBType DBName OTRSDBUser OTRSDBPassword ))
+            for my $Param (
+                qw ( DBUser DBPassword DBHost DBType DBPort DBSID DBName InstallType OTRSDBUser OTRSDBPassword )
+                )
             {
                 $DBCredentials{$Param} = $Self->{ParamObject}->GetParam( Param => $Param ) || '';
             }
@@ -312,7 +313,8 @@ sub Run {
 
     elsif ( $Self->{Subaction} eq 'DB' ) {
 
-        my $DBType = $Self->{ParamObject}->GetParam( Param => 'DBType' );
+        my $DBType        = $Self->{ParamObject}->GetParam( Param => 'DBType' );
+        my $DBInstallType = $Self->{ParamObject}->GetParam( Param => 'DBInstallType' );
 
         # use non-instantiated module to generate a password
         my $GeneratedPassword = Kernel::System::User->GenerateRandomPassword( Size => 16 );
@@ -326,11 +328,20 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabaseMySQL',
                 Data => {
-                    Item     => 'Configure MySQL',
-                    Step     => $StepCounter,
-                    Password => $GeneratedPassword,
+                    Item        => 'Configure MySQL',
+                    Step        => $StepCounter,
+                    InstallType => $DBInstallType,
                 },
             );
+            if ( $DBInstallType eq 'CreateDB' ) {
+                $Self->{LayoutObject}->Block(
+                    Name => 'DatabaseMySQLCreate',
+                    Data => {
+                        Password => $GeneratedPassword,
+                    },
+                );
+            }
+
             $Output .= $Self->{LayoutObject}->Output(
                 TemplateFile => 'Installer',
                 Data         => {
@@ -351,17 +362,27 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabaseMSSQL',
                 Data => {
-                    Item     => 'Database',
-                    Step     => $StepCounter,
-                    Password => $GeneratedPassword,
+                    Item        => 'Database',
+                    Step        => $StepCounter,
+                    InstallType => $DBInstallType,
                 },
             );
+
+            if ( $DBInstallType eq 'CreateDB' ) {
+                $Self->{LayoutObject}->Block(
+                    Name => 'DatabaseMSSQLCreate',
+                    Data => {
+                        Password => $GeneratedPassword,
+                    },
+                );
+            }
 
             $Output .= $Self->{LayoutObject}->Output(
                 TemplateFile => 'Installer',
                 Data         => {
-                    Item => 'Configure Microsoft SQL Server',
-                    Step => $StepCounter,
+                    Item        => 'Configure Microsoft SQL Server',
+                    Step        => $StepCounter,
+                    InstallType => $DBInstallType,
                     }
             );
             $Output .= $Self->{LayoutObject}->Footer();
@@ -376,11 +397,19 @@ sub Run {
             $Self->{LayoutObject}->Block(
                 Name => 'DatabasePostgreSQL',
                 Data => {
-                    Item     => 'Database',
-                    Step     => $StepCounter,
-                    Password => $GeneratedPassword,
+                    Item        => 'Database',
+                    Step        => $StepCounter,
+                    InstallType => $DBInstallType,
                 },
             );
+            if ( $DBInstallType eq 'CreateDB' ) {
+                $Self->{LayoutObject}->Block(
+                    Name => 'DatabasePostgreSQLCreate',
+                    Data => {
+                        Password => $GeneratedPassword,
+                    },
+                );
+            }
 
             $Output .= $Self->{LayoutObject}->Output(
                 TemplateFile => 'Installer',
@@ -392,6 +421,32 @@ sub Run {
             $Output .= $Self->{LayoutObject}->Footer();
             return $Output;
         }
+
+        elsif ( $DBType eq 'oracle' ) {
+            my $Output =
+                $Self->{LayoutObject}->Header(
+                Title => "$Title - "
+                    . $Self->{LayoutObject}->{LanguageObject}->Get('Database') . ' Oracle'
+                );
+            $Self->{LayoutObject}->Block(
+                Name => 'DatabaseOracle',
+                Data => {
+                    Item => 'Database',
+                    Step => $StepCounter,
+                },
+            );
+
+            $Output .= $Self->{LayoutObject}->Output(
+                TemplateFile => 'Installer',
+                Data         => {
+                    Item => 'Configure Oracle',
+                    Step => $StepCounter,
+                    }
+            );
+            $Output .= $Self->{LayoutObject}->Footer();
+            return $Output;
+        }
+
         else {
             $Self->{LayoutObject}->FatalError(
                 Message => "Unknown database type '$DBType'.",
@@ -404,13 +459,17 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'DBCreate' ) {
 
         my %DBCredentials;
-        for my $Param (qw ( DBUser DBPassword DBHost DBType DBName OTRSDBUser OTRSDBPassword )) {
+        for my $Param (
+            qw ( DBUser DBPassword DBHost DBType DBName DBSID DBPort InstallType OTRSDBUser OTRSDBPassword )
+            )
+        {
             $DBCredentials{$Param} = $Self->{ParamObject}->GetParam( Param => $Param ) || '';
         }
         %DBCredentials = %{ $Self->{Options} } if $Self->{Options}->{DBType};
 
         # get and check params and connect to DB
         my %Result = $Self->ConnectToDB(%DBCredentials);
+
         my %DB;
         my $DBH;
         if ( ref $Result{DB} ne 'HASH' || !$Result{DBH} ) {
@@ -502,6 +561,17 @@ sub Run {
             $DB{ConfigDSN}
                 = 'DBI:Pg:dbname=$Self->{Database};host=$Self->{DatabaseHost}';
             $DB{DSN} = "DBI:Pg:dbname=$DB{DBName};host=$DB{DBHost}";
+        }
+        elsif ( $DB{DBType} eq 'oracle' ) {
+
+            # set DSN for Config.pm
+            $DB{ConfigDSN}
+                = 'DBI:Oracle:host=$Self->{DatabaseHost};' . "sid=$DB{DBSID};port=$DB{DBPort}";
+            $DB{DSN} = "DBI:Oracle:host=$DB{DBHost};sid=$DB{DBSID};port=$DB{DBPort}";
+            $Self->{ConfigObject}->Set(
+                Key   => 'Database::Connect',
+                Value => "ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'",
+            );
         }
 
         # execute database statements
@@ -719,7 +789,6 @@ sub Run {
         );
 
         if ( !$Self->{Options}->{SkipLog} ) {
-            warn "Skipping log";
             $Param{LogModuleString} = $Self->{LayoutObject}->BuildSelection(
                 Data => {
                     'Kernel::System::Log::SysLog' => 'Syslog',
@@ -1078,8 +1147,8 @@ sub ReConfigure {
             # replace config with %Param
             for my $Key ( sort keys %Param ) {
 
-                # database passwords can contain characters like '@' or '$' and should be single-quoted
-                # same goes for database hosts which can be like 'myserver\instance name' for MS SQL
+             # database passwords can contain characters like '@' or '$' and should be single-quoted
+             # same goes for database hosts which can be like 'myserver\instance name' for MS SQL
                 if ( $Key eq 'DatabasePw' || $Key eq 'DatabaseHost' ) {
                     $NewConfig =~
                         s/(\$Self->{("|'|)$Key("|'|)} =.+?('|"));/\$Self->{'$Key'} = '$Param{$Key}';/g;
@@ -1109,31 +1178,47 @@ sub ConnectToDB {
     my ( $Self, %Param ) = @_;
 
     # check params
-    for my $Key (qw (DBType OTRSDBUser DBHost OTRSDBPassword)) {
+    my @NeededKeys = qw ( DBType DBHost DBUser DBPassword );
+    if ( $Param{InstallType} eq 'CreateDB' ) {
+        push @NeededKeys, qw ( OTRSDBUser OTRSDBPassword );
+    }
+
+    if ( $Param{DBType} eq 'oracle' ) {
+        push @NeededKeys, qw ( DBSID DBPort );
+    }
+
+    for my $Key (@NeededKeys) {
         if ( !$Param{$Key} && $Key !~ /^(OTRSDBPassword)$/ ) {
             return (
                 Successful => 0,
                 Message    => "You need '$Key'!!",
-                Comment    => 'Please go back',
                 DB         => undef,
                 DBH        => undef,
             );
         }
     }
-    my $DBH;
+
+    # if we do not need to create a database for OTRS OTRSDBuser equals DBUser
+    if ( $Param{InstallType} ne 'CreateDB' ) {
+        $Param{OTRSDBUser}     = $Param{DBUser};
+        $Param{OTRSDBPassword} = $Param{DBPassword};
+    }
 
     # create DSN string for backend
     if ( $Param{DBType} eq 'mysql' ) {
         $Param{DSN} = "DBI:mysql:database=;host=$Param{DBHost};";
     }
     elsif ( $Param{DBType} eq 'mssql' ) {
-        $Param{DSN} = "DBI:ODBC:driver={SQL Server};Server=$Param{DBHost}";
+        $Param{DSN} = "DBI:ODBC:driver={SQL Server};Server=$Param{DBHost};";
     }
     elsif ( $Param{DBType} eq 'postgresql' ) {
         $Param{DSN} = "DBI:Pg:host=$Param{DBHost};";
     }
+    elsif ( $Param{DBType} eq 'oracle' ) {
+        $Param{DSN} = "DBI:Oracle:host=$Param{DBHost};sid=$Param{DBSID};port=$Param{DBPort};"
+    }
 
-    $DBH = DBI->connect(
+    my $DBH = DBI->connect(
         $Param{DSN}, $Param{DBUser}, $Param{DBPassword},
     );
 

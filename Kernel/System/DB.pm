@@ -177,7 +177,7 @@ sub new {
     # check/get extra database configuration options
     # (overwrite with params)
     for (
-        qw(Type Limit DirectBlob Attribute QuoteSingle QuoteBack Connect Encode CaseInsensitive LcaseLikeInLargeText)
+        qw(Type Limit DirectBlob Attribute QuoteSingle QuoteBack Connect Encode CaseSensitive LcaseLikeInLargeText)
         )
     {
         if ( defined $Param{$_} ) {
@@ -334,7 +334,7 @@ sub Quote {
 
     # quote integers
     if ( $Type eq 'Integer' ) {
-        if ( $Text !~ /^(\+|\-|)\d{1,16}$/ ) {
+        if ( $Text !~ m{\A [+-]? \d{1,16} \z}xms ) {
             $Self->{LogObject}->Log(
                 Caller   => 1,
                 Priority => 'error',
@@ -347,7 +347,7 @@ sub Quote {
 
     # quote numbers
     if ( $Type eq 'Number' ) {
-        if ( $Text !~ /^(\+|\-|)(\d{1,20}|\d{1,20}\.\d{1,20})$/ ) {
+        if ( $Text !~ m{ \A [+-]? \d{1,20} (?:\.\d{1,20})? \z}xms ) {
             $Self->{LogObject}->Log(
                 Caller   => 1,
                 Priority => 'error',
@@ -1223,11 +1223,11 @@ sub QueryCondition {
 
 # check if database supports LIKE in large text types
 # the first condition is a little bit opaque
-# CaseInsensitive of the database defines, if the database handles case sensitivity or not
+# CaseSensitive of the database defines, if the database handles case sensitivity or not
 # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
 # so if the database dont support case sensitivity or the configuration of the customer database want to do this
 # then we prevent the LOWER() statements.
-                    if ( $Self->GetDatabaseFunction('CaseInsensitive') || $CaseSensitive ) {
+                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type '$Word'";
                     }
                     elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {
@@ -1260,11 +1260,11 @@ sub QueryCondition {
 
 # check if database supports LIKE in large text types
 # the first condition is a little bit opaque
-# CaseInsensitive of the database defines, if the database handles case sensitivity or not
+# CaseSensitive of the database defines, if the database handles case sensitivity or not
 # and the parameter $CaseSensitive defines, if the customer database should do case sensitive statements or not.
 # so if the database dont support case sensitivity or the configuration of the customer database want to do this
 # then we prevent the LOWER() statements.
-                    if ( $Self->GetDatabaseFunction('CaseInsensitive') || $CaseSensitive ) {
+                    if ( !$Self->GetDatabaseFunction('CaseSensitive') || $CaseSensitive ) {
                         $SQLA .= "$Key $Type '$Word'";
                     }
                     elsif ( $Self->GetDatabaseFunction('LcaseLikeInLargeText') ) {

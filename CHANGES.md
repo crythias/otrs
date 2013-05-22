@@ -1,4 +1,7 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-05-17 Added SMIME cache.
+ - 2013-05-13 Improved handling of the CaseSensitive configuration. There is no CaseInsensitive configuration anymore.
+ - 2013-05-11 Fixed bug#[9246](http://bugs.otrs.org/show_bug.cgi?id=9246) - ProcessManagement: TranstionAction error messages not sufficient enough.
  - 2013-04-30 Fixed bug#[9376](http://bugs.otrs.org/show_bug.cgi?id=9376) - Configurable automatic merge subject.
  - 2013-04-30 Fixed bug#[9372](http://bugs.otrs.org/show_bug.cgi?id=9372) - Configurable envelope sender address.
  - 2013-04-30 Added article link to every article box in ticket zoom.
@@ -16,7 +19,25 @@
  - 2013-03-27 Fixed bug#[8962](http://bugs.otrs.org/show_bug.cgi?id=8962) - RequestObject GetUploadAll Source 'File' option is unused
     and hard-coded to use /tmp.
 
-#3.2.7 2013-??.??
+#3.2.8 2013-??-??
+ - 2013-05-22 Fixed bug#[9408](http://bugs.otrs.org/show_bug.cgi?id=9408) - A value of Dest inputed in CustomerTicketMessage isn't validated.
+ - 2013-05-21 Fixed bug#[9418](http://bugs.otrs.org/show_bug.cgi?id=9418) - Incorrect decoding email subject and From token.
+ - 2013-05-21 Fixed bug#[9448](http://bugs.otrs.org/show_bug.cgi?id=9448) - AgentTicketPhoneInbound/Outbound inserts Agent's personal email address into article "from".
+ - 2013-05-17 Fixed bug#[9445](http://bugs.otrs.org/show_bug.cgi?id=9445) - ProcessManagement: Error Message: Need ServiceID or Name!.
+ - 2013-05-17 Fixed bug#[9439](http://bugs.otrs.org/show_bug.cgi?id=9439) - ProcessManagement: Customer field value is not remembered after server error is detected.
+
+#3.2.7 2013-05-21
+ - 2013-05-17 Updated Package Manager, that will ensure that packages will be checked against the official OTRS package repository.
+    This is to guarantee that your package wasn’t modified, which may possibly harm your system.
+    All independent package contributors will have to conduct a check of their Add-Ons by
+    OTRS Group in order to take full advantage of the OTRS package verification.
+ - 2013-05-16 Fixed bug#[9387](http://bugs.otrs.org/show_bug.cgi?id=9387) - Error in a condition with dynamic fields in NotificationEvent.
+ - 2013-05-14 Fixed bug#[9286](http://bugs.otrs.org/show_bug.cgi?id=9286) - Ticket::ChangeOwnerToEveryone isn't functional, After a AJAX Load the setting is ignored.
+ - 2013-05-14 Fixed bug#[7518](http://bugs.otrs.org/show_bug.cgi?id=7518) - Escalation Notify by not working properly (follow-up fix).
+ - 2013-05-14 Fixed bug#[9410](http://bugs.otrs.org/show_bug.cgi?id=9410) - SessionID isn't added to URL when using ajax customer search without cookies active.
+ - 2013-05-14 Fixed bug#[9419](http://bugs.otrs.org/show_bug.cgi?id=9419) - Process Management: List of available dialog fields lists Responsible
+    even if feature is inactive.
+ - 2013-05-11 Fixed bug#[9246](http://bugs.otrs.org/show_bug.cgi?id=9246) - ProcessManagement: TranstionAction error messages not sufficient enough.
  - 2013-05-07 Fixed bug#[9345](http://bugs.otrs.org/show_bug.cgi?id=9345) - OTRS exceeds 998 character limit in References Line of E-Mail Header.
  - 2013-05-07 Fixed bug#[7478](http://bugs.otrs.org/show_bug.cgi?id=7478) - Got an external answer to an internal mail.
  - 2013-05-07 Improved permission checks in AgentTicketPhone.

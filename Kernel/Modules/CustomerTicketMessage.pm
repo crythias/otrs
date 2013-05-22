@@ -256,7 +256,7 @@ sub Run {
             $IsUpload = 1;
             $Error{AttachmentUpload} = 1;
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-                Param  => 'file_upload',
+                Param => 'file_upload',
             );
             $Self->{UploadCacheObject}->FormIDAddFile(
                 FormID => $Self->{FormID},
@@ -361,6 +361,24 @@ sub Run {
         # check queue
         if ( !$NewQueueID && !$IsUpload && !$GetParam{Expand} ) {
             $Error{QueueInvalid} = 'ServerError';
+        }
+
+        # prevent queue tamper with, see bug#9408
+        # get the original list of queues to display
+        my $Tos = $Self->_GetTos(
+            %GetParam,
+            %ACLCompatGetParam,
+            QueueID => $NewQueueID,
+        );
+
+        # check if current selected QueueID exists in the list of queues, otherwise rise an error
+        if ( !$Tos->{$NewQueueID} ) {
+            $Error{QueueInvalid} = 'ServerError';
+        }
+
+        # set the correct queue name in $To if it was altered
+        if ( $To ne $Tos->{$NewQueueID} ){
+            $To = $Tos->{$NewQueueID}
         }
 
         # check subject
@@ -511,7 +529,7 @@ sub Run {
 
         # get submitted attachment
         my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-            Param  => 'file_upload',
+            Param => 'file_upload',
         );
         if (%UploadStuff) {
             push @AttachmentData, \%UploadStuff;

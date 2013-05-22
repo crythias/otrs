@@ -175,8 +175,10 @@ sub Run {
                     Value => $Ticket{Number},
                 );
                 $Output .= $Self->{LayoutObject}->Warning(
-                    Message => $Self->{LayoutObject}->{LanguageObject}->Get('Sorry, you need to be the ticket owner to perform this action.'),
-                    Comment => $Self->{LayoutObject}->{LanguageObject}->Get('Please change the owner first.'),
+                    Message => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Sorry, you need to be the ticket owner to perform this action.'),
+                    Comment => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Please change the owner first.'),
                 );
                 $Output .= $Self->{LayoutObject}->Footer(
                     Type => 'Small',
@@ -297,7 +299,7 @@ sub Run {
             %Error                   = ();
             $Error{AttachmentUpload} = 1;
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-                Param  => 'FileUpload',
+                Param => 'FileUpload',
             );
             $Self->{UploadCacheObject}->FormIDAddFile(
                 FormID => $Self->{FormID},
@@ -707,7 +709,7 @@ sub Run {
 
             # get submit attachment
             my %UploadStuff = $Self->{ParamObject}->GetUploadAll(
-                Param  => 'FileUpload',
+                Param => 'FileUpload',
             );
             if (%UploadStuff) {
                 push @Attachments, \%UploadStuff;
@@ -1676,7 +1678,14 @@ sub _GetResponsible {
         Type  => 'Long',
         Valid => 1,
     );
-    if ( $Param{QueueID} && !$Param{AllUsers} ) {
+
+    # show all users
+    if ( $Self->{ConfigObject}->Get('Ticket::ChangeOwnerToEveryone') ) {
+        %ShownUsers = %AllGroupsMembers;
+    }
+
+    # show only users with responsible or rw pemissions in the queue
+    elsif ( $Param{QueueID} && !$Param{AllUsers} ) {
         my $GID = $Self->{QueueObject}->GetQueueGroupID(
             QueueID => $Param{NewQueueID} || $Param{QueueID}
         );
@@ -1712,7 +1721,14 @@ sub _GetOwners {
         Type  => 'Long',
         Valid => 1,
     );
-    if ( $Param{QueueID} && !$Param{AllUsers} ) {
+
+    # show all users
+    if ( $Self->{ConfigObject}->Get('Ticket::ChangeOwnerToEveryone') ) {
+        %ShownUsers = %AllGroupsMembers;
+    }
+
+    # show only users with owner or rw pemissions in the queue
+    elsif ( $Param{QueueID} && !$Param{AllUsers} ) {
         my $GID = $Self->{QueueObject}->GetQueueGroupID(
             QueueID => $Param{NewQueueID} || $Param{QueueID}
         );
