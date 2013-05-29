@@ -3,7 +3,6 @@
 
 <!-- Fix bug#8490 - no history record for title update -->
 <Insert Table="ticket_history_type">
-    <Data Key="id" Type="AutoIncrement">50</Data>
     <Data Key="name" Type="Quote">TitleUpdate</Data>
     <Data Key="valid_id">1</Data>
     <Data Key="create_by">1</Data>
@@ -36,5 +35,16 @@
 
 </TableAlter>
 
+<TableAlter Name="article">
+    <IndexDrop Name="article_message_id"/>
+    <ColumnAdd Name="a_message_id_md5" Required="false" Size="32" Type="VARCHAR"/>
+    <IndexCreate Name="article_message_id_md5">
+        <IndexColumn Name="a_message_id_md5"/>
+    </IndexCreate>
+</TableAlter>
+<TableAlter Name="article_search">
+    <IndexDrop Name="article_search_message_id"/>
+    <ColumnDrop Name="a_message_id"/>
+</TableAlter>
 
 </database>
