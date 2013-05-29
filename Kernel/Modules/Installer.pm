@@ -1188,7 +1188,7 @@ sub ConnectToDB {
     }
 
     for my $Key (@NeededKeys) {
-        if ( !$Param{$Key} && $Key !~ /^(OTRSDBPassword)$/ ) {
+        if ( !$Param{$Key} && $Key !~ /^(DBPassword)$/ ) {
             return (
                 Successful => 0,
                 Message    => "You need '$Key'!!",
@@ -1216,6 +1216,18 @@ sub ConnectToDB {
     }
     elsif ( $Param{DBType} eq 'oracle' ) {
         $Param{DSN} = "DBI:Oracle:host=$Param{DBHost};sid=$Param{DBSID};port=$Param{DBPort};"
+    }
+
+    # extract driver to load for install test
+    my ($Driver) = ( $Param{DSN} =~ /^DBI:(.*?):/);
+    if ( !$Self->{MainObject}->Require( 'DBD::' . $Driver ) ) {
+        return (
+            Successful => 0,
+            Message    => "Can't connect to database, Perl module DBD::$Driver not installed!",
+            Comment    => "",
+            DB         => undef,
+            DBH        => undef,
+        );        
     }
 
     my $DBH = DBI->connect(
