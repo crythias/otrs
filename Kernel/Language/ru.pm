@@ -9,6 +9,7 @@
 # Copyright (C) 2010-2011 Eugene Kungurov <ekungurov83 at ya.ru>
 # Copyright (C) 2010 Sergey Romanov <romanov_s at mail.ru>
 # Copyright (C) 2012-2013 Vadim Goncharov <vgoncharov at mail.ru>
+# Copyright (C) 2013 Alexey Gluhov <glalexnn at yandex.ru>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,7 +25,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-05-28 11:37:26
+    # Last translation file sync: 2013-05-31 15:13:01
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -263,9 +264,9 @@ sub Data {
         'Dispatching by email To: field.' => 'Перенаправление по заголовку To: электронного письма',
         'Dispatching by selected Queue.' => 'Перенаправление по выбранной очереди',
         'No entry found!' => 'Запись не найдена',
-        'Session invalid. Please log in again.' => '',
+        'Session invalid. Please log in again.' => 'Ошибка сессии. Пожалуйста авторизуйтесь вновь.',
         'Session has timed out. Please log in again.' => 'Сеанс завершен. Попробуйте войти заново.',
-        'Session limit reached! Please try again later.' => '',
+        'Session limit reached! Please try again later.' => 'Срок жизни сессии прошел. Пожалуйста попробуйте еще раз.',
         'No Permission!' => 'Нет доступа!',
         '(Click here to add)' => '(нажмите сюда чтобы добавить)',
         'Preview' => 'Предварительный просмотр',
@@ -356,7 +357,7 @@ sub Data {
         'more' => 'далее',
         'Collapse' => 'Свернуть',
         'Shown' => 'Показано',
-        'Shown customer users' => '',
+        'Shown customer users' => 'Отображенные клиенты',
         'News' => 'Новости',
         'Product News' => 'Новости о продукте',
         'OTRS News' => 'Новости OTRS',
@@ -882,7 +883,7 @@ sub Data {
 
         # Template: AdminCustomerUser
         'Customer Management' => 'Управление клиентами',
-        'Back to search result' => '',
+        'Back to search result' => 'Назад к результатам поиска',
         'Add customer' => 'Добавить клиента',
         'Select' => 'Выбор',
         'Hint' => 'Подсказка',
@@ -891,7 +892,7 @@ sub Data {
         'Please enter a search term to look for customers.' => 'Введите запрос для поиска клиентов.',
         'Last Login' => 'Последний вход',
         'Login as' => 'Зайти данным пользователем',
-        'Switch to customer' => '',
+        'Switch to customer' => 'Переключится на клиента',
         'Add Customer' => 'Добавить клиента',
         'Edit Customer' => 'Редактировать клиента',
         'This field is required and needs to be a valid email address.' =>
@@ -979,8 +980,8 @@ sub Data {
             'Это порядок, в котором поле будет показываться среди других полей на тех экранах, где оно активно.',
         'Field type' => 'Тип поля',
         'Object type' => 'Тип объекта',
-        'Internal field' => '',
-        'This field is protected and can\'t be deleted.' => '',
+        'Internal field' => 'Внутреннее поле',
+        'This field is protected and can\'t be deleted.' => 'Это поле защищено и не может быть удалено.',
         'Field Settings' => ' - настройки поля',
         'Default value' => 'Значение по умолчанию',
         'This is the default value for this field.' => 'Это значение по умолчанию для данного поля.',
@@ -1115,7 +1116,7 @@ sub Data {
         'Archive selected tickets' => 'Архивировать выбранные заявки',
         'Add Note' => 'Добавить заметку',
         'Time units' => 'Единицы времени',
-        '(work units)' => '',
+        '(work units)' => '(рабочие единицы)',
         'Ticket Commands' => 'Команды по заявке',
         'Send agent/customer notifications on changes' => 'Отправлять уведомление агенту при изменениях',
         'CMD' => 'Команда',
@@ -1140,7 +1141,7 @@ sub Data {
         'GenericInterface Debugger for Web Service %s' => '',
         'Web Services' => 'Вебсервисы',
         'Debugger' => 'Отладчик',
-        'Go back to web service' => '',
+        'Go back to web service' => 'Перейти назад к веб сервису',
         'Clear' => 'Очистить',
         'Do you really want to clear the debug log of this web service?' =>
             '',
@@ -1469,7 +1470,7 @@ sub Data {
         'Install Package' => 'Установить пакет',
         'Update repository information' => 'Обновить информацию репозитория',
         'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
-            '',
+            'Не нашли требующуюся функцию? Клиентам заключившим сервисный контракт, OTRS Group предлагает набор расширений(Add-One)',
         'Online Repository' => 'Онлайновый репозиторий',
         'Vendor' => 'Изготовитель',
         'Module documentation' => 'Документация модуля',
@@ -1606,12 +1607,12 @@ sub Data {
         'ArticleType' => '',
         'Display' => '',
         'Edit Field Details' => '',
-        'Customer interface does not support internal article types.' => '',
+        'Customer interface does not support internal article types.' => 'Клиентский интерфейс не поддерживает внутренний тип заметки',
 
         # Template: AdminProcessManagementPath
         'Path' => '',
-        'Edit this transition' => '',
-        'Transition Actions' => '',
+        'Edit this transition' => 'Редактировать это преобразование',
+        'Transition Actions' => 'Действия преобразований',
         'You can assign Transition Actions to this Transition by dragging the elements with the mouse from the left list to the right list.' =>
             '',
         'Filter available Transition Actions' => '',
@@ -1654,6 +1655,7 @@ sub Data {
         'Extend the width of the Canvas' => '',
         'Extend the height of the Canvas' => '',
         'Remove the Activity from this Process' => '',
+        'Edit this Activity' => '',
         'Do you really want to delete this Process?' => '',
         'Do you really want to delete this Activity?' => '',
         'Do you really want to delete this Activity Dialog?' => '',
@@ -2362,7 +2364,7 @@ sub Data {
         'Fulltext' => 'Полнотекстовый',
         'Remove' => 'Удалить',
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
-            '',
+            'Искать в свойствах От, Для, Копия, Тема и тело сообщения, перекрывая другие атрибуты с тем же именем.',
         'Customer User Login' => 'Логин клиента',
         'Created in Queue' => 'Создана в очереди',
         'Lock state' => 'Состояние блокировки',
@@ -2391,14 +2393,14 @@ sub Data {
         'Article Type' => 'Тип сообщения',
         'Sender Type' => 'Тип отправителя',
         'Save filter settings as default' => 'Сохранить условия фильтра для показа по умолчанию',
-        'Archive' => '',
-        'This ticket is archived.' => '',
+        'Archive' => 'Архив',
+        'This ticket is archived.' => 'Заявка перемещена в архив.',
         'Linked Objects' => 'Связанные объекты',
         'Article(s)' => 'сообщений',
         'Change Queue' => 'Сменить очередь',
         'There are no dialogs available at this point in the process.' =>
-            '',
-        'This item has no articles yet.' => '',
+            'Нет диалогов доступных в этой части процесса',
+        'This item has no articles yet.' => 'Этот элемент пока не имеет заметок.',
         'Article Filter' => 'Фильтр сообщений',
         'Add Filter' => 'Добавить фильтр',
         'Set' => 'Установить',
@@ -2515,10 +2517,10 @@ sub Data {
         'Search Results for' => 'Результаты поиска для',
 
         # Template: CustomerTicketZoom
-        'Show  article' => '',
+        'Show  article' => 'Показать сообщение',
         'Expand article' => 'Развернуть сообщение',
-        'Information' => '',
-        'Next Steps' => '',
+        'Information' => 'Сведения',
+        'Next Steps' => 'Далее',
         'Reply' => 'Ответить',
 
         # Template: CustomerWarning
@@ -2568,9 +2570,9 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => '',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
+        'Fulltext search' => 'Полнотекстовый поиск',
+        'CustomerID Search' => 'Поиск по ID клиента',
+        'CustomerUser Search' => 'Поиск по логину',
         'You are logged in as' => 'Вы вошли как',
 
         # Template: HeaderSmall
@@ -2649,7 +2651,7 @@ sub Data {
 
         # Template: InstallerRegistration
         'Organization' => 'Организация',
-        'Position' => '',
+        'Position' => 'Сфера деятельности',
         'Complete registration and continue' => 'Завершить регистрацию и продолжить',
         'Please fill in all fields marked as mandatory.' => 'Пожалуйста, заполните все поля, отмеченные как обязательные.',
 
@@ -2674,7 +2676,7 @@ sub Data {
             'Вручную вводимые адреса электронной почты будут проверяться на MX-записи в DNS. Не используйте эту опцию, если ваш DNS-сервер медленный или не разрешает публичные адреса.',
 
         # Template: LinkObject
-        'Object#' => '',
+        'Object#' => 'Объект#',
         'Add links' => 'Добавить связи',
         'Delete links' => 'Удалить связи',
 
@@ -2702,7 +2704,7 @@ sub Data {
         # Template: PictureUpload
         'Need FormID!' => 'Требуется FormID!',
         'No file found!' => 'Файл не найден!',
-        'The file is not an image that can be shown inline!' => '',
+        'The file is not an image that can be shown inline!' => 'Этот файл не может быть отображен как часть текста!',
 
         # Template: PrintFooter
         'URL' => 'URL',
@@ -4556,7 +4558,6 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (рабочие единицы)',
         '%s Tickets affected! Do you really want to use this job?' => '%s заявок будет изменено! Выполнить это задание?',
         '(Checks MX recordes of used email addresses by composing an answer. Don\'t use CheckMXRecord if your OTRS machine is behinde a dial-up line $!)' =>
             'Проверять MX-записи домена, на который отправляется email при ответе. Не используйте эту возможность, если сервер с OTRS доступен по слабому каналу!',

@@ -949,6 +949,11 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 $('#Display').val('1');
             }
 
+            // fields without default value can not be hidden
+            if ($.inArray(Fieldname, FieldsWithoutDefaultValue) > -1 ) {
+                $('#Display').find('option[value=0]').remove();
+            }
+
             // if there is a field config already the default settings from above are now overwritten
             if (typeof FieldConfig !== 'undefined') {
                 $('#DescShort').val(FieldConfig.DescriptionShort);
@@ -1008,7 +1013,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 // get current index
                 ConditionHTML = $('#ConditionContainer').html().replace(/_INDEX_/g, CurrentParentIndex + 1).replace(/_FIELDINDEX_/g, LastKnownFieldIndex);
 
-            $(ConditionHTML).insertBefore($('#ConditionAdd'));
+            $($.parseHTML(ConditionHTML)).insertBefore($('#ConditionAdd'));
             return false;
         });
 
@@ -1037,7 +1042,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
                 // add new field
                 ConditionFieldHTML = $('#ConditionFieldContainer').html().replace(/_INDEX_/g, CurrentParentIndex).replace(/_FIELDINDEX_/g, LastKnownFieldIndex + 1);
 
-            $(ConditionFieldHTML).insertBefore($(this));
+            $($.parseHTML(ConditionFieldHTML)).insertBefore($(this));
             return false;
         });
 
@@ -1100,7 +1105,7 @@ Core.Agent.Admin.ProcessManagement = (function (TargetNS) {
             // get current index
             ConfigParamHTML = $('#ConfigParamContainer').html().replace(/_INDEX_/g, LastKnownFieldIndex + 1);
 
-            $(ConfigParamHTML).insertBefore($('#ConfigAdd'));
+            $($.parseHTML(ConfigParamHTML)).insertBefore($('#ConfigAdd'));
             return false;
         });
 

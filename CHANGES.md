@@ -1,4 +1,6 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-05-31 Fixed bug#[9486](http://bugs.otrs.org/show_bug.cgi?id=9486) - Database error by invalid condition with parentheses in TicketSearch, thanks to Norihiro Tanaka!
+ - 2013-05-31 Added multiple backends support for CustomerCompany, thanks to Cyrille @ belnet-ict!
  - 2013-05-30 Fixed bug#[7439](http://bugs.otrs.org/show_bug.cgi?id=7439) - Installer breaks on dash in database name or database user.
  - 2013-05-25 Fixed bug#[9381](http://bugs.otrs.org/show_bug.cgi?id=9381) - Replaced otrs.cleanup shell script with perl version.
  - 2013-05-25 Fixed bug#[4656](http://bugs.otrs.org/show_bug.cgi?id=4656) - Implement md5sum of message_ID field.
@@ -24,6 +26,14 @@
     and hard-coded to use /tmp.
 
 #3.2.8 2013-??-??
+ - 2013-05-31 Fixed bug#[9479](http://bugs.otrs.org/show_bug.cgi?id=9479) - ProcessManagement: Article and CustomerID should not be Hidden.
+ - 2013-05-31 Fixed bug#[9491](http://bugs.otrs.org/show_bug.cgi?id=9491) - GenericAgent job update with dynamic fields sends Uninitialized value error.
+ - 2013-05-31 Fixed bug#[9456](http://bugs.otrs.org/show_bug.cgi?id=9456) - Empty 'Dropdown' dynamic field value of GenericAgent job wont get used and stored.
+ - 2013-05-31 Follow-up fix for bug#[9245](http://bugs.otrs.org/show_bug.cgi?id=9245) - Added translatable titles for transition buttons.
+ - 2013-05-31 Updated Russian translation, thanks to Alexey Gluhov!
+ - 2013-05-31 Fixed bug#[9245](http://bugs.otrs.org/show_bug.cgi?id=9245) - Improve user interaction on transitions.
+ - 2013-05-31 Fixed bug#[9284](http://bugs.otrs.org/show_bug.cgi?id=9284) - Improve user experience of accordion widget.
+ - 2013-05-31 Fixed bug#[9105](http://bugs.otrs.org/show_bug.cgi?id=9105) - Opening reply view crashes browsers on iPad 3.
  - 2013-05-28 Added '-a reinstall-all' feature to bin/otrs.PackageManager.pl.
  - 2013-05-27 Fixed bug#[9476](http://bugs.otrs.org/show_bug.cgi?id=9476) - AgentTicketZoom: translation of "split" into german language.
  - 2013-05-27 Fixed bug#[9459](http://bugs.otrs.org/show_bug.cgi?id=9459) - Creating a new transition action coming from the transition path view produces errors.
