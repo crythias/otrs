@@ -387,6 +387,27 @@ Description>
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="DynamicFieldFromCustomerUser::Mapping" Required="0" Valid="0">
+        <Description Translatable="1">Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set manually. They mustn't be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="CustomerUserFirstname">CustomerFirstname</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::EventModulePost###930-DynamicFieldFromCustomerUser" Required="0" Valid="0">
+        <Description Translatable="1">This event module stores attributes from CustomerUser as DynamicFields tickets.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::DynamicFieldFromCustomerUser</Item>
+                <Item Key="Event">(TicketCreate|TicketCustomerUpdate)</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::CustomModule###001-CustomModule" Required="0" Valid="0">
         <Description Translatable="1">Overloads (redefines) existing functions in Kernel::System::Ticket. Used to easily add customizations.</Description>
         <Group>Ticket</Group>
@@ -504,6 +525,7 @@ Description>
                 <Item Key="ModulePriority">200</Item>
                 <Item Key="CustomerInfo">0</Item>
                 <Item Key="TicketActionsPerTicket">0</Item>
+                <Item Key="OverviewMenuModules">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -523,6 +545,7 @@ Description>
                 <Item Key="DefaultViewNewLine">90</Item>
                 <Item Key="StripEmptyLines">0</Item>
                 <Item Key="TicketActionsPerTicket">0</Item>
+                <Item Key="OverviewMenuModules">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -4837,6 +4860,27 @@ $QData{"Body"}
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::OverviewMenuModule###001-Sort" Required="0" Valid="1">
+        <Description Translatable="1">Shows a select of ticket attributes to order the queue view ticket list. The possible selections can be configured via 'TicketOverviewMenuSort###SortAttributes'.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::OverviewMenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::TicketOverviewMenuSort</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="TicketOverviewMenuSort###SortAttributes" Required="0" Valid="1">
+        <Description Translatable="1">Defines from which ticket attributes the agent can select the result order.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::OverviewMenuModule</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Age">1</Item>
+                <Item Key="Title">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::PreMenuModule###100-Lock" Required="0" Valid="1">
         <Description Translatable="1">Shows a link in the menu to lock / unlock a ticket in the ticket overviews of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -5214,6 +5258,32 @@ $QData{"Body"}
                 <Item Key="Group"></Item>
                 <Item Key="Default">1</Item>
                 <Item Key="CacheTTL">2</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+     <ConfigItem Name="DashboardBackend###0270-TicketQueueOverview" Required="0" Valid="1">
+        <Description Translatable="1">Parameters for the dashboard backend of the queue overview widget of the agent interface. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "QueuePermissionGroup" is not mandatory, queues are only listed if they belong to this permission group if you enable it. "States" is a list of states, the key is the sort order of the state in the widget. "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Dashboard</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::DashboardTicketQueueOverview</Item>
+                <Item Key="Title" Translatable="1">Ticket Queue Overview</Item>
+                <Item Key="Description" Translatable="1">Provides a matrix overview of the tickets per state per queue.</Item>
+                <Item Key="Permission">rw</Item>
+                <Item Key="QueuePermissionGroup">users</Item>
+                <Item Key="Block">ContentLarge</Item>
+                <Item Key="Group"></Item>
+                <Item Key="Default">1</Item>
+                <Item Key="Sort">SortBy=Age;OrderBy=Up</Item>
+                <Item Key="CacheTTLLocal">0.5</Item>
+                <Item Key="States">
+                    <Hash>
+                        <Item Key="1">new</Item>
+                        <Item Key="4">open</Item>
+                        <Item Key="6">pending reminder</Item>
+                    </Hash>
+                </Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -6568,12 +6638,12 @@ $QData{"Body"}
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMove###NextScreen" Required="1" Valid="1">
-        <Description Translatable="1">Determines the next screen after the ticket is moved. LastScreenOverview will return to search results, queueview, dashboard or the like, LastScreenView will return to TicketZoom.</Description>
+        <Description Translatable="1">Determines the next screen after the ticket is moved. LastScreenOverview will return the last overview screen (e.g. search results, queueview, dashboard). TicketZoom will return to the TicketZoom.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
         <Setting>
-            <Option SelectedID="LastScreenView">
-                <Item Key="LastScreenView">LastScreenView</Item>
+            <Option SelectedID="TicketZoom">
+                <Item Key="TicketZoom">TicketZoom</Item>
                 <Item Key="LastScreenOverview">LastScreenOverview</Item>
             </Option>
         </Setting>
@@ -7659,6 +7729,82 @@ Thanks for your help!
                 <Item Key="Module">Kernel::System::PostMaster::Filter::FollowUpArticleTypeCheck</Item>
                 <Item Key="ArticleType">email-internal</Item>
                 <Item Key="SenderType">customer</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition1" Required="0" Valid="0">
+        <Description Translatable="1">Recognize if a ticket is a follow up to an existing ticket using an external ticket number.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::PostMaster::Filter::ExternalTicketNumberRecognition</Item>
+                <Item Key="Name">Some Description</Item>
+                <Item Key="FromAddressRegExp">\s*@example.com</Item>
+                <Item Key="NumberRegExp">\s*Incident-(\d.*)\s*</Item>
+                <Item Key="SearchInSubject">1</Item>
+                <Item Key="SearchInBody">1</Item>
+                <Item Key="TicketStateTypes">new;open</Item>
+                <Item Key="DynamicFieldName">Name_X</Item>
+                <Item Key="SenderType">system</Item>
+                <Item Key="ArticleType">note-report</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition2" Required="0" Valid="0">
+        <Description Translatable="1">Recognize if a ticket is a follow up to an existing ticket using an external ticket number.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::PostMaster::Filter::ExternalTicketNumberRecognition</Item>
+                <Item Key="Name">Some Description</Item>
+                <Item Key="FromAddressRegExp">\s*@example.com</Item>
+                <Item Key="NumberRegExp">\s*Incident-(\d.*)\s*</Item>
+                <Item Key="SearchInSubject">1</Item>
+                <Item Key="SearchInBody">1</Item>
+                <Item Key="TicketStateTypes">new;open</Item>
+                <Item Key="DynamicFieldName">Name_X</Item>
+                <Item Key="SenderType">system</Item>
+                <Item Key="ArticleType">note-report</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition3" Required="0" Valid="0">
+        <Description Translatable="1">Recognize if a ticket is a follow up to an existing ticket using an external ticket number.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::PostMaster::Filter::ExternalTicketNumberRecognition</Item>
+                <Item Key="Name">Some Description</Item>
+                <Item Key="FromAddressRegExp">\s*@example.com</Item>
+                <Item Key="NumberRegExp">\s*Incident-(\d.*)\s*</Item>
+                <Item Key="SearchInSubject">1</Item>
+                <Item Key="SearchInBody">1</Item>
+                <Item Key="TicketStateTypes">new;open</Item>
+                <Item Key="DynamicFieldName">Name_X</Item>
+                <Item Key="SenderType">system</Item>
+                <Item Key="ArticleType">note-report</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition4" Required="0" Valid="0">
+        <Description Translatable="1">Recognize if a ticket is a follow up to an existing ticket using an external ticket number.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::PostMaster::Filter::ExternalTicketNumberRecognition</Item>
+                <Item Key="Name">Some Description</Item>
+                <Item Key="FromAddressRegExp">\s*@example.com</Item>
+                <Item Key="NumberRegExp">\s*Incident-(\d.*)\s*</Item>
+                <Item Key="SearchInSubject">1</Item>
+                <Item Key="SearchInBody">1</Item>
+                <Item Key="TicketStateTypes">new;open</Item>
+                <Item Key="DynamicFieldName">Name_X</Item>
+                <Item Key="SenderType">system</Item>
+                <Item Key="ArticleType">note-report</Item>
             </Hash>
         </Setting>
     </ConfigItem>
