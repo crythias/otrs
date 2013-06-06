@@ -1,4 +1,10 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-06-06 Fixed bug#[9503](http://bugs.otrs.org/show_bug.cgi?id=9503) - no connection header in soap responses.
+ - 2013-06-05 Added sort functionality to ticket medium and preview overviews.
+ - 2013-06-05 Fixed bug#[8475(http://bugs.otrs.org/show_bug.cgi?id=8475) - Screen refresh after action not always correct.
+ - 2013-06-04 Added new dashboard widget that shows in a matrix form the number of tickets per state and per queue.
+ - 2013-06-04 Added support to recognize numbers from external ticket systems in email subject and body to create follow-up articles in existing tickets.
+ - 2013-06-04 Added support for storing customer user data in dynamic ticket fields on ticket create or customer user update.
  - 2013-05-31 Fixed bug#[9486](http://bugs.otrs.org/show_bug.cgi?id=9486) - Database error by invalid condition with parentheses in TicketSearch, thanks to Norihiro Tanaka!
  - 2013-05-31 Added multiple backends support for CustomerCompany, thanks to Cyrille @ belnet-ict!
  - 2013-05-30 Fixed bug#[7439](http://bugs.otrs.org/show_bug.cgi?id=7439) - Installer breaks on dash in database name or database user.
@@ -26,6 +32,9 @@
     and hard-coded to use /tmp.
 
 #3.2.8 2013-??-??
+ - 2013-06-06 Improved permission checks in AgentTicketWatcher.
+ - 2013-06-04 Fixed bug#[7143](http://bugs.otrs.org/show_bug.cgi?id=7143) - "SFTP." gets rewritten to "Shttp://FTP."
+ - 2013-06-04 Fixed bug#[9488](http://bugs.otrs.org/show_bug.cgi?id=9488) - Use of uninitialized value at OutofOffice setting in AgentPreferences.
  - 2013-05-31 Fixed bug#[9479](http://bugs.otrs.org/show_bug.cgi?id=9479) - ProcessManagement: Article and CustomerID should not be Hidden.
  - 2013-05-31 Fixed bug#[9491](http://bugs.otrs.org/show_bug.cgi?id=9491) - GenericAgent job update with dynamic fields sends Uninitialized value error.
  - 2013-05-31 Fixed bug#[9456](http://bugs.otrs.org/show_bug.cgi?id=9456) - Empty 'Dropdown' dynamic field value of GenericAgent job wont get used and stored.
@@ -77,7 +86,6 @@
  - 2013-04-29 Fixed bug#[9040](http://bugs.otrs.org/show_bug.cgi?id=9040) - CustomerTicketPrint crashes when no attributes are configured to be printed.
  - 2013-04-26 Added UnitTest for case sensivity parameter of customer databases
  - 2013-04-23 Fixed bug#[9362](http://bugs.otrs.org/show_bug.cgi?id=9362) - cannot redirect to external url containing & caracter.
- - 2013-04-23 Fixed bug#[9060](http://bugs.otrs.org/show_bug.cgi?id=9060) - OTRS_CUSTOMER_BODY overwritten in Agent::Move Notifications.
  - 2013-04-23 Fixed bug#[7856](http://bugs.otrs.org/show_bug.cgi?id=7856) - Statistics only use non archived tickets.
  - 2013-04-23 Fixed bug#[9072](http://bugs.otrs.org/show_bug.cgi?id=9072) - Reply to email-internal includes customer users email in Cc. field.
  - 2013-04-22 Fixed bug#[9349](http://bugs.otrs.org/show_bug.cgi?id=9349) - SQL warnings on Oracle DB if more than 4k characters are sent to the database.

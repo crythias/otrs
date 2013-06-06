@@ -2985,6 +2985,8 @@ sub Data {
         'Defines an alternate logout URL for the customer panel.' => '',
         'Defines an external link to the database of the customer (e.g. \'http://yourhost/customer.php?CID=$Data{"CustomerID"}\' or \'\').' =>
             '',
+        'Defines from which ticket attributes the agent can select the result order.' =>
+            '',
         'Defines how the From field from the emails (sent from answers and email tickets) should look like.' =>
             '',
         'Defines if a pre-sorting by priority should be done in the queue view.' =>
@@ -3503,8 +3505,8 @@ sub Data {
             '',
         'Determines the next screen after the follow up screen of a zoomed ticket in the customer interface.' =>
             '',
-        'Determines the next screen after the ticket is moved. LastScreenOverview will return to search results, queueview, dashboard or the like, LastScreenView will return to TicketZoom.' =>
-            '',
+        'Determines the next screen after the ticket is moved. LastScreenOverview will return the last overview screen (e.g. search results, queueview, dashboard). TicketZoom will return to the TicketZoom.' =>
+            'Bestimmt das nächste Fenster nach dem das Ticket verschoben ist. LastScreenOverview wechselt zur letzten Übersichtsseite. TicketZoom wechselt zur Ticket Detailansicht.',
         'Determines the possible states for pending tickets that changed state after reaching time limit.' =>
             '',
         'Determines the strings that will be shown as receipent (To:) of the phone ticket and as sender (From:) of the email ticket in the agent interface. For Queue as NewQueueSelectionType "<Queue>" shows the names of the queues and for SystemAddress "<Realname> <<Email>>" shows the name and email of the receipent.' =>
@@ -4339,6 +4341,8 @@ sub Data {
         'Shows a list of all the possible agents (all agents with note permissions on the queue/ticket) to determine who should be informed about this note, in the ticket responsible screen of the agent interface.' =>
             '',
         'Shows a preview of the ticket overview (CustomerInfo => 1 - shows also Customer-Info, CustomerInfoMaxSize max. size in characters of Customer-Info).' =>
+            '',
+        'Shows a select of ticket attributes to order the queue view ticket list. The possible selections can be configured via "TicketOverviewMenuSort###SortAttributes".' =>
             '',
         'Shows all both ro and rw queues in the queue view.' => '',
         'Shows all open tickets (even if they are locked) in the escalation view of the agent interface.' =>

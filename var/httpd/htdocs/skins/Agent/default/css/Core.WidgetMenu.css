@@ -415,6 +415,10 @@ ul.ContextFunctions li:last-child:hover > a {
     padding: 4px 8px;
 }
 
+.Actions li.SortBy {
+    padding: 5px 8px;
+}
+
 .Actions li select {
     font-size: 11px;
 }
