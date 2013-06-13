@@ -12,6 +12,7 @@ package Kernel::System::CustomerCompany;
 use strict;
 use warnings;
 
+use Kernel::System::EventHandler;
 use Kernel::System::Valid;
 use Kernel::System::Cache;
 
@@ -39,7 +40,6 @@ create an object
     use Kernel::System::Encode;
     use Kernel::System::Log;
     use Kernel::System::Main;
-    use Kernel::System::Time;
     use Kernel::System::DB;
     use Kernel::System::CustomerCompany;
 
@@ -50,10 +50,6 @@ create an object
     my $LogObject = Kernel::System::Log->new(
         ConfigObject => $ConfigObject,
         EncodeObject => $EncodeObject,
-    );
-    my $TimeObject = Kernel::System::Time->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
     );
     my $MainObject = Kernel::System::Main->new(
         ConfigObject => $ConfigObject,
@@ -70,7 +66,6 @@ create an object
         ConfigObject => $ConfigObject,
         LogObject    => $LogObject,
         DBObject     => $DBObject,
-        TimeObject   => $TimeObject,
         EncodeObject => $EncodeObject,
         MainObject   => $MainObject,
     );
@@ -97,16 +92,27 @@ sub new {
         # next if backend is not used
         next if !$Self->{ConfigObject}->Get("CustomerCompany$Count");
 
-        my $GenericModule = $Self->{ConfigObject}->Get("CustomerCompany$Count")->{Module} || 'Kernel::System::CustomerCompany::DB';
+        my $GenericModule = $Self->{ConfigObject}->Get("CustomerCompany$Count")->{Module}
+            || 'Kernel::System::CustomerCompany::DB';
         if ( !$Self->{MainObject}->Require($GenericModule) ) {
             $Self->{MainObject}->Die("Can't load backend module $GenericModule! $@");
         }
         $Self->{"CustomerCompany$Count"} = $GenericModule->new(
             Count => $Count,
             %Param,
-            CustomerCompanyMap   => $Self->{ConfigObject}->Get("CustomerCompany$Count"),
+            CustomerCompanyMap => $Self->{ConfigObject}->Get("CustomerCompany$Count"),
         );
     }
+
+    # init of event handler
+    push @ISA, 'Kernel::System::EventHandler';
+    $Self->EventHandlerInit(
+        Config     => 'CustomerCompany::EventModulePost',
+        BaseObject => 'CustomerCompanyObject',
+        Objects    => {
+            %{$Self},
+        },
+    );
 
     return $Self;
 }
@@ -149,8 +155,20 @@ sub CustomerCompanyAdd {
         }
     }
 
-    return $Self->{ $Param{Source} }->CustomerCompanyAdd(%Param);
+    my $Result = $Self->{ $Param{Source} }->CustomerCompanyAdd(%Param);
+    return if !$Result;
 
+    # trigger event
+    $Self->EventHandler(
+        Event => 'CustomerCompanyAdd',
+        Data  => {
+            CustomerID => $Param{CustomerID},
+            NewData    => \%Param,
+        },
+        UserID => $Param{UserID},
+    );
+
+    return $Result;
 }
 
 =item CustomerCompanyGet()
@@ -201,10 +219,10 @@ sub CustomerCompanyGet {
         next if !%Company;
 
         # return company data
-	return (
+        return (
             %Company,
-            Source        => "CustomerCompany$Count",
-            Config        => $Self->{ConfigObject}->Get("CustomerCompany$Count"),
+            Source => "CustomerCompany$Count",
+            Config => $Self->{ConfigObject}->Get("CustomerCompany$Count"),
         );
     }
     return;
@@ -215,7 +233,7 @@ sub CustomerCompanyGet {
 update customer company attributes
 
     $CustomerCompanyObject->CustomerCompanyUpdate(
-        CustomerCompanyID       => 'oldexample.com', #required if CustomerCompanyID-update
+        CustomerCompanyID       => 'oldexample.com', # required for CustomerCompanyID-update
         CustomerID              => 'example.com',
         CustomerCompanyName     => 'New Customer Company Inc.',
         CustomerCompanyStreet   => '5201 Blue Lagoon Drive',
@@ -237,7 +255,8 @@ sub CustomerCompanyUpdate {
 
     # check needed stuff
     if ( !$Param{CustomerCompanyID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need CustomerCompanyID or CustomerID!" );
+        $Self->{LogObject}
+            ->Log( Priority => 'error', Message => "Need CustomerCompanyID or CustomerID!" );
         return;
     }
 
@@ -250,7 +269,21 @@ sub CustomerCompanyUpdate {
         );
         return;
     }
-    return $Self->{ $Company{Source} }->CustomerCompanyUpdate(%Param);
+    my $Result = $Self->{ $Company{Source} }->CustomerCompanyUpdate(%Param);
+    return if !$Result;
+
+    # trigger event
+    $Self->EventHandler(
+        Event => 'CustomerCompanyUpdate',
+        Data  => {
+            CustomerID    => $Param{CustomerID},
+            OldCustomerID => $Param{CustomerCompanyID},
+            NewData       => \%Param,
+            OldData       => \%Company,
+        },
+        UserID => $Param{UserID},
+    );
+    return $Result;
 }
 
 =item CustomerCompanySourceList()

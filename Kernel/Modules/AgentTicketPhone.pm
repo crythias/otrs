@@ -345,8 +345,10 @@ sub Run {
                 $CountAux         = $CountFrom . 'Error';
             }
 
-            my $CustomerKey
-                = ( $CustomerDataFrom{UserEmail} eq $EmailAddress ? $Article{CustomerUserID} : '' );
+            my $CustomerKey = '';
+            if ( defined $CustomerDataFrom{UserEmail} && $CustomerDataFrom{UserEmail} eq $EmailAddress ) {
+                $CustomerKey = $Article{CustomerUserID};
+            }
 
             push @MultipleCustomer, {
                 Count            => $CountAux,
@@ -1842,6 +1844,7 @@ sub _MaskPhoneNew {
             Multiple       => 0,
             Size           => 0,
             Name           => 'Dest',
+            TreeView       => $TreeView,
             SelectedID     => $Param{ToSelected},
             OnChangeSubmit => 0,
         );
@@ -1851,6 +1854,7 @@ sub _MaskPhoneNew {
             Class       => 'Validate_Required',
             Data        => \%NewTo,
             Name        => 'Dest',
+            TreeView    => $TreeView,
             SelectedID  => $Param{ToSelected},
             Translation => 0,
         );

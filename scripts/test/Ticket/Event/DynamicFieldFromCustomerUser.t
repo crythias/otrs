@@ -1,6 +1,6 @@
 # --
 # DynamicFieldFromCustomerUser.t - DynamicFieldFromCustomerUser tests
-# Copyright (C) 2003-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -19,9 +19,18 @@ use Kernel::System::DynamicField;
 use Kernel::System::Ticket;
 use Kernel::System::UnitTest::Helper;
 
+my $ConfigObject = Kernel::Config->new( %{$Self} );
+
+# don't check email address validity
+$ConfigObject->Set(
+    Key   => 'CheckEmailAddresses',
+    Value => 0,
+);
+
 # create helper object
 my $HelperObject = Kernel::System::UnitTest::Helper->new(
     %{$Self},
+    ConfigObject               => $ConfigObject,
     UnitTestObject             => $Self,
     RestoreSystemConfiguration => 1,
 );
@@ -31,7 +40,6 @@ my $RandomID = $HelperObject->GetRandomID();
 
 $RandomID =~ s/\-//g;
 
-my $ConfigObject = Kernel::Config->new( %{$Self} );
 $ConfigObject->Set(
     Key   => 'DynamicFieldFromCustomerUser::Mapping',
     Value => {
@@ -44,7 +52,7 @@ $ConfigObject->Set(
     Key   => 'Ticket::EventModulePost###930-DynamicFieldFromCustomerUser',
     Value => {
         Module => 'Kernel::System::Ticket::Event::DynamicFieldFromCustomerUser',
-        Event => '(TicketCreate|TicketCustomerUpdate)',
+        Event  => '(TicketCreate|TicketCustomerUpdate)',
     },
 );
 

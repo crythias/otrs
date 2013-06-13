@@ -3966,11 +3966,14 @@ via the Preferences button after logging in.
                     <Prio>50</Prio>
                 </NavBar>
                 <Loader>
+                    <CSS>Core.Agent.Dashboard.css</CSS>
+                    <CSS>thirdparty/fullcalendar-1.6.1/fullcalendar.css</CSS>
                     <JavaScript>thirdparty/flot-0.8.1/excanvas.js</JavaScript>
                     <JavaScript>thirdparty/flot-0.8.1/jquery.flot.js</JavaScript>
                     <JavaScript>Core.UI.Chart.js</JavaScript>
                     <JavaScript>Core.UI.DnD.js</JavaScript>
                     <JavaScript>Core.Agent.Dashboard.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-1.6.1/fullcalendar.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -5770,6 +5773,8 @@ M
                 <Item>thirdparty/jquery-validate-1.11.1/jquery.validate.js</Item>
                 <Item>thirdparty/stacktrace-0.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
+                <Item>thirdparty/jquery-jstree-v.pre1.0/jquery.jstree.js</Item>
+                <Item>thirdparty/jquery-jstree-v.pre1.0/_lib/jquery.hotkeys.js</Item>
                 <Item>Core.JavaScriptEnhancements.js</Item>
                 <Item>Core.Debug.js</Item>
                 <Item>Core.Data.js</Item>
@@ -5788,6 +5793,7 @@ M
                 <Item>Core.UI.Dialog.js</Item>
                 <Item>Core.UI.ActionRow.js</Item>
                 <Item>Core.UI.Popup.js</Item>
+                <Item>Core.UI.TreeSelection.js</Item>
                 <Item>Core.Form.js</Item>
                 <Item>Core.Form.ErrorTooltips.js</Item>
                 <Item>Core.Form.Validate.js</Item>
@@ -5847,6 +5853,8 @@ M
                 <Item>thirdparty/jquery-ui-1.10.3/jquery-ui.js</Item>
                 <Item>thirdparty/stacktrace-0.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
+                <Item>thirdparty/jquery-jstree-v.pre1.0/jquery.jstree.js</Item>
+                <Item>thirdparty/jquery-jstree-v.pre1.0/_lib/jquery.hotkeys.js</Item>
                 <Item>Core.Debug.js</Item>
                 <Item>Core.Data.js</Item>
                 <Item>Core.Exception.js</Item>
@@ -5860,6 +5868,7 @@ M
                 <Item>Core.UI.RichTextEditor.js</Item>
                 <Item>Core.UI.Datepicker.js</Item>
                 <Item>Core.UI.Popup.js</Item>
+                <Item>Core.UI.TreeSelection.js</Item>
                 <Item>Core.Form.js</Item>
                 <Item>Core.Form.ErrorTooltips.js</Item>
                 <Item>Core.Form.Validate.js</Item>
@@ -5898,6 +5907,19 @@ M
                 <Item Key="VisibleName">Default</Item>
                 <Item Key="Description">This is the default orange - black skin.</Item>
                 <Item Key="HomePage">www.otrs.org</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Loader::Agent::Skin###001-ivory" Required="0" Valid="1">
+        <Description Translatable="1">Balanced white skin by Felix Niklas.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="InternalName">ivory</Item>
+                <Item Key="VisibleName">Ivory</Item>
+                <Item Key="Description">Balanced white skin by Felix Niklas.</Item>
+                <Item Key="HomePage">www.felixniklas.de</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5985,6 +6007,30 @@ M
                 <Item Key="0">No</Item>
                 <Item Key="1">Yes</Item>
             </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerCompany::EventModulePost###100-UpdateCustomerUsers" Required="0" Valid="1">
+        <Description Translatable="1">Event module that updates customer users after an update of the Customer Company.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CustomerCompany</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::CustomerCompany::Event::CustomerUserUpdate</Item>
+                <Item Key="Event">CustomerCompanyUpdate</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerUser::EventModulePost###100-UpdateServiceMembership" Required="0" Valid="1">
+        <Description Translatable="1">Event module that updates customer user service membership if login changes.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::CustomerUser</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::CustomerUser::Event::ServiceMemberUpdate</Item>
+                <Item Key="Event">CustomerUserUpdate</Item>
+                <Item Key="Transaction">0</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Cache::Module" Required="1" Valid="1" ConfigLevel="200">
