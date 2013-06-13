@@ -726,7 +726,7 @@ sub CustomerUserAdd {
 
     # log notice
     $Self->{LogObject}->Log(
-        Priority => 'notice',
+        Priority => 'info',
         Message  => "CustomerUser: '$Param{UserLogin}' created successfully ($Param{UserID})!",
     );
 
@@ -773,6 +773,26 @@ sub CustomerUserUpdate {
 
     # get old user data (pw)
     my %UserData = $Self->CustomerUserDataGet( User => $Param{ID} );
+
+    # if we update the email address, check if it already exists
+    if (
+           $Param{UserEmail}
+        && $Self->{CustomerUserMap}->{CustomerUserEmailUniqCheck}
+        && lc $Param{UserEmail} ne lc $UserData{UserEmail}
+        )
+    {
+        my %Result = $Self->CustomerSearch(
+            Valid            => 1,
+            PostMasterSearch => $Param{UserEmail},
+        );
+        if (%Result) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message  => 'Email already exists!',
+            );
+            return;
+        }
+    }
 
     # quote values
     my %Value;
@@ -849,7 +869,7 @@ sub CustomerUserUpdate {
 
     # log notice
     $Self->{LogObject}->Log(
-        Priority => 'notice',
+        Priority => 'info',
         Message  => "CustomerUser: '$Param{UserLogin}' updated successfully ($Param{UserID})!",
     );
 

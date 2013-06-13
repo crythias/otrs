@@ -1,4 +1,17 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-06-11 Added possibility to execute generic agent jobs for configured ticket events.
+ - 2013-06-11 Added new feature to allow selecting services, queues, etc. from a JSTree view which is opened
+    within an overlay (agent and customer frontend).
+ - 2013-06-10 Added new feature that set a ticket to be displayed as an even on a ticket dashboard widget.
+ - 2013-06-10 Fixed bug#[5759](http://bugs.otrs.org/show_bug.cgi?id=5759) - Company ID is listed twice in SQL field list.
+ - 2013-06-10 Fixed bug#[9366](http://bugs.otrs.org/show_bug.cgi?id=9366) - Order of involved agents in AgentTicketNote is incorrect.
+ - 2013-06-10 Fixed bug#[8973](http://bugs.otrs.org/show_bug.cgi?id=8973) - Updating Customer Login looses Service relations.
+ - 2013-06-10 Added new version of ivory skin.
+ - 2013-06-08 Added caching to search profiles.
+ - 2013-06-07 Fixed bug#[9454](http://bugs.otrs.org/show_bug.cgi?id=9454) - Use of uninitialized value error in AgentTicketForward.pm, undef Next ticket state.
+ - 2013-06-07 Fixed bug#[8222](http://bugs.otrs.org/show_bug.cgi?id=8222) - List of recipients is not well structured.
+ - 2013-06-07 Added events to CustomerUser and CustomerCompany objects.
+    Tickets are now automatically updated when a CustomerID or Customer Login changes.
  - 2013-06-06 Fixed bug#[9503](http://bugs.otrs.org/show_bug.cgi?id=9503) - no connection header in soap responses.
  - 2013-06-05 Added sort functionality to ticket medium and preview overviews.
  - 2013-06-05 Fixed bug#[8475(http://bugs.otrs.org/show_bug.cgi?id=8475) - Screen refresh after action not always correct.
@@ -32,6 +45,16 @@
     and hard-coded to use /tmp.
 
 #3.2.8 2013-??-??
+ - 2013-06-13 Fixed bug#[9464](http://bugs.otrs.org/show_bug.cgi?id=9464) - Unique email address only checked during CustomerUserAdd, not during Update.
+ - 2013-06-11 Fixed bug#[9497](http://bugs.otrs.org/show_bug.cgi?id=9497) - AgentTicketSearch logs a Uninitialized error message in Oracle.
+ - 2013-06-11 Fixed bug#[9481](http://bugs.otrs.org/show_bug.cgi?id=9481) - Possible to select invalid services in SLA admin screen.
+ - 2013-06-11 Fixed bug#[9451](http://bugs.otrs.org/show_bug.cgi?id=9451) - Possible to select invalid autoresponses for queues.
+ - 2013-06-11 Fixed bug#[9516](http://bugs.otrs.org/show_bug.cgi?id=9516) - Field names for account signups in some languages are broken.
+ - 2013-06-08 Fixed bug#[9501](http://bugs.otrs.org/show_bug.cgi?id=9501) - Missing values in GenericAgent ticket list for tickets without articles.
+ - 2013-06-08 Fixed bug#[9447](http://bugs.otrs.org/show_bug.cgi?id=9447) - Empty line at PDF search result with process tickets (0 article).
+ - 2013-06-07 Fixed bug#[9409](http://bugs.otrs.org/show_bug.cgi?id=9409) - If HTTP_USER_AGENT isn't set, error on Layout.pm.
+ - 2013-06-07 Fixed bug#[9454](http://bugs.otrs.org/show_bug.cgi?id=9454) - Use of uninitialized value error in AgentTicketForward.pm, undef Next ticket state.
+ - 2013-06-07 Fixed bug#[9493](http://bugs.otrs.org/show_bug.cgi?id=9493) - Use of uninitialized value error in AgentTicketPhone.pm on Ticket Split action.
  - 2013-06-06 Improved permission checks in AgentTicketWatcher.
  - 2013-06-04 Fixed bug#[7143](http://bugs.otrs.org/show_bug.cgi?id=7143) - "SFTP." gets rewritten to "Shttp://FTP."
  - 2013-06-04 Fixed bug#[9488](http://bugs.otrs.org/show_bug.cgi?id=9488) - Use of uninitialized value at OutofOffice setting in AgentPreferences.

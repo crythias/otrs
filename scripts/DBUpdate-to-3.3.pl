@@ -323,6 +323,11 @@ sub _UninstallMergedFeatureAddOns {
         OTRSFreeTextFromCustomerUser
         OTRSExternalTicketNumberRecognition
         OTRSDashboardQueueOverview
+        OTRSDashboardTicketCalendar
+        OTRSMultiServiceSelect
+        OTRSMultiQueueSelect
+        OTRSEventBasedTicketActions
+        OTRSKeepFAQAttachments
     )) {
         my $Success = $PackageObject->_PackageUninstallMerged (
             Name => $PackageName,

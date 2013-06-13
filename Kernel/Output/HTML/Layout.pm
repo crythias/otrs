@@ -204,7 +204,7 @@ sub new {
     $Self->{BrowserJavaScriptSupport} = 1;
     $Self->{BrowserRichText}          = 1;
 
-    my $HttpUserAgent = lc $ENV{HTTP_USER_AGENT};
+    my $HttpUserAgent = ( defined $ENV{HTTP_USER_AGENT} ? lc $ENV{HTTP_USER_AGENT} : '' );
     if ( !$HttpUserAgent ) {
         $Self->{Browser} = 'Unknown - no $ENV{"HTTP_USER_AGENT"}';
     }
@@ -2278,6 +2278,7 @@ sub BuildSelection {
         AttributeRef => $AttributeRef,
         DataRef      => $DataRef,
         OptionTitle  => $Param{OptionTitle},
+        TreeView     => $Param{TreeView},
     );
     return $String;
 }
@@ -5070,7 +5071,8 @@ create the html string
 
     my $HTMLString = $LayoutObject->_BuildSelectionOutput(
         AttributeRef => $AttributeRef,
-        DataRef => $DataRef,
+        DataRef      => $DataRef,
+        TreeView     => 0, # optional, see BuildSelection()
     );
 
     my $AttributeRef = {
@@ -5137,6 +5139,11 @@ sub _BuildSelectionOutput {
             $String .= "  <option value=\"$Key\"$SelectedDisabled$OptionTitle>$Value</option>\n";
         }
         $String .= '</select>';
+
+        if ($Param{TreeView}) {
+            $String .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+        }
+
     }
     return $String;
 }
