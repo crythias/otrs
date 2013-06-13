@@ -9,6 +9,7 @@
 # Copyright (C) 2010-2011 Eugene Kungurov <ekungurov83 at ya.ru>
 # Copyright (C) 2010 Sergey Romanov <romanov_s at mail.ru>
 # Copyright (C) 2012-2013 Vadim Goncharov <vgoncharov at mail.ru>
+# Copyright (C) 2013 Alexey Gluhov <glalexnn at yandex.ru>
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -24,7 +25,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-04-18 14:11:39
+    # Last translation file sync: 2013-05-31 15:13:01
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -263,9 +264,9 @@ sub Data {
         'Dispatching by email To: field.' => 'Перенаправление по заголовку To: электронного письма',
         'Dispatching by selected Queue.' => 'Перенаправление по выбранной очереди',
         'No entry found!' => 'Запись не найдена',
-        'Session invalid. Please log in again.' => '',
+        'Session invalid. Please log in again.' => 'Ошибка сессии. Пожалуйста авторизуйтесь вновь.',
         'Session has timed out. Please log in again.' => 'Сеанс завершен. Попробуйте войти заново.',
-        'Session limit reached! Please try again later.' => '',
+        'Session limit reached! Please try again later.' => 'Срок жизни сессии прошел. Пожалуйста попробуйте еще раз.',
         'No Permission!' => 'Нет доступа!',
         '(Click here to add)' => '(нажмите сюда чтобы добавить)',
         'Preview' => 'Предварительный просмотр',
@@ -354,16 +355,18 @@ sub Data {
         'Events' => 'События',
         'Invalid Token!' => 'Неверный токен !',
         'more' => 'далее',
-        'For more info see:' => 'Дополнительная информация находится по адресу:',
-        'Package verification failed!' => 'Ошибка проверки целостности пакета',
         'Collapse' => 'Свернуть',
         'Shown' => 'Показано',
-        'Shown customer users' => '',
+        'Shown customer users' => 'Отображенные клиенты',
         'News' => 'Новости',
         'Product News' => 'Новости о продукте',
         'OTRS News' => 'Новости OTRS',
         '7 Day Stats' => 'Статистика за 7 дней',
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
+            '',
+        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
+            '',
+        '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
             '',
         'Bold' => 'Полужирный',
         'Italic' => 'Курсив',
@@ -658,6 +661,7 @@ sub Data {
         'You don\'t have write access to this ticket.' => 'У вас нет прав на запись в эту заявку.',
         'Sorry, you need to be the ticket owner to perform this action.' =>
             'Извините, для выполнения этого действия вам необходимо быть владельцем заявки.',
+        'Please change the owner first.' => 'Пожалуйста, сначала измените владельца',
         'Ticket selected.' => 'Заявка выбрана.',
         'Ticket is locked by another agent.' => 'Заявка заблокирована другим агентом.',
         'Ticket locked.' => 'Заявка заблокирована.',
@@ -694,6 +698,7 @@ sub Data {
         'Show the ticket history' => 'Показать историю заявки',
         'Print this ticket' => 'Печать этой заявки',
         'Print this article' => 'Печать этого сообщения',
+        'Split' => 'Разделить',
         'Split this article' => 'Разделить это сообщение',
         'Forward article via mail' => 'Переслать сообщение почтой',
         'Change the ticket priority' => 'Сменить приоритет заявки',
@@ -878,7 +883,7 @@ sub Data {
 
         # Template: AdminCustomerUser
         'Customer Management' => 'Управление клиентами',
-        'Back to search result' => '',
+        'Back to search result' => 'Назад к результатам поиска',
         'Add customer' => 'Добавить клиента',
         'Select' => 'Выбор',
         'Hint' => 'Подсказка',
@@ -887,7 +892,7 @@ sub Data {
         'Please enter a search term to look for customers.' => 'Введите запрос для поиска клиентов.',
         'Last Login' => 'Последний вход',
         'Login as' => 'Зайти данным пользователем',
-        'Switch to customer' => '',
+        'Switch to customer' => 'Переключится на клиента',
         'Add Customer' => 'Добавить клиента',
         'Edit Customer' => 'Редактировать клиента',
         'This field is required and needs to be a valid email address.' =>
@@ -975,8 +980,8 @@ sub Data {
             'Это порядок, в котором поле будет показываться среди других полей на тех экранах, где оно активно.',
         'Field type' => 'Тип поля',
         'Object type' => 'Тип объекта',
-        'Internal field' => '',
-        'This field is protected and can\'t be deleted.' => '',
+        'Internal field' => 'Внутреннее поле',
+        'This field is protected and can\'t be deleted.' => 'Это поле защищено и не может быть удалено.',
         'Field Settings' => ' - настройки поля',
         'Default value' => 'Значение по умолчанию',
         'This is the default value for this field.' => 'Это значение по умолчанию для данного поля.',
@@ -1111,7 +1116,7 @@ sub Data {
         'Archive selected tickets' => 'Архивировать выбранные заявки',
         'Add Note' => 'Добавить заметку',
         'Time units' => 'Единицы времени',
-        '(work units)' => '',
+        '(work units)' => '(рабочие единицы)',
         'Ticket Commands' => 'Команды по заявке',
         'Send agent/customer notifications on changes' => 'Отправлять уведомление агенту при изменениях',
         'CMD' => 'Команда',
@@ -1136,7 +1141,7 @@ sub Data {
         'GenericInterface Debugger for Web Service %s' => '',
         'Web Services' => 'Вебсервисы',
         'Debugger' => 'Отладчик',
-        'Go back to web service' => '',
+        'Go back to web service' => 'Перейти назад к веб сервису',
         'Clear' => 'Очистить',
         'Do you really want to clear the debug log of this web service?' =>
             '',
@@ -1465,7 +1470,7 @@ sub Data {
         'Install Package' => 'Установить пакет',
         'Update repository information' => 'Обновить информацию репозитория',
         'Did not find a required feature? OTRS Group provides their service contract customers with exclusive Add-Ons:' =>
-            '',
+            'Не нашли требующуюся функцию? Клиентам заключившим сервисный контракт, OTRS Group предлагает набор расширений(Add-One)',
         'Online Repository' => 'Онлайновый репозиторий',
         'Vendor' => 'Изготовитель',
         'Module documentation' => 'Документация модуля',
@@ -1602,12 +1607,12 @@ sub Data {
         'ArticleType' => '',
         'Display' => '',
         'Edit Field Details' => '',
-        'Customer interface does not support internal article types.' => '',
+        'Customer interface does not support internal article types.' => 'Клиентский интерфейс не поддерживает внутренний тип заметки',
 
         # Template: AdminProcessManagementPath
         'Path' => '',
-        'Edit this transition' => '',
-        'Transition Actions' => '',
+        'Edit this transition' => 'Редактировать это преобразование',
+        'Transition Actions' => 'Действия преобразований',
         'You can assign Transition Actions to this Transition by dragging the elements with the mouse from the left list to the right list.' =>
             '',
         'Filter available Transition Actions' => '',
@@ -1650,6 +1655,7 @@ sub Data {
         'Extend the width of the Canvas' => '',
         'Extend the height of the Canvas' => '',
         'Remove the Activity from this Process' => '',
+        'Edit this Activity' => '',
         'Do you really want to delete this Process?' => '',
         'Do you really want to delete this Activity?' => '',
         'Do you really want to delete this Activity Dialog?' => '',
@@ -2358,7 +2364,7 @@ sub Data {
         'Fulltext' => 'Полнотекстовый',
         'Remove' => 'Удалить',
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
-            '',
+            'Искать в свойствах От, Для, Копия, Тема и тело сообщения, перекрывая другие атрибуты с тем же именем.',
         'Customer User Login' => 'Логин клиента',
         'Created in Queue' => 'Создана в очереди',
         'Lock state' => 'Состояние блокировки',
@@ -2387,14 +2393,14 @@ sub Data {
         'Article Type' => 'Тип сообщения',
         'Sender Type' => 'Тип отправителя',
         'Save filter settings as default' => 'Сохранить условия фильтра для показа по умолчанию',
-        'Archive' => '',
-        'This ticket is archived.' => '',
+        'Archive' => 'Архив',
+        'This ticket is archived.' => 'Заявка перемещена в архив.',
         'Linked Objects' => 'Связанные объекты',
         'Article(s)' => 'сообщений',
         'Change Queue' => 'Сменить очередь',
         'There are no dialogs available at this point in the process.' =>
-            '',
-        'This item has no articles yet.' => '',
+            'Нет диалогов доступных в этой части процесса',
+        'This item has no articles yet.' => 'Этот элемент пока не имеет заметок.',
         'Article Filter' => 'Фильтр сообщений',
         'Add Filter' => 'Добавить фильтр',
         'Set' => 'Установить',
@@ -2511,10 +2517,10 @@ sub Data {
         'Search Results for' => 'Результаты поиска для',
 
         # Template: CustomerTicketZoom
-        'Show  article' => '',
+        'Show  article' => 'Показать сообщение',
         'Expand article' => 'Развернуть сообщение',
-        'Information' => '',
-        'Next Steps' => '',
+        'Information' => 'Сведения',
+        'Next Steps' => 'Далее',
         'Reply' => 'Ответить',
 
         # Template: CustomerWarning
@@ -2564,9 +2570,9 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => '',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
+        'Fulltext search' => 'Полнотекстовый поиск',
+        'CustomerID Search' => 'Поиск по ID клиента',
+        'CustomerUser Search' => 'Поиск по логину',
         'You are logged in as' => 'Вы вошли как',
 
         # Template: HeaderSmall
@@ -2645,7 +2651,7 @@ sub Data {
 
         # Template: InstallerRegistration
         'Organization' => 'Организация',
-        'Position' => '',
+        'Position' => 'Сфера деятельности',
         'Complete registration and continue' => 'Завершить регистрацию и продолжить',
         'Please fill in all fields marked as mandatory.' => 'Пожалуйста, заполните все поля, отмеченные как обязательные.',
 
@@ -2670,7 +2676,7 @@ sub Data {
             'Вручную вводимые адреса электронной почты будут проверяться на MX-записи в DNS. Не используйте эту опцию, если ваш DNS-сервер медленный или не разрешает публичные адреса.',
 
         # Template: LinkObject
-        'Object#' => '',
+        'Object#' => 'Объект#',
         'Add links' => 'Добавить связи',
         'Delete links' => 'Удалить связи',
 
@@ -2698,7 +2704,7 @@ sub Data {
         # Template: PictureUpload
         'Need FormID!' => 'Требуется FormID!',
         'No file found!' => 'Файл не найден!',
-        'The file is not an image that can be shown inline!' => '',
+        'The file is not an image that can be shown inline!' => 'Этот файл не может быть отображен как часть текста!',
 
         # Template: PrintFooter
         'URL' => 'URL',
@@ -2723,8 +2729,11 @@ sub Data {
         'Go back to the previous page' => 'Перейти на предыдущую страницу',
 
         # SysConfig
+        '"Slim" Skin which tries to save screen space for power users.' =>
+            '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             '',
+        'AccountedTime' => '',
         'Activates a blinking mechanism of the queue that contains the oldest ticket.' =>
             '',
         'Activates lost password feature for agents, in the agent interface.' =>
@@ -2742,7 +2751,7 @@ sub Data {
         'Activates time accounting.' => '',
         'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
             '',
-        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             '',
         'Adds the one time vacation days for the indicated calendar. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
             '',
@@ -2825,6 +2834,7 @@ sub Data {
             '',
         'Allows to set a new ticket state in the move ticket screen of the agent interface.' =>
             '',
+        'ArticleTree' => '',
         'Attachments <-> Responses' => 'Прикрепленные файлы <-> Ответы',
         'Auto Responses <-> Queues' => 'Автоответы <-> Очередь',
         'Automated line break in text messages after x number of chars.' =>
@@ -2836,6 +2846,8 @@ sub Data {
         'Automatically sets the responsible of a ticket (if it is not set yet) after the first owner update.' =>
             '',
         'Balanced white skin by Felix Niklas.' => '',
+        'Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
+            '',
         'Blocks all the incoming emails that do not have a valid ticket number in subject with From: @example.com address.' =>
             '',
         'Builds an article index right after the article\'s creation.' =>
@@ -2870,8 +2882,6 @@ sub Data {
         'Configure Processes.' => '',
         'Configure your own log text for PGP.' => '',
         'Configures a default TicketDynmicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://doc.otrs.org/), chapter "Ticket Event Module".' =>
-            '',
-        'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
             '',
         'Controls if customers have the ability to sort their tickets.' =>
             '',
@@ -2912,6 +2922,7 @@ sub Data {
             '',
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
+        'CustomerName' => '',
         'Customers <-> Groups' => 'Клиенты <-> Группы',
         'Customers <-> Services' => 'Клиенты <-> Сервисы',
         'Data used to export the search result in CSV format.' => '',
@@ -3630,8 +3641,6 @@ sub Data {
             '',
         'Executes follow up plain/raw mail checks in mails that don\'t have a ticket number in the subject.' =>
             '',
-        'Experimental "Slim" skin which tries to save screen space for power users.' =>
-            '',
         'Exports the whole article tree in search result (it can affect the system performance).' =>
             '',
         'Fetches packages via proxy. Overwrites "WebUserAgent::Proxy".' =>
@@ -3639,6 +3648,10 @@ sub Data {
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.' =>
             '',
         'Filter incoming emails.' => 'Фильтрация входящей почты.',
+        'FirstLock' => '',
+        'FirstResponse' => '',
+        'FirstResponseDiffInMin' => '',
+        'FirstResponseInMin' => '',
         'Forces encoding of outgoing emails (7bit|8bit|quoted-printable|base64).' =>
             '',
         'Forces to choose a different ticket state (from current) after lock action. Define the current state as key, and the next state after lock action as content.' =>
@@ -3653,6 +3666,7 @@ sub Data {
         'Frontend module registration for the agent interface.' => '',
         'Frontend module registration for the customer interface.' => '',
         'Frontend theme' => 'Тема интерфеса',
+        'Fulltext index regex filters to remove parts of the text.' => '',
         'GenericAgent' => 'Планировщик задач',
         'GenericInterface Debugger GUI' => '',
         'GenericInterface Invoker GUI' => '',
@@ -4401,6 +4415,8 @@ sub Data {
         'Shows time use complete description (days, hours, minutes), if set to "Yes"; or just first letter (d, h, m), if set to "No".' =>
             '',
         'Skin' => 'Окрас',
+        'SolutionDiffInMin' => '',
+        'SolutionInMin' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             '',
         'Spam Assassin example setup. Ignores emails that are marked with SpamAssassin.' =>
@@ -4460,6 +4476,7 @@ sub Data {
             '',
         'Statistics' => 'Отчеты',
         'Status view' => 'Просмотр статусов',
+        'Stop words for fulltext index. These words will be removed.' => '',
         'Stores cookies after the browser has been closed.' => '',
         'Strips empty lines on the ticket preview in the queue view.' => '',
         'Textarea' => '',
@@ -4503,6 +4520,7 @@ sub Data {
         'Ticket event module that triggers the escalation stop events.' =>
             '',
         'Ticket overview' => 'Обзор заявок',
+        'TicketNumber' => '',
         'Tickets' => 'Заявки',
         'Time in seconds that gets added to the actual time if setting a pending-state (default: 86400 = 1 day).' =>
             '',
@@ -4520,6 +4538,8 @@ sub Data {
         'Updates the ticket escalation index after a ticket attribute got updated.' =>
             '',
         'Updates the ticket index accelerator.' => '',
+        'UserFirstname' => '',
+        'UserLastname' => '',
         'Uses Cc recipients in reply Cc list on compose an email answer in the ticket compose screen of the agent interface.' =>
             '',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
@@ -4538,7 +4558,6 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (рабочие единицы)',
         '%s Tickets affected! Do you really want to use this job?' => '%s заявок будет изменено! Выполнить это задание?',
         '(Checks MX recordes of used email addresses by composing an answer. Don\'t use CheckMXRecord if your OTRS machine is behinde a dial-up line $!)' =>
             'Проверять MX-записи домена, на который отправляется email при ответе. Не используйте эту возможность, если сервер с OTRS доступен по слабому каналу!',
@@ -4739,6 +4758,7 @@ sub Data {
         'Filtername' => 'Имя фильтра',
         'Follow up' => 'Ответ',
         'Follow up notification' => 'Уведомление об обновлениях',
+        'For more info see:' => 'Дополнительная информация находится по адресу:',
         'For very complex stats it is possible to include a hardcoded file.' =>
             'Для очень сложных отчетов, возможно, необходимо использовать временный файл',
         'Form' => 'Форма',
@@ -4899,6 +4919,7 @@ sub Data {
         'Package' => 'Пакет',
         'Package not correctly deployed! You should reinstall the Package again!' =>
             'Пакет установлен некорректно! Вы должны переустановить пакет!',
+        'Package verification failed!' => 'Ошибка проверки целостности пакета',
         'Param 1' => 'Параметр 1',
         'Param 2' => 'Параметр 2',
         'Param 3' => 'Параметр 3',
@@ -4916,7 +4937,6 @@ sub Data {
             'Настройки прав доступа. Вы можете выбрать одну или несколько групп, чтобы отчет был видел для разных пользователей.',
         'Permissions to change the ticket owner in this group/queue.' => 'Права на смену владельца заявок в этой группе/очереди',
         'PhoneView' => 'Заявка по телефону',
-        'Please change the owner first.' => 'Пожалуйста, сначала измените владельца',
         'Please contact your admin' => 'Свяжитесь с администратором',
         'Please enter subject.' => 'Пожалуйста, введите тему.',
         'Please provide a name.' => 'Пожалуйста, введите имя.',
@@ -4997,7 +5017,6 @@ sub Data {
         'Sort by' => 'Сортировка по',
         'Source' => 'Источник',
         'Spell Check' => 'Проверка орфографии',
-        'Split' => 'Разделить',
         'State Type' => 'Тип статуса',
         'Static-File' => 'Статический файл',
         'Stats-Area' => 'Статистика',

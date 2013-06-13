@@ -23,7 +23,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-04-18 14:11:29
+    # Last translation file sync: 2013-05-31 15:12:51
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -353,8 +353,6 @@ sub Data {
         'Events' => 'Eventi',
         'Invalid Token!' => 'Striga Invalida',
         'more' => 'di più',
-        'For more info see:' => 'Per maggior informazioni vedi:',
-        'Package verification failed!' => 'Verifica del pacchetto fallita! ',
         'Collapse' => 'Collassa',
         'Shown' => 'Visualizzati',
         'Shown customer users' => 'Clienti visualizzati',
@@ -364,6 +362,10 @@ sub Data {
         '7 Day Stats' => 'Statistiche ultimi 7 Giorni',
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
             'Le informazioni di Process Management del database non sono sincronizzate con la configurazione, per cortesia effettuare la sincronizzazione',
+        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
+            '',
+        '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
+            '',
         'Bold' => 'Grassetto',
         'Italic' => 'Corsivo',
         'Underline' => 'Sottolinea',
@@ -657,6 +659,7 @@ sub Data {
         'You don\'t have write access to this ticket.' => 'Non hai accesso in modifica a questo ticket',
         'Sorry, you need to be the ticket owner to perform this action.' =>
             'Spiacente, devi essere il proprietario del ticket per effettuare questa operazione.',
+        'Please change the owner first.' => '',
         'Ticket selected.' => 'Ticket Selezionato',
         'Ticket is locked by another agent.' => 'Il Ticket è assegnato ad un altro operatore',
         'Ticket locked.' => 'Ticket assegnato.',
@@ -693,6 +696,7 @@ sub Data {
         'Show the ticket history' => 'storico del ticket',
         'Print this ticket' => 'Stampa questo ticket',
         'Print this article' => 'Sampa questo articolo',
+        'Split' => '',
         'Split this article' => 'Duplica questo articolo',
         'Forward article via mail' => 'Inoltra l\'articolo via email',
         'Change the ticket priority' => 'Cambia priorità al ticket',
@@ -1110,7 +1114,7 @@ sub Data {
         'Archive selected tickets' => 'Archivia i ticket selezionati',
         'Add Note' => 'Aggiungi nota',
         'Time units' => 'Tempo',
-        '(work units)' => '',
+        '(work units)' => '(unità di lavoro)',
         'Ticket Commands' => 'Comandi Ticket',
         'Send agent/customer notifications on changes' => 'Invia a un agente/utente una notifica se cambia',
         'CMD' => 'comando',
@@ -1649,6 +1653,7 @@ sub Data {
         'Extend the width of the Canvas' => 'Aumenta la larghezza del riquadro',
         'Extend the height of the Canvas' => 'Aumenta l\'altezza del riquadro',
         'Remove the Activity from this Process' => 'Rimuovi l\'attività dal Processo',
+        'Edit this Activity' => '',
         'Do you really want to delete this Process?' => 'Vuoi veramente cancellare questo Processo ?',
         'Do you really want to delete this Activity?' => 'Vuoi veramente cancellare questa Attività ?',
         'Do you really want to delete this Activity Dialog?' => 'Vuoi veramente cancellare questo interazione dell\'attività ',
@@ -2722,8 +2727,11 @@ sub Data {
         'Go back to the previous page' => 'Torna alla pagina precedente',
 
         # SysConfig
+        '"Slim" Skin which tries to save screen space for power users.' =>
+            '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             'Modulo ACL che permette di chiudere ticket genitori solo se tutti i ticket figli sono già chiusi ("Stato" mostra quali stati non sono disponibili per il ticket padre finché non sono chiusi tutti i figli).',
+        'AccountedTime' => '',
         'Activates a blinking mechanism of the queue that contains the oldest ticket.' =>
             'Attiva il meccanismo di blinking della coda che contiene il ticket più vecchio.',
         'Activates lost password feature for agents, in the agent interface.' =>
@@ -2741,8 +2749,8 @@ sub Data {
         'Activates time accounting.' => 'Attiva Rendicontazione Tempo.',
         'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
             'Aggiunge un suffisso con l\'attuale anno e mese nel log di OTRS. Verrà creato un log per ogni mese.',
-        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
-            'Aggiunge gli indirizzi email dei clienti per i destinatari nella schermata di composizione del ticket dell\'interfaccia dell\'agente.',
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
+            '',
         'Adds the one time vacation days for the indicated calendar. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
             'Aggiunge i giorni di vacanza singoli per il calendario indicato. Si prega di usare una cifra sola per i numeri da 1 a 9 (invece di 01 - 09).',
         'Adds the one time vacation days. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
@@ -2824,6 +2832,7 @@ sub Data {
             'Permette agli amministratori di effettuare l\'accesso come altri utenti, tramite il pannelo di amministrazione.',
         'Allows to set a new ticket state in the move ticket screen of the agent interface.' =>
             'Permette di impostare un nuovo stato di ticket nella schermata di movimento ticket dell\'interfaccia degli agenti.',
+        'ArticleTree' => '',
         'Attachments <-> Responses' => 'Allegati <-> Risposte',
         'Auto Responses <-> Queues' => 'Risposte automatiche <-> Code',
         'Automated line break in text messages after x number of chars.' =>
@@ -2835,6 +2844,8 @@ sub Data {
         'Automatically sets the responsible of a ticket (if it is not set yet) after the first owner update.' =>
             'Imposta automaticamente la responsabilità del ticket (se non è già impostata) dopo il primo cambio di proprietà.',
         'Balanced white skin by Felix Niklas.' => 'Tema Balanced White by Felix Niklas.',
+        'Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
+            '',
         'Blocks all the incoming emails that do not have a valid ticket number in subject with From: @example.com address.' =>
             'Blocca tutte le email in entrata che non hanno un numero di ticket valdo nell\'oggetto con indirizzi Da: @esempio.com',
         'Builds an article index right after the article\'s creation.' =>
@@ -2870,8 +2881,6 @@ sub Data {
         'Configure your own log text for PGP.' => '',
         'Configures a default TicketDynmicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://doc.otrs.org/), chapter "Ticket Event Module".' =>
             '',
-        'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
-            'Configura l\'indice full-text. Eseguire "bin/otrs.RebuildFulltextIndex.pl" per generare un nuovo indice.',
         'Controls if customers have the ability to sort their tickets.' =>
             'Controlla se i clienti hanno la possibilità di ordinare i loro ticket.',
         'Controls if more than one from entry can be set in the new phone ticket in the agent interface.' =>
@@ -2911,6 +2920,7 @@ sub Data {
             '',
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
+        'CustomerName' => '',
         'Customers <-> Groups' => 'Clienti <-> Gruppi',
         'Customers <-> Services' => 'Clienti <-> Servizi',
         'Data used to export the search result in CSV format.' => 'Dati usati per esportare i risultati di ricerca in formato CSV',
@@ -3629,8 +3639,6 @@ sub Data {
             '',
         'Executes follow up plain/raw mail checks in mails that don\'t have a ticket number in the subject.' =>
             '',
-        'Experimental "Slim" skin which tries to save screen space for power users.' =>
-            '',
         'Exports the whole article tree in search result (it can affect the system performance).' =>
             '',
         'Fetches packages via proxy. Overwrites "WebUserAgent::Proxy".' =>
@@ -3638,6 +3646,10 @@ sub Data {
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.' =>
             '',
         'Filter incoming emails.' => 'Filtra email in ingresso',
+        'FirstLock' => '',
+        'FirstResponse' => '',
+        'FirstResponseDiffInMin' => '',
+        'FirstResponseInMin' => '',
         'Forces encoding of outgoing emails (7bit|8bit|quoted-printable|base64).' =>
             '',
         'Forces to choose a different ticket state (from current) after lock action. Define the current state as key, and the next state after lock action as content.' =>
@@ -3652,6 +3664,7 @@ sub Data {
         'Frontend module registration for the agent interface.' => '',
         'Frontend module registration for the customer interface.' => '',
         'Frontend theme' => 'Tema per l\'interfaccia',
+        'Fulltext index regex filters to remove parts of the text.' => '',
         'GenericAgent' => 'OperatoreGenerico',
         'GenericInterface Debugger GUI' => '',
         'GenericInterface Invoker GUI' => '',
@@ -4400,6 +4413,8 @@ sub Data {
         'Shows time use complete description (days, hours, minutes), if set to "Yes"; or just first letter (d, h, m), if set to "No".' =>
             '',
         'Skin' => '',
+        'SolutionDiffInMin' => '',
+        'SolutionInMin' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             '',
         'Spam Assassin example setup. Ignores emails that are marked with SpamAssassin.' =>
@@ -4459,6 +4474,7 @@ sub Data {
             '',
         'Statistics' => 'Statistiche',
         'Status view' => 'Vista di stato',
+        'Stop words for fulltext index. These words will be removed.' => '',
         'Stores cookies after the browser has been closed.' => '',
         'Strips empty lines on the ticket preview in the queue view.' => '',
         'Textarea' => '',
@@ -4502,6 +4518,7 @@ sub Data {
         'Ticket event module that triggers the escalation stop events.' =>
             '',
         'Ticket overview' => 'Vista Globale delle richieste',
+        'TicketNumber' => '',
         'Tickets' => 'Richieste',
         'Time in seconds that gets added to the actual time if setting a pending-state (default: 86400 = 1 day).' =>
             '',
@@ -4519,6 +4536,8 @@ sub Data {
         'Updates the ticket escalation index after a ticket attribute got updated.' =>
             '',
         'Updates the ticket index accelerator.' => '',
+        'UserFirstname' => '',
+        'UserLastname' => '',
         'Uses Cc recipients in reply Cc list on compose an email answer in the ticket compose screen of the agent interface.' =>
             '',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
@@ -4537,13 +4556,18 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (unità di lavoro)',
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
+            'Aggiunge gli indirizzi email dei clienti per i destinatari nella schermata di composizione del ticket dell\'interfaccia dell\'agente.',
         'Allows extended search conditions in ticket search of the agent interface. With this feature you can search w. g. with this kind of conditions like "(key1&&key2)" or "(key1||key2)".' =>
             'Permette di usare le condizioni avanzate di ricerca nell\'interfaccia degli agenti. Con questa funzione si può cercare con condizioni del tipo "(chiave1&&chiave2)" o "(chiave1||chiave2)"',
+        'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
+            'Configura l\'indice full-text. Eseguire "bin/otrs.RebuildFulltextIndex.pl" per generare un nuovo indice.',
         'Customer Data' => 'Dati del cliente',
         'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
             'Non hai trovato una feature ? il Gruppo OTRS offre ai clienti paganti degli addon esclusivi:',
+        'For more info see:' => 'Per maggior informazioni vedi:',
         'Logout successful. Thank you for using OTRS!' => 'Disconnessione avvenuta con successo. Grazie per aver usato OTRS!',
+        'Package verification failed!' => 'Verifica del pacchetto fallita! ',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'La Modalita Sicura deve essere tolta per installare usando il web-installer.',
         'There are currently no steps available for this process.' => 'Al momento non ci sono attività disponibili per questo processo.',

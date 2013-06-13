@@ -322,10 +322,12 @@ sub JobRun {
     # escalation tickets
     if ( $Job{Escalation} ) {
 
+        # Find all tickets which will escalate within the next five days.
+        #   The notification module will determine if a notification must be sent out or not.
         my @Tickets = $Self->{TicketObject}->TicketSearch(
             Result                           => 'ARRAY',
             Limit                            => 100,
-            TicketEscalationTimeOlderMinutes => -( 3 * 8 * 60 ),       # 3 days, roughly
+            TicketEscalationTimeOlderMinutes => -( 5 * 24 * 60 ),
             Permission                       => 'rw',
             UserID                           => $Param{UserID} || 1,
         );
@@ -1097,7 +1099,16 @@ sub _JobRunTicket {
             TransformDates     => 0,
         );
 
-        if ( defined $Value && $Value ne '' ) {
+        # check if we got a value or an empty value if
+        # an empty value is configured as valid (PossibleNone)
+        # for the current dynamic field
+        if (
+            defined $Value
+            && (
+                $DynamicFieldConfig->{Config}->{PossibleNone}
+                || $Value ne ''
+            )
+        ) {
             my $Success = $Self->{BackendObject}->ValueSet(
                 DynamicFieldConfig => $DynamicFieldConfig,
                 ObjectID           => $Param{TicketID},

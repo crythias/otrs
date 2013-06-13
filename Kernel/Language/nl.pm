@@ -22,7 +22,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-04-18 14:11:35
+    # Last translation file sync: 2013-05-31 15:12:57
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -352,8 +352,6 @@ sub Data {
         'Events' => 'Gebeurtenissen',
         'Invalid Token!' => 'Fout token!',
         'more' => 'meer',
-        'For more info see:' => 'Voor meer informatie zie:',
-        'Package verification failed!' => 'Pakketverificatie mislukt!',
         'Collapse' => 'Inklappen',
         'Shown' => 'Tonen',
         'Shown customer users' => 'Getoonde klanten',
@@ -363,6 +361,10 @@ sub Data {
         '7 Day Stats' => 'Afgelopen 7 dagen',
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
             'Proces informatie uit de database is niet gesynchroniseerd met de systeemconfiguratie. Voer een synchronisatie uit.',
+        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
+            '',
+        '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
+            '',
         'Bold' => 'Vet',
         'Italic' => 'Cursief',
         'Underline' => 'Onderstreep',
@@ -656,6 +658,7 @@ sub Data {
         'You don\'t have write access to this ticket.' => 'U heeft geen schrijfrechten op dit ticket.',
         'Sorry, you need to be the ticket owner to perform this action.' =>
             'U moet de eigenaar zijn om deze actie uit te voeren.',
+        'Please change the owner first.' => '',
         'Ticket selected.' => 'Ticket geselecteerd.',
         'Ticket is locked by another agent.' => 'Dit ticket is vergrendeld door een andere behandelaar.',
         'Ticket locked.' => 'Ticket vergrendeld.',
@@ -692,6 +695,7 @@ sub Data {
         'Show the ticket history' => 'Toon de ticket-geschiedenis',
         'Print this ticket' => 'Print dit ticket',
         'Print this article' => 'Print deze interactie',
+        'Split' => '',
         'Split this article' => 'Splits deze interactie',
         'Forward article via mail' => 'Stuur interactie naar een mailadres',
         'Change the ticket priority' => 'Wijzig de prioriteit van dit ticket',
@@ -1648,6 +1652,7 @@ sub Data {
         'Extend the width of the Canvas' => 'Vergroot de breedte van de canvas',
         'Extend the height of the Canvas' => 'Vergroot de hoogte van de canvas',
         'Remove the Activity from this Process' => 'Verwijder de activiteit uit dit proces',
+        'Edit this Activity' => '',
         'Do you really want to delete this Process?' => 'Wilt u dit proces verwijderen?',
         'Do you really want to delete this Activity?' => 'Wilt u deze activiteit verwijderen?',
         'Do you really want to delete this Activity Dialog?' => 'Wilt u deze dialoog verwijderen?',
@@ -2613,6 +2618,8 @@ sub Data {
         'False' => 'Fout',
 
         # Template: InstallerDBStart
+        'If you have set a root password for your database, it must be entered here. If not, leave this field empty.' => 'Als er een root-wachtwoord voor deze database nodig is, vul deze hier in. Anders moet dit veld leeg blijven.',
+        'Repeat Password' => 'Herhaal wachtwoord',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Als er een wachtwoord hoort bij dit account, vul deze hier in. Vanuit beveiligingsoogpunt is het aan te bevelen een wachtwoord te gebruiken. Kijk in de databasedocumentatie voor meer informatie.',
         'Currently only MySQL is supported in the web installer.' => 'Alleen MySQL wordt ondersteund door de web installer.',
@@ -2721,8 +2728,11 @@ sub Data {
         'Go back to the previous page' => 'Terug naar de vorige pagina',
 
         # SysConfig
+        '"Slim" Skin which tries to save screen space for power users.' =>
+            '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             '',
+        'AccountedTime' => '',
         'Activates a blinking mechanism of the queue that contains the oldest ticket.' =>
             '',
         'Activates lost password feature for agents, in the agent interface.' =>
@@ -2740,7 +2750,7 @@ sub Data {
         'Activates time accounting.' => '',
         'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
             '',
-        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
             '',
         'Adds the one time vacation days for the indicated calendar. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
             '',
@@ -2823,6 +2833,7 @@ sub Data {
             '',
         'Allows to set a new ticket state in the move ticket screen of the agent interface.' =>
             '',
+        'ArticleTree' => '',
         'Attachments <-> Responses' => 'Standaard-antwoorden <-> Bijlagen',
         'Auto Responses <-> Queues' => 'Wachtrijen <-> Automatische antwoorden',
         'Automated line break in text messages after x number of chars.' =>
@@ -2834,6 +2845,8 @@ sub Data {
         'Automatically sets the responsible of a ticket (if it is not set yet) after the first owner update.' =>
             '',
         'Balanced white skin by Felix Niklas.' => '',
+        'Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
+            '',
         'Blocks all the incoming emails that do not have a valid ticket number in subject with From: @example.com address.' =>
             '',
         'Builds an article index right after the article\'s creation.' =>
@@ -2868,8 +2881,6 @@ sub Data {
         'Configure Processes.' => 'Beheer processen',
         'Configure your own log text for PGP.' => '',
         'Configures a default TicketDynmicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://doc.otrs.org/), chapter "Ticket Event Module".' =>
-            '',
-        'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
             '',
         'Controls if customers have the ability to sort their tickets.' =>
             '',
@@ -2910,6 +2921,7 @@ sub Data {
             '',
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
+        'CustomerName' => '',
         'Customers <-> Groups' => 'Klanten <-> Groepen',
         'Customers <-> Services' => 'Klanten <-> Services',
         'Data used to export the search result in CSV format.' => '',
@@ -3628,8 +3640,6 @@ sub Data {
             '',
         'Executes follow up plain/raw mail checks in mails that don\'t have a ticket number in the subject.' =>
             '',
-        'Experimental "Slim" skin which tries to save screen space for power users.' =>
-            '',
         'Exports the whole article tree in search result (it can affect the system performance).' =>
             '',
         'Fetches packages via proxy. Overwrites "WebUserAgent::Proxy".' =>
@@ -3637,6 +3647,10 @@ sub Data {
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.' =>
             '',
         'Filter incoming emails.' => 'Filter inkomende e-mails.',
+        'FirstLock' => '',
+        'FirstResponse' => '',
+        'FirstResponseDiffInMin' => '',
+        'FirstResponseInMin' => '',
         'Forces encoding of outgoing emails (7bit|8bit|quoted-printable|base64).' =>
             '',
         'Forces to choose a different ticket state (from current) after lock action. Define the current state as key, and the next state after lock action as content.' =>
@@ -3651,6 +3665,7 @@ sub Data {
         'Frontend module registration for the agent interface.' => '',
         'Frontend module registration for the customer interface.' => '',
         'Frontend theme' => 'Thema',
+        'Fulltext index regex filters to remove parts of the text.' => '',
         'GenericAgent' => 'Automatische taken',
         'GenericInterface Debugger GUI' => '',
         'GenericInterface Invoker GUI' => '',
@@ -4399,6 +4414,8 @@ sub Data {
         'Shows time use complete description (days, hours, minutes), if set to "Yes"; or just first letter (d, h, m), if set to "No".' =>
             '',
         'Skin' => 'Skin',
+        'SolutionDiffInMin' => '',
+        'SolutionInMin' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             '',
         'Spam Assassin example setup. Ignores emails that are marked with SpamAssassin.' =>
@@ -4458,6 +4475,7 @@ sub Data {
             '',
         'Statistics' => 'Rapportages',
         'Status view' => 'Statusoverzicht',
+        'Stop words for fulltext index. These words will be removed.' => '',
         'Stores cookies after the browser has been closed.' => '',
         'Strips empty lines on the ticket preview in the queue view.' => '',
         'Textarea' => '',
@@ -4501,6 +4519,7 @@ sub Data {
         'Ticket event module that triggers the escalation stop events.' =>
             '',
         'Ticket overview' => 'Ticketoverzicht',
+        'TicketNumber' => '',
         'Tickets' => 'Tickets',
         'Time in seconds that gets added to the actual time if setting a pending-state (default: 86400 = 1 day).' =>
             '',
@@ -4518,6 +4537,8 @@ sub Data {
         'Updates the ticket escalation index after a ticket attribute got updated.' =>
             '',
         'Updates the ticket index accelerator.' => '',
+        'UserFirstname' => '',
+        'UserLastname' => '',
         'Uses Cc recipients in reply Cc list on compose an email answer in the ticket compose screen of the agent interface.' =>
             '',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
@@ -4541,9 +4562,11 @@ sub Data {
         'Customer Data' => 'Klantgegevens',
         'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
             'Heeft u een feature niet kunnen vinden? De OTRS Groep levert add-ons voor klanten met een subscription:',
+        'For more info see:' => 'Voor meer informatie zie:',
         'Logout successful. Thank you for using OTRS!' => 'U bent afgemeld. Bedankt voor het gebruiken van OTRS.',
         'New email ticket for %s' => 'Nieuw e-mail-ticket voor %s',
         'New phone ticket for %s' => 'Nieuw telefoon-ticket voor %s',
+        'Package verification failed!' => 'Pakketverificatie mislukt!',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Secure Mode moet gedeactiveerd worden om te kunnen herinstalleren met de web-installer.',
         'There are currently no steps available for this process.' => 'Er zijn geen stappen beschikbaar voor dit proces.',

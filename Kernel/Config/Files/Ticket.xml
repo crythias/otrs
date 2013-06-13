@@ -394,7 +394,7 @@ Description>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Ticket::SearchIndex::Attribute" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.</Description>
+        <Description Translatable="1">Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.</Description>
         <Group>Ticket</Group>
         <SubGroup>Core::FulltextSearch</SubGroup>
         <Setting>
@@ -402,6 +402,46 @@ Description>
                 <Item Key="WordCountMax">1000</Item>
                 <Item Key="WordLengthMin">3</Item>
                 <Item Key="WordLengthMax">30</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::Filters" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Fulltext index regex filters to remove parts of the text.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Array>
+                <Item><![CDATA[[,\&\<\>\?"\!\*\|;\[\]\(\)\+\$\^=]]]></Item>
+                <Item><![CDATA[^[':.]|[':.]$]]></Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::SearchIndex::StopWords" Required="1" Valid="1" ConfigLevel="200">
+        <Description Translatable="1">Stop words for fulltext index. These words will be removed.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::FulltextSearch</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="der">1</Item>
+                <Item Key="die">1</Item>
+                <Item Key="das">1</Item>
+                <Item Key="und">1</Item>
+                <Item Key="in">1</Item>
+                <Item Key="vom">1</Item>
+                <Item Key="zu">1</Item>
+                <Item Key="im">1</Item>
+                <Item Key="den">1</Item>
+                <Item Key="auf">1</Item>
+                <Item Key="als">1</Item>
+
+                <Item Key="the">1</Item>
+                <Item Key="of">1</Item>
+                <Item Key="and">1</Item>
+                <Item Key="in">1</Item>
+                <Item Key="to">1</Item>
+                <Item Key="a">1</Item>
+                <Item Key="is">1</Item>
+                <Item Key="for">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -1179,29 +1219,29 @@ Description>
         <SubGroup>Frontend::Agent::Ticket::ViewSearch</SubGroup>
         <Setting>
             <Array>
-                <Item>TicketNumber</Item>
-                <Item>Age</Item>
-                <Item>Created</Item>
-                <Item>Closed</Item>
-                <Item>FirstLock</Item>
-                <Item>FirstResponse</Item>
-                <Item>State</Item>
-                <Item>Priority</Item>
-                <Item>Queue</Item>
-                <Item>Lock</Item>
-                <Item>Owner</Item>
-                <Item>UserFirstname</Item>
-                <Item>UserLastname</Item>
-                <Item>CustomerID</Item>
-                <Item>CustomerName</Item>
-                <Item>From</Item>
-                <Item>Subject</Item>
-                <Item>AccountedTime</Item>
-                <Item>ArticleTree</Item>
-                <Item>SolutionInMin</Item>
-                <Item>SolutionDiffInMin</Item>
-                <Item>FirstResponseInMin</Item>
-                <Item>FirstResponseDiffInMin</Item>
+                <Item Translatable="1">TicketNumber</Item>
+                <Item Translatable="1">Age</Item>
+                <Item Translatable="1">Created</Item>
+                <Item Translatable="1">Closed</Item>
+                <Item Translatable="1">FirstLock</Item>
+                <Item Translatable="1">FirstResponse</Item>
+                <Item Translatable="1">State</Item>
+                <Item Translatable="1">Priority</Item>
+                <Item Translatable="1">Queue</Item>
+                <Item Translatable="1">Lock</Item>
+                <Item Translatable="1">Owner</Item>
+                <Item Translatable="1">UserFirstname</Item>
+                <Item Translatable="1">UserLastname</Item>
+                <Item Translatable="1">CustomerID</Item>
+                <Item Translatable="1">CustomerName</Item>
+                <Item Translatable="1">From</Item>
+                <Item Translatable="1">Subject</Item>
+                <Item Translatable="1">AccountedTime</Item>
+                <Item Translatable="1">ArticleTree</Item>
+                <Item Translatable="1">SolutionInMin</Item>
+                <Item Translatable="1">SolutionDiffInMin</Item>
+                <Item Translatable="1">FirstResponseInMin</Item>
+                <Item Translatable="1">FirstResponseDiffInMin</Item>
             </Array>
         </Setting>
     </ConfigItem>

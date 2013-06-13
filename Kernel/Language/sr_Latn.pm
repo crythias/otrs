@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-04-18 14:11:43
+    # Last translation file sync: 2013-05-31 15:13:05
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -346,8 +346,6 @@ sub Data {
         'Events' => 'Događaji',
         'Invalid Token!' => 'Neispravna oznaka!',
         'more' => 'još',
-        'For more info see:' => 'Za dodatne informacije pogledaj:',
-        'Package verification failed!' => 'Neuspela verifikacija paketa!',
         'Collapse' => 'Smanji',
         'Shown' => 'Prikazan',
         'Shown customer users' => '',
@@ -356,6 +354,10 @@ sub Data {
         'OTRS News' => '"OTRS" Novosti',
         '7 Day Stats' => 'Sedmodnevna statistika',
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
+            '',
+        'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
+            '',
+        '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
             '',
         'Bold' => 'Podebljano',
         'Italic' => 'Kurziv',
@@ -650,6 +652,7 @@ sub Data {
         'You don\'t have write access to this ticket.' => 'Nemate pravo upisa u ovaj tiket.',
         'Sorry, you need to be the ticket owner to perform this action.' =>
             'Nažalost, morate biti vlasnik tiketa za ovu akciju.',
+        'Please change the owner first.' => '',
         'Ticket selected.' => 'Izabran tiket.',
         'Ticket is locked by another agent.' => 'Tiket je zaključan od strane drugog operatera.',
         'Ticket locked.' => 'Zaključan tiket.',
@@ -686,6 +689,7 @@ sub Data {
         'Show the ticket history' => '',
         'Print this ticket' => '',
         'Print this article' => '',
+        'Split' => '',
         'Split this article' => '',
         'Forward article via mail' => '',
         'Change the ticket priority' => 'Promeni prioritet tiketa',
@@ -1103,7 +1107,7 @@ sub Data {
         'Archive selected tickets' => 'Arhiviraj izabrane tikete',
         'Add Note' => 'Dodaj napomenu',
         'Time units' => 'Vremenske jedinice',
-        '(work units)' => '',
+        '(work units)' => '(elementi posla)',
         'Ticket Commands' => 'Komande za tiket',
         'Send agent/customer notifications on changes' => 'Pošalji obaveštenja operateru/korisniku pri promenama',
         'CMD' => '"CMD"',
@@ -1642,6 +1646,7 @@ sub Data {
         'Extend the width of the Canvas' => '',
         'Extend the height of the Canvas' => '',
         'Remove the Activity from this Process' => '',
+        'Edit this Activity' => '',
         'Do you really want to delete this Process?' => '',
         'Do you really want to delete this Activity?' => '',
         'Do you really want to delete this Activity Dialog?' => '',
@@ -2715,8 +2720,11 @@ sub Data {
         'Go back to the previous page' => 'Vratite se na prethodnu stranu',
 
         # SysConfig
+        '"Slim" Skin which tries to save screen space for power users.' =>
+            '',
         'ACL module that allows closing parent tickets only if all its children are already closed ("State" shows which states are not available for the parent ticket until all child tickets are closed).' =>
             '"ACL" modul koji dozvoljava da tiketi roditelji budu zatvoreni samo ako su već zatvoreni svi tiketi deca ("Status" pokazuje koji statusi nisu dostupni za tiket roditelj dok se ne zatvore svi tiketi deca).',
+        'AccountedTime' => '',
         'Activates a blinking mechanism of the queue that contains the oldest ticket.' =>
             'Aktivira mehanizam treptanja reda koji sarži najstariji tiket.',
         'Activates lost password feature for agents, in the agent interface.' =>
@@ -2734,8 +2742,8 @@ sub Data {
         'Activates time accounting.' => 'Aktivira merenje vremena.',
         'Adds a suffix with the actual year and month to the OTRS log file. A logfile for every month will be created.' =>
             'Dodaje tekuću godinu i mesec kao sufiks u "OTRS" dnevniku. Biće kreirana datoteka dnevnika za svaki mesec.',
-        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
-            'Dodaje korisničke imejl adrese primaocima u prozoru za otvaranje tiketa na interfejsu operatera.',
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface. The customers email address won\'t be added if the article type is email-internal.' =>
+            '',
         'Adds the one time vacation days for the indicated calendar. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
             'Jednokratno dodaje neradne dane za izabrani kalendar. Molimo Vas da koristite jednu cifru za brojeve od 1 do 9 (umesto 01 - 09).',
         'Adds the one time vacation days. Please use single digit pattern for numbers from 1 to 9 (instead of 01 - 09).' =>
@@ -2817,6 +2825,7 @@ sub Data {
             '',
         'Allows to set a new ticket state in the move ticket screen of the agent interface.' =>
             '',
+        'ArticleTree' => '',
         'Attachments <-> Responses' => 'Prilozi <-> Odgovori',
         'Auto Responses <-> Queues' => 'Automatski odgovori <-> Redovi',
         'Automated line break in text messages after x number of chars.' =>
@@ -2828,6 +2837,8 @@ sub Data {
         'Automatically sets the responsible of a ticket (if it is not set yet) after the first owner update.' =>
             '',
         'Balanced white skin by Felix Niklas.' => 'Balansirani beli izgled, Felix Niklas.',
+        'Basic fulltext index settings. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
+            '',
         'Blocks all the incoming emails that do not have a valid ticket number in subject with From: @example.com address.' =>
             '',
         'Builds an article index right after the article\'s creation.' =>
@@ -2862,8 +2873,6 @@ sub Data {
         'Configure Processes.' => '',
         'Configure your own log text for PGP.' => '',
         'Configures a default TicketDynmicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://doc.otrs.org/), chapter "Ticket Event Module".' =>
-            '',
-        'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
             '',
         'Controls if customers have the ability to sort their tickets.' =>
             'Kontroliše da li korisnici imaju mogućnost da sortiraju svoje tikete.',
@@ -2904,6 +2913,7 @@ sub Data {
             'Korisnička stavka (ikona) koja pokazuje otvorene tikete ovog korisnika kao info blok.',
         'Customer item (icon) which shows the open tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
             '',
+        'CustomerName' => '',
         'Customers <-> Groups' => 'Korisici <-> Grupe',
         'Customers <-> Services' => 'Korisnici <-> Servisi',
         'Data used to export the search result in CSV format.' => 'Podaci upotrebljeni za ivoz rezultata pretraživanja u "CSV" formatu.',
@@ -3622,8 +3632,6 @@ sub Data {
             '',
         'Executes follow up plain/raw mail checks in mails that don\'t have a ticket number in the subject.' =>
             '',
-        'Experimental "Slim" skin which tries to save screen space for power users.' =>
-            '',
         'Exports the whole article tree in search result (it can affect the system performance).' =>
             '',
         'Fetches packages via proxy. Overwrites "WebUserAgent::Proxy".' =>
@@ -3631,6 +3639,10 @@ sub Data {
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.' =>
             '',
         'Filter incoming emails.' => 'Filtriranje dolaznih poruka.',
+        'FirstLock' => '',
+        'FirstResponse' => '',
+        'FirstResponseDiffInMin' => '',
+        'FirstResponseInMin' => '',
         'Forces encoding of outgoing emails (7bit|8bit|quoted-printable|base64).' =>
             '',
         'Forces to choose a different ticket state (from current) after lock action. Define the current state as key, and the next state after lock action as content.' =>
@@ -3645,6 +3657,7 @@ sub Data {
         'Frontend module registration for the agent interface.' => '',
         'Frontend module registration for the customer interface.' => '',
         'Frontend theme' => '',
+        'Fulltext index regex filters to remove parts of the text.' => '',
         'GenericAgent' => '',
         'GenericInterface Debugger GUI' => '',
         'GenericInterface Invoker GUI' => '',
@@ -4393,6 +4406,8 @@ sub Data {
         'Shows time use complete description (days, hours, minutes), if set to "Yes"; or just first letter (d, h, m), if set to "No".' =>
             '',
         'Skin' => '',
+        'SolutionDiffInMin' => '',
+        'SolutionInMin' => '',
         'Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.' =>
             '',
         'Spam Assassin example setup. Ignores emails that are marked with SpamAssassin.' =>
@@ -4452,6 +4467,7 @@ sub Data {
             '',
         'Statistics' => 'Statistike',
         'Status view' => 'Pregled statusa',
+        'Stop words for fulltext index. These words will be removed.' => '',
         'Stores cookies after the browser has been closed.' => 'Čuva kolačiće nakon zatvaranja pretraživača.',
         'Strips empty lines on the ticket preview in the queue view.' => '',
         'Textarea' => '',
@@ -4495,6 +4511,7 @@ sub Data {
         'Ticket event module that triggers the escalation stop events.' =>
             '',
         'Ticket overview' => 'Pregled tiketa',
+        'TicketNumber' => '',
         'Tickets' => 'Tiketi',
         'Time in seconds that gets added to the actual time if setting a pending-state (default: 86400 = 1 day).' =>
             '',
@@ -4512,6 +4529,8 @@ sub Data {
         'Updates the ticket escalation index after a ticket attribute got updated.' =>
             'Ažuriraj indeks eskalacije tiketa posle ažuriranja atributa tiketa.',
         'Updates the ticket index accelerator.' => 'Ažuriraj akcelerator indeksa tiketa.',
+        'UserFirstname' => '',
+        'UserLastname' => '',
         'Uses Cc recipients in reply Cc list on compose an email answer in the ticket compose screen of the agent interface.' =>
             '',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
@@ -4530,11 +4549,14 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (elementi posla)',
+        'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
+            'Dodaje korisničke imejl adrese primaocima u prozoru za otvaranje tiketa na interfejsu operatera.',
         'Customer Data' => 'Podaci o korisniku',
         'Did not find a required feature? OTRS Group provides their subscription customers with exclusive Add-Ons:' =>
             'Niste pronašli potrebnu funkciju? "OTRS Group" za svoje pretplaćene korisnike ima ekskluzivne dodatke:',
+        'For more info see:' => 'Za dodatne informacije pogledaj:',
         'Logout successful. Thank you for using OTRS!' => 'Uspešno ste se odjavili! Hvala što ste koristili "OTRS"!',
+        'Package verification failed!' => 'Neuspela verifikacija paketa!',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Siguran mod mora biti isključen radi reinstalacije preko "web" procedure.',
 
