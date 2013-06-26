@@ -77,10 +77,10 @@
                     Core.Form.Validate.Init();
 
                     // Register event for tree selection dialog
-                    $('.ShowTreeSelection').bind('click', function (Event) {
-                        Core.UI.TreeSelection.ShowTreeSelection($(this));
-                        return false;
-                    });
+                    Core.UI.TreeSelection.InitTreeSelection();
+
+                    // Initially display dynamic fields with TreeMode = 1 correctly
+                    Core.UI.TreeSelection.InitDynamicFieldTreeViewRestore();
 
                     $('#AJAXLoader').addClass('Hidden');
                     $('#AJAXDialog').val('1');

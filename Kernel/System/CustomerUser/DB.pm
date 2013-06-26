@@ -654,7 +654,7 @@ sub CustomerUserAdd {
     # check email address if already exists
     if ( $Param{UserEmail} && $Self->{CustomerUserMap}->{CustomerUserEmailUniqCheck} ) {
         my %Result = $Self->CustomerSearch(
-            Valid            => 1,
+            Valid            => 0,
             PostMasterSearch => $Param{UserEmail},
         );
         if (%Result) {
@@ -776,13 +776,13 @@ sub CustomerUserUpdate {
 
     # if we update the email address, check if it already exists
     if (
-           $Param{UserEmail}
+        $Param{UserEmail}
         && $Self->{CustomerUserMap}->{CustomerUserEmailUniqCheck}
         && lc $Param{UserEmail} ne lc $UserData{UserEmail}
         )
     {
         my %Result = $Self->CustomerSearch(
-            Valid            => 1,
+            Valid            => 0,
             PostMasterSearch => $Param{UserEmail},
         );
         if (%Result) {
@@ -906,7 +906,7 @@ sub SetPassword {
     my $CryptedPw = '';
 
     # get crypt type
-    my $CryptType = $Self->{ConfigObject}->Get('Customer::AuthModule::DB::CryptType') || '';
+    my $CryptType = $Self->{ConfigObject}->Get('Customer::AuthModule::DB::CryptType') || 'bcrypt';
 
     # crypt plain (no crypt at all)
     if ( $CryptType eq 'plain' ) {
@@ -945,6 +945,30 @@ sub SetPassword {
 
         $SHAObject->add($Pw);
         $CryptedPw = $SHAObject->hexdigest();
+    }
+
+    # always crypt with bcrypt if possible
+    elsif ( $Self->{MainObject}->Require( 'Crypt::Eksblowfish::Bcrypt', Silent => 1 ) ) {
+
+        my $Cost = 9;
+        my $Salt = $Self->{MainObject}->GenerateRandomString( Length => 16 );
+
+        # remove UTF8 flag, required by Crypt::Eksblowfish::Bcrypt
+        $Self->{EncodeObject}->EncodeOutput( \$Pw );
+
+        # calculate password hash
+        my $Octets = Crypt::Eksblowfish::Bcrypt::bcrypt_hash(
+            {
+                key_nul => 1,
+                cost    => 9,
+                salt    => $Salt,
+            },
+            $Pw
+        );
+
+        # We will store cost and salt in the password string so that it can be decoded
+        #   in future even if we use a higher cost by default.
+        $CryptedPw = "BCRYPT:$Cost:$Salt:" . Crypt::Eksblowfish::Bcrypt::en_base64($Octets);
     }
 
     # crypt with sha2
@@ -1016,23 +1040,14 @@ sub SetPassword {
 sub GenerateRandomPassword {
     my ( $Self, %Param ) = @_;
 
-    # generated passwords are eight characters long by default.
+    # Generated passwords are eight characters long by default.
     my $Size = $Param{Size} || 8;
 
-    # The list of characters that can appear in a randomly generated password.
-    # Note that users can put any character into a password they choose themselves.
-    my @PwChars
-        = ( 0 .. 9, 'A' .. 'Z', 'a' .. 'z', '-', '_', '!', '@', '#', '$', '%', '^', '&', '*' );
+    my $Password = $Self->{MainObject}->GenerateRandomString(
+        Length => $Size,
+    );
 
-    # number of characters in the list.
-    my $PwCharsLen = scalar(@PwChars);
-
-    # generate the password.
-    my $Password = '';
-    for ( my $i = 0; $i < $Size; $i++ ) {
-        $Password .= $PwChars[ rand $PwCharsLen ];
-    }
-
+    # Return the password.
     return $Password;
 }
 

@@ -21,7 +21,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-05-31 15:13:10
+    # Last translation file sync: 2013-06-14 08:49:53
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -879,7 +879,7 @@ sub Data {
 
         # Template: AdminCustomerUser
         'Customer Management' => '客户管理',
-        'Back to search result' => '',
+        'Back to search results' => '',
         'Add customer' => '新增客户',
         'Select' => '选择',
         'Hint' => '提示',
@@ -916,7 +916,7 @@ sub Data {
         'Select the customer:group permissions.' => '选择客户:群组设定权限。',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
             '如果没有选择，将无法给客户设定群组权限（票单将对该客户不可用）。',
-        'Search Result:' => '搜索结果',
+        'Search Results' => '搜索结果',
         'Customers' => '客户',
         'Groups' => '群组',
         'No matches found.' => '没有找到相匹配的.',
@@ -1672,6 +1672,7 @@ sub Data {
             '',
         'This TransitionAction is already used in this Path. You cannot use it twice!' =>
             '',
+        'Remove the Transition from this Process' => '',
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
@@ -2460,11 +2461,8 @@ sub Data {
         'Please fill out this form to receive login credentials.' => '',
         'How we should address you' => '称谓',
         'Your First Name' => '名字',
-        'Please supply a first name' => '请提供您的名字',
         'Your Last Name' => '姓',
-        'Please supply a last name' => '请提供您的姓',
         'Your email address (this will become your username)' => '',
-        'Please supply a' => '请提供',
 
         # Template: CustomerNavigationBar
         'Edit personal preferences' => '编辑个人设置',
@@ -3599,6 +3597,7 @@ sub Data {
         'DynamicField object registration.' => '',
         'Edit customer company' => '',
         'Email Addresses' => 'Email 地址',
+        'Enable keep-alive connection header for SOAP responses.' => '',
         'Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.' =>
             '',
         'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
@@ -4558,6 +4557,9 @@ sub Data {
         'For more info see:' => '更多信息请看',
         'Logout successful. Thank you for using OTRS!' => '成功注销，谢谢使用!',
         'Package verification failed!' => '软件包验证失败',
+        'Please supply a' => '请提供',
+        'Please supply a first name' => '请提供您的名字',
+        'Please supply a last name' => '请提供您的姓',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             '为了重新用Web 界面安装，安全模式必须禁用',
 

@@ -33,6 +33,7 @@ sub new {
     $Self->{ValidObject} = Kernel::System::Valid->new( %{$Self} );
 
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new( %{$Self} );
+    $Self->{DynamicFieldBackendObject} = Kernel::System::DynamicField::Backend->new( %{$Self} );
 
     # get configured object types
     $Self->{ObjectTypeConfig} = $Self->{ConfigObject}->Get('DynamicFields::ObjectType');
@@ -123,6 +124,10 @@ sub _AddAction {
             $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
         }
     }
+
+    # get the TreeView option and set it to '0' if it is undefined
+    $GetParam{TreeView} = $Self->{ParamObject}->GetParam( Param => 'TreeView' );
+    $GetParam{TreeView} = defined $GetParam{TreeView} && $GetParam{TreeView} ? '1' : '0';
 
     if ( $GetParam{Name} ) {
 
@@ -223,6 +228,7 @@ sub _AddAction {
     # set specific config
     my $FieldConfig = {
         PossibleValues     => $PossibleValues,
+        TreeView           => $GetParam{TreeView},
         DefaultValue       => $GetParam{DefaultValue},
         PossibleNone       => $GetParam{PossibleNone},
         TranslatableValues => $GetParam{TranslatableValues},
@@ -295,10 +301,9 @@ sub _Change {
     if ( IsHashRefWithData( $DynamicFieldData->{Config} ) ) {
 
         # set PossibleValues
-        $Config{PossibleValues} = {};
-        if ( IsHashRefWithData( $DynamicFieldData->{Config}->{PossibleValues} ) ) {
-            $Config{PossibleValues} = $DynamicFieldData->{Config}->{PossibleValues};
-        }
+        $Config{PossibleValues} = $Self->{DynamicFieldBackendObject}->PossibleValuesGet(
+            DynamicFieldConfig => $DynamicFieldData,
+        ) || {};
 
         # set DefaultValue
         $Config{DefaultValue} = $DynamicFieldData->{Config}->{DefaultValue};
@@ -306,8 +311,11 @@ sub _Change {
         # set PossibleNone
         $Config{PossibleNone} = $DynamicFieldData->{Config}->{PossibleNone};
 
-        # set TranslatalbeValues
+        # set TranslatableValues
         $Config{TranslatableValues} = $DynamicFieldData->{Config}->{TranslatableValues};
+
+        # set TreeView
+        $Config{TreeView} = $DynamicFieldData->{Config}->{TreeView};
 
         # set Link
         $Config{Link} = $DynamicFieldData->{Config}->{Link};
@@ -338,6 +346,10 @@ sub _ChangeAction {
             $Errors{ $Needed . 'ServerErrorMessage' } = 'This field is required.';
         }
     }
+
+    # get the TreeView option and set it to '0' if it is undefined
+    $GetParam{TreeView} = $Self->{ParamObject}->GetParam( Param => 'TreeView' );
+    $GetParam{TreeView} = defined $GetParam{TreeView} && $GetParam{TreeView} ? '1' : '0';
 
     my $FieldID = $Self->{ParamObject}->GetParam( Param => 'ID' );
     if ( !$FieldID ) {
@@ -475,6 +487,7 @@ sub _ChangeAction {
     # set specific config
     my $FieldConfig = {
         PossibleValues     => $PossibleValues,
+        TreeView           => $GetParam{TreeView},
         DefaultValue       => $GetParam{DefaultValue},
         PossibleNone       => $GetParam{PossibleNone},
         TranslatableValues => $GetParam{TranslatableValues},
@@ -697,6 +710,19 @@ sub _ShowScreen {
         Class      => 'W50pc',
     );
 
+    my $TreeView = $Param{TreeView} || '0';
+
+    # create treeview option list
+    my $TreeViewStrg = $Self->{LayoutObject}->BuildSelection(
+        Data => {
+            0 => 'No',
+            1 => 'Yes',
+        },
+        Name       => 'TreeView',
+        SelectedID => $TreeView,
+        Class      => 'W50pc',
+    );
+
     my $Link = $Param{Link} || '';
 
     my $ReadonlyInternalField = '';
@@ -720,6 +746,7 @@ sub _ShowScreen {
             ValueCounter           => $ValueCounter,
             DefaultValueStrg       => $DefaultValueStrg,
             PossibleNoneStrg       => $PossibleNoneStrg,
+            TreeViewStrg           => $TreeViewStrg,
             TranslatableValuesStrg => $TranslatableValuesStrg,
             ReadonlyInternalField  => $ReadonlyInternalField,
             Link                   => $Link,

@@ -449,6 +449,7 @@ sub Run {
                                 Size           => 5,
                                 SelectedID     => $ObjectAttribute->{SelectedValues},
                                 Translation    => $ObjectAttribute->{Translation},
+                                TreeView       => $ObjectAttribute->{TreeView} || 0,
                                 Sort           => $ObjectAttribute->{Sort} || undef,
                                 SortIndividual => $ObjectAttribute->{SortIndividual} || undef,
                             );
@@ -463,6 +464,7 @@ sub Run {
                                 Data           => \%ValueHash,
                                 Name           => $Use . $ObjectAttribute->{Element},
                                 Translation    => $ObjectAttribute->{Translation},
+                                TreeView       => $ObjectAttribute->{TreeView} || 0,
                                 Sort           => $ObjectAttribute->{Sort} || undef,
                                 SortIndividual => $ObjectAttribute->{SortIndividual} || undef,
                             );
@@ -885,6 +887,7 @@ sub Run {
             $Data{StatType} = $Stat->{StatType};
 
             for my $ObjectAttribute ( @{ $Stat->{UseAsXvalue} } ) {
+                next if !defined $Param{Select};
                 next if $Param{Select} ne $ObjectAttribute->{Element};
 
                 my @Array = $Self->{ParamObject}->GetArray( Param => $Param{Select} );
@@ -1495,14 +1498,20 @@ sub Run {
                     Name           => $ObjectAttribute->{Element},
                     Multiple       => 1,
                     Size           => 5,
+                    Class          => ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) ? 'DynamicFieldWithTreeView' : '',
                     SelectedID     => $ObjectAttribute->{SelectedValues},
                     Translation    => $ObjectAttribute->{Translation},
+                    TreeView       => $ObjectAttribute->{TreeView} || 0,
                     Sort           => $ObjectAttribute->{Sort} || undef,
                     SortIndividual => $ObjectAttribute->{SortIndividual} || undef,
                     OnChange =>
                         "Core.Agent.Stats.SelectRadiobutton('$ObjectAttribute->{Element}', 'Select')",
 
                 );
+
+                if ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) {
+                    $BlockData{SelectField} .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+                }
             }
 
             $BlockData{Name}    = $ObjectAttribute->{Name};
@@ -1585,13 +1594,19 @@ sub Run {
                     Name           => $ObjectAttribute->{Element},
                     Multiple       => 1,
                     Size           => 5,
+                    Class          => ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) ? 'DynamicFieldWithTreeView' : '',
                     SelectedID     => $ObjectAttribute->{SelectedValues},
                     Translation    => $ObjectAttribute->{Translation},
+                    TreeView       => $ObjectAttribute->{TreeView} || 0,
                     Sort           => $ObjectAttribute->{Sort} || undef,
                     SortIndividual => $ObjectAttribute->{SortIndividual} || undef,
                     OnChange       => "Core.Agent.Stats.SelectCheckbox('Select"
                         . $ObjectAttribute->{Element} . "')",
                 );
+
+                if ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) {
+                    $BlockData{SelectField} .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+                }
             }
 
             $BlockData{Name}    = $ObjectAttribute->{Name};
@@ -1707,13 +1722,19 @@ sub Run {
                     Name           => $ObjectAttribute->{Element},
                     Multiple       => 1,
                     Size           => 5,
+                    Class          => ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) ? 'DynamicFieldWithTreeView' : '',
                     SelectedID     => $ObjectAttribute->{SelectedValues},
                     Translation    => $ObjectAttribute->{Translation},
+                    TreeView       => $ObjectAttribute->{TreeView} || 0,
                     Sort           => $ObjectAttribute->{Sort} || undef,
                     SortIndividual => $ObjectAttribute->{SortIndividual} || undef,
                     OnChange       => "Core.Agent.Stats.SelectCheckbox('Select"
                         . $ObjectAttribute->{Element} . "')",
                 );
+
+                if ($ObjectAttribute->{ShowAsTree} && $ObjectAttribute->{IsDynamicField}) {
+                    $BlockData{SelectField} .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+                }
             }
 
             $BlockData{Element} = $ObjectAttribute->{Element};
@@ -2677,9 +2698,9 @@ sub _ColumnAndRowTranslation {
         # sort
         my $DisableDefaultResultSort = grep {
             $_->{DisableDefaultResultSort}
-            && $_->{DisableDefaultResultSort} == 1 
+            && $_->{DisableDefaultResultSort} == 1
         } @{ $Param{StatRef}->{UseAsXvalue} };
-        
+
         if (!$DisableDefaultResultSort) {
             @{ $Param{StatArrayRef} } = sort { $a->[0] cmp $b->[0] } @{ $Param{StatArrayRef} };
         }
