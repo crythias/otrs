@@ -124,12 +124,6 @@ Core.Agent.TicketAction = (function (TargetNS) {
             OpenCustomerDialog();
             return false;
         });
-
-        // Register event for tree selection dialog
-        $('.Field').on('click', '.ShowTreeSelection', function (Event) {
-            Core.UI.TreeSelection.ShowTreeSelection($(this));
-            return false;
-        });
     };
 
     /**

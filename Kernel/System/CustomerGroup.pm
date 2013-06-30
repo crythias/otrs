@@ -1,5 +1,5 @@
 # --
-# Kernel/System/CustomerGroup.pm - All Groups related function should be here eventually
+# Kernel/System/CustomerGroup.pm - All CustomerGroups related functions
 # Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -87,7 +87,7 @@ sub new {
 
     $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
         %{$Self},
-        Type => 'Group',
+        Type => 'CustomerGroup',
         TTL  => 60 * 60 * 3,
     );
 
@@ -173,8 +173,11 @@ sub GroupMemberAdd {
 
 =item GroupMemberList()
 
+if GroupID is passed:
 returns a list of users of a group with ro/move_into/create/owner/priority/rw permissions
 
+if UserID is passed:
+returns a list of groups for userID with ro/move_into/create/owner/priority/rw permissions
     UserID: user id
     GroupID: group id
     Type: ro|move_into|priority|create|rw
@@ -208,7 +211,7 @@ sub GroupMemberList {
     my @Name;
     my @ID;
 
-    # check if customer group feature is activ, if not, return all groups
+    # check if customer group feature is active, if not, return all groups
     if ( !$Self->{ConfigObject}->Get('CustomerGroupSupport') ) {
 
         # get permissions
@@ -235,7 +238,7 @@ sub GroupMemberList {
         return %{$Cache} if ref $Cache eq 'HASH';
     }
 
-    # if it's activ, return just the permitted groups
+    # if it's active, return just the permitted groups
     my $SQL = "SELECT g.id, g.name, gu.permission_key, gu.permission_value, gu.user_id "
         . " FROM groups g, group_customer_user gu WHERE "
         . " g.valid_id IN ( ${\(join ', ', $Self->{ValidObject}->ValidIDsGet())} ) AND "
@@ -247,7 +250,7 @@ sub GroupMemberList {
         $SQL .= " gu.user_id = '" . $Self->{DBObject}->Quote( $Param{UserID} ) . "'";
     }
     else {
-        $SQL .= " gu.group_id = " . $Self->{DBObject}->Quote( $Param{GroupID} ) . "";
+        $SQL .= " gu.group_id = " . $Self->{DBObject}->Quote( $Param{GroupID}, 'Integer', ) . "";
     }
     $Self->{DBObject}->Prepare( SQL => $SQL );
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {

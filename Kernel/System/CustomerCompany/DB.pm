@@ -108,11 +108,15 @@ sub CustomerCompanyList {
         $Valid = 0;
     }
 
-    my $CacheType = $Self->{CacheType} . '_CustomerCompanyList';
-    my $CacheKey = "CustomerCompanyList::${Valid}::" . ( $Param{Search} || '' );
+    my $CacheType;
+    my $CacheKey;
 
     # check cache
     if ( $Self->{CacheObject} ) {
+
+        $CacheType = $Self->{CacheType} . '_CustomerCompanyList';
+        $CacheKey = "CustomerCompanyList::${Valid}::" . ( $Param{Search} || '' );
+
         my $Data = $Self->{CacheObject}->Get(
             Type => $CacheType,
             Key  => $CacheKey,
@@ -313,7 +317,7 @@ sub CustomerCompanyAdd {
         $SQL .= ', ' if ($ValueInserted);
 
         if ( $Entry->[5] =~ /^int$/i ) {
-            $SQL .= " " . $Self->{DBObject}->Quote( $Param{ $Entry->[0] } );
+            $SQL .= " " . $Self->{DBObject}->Quote( $Param{ $Entry->[0] }, 'Integer' );
         }
         else {
             $SQL .= " '" . $Self->{DBObject}->Quote( $Param{ $Entry->[0] } ) . "'";

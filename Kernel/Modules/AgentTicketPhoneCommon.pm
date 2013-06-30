@@ -261,11 +261,16 @@ sub Run {
 
             my $PossibleValuesFilter;
 
+            # get PossibleValues
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+            );
+
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+            if ( IsHashRefWithData( $PossibleValues ) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+                my %AclData = %{ $PossibleValues };
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -283,7 +288,7 @@ sub Run {
 
                     # convert Filer key => key back to key => value using map
                     %{$PossibleValuesFilter}
-                        = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} }
+                        = map { $_ => $PossibleValues->{$_} }
                         keys %Filter;
                 }
             }
@@ -443,11 +448,16 @@ sub Run {
 
             my $PossibleValuesFilter;
 
+            # get PossibleValues
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+            );
+
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+            if ( IsHashRefWithData( $PossibleValues ) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+                my %AclData = %{ $PossibleValues };
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -465,7 +475,7 @@ sub Run {
 
                     # convert Filer key => key back to key => value using map
                     %{$PossibleValuesFilter}
-                        = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} }
+                        = map { $_ => $PossibleValues->{$_} }
                         keys %Filter;
                 }
             }
@@ -617,23 +627,34 @@ sub Run {
                 );
             }
 
-            my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
-            my $Sender            = $TemplateGenerator->Sender(
-                QueueID => $Ticket{QueueID},
-                UserID  => $Self->{UserID},
+            # Use customer data as From, if possible
+            my %LastCustomerArticle = $Self->{TicketObject}->ArticleLastCustomerArticle(
+                TicketID      => $Self->{TicketID},
+                DynamicFields => 0,
             );
 
+            my $From = $LastCustomerArticle{From};
+
+            # If we don't have a customer article, use the agent as From
+            if (!$From) {
+                my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
+                $From = $TemplateGenerator->Sender(
+                    QueueID => $Ticket{QueueID},
+                    UserID  => $Self->{UserID},
+                );
+            }
+
             my $ArticleID = $Self->{TicketObject}->ArticleCreate(
-                TicketID       => $Self->{TicketID},
-                ArticleType    => $Self->{Config}->{ArticleType},
-                SenderType     => $Self->{Config}->{SenderType},
-                From           => $Sender,
-                Subject        => $GetParam{Subject},
-                Body           => $GetParam{Body},
-                MimeType       => $MimeType,
-                Charset        => $Self->{LayoutObject}->{UserCharset},
-                UserID         => $Self->{UserID},
-                HistoryType    => $Self->{Config}->{HistoryType},
+                TicketID    => $Self->{TicketID},
+                ArticleType => $Self->{Config}->{ArticleType},
+                SenderType  => $Self->{Config}->{SenderType},
+                From        => $From,
+                Subject     => $GetParam{Subject},
+                Body        => $GetParam{Body},
+                MimeType    => $MimeType,
+                Charset     => $Self->{LayoutObject}->{UserCharset},
+                UserID      => $Self->{UserID},
+                HistoryType => $Self->{Config}->{HistoryType},
                 HistoryComment => $Self->{Config}->{HistoryComment} || '%%',
             );
 
@@ -748,7 +769,7 @@ sub Run {
                 );
             next DYNAMICFIELD if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
-            my $PossibleValues = $Self->{BackendObject}->AJAXPossibleValuesGet(
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
@@ -773,12 +794,18 @@ sub Run {
                 %{$PossibleValues} = map { $_ => $PossibleValues->{$_} } keys %Filter;
             }
 
+            my $DataValues = $Self->{BackendObject}->BuildSelectionDataGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                PossibleValues     => $PossibleValues,
+                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+            ) || $PossibleValues;
+
             # add dynamic field to the list of fields to update
             push(
                 @DynamicFieldAJAX,
                 {
                     Name        => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data        => $PossibleValues,
+                    Data        => $DataValues,
                     SelectedID  => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
                     Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
                     Max         => 100,

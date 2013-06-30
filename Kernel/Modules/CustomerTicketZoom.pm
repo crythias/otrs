@@ -105,7 +105,7 @@ sub Run {
     if ( !$Self->{TicketID} && $Self->{ParamObject}->GetParam( Param => 'TicketNumber' ) ) {
         $Self->{TicketID} = $Self->{TicketObject}->TicketIDLookup(
             TicketNumber => $Self->{ParamObject}->GetParam( Param => 'TicketNumber' ),
-            UserID       => $Self->{UserID},
+            UserID => $Self->{UserID},
         );
     }
 
@@ -227,7 +227,7 @@ sub Run {
                 );
             next DYNAMICFIELD if $DynamicFieldConfig->{ObjectType} ne 'Ticket';
 
-            my $PossibleValues = $Self->{BackendObject}->AJAXPossibleValuesGet(
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
@@ -252,12 +252,18 @@ sub Run {
                 %{$PossibleValues} = map { $_ => $PossibleValues->{$_} } keys %Filter;
             }
 
+            my $DataValues = $Self->{BackendObject}->BuildSelectionDataGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                PossibleValues     => $PossibleValues,
+                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+            ) || $PossibleValues;
+
             # add dynamic field to the list of fields to update
             push(
                 @DynamicFieldAJAX,
                 {
                     Name        => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data        => $PossibleValues,
+                    Data        => $DataValues,
                     SelectedID  => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
                     Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
                     Max         => 100,
@@ -380,11 +386,16 @@ sub Run {
 
             my $PossibleValuesFilter;
 
+            # get PossibleValues
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+            );
+
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -402,7 +413,7 @@ sub Run {
 
                     # convert Filer key => key back to key => value using map
                     %{$PossibleValuesFilter}
-                        = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} }
+                        = map { $_ => $PossibleValues->{$_} }
                         keys %Filter;
                 }
             }
@@ -546,13 +557,17 @@ sub Run {
             return $Output;
         }
 
-        if ( $Self->{Config}->{State} ) {
-
-            # set state
+        # set state
+        my $NextState = $Self->{Config}->{StateDefault} || 'open';
+        if ( $GetParam{StateID} && $Self->{Config}->{State} ) {
             my %NextStateData = $Self->{StateObject}->StateGet( ID => $GetParam{StateID} );
-            my $NextState = $NextStateData{Name}
-                || $Self->{Config}->{StateDefault}
-                || 'open';
+            $NextState = $NextStateData{Name};
+        }
+
+        # change state if
+        # customer set another state
+        # or the ticket is not new
+        if ( $Ticket{StateType} !~ /^new/ || $GetParam{StateID} ) {
             $Self->{TicketObject}->StateSet(
                 TicketID  => $Self->{TicketID},
                 ArticleID => $ArticleID,
@@ -588,8 +603,8 @@ sub Run {
 
             # skip deleted inline images
             next if $Attachment->{ContentID}
-                && $Attachment->{ContentID} =~ /^inline/
-                && $GetParam{Body} !~ /$Attachment->{ContentID}/;
+                    && $Attachment->{ContentID} =~ /^inline/
+                    && $GetParam{Body} !~ /$Attachment->{ContentID}/;
             $Self->{TicketObject}->ArticleWriteAttachment(
                 %{$Attachment},
                 ArticleID => $ArticleID,
@@ -656,11 +671,16 @@ sub Run {
 
         my $PossibleValuesFilter;
 
+        # get PossibleValues
+        my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+            DynamicFieldConfig => $DynamicFieldConfig,
+        );
+
         # check if field has PossibleValues property in its configuration
-        if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+        if ( IsHashRefWithData($PossibleValues) ) {
 
             # convert possible values key => value to key => key for ACLs usign a Hash slice
-            my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+            my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
             # set possible values filter from ACLs
@@ -678,7 +698,7 @@ sub Run {
 
                 # convert Filer key => key back to key => value using map
                 %{$PossibleValuesFilter}
-                    = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} }
+                    = map { $_ => $PossibleValues->{$_} }
                     keys %Filter;
             }
         }
@@ -1132,8 +1152,8 @@ sub _Mask {
     }
 
     # Expand option
-    my $ExpandOption = ( $Self->{ZoomExpand}    ? 'One' : 'All' );
-    my $ExpandPlural = ( $ExpandOption eq 'All' ? 's'   : '' );
+    my $ExpandOption = ( $Self->{ZoomExpand} ? 'One' : 'All' );
+    my $ExpandPlural = ( $ExpandOption eq 'All' ? 's' : '' );
     $Self->{LayoutObject}->Block(
         Name => 'Expand',
         Data => {
