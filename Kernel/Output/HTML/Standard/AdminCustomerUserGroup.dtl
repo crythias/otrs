@@ -128,7 +128,7 @@
         <div class="WidgetSimple">
 <!-- dtl:block:Result -->
             <div class="Header">
-                <h2>$Text{"Search Result:"}</h2>
+                <h2>$Text{"Search Results"}:</h2>
             </div>
             <div class="Content LayoutGrid ColumnsWithSpacing">
                 <div class="Size1of2">
@@ -179,6 +179,7 @@
                     <input type="hidden" name="Action" value="$Env{"Action"}"/>
                     <input type="hidden" name="Subaction" value="Change$QData{"Type"}"/>
                     <input type="hidden" name="ID" value="$QData{"ID"}"/>
+                    <input type="hidden" name="CustomerUserSearch" value="$QData{"CustomerUserSearch"}" />
                     <table class="DataTable VariableWidth" id="$QData{"VisibleNeType"}">
                         <thead>
                             <tr>

@@ -1,7 +1,28 @@
-#3.2.8 2013-??-??
+#3.2.9 2013-??-??
+ - 2013-06-29 Fixed bug#[9539](http://bugs.otrs.org/show_bug.cgi?id=9539) - Cannot send notification to a group of customers.
+ - 2013-06-28 Fixed bug#[8273](http://bugs.otrs.org/show_bug.cgi?id=8273) - Copying text in preview mode not possible.
+ - 2013-06-28 Fixed bug#[9557](http://bugs.otrs.org/show_bug.cgi?id=9557) - Cannot see quoted text in customer ticket zoom.
+ - 2013-06-27 Fixed bug#[9011](http://bugs.otrs.org/show_bug.cgi?id=9011) - GenericInterface: New value after value mapping can't be 0.
+ - 2013-06-25 Improved parameter quoting in various places.
+ - 2013-06-24 Fixed bug#[9104](http://bugs.otrs.org/show_bug.cgi?id=9104) - Group permission for customer subset overwrites permissions for other customers.
+ - 2013-06-21 Fixed bug#[9434](http://bugs.otrs.org/show_bug.cgi?id=9434) - Activities are not translated.
+ - 2013-06-21 Fixed bug#[9261](http://bugs.otrs.org/show_bug.cgi?id=9261) - Ticket Inbound changes FROM in view.
+ - 2013-06-21 Fixed bug#[9540](http://bugs.otrs.org/show_bug.cgi?id=9540) - AgentTicketOwner doesn't activate PreviousOwner if new owner is selected.
+ - 2013-06-21 Fixed bug#[9365](http://bugs.otrs.org/show_bug.cgi?id=9365) - AgentLinkObject screen does not provide a search restriction for ticket type.
+ - 2013-06-19 Fixed bug#[9533](http://bugs.otrs.org/show_bug.cgi?id=9533) - Delete Inactive Process button not aligned.
+ - 2013-06-18 Fixed bug#[9504](http://bugs.otrs.org/show_bug.cgi?id=9504) - wrong status after answer via customer portal.
+ - 2013-06-18 Fixed bug#[9425](http://bugs.otrs.org/show_bug.cgi?id=9425) - Wrong created date for queue view.
+ - 2013-06-18 Follow-up fix for bug#[8880](http://bugs.otrs.org/show_bug.cgi?id=8880) - No inline image shown if HTML email contains 'base' tag.
+ - 2013-06-17 Updated Spanish translation, thanks to Enrique Matías Sánchez!
+ - 2013-06-17 Fixed bug#[8112](http://bugs.otrs.org/show_bug.cgi?id=8112) - Display issue in FROM column of AgentTicketZoom with some agent names.
+ - 2013-06-14 Fixed bug#[9524](http://bugs.otrs.org/show_bug.cgi?id=9524) - Uninitialized  value after step2 in TicketAccountedTime stats.
+ - 2013-06-14 Fixed bug#[9511](http://bugs.otrs.org/show_bug.cgi?id=9511) - ProcessManagement: No SLA verification after Service update.
+ - 2013-06-14 Fixed bug#[9513](http://bugs.otrs.org/show_bug.cgi?id=9513) - Frontend::ToolBarModule###11-CICSearchCustomerUser does not use settings of Frontend::Agent::CustomerSearch.
+ - 2013-06-13 Fixed bug#[8719](http://bugs.otrs.org/show_bug.cgi?id=8719) - PasswordMin2Lower2UpperCharacters problem.
+
+#3.2.8 2013-06-18
  - 2013-06-13 Fixed bug#[9464](http://bugs.otrs.org/show_bug.cgi?id=9464) - Unique email address only checked during CustomerUserAdd, not during Update.
  - 2013-06-11 Fixed bug#[9497](http://bugs.otrs.org/show_bug.cgi?id=9497) - AgentTicketSearch logs a Uninitialized error message in Oracle.
- - 2013-06-11 Fixed bug#[9481](http://bugs.otrs.org/show_bug.cgi?id=9481) - Possible to select invalid services in SLA admin screen.
  - 2013-06-11 Fixed bug#[9451](http://bugs.otrs.org/show_bug.cgi?id=9451) - Possible to select invalid autoresponses for queues.
  - 2013-06-11 Fixed bug#[9516](http://bugs.otrs.org/show_bug.cgi?id=9516) - Field names for account signups in some languages are broken.
  - 2013-06-08 Fixed bug#[9501](http://bugs.otrs.org/show_bug.cgi?id=9501) - Missing values in GenericAgent ticket list for tickets without articles.

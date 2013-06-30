@@ -23,7 +23,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-05-31 15:12:47
+    # Last translation file sync: 2013-06-14 08:49:31
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -881,7 +881,7 @@ sub Data {
 
         # Template: AdminCustomerUser
         'Customer Management' => 'Gestion des clients',
-        'Back to search result' => '',
+        'Back to search results' => '',
         'Add customer' => 'Ajouter un client',
         'Select' => 'Sélectionner',
         'Hint' => 'Conseil',
@@ -918,7 +918,7 @@ sub Data {
         'Select the customer:group permissions.' => 'Sélectionner les permissions pour les clients et pour les groupes.',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
             'Si rien n\'est sélectionné, aucune permission ne sera accordée à ce groupe (les clients n\'auront pas accès aux demandes).',
-        'Search Result:' => 'Résultat de recherche :',
+        'Search Results' => 'Résultat de recherche',
         'Customers' => 'Clients',
         'Groups' => 'Groupes',
         'No matches found.' => 'Aucun résultat.',
@@ -1674,6 +1674,7 @@ sub Data {
             '',
         'This TransitionAction is already used in this Path. You cannot use it twice!' =>
             '',
+        'Remove the Transition from this Process' => '',
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
@@ -2462,11 +2463,8 @@ sub Data {
         'Please fill out this form to receive login credentials.' => 'Veuillez remplir ce formulaire pour recevoir les justificatifs d\'identité permettant de se connecter.',
         'How we should address you' => 'Titre de civilité',
         'Your First Name' => 'Prénom',
-        'Please supply a first name' => 'Veuillez fournir un prénom',
         'Your Last Name' => 'Nom de famille',
-        'Please supply a last name' => 'Veuillez fournir un nom de famille',
         'Your email address (this will become your username)' => 'Votre adresse électronique (vous utiliserez celle-ci comme nom d\'utilisateur)',
-        'Please supply a' => 'Veuillez fournir un ',
 
         # Template: CustomerNavigationBar
         'Edit personal preferences' => 'Éditer les préférences',
@@ -3601,6 +3599,7 @@ sub Data {
         'DynamicField object registration.' => 'Enregistrement de l\'objet « Champ dynamique » (DynamicField).',
         'Edit customer company' => '',
         'Email Addresses' => 'Adresses de courrier électronique',
+        'Enable keep-alive connection header for SOAP responses.' => '',
         'Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.' =>
             'Permet l\'envoi de PDF. Le module CPAN PDF::AP12 est nécessaire. S\'il n\'est pas installé, l\'envoi de PDF sera désactivé.',
         'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
@@ -6716,6 +6715,9 @@ sub Data {
             'Veuillez sélectionner un seul élément ou désactiver le bouton « Figer » là où le champ sélectionné est en surbrillance.',
         'Please set a strong password for SOAP::Password in SysConfig.' =>
             'Veuillez configurer un mot de passe fort pour SOAP::Password in SysConfig.',
+        'Please supply a' => 'Veuillez fournir un ',
+        'Please supply a first name' => 'Veuillez fournir un prénom',
+        'Please supply a last name' => 'Veuillez fournir un nom de famille',
         'Poland' => 'Pologne',
         'Portugal' => 'Portugal',
         'Postmaster' => 'Maître de poste',
