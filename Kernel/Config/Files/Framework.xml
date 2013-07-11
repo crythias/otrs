@@ -2424,7 +2424,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="WebMaxFileUpload" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Defines the maximal size (in bytes) for file uploads via the browser.</Description>
+        <Description Translatable="1">Defines the maximal size (in bytes) for file uploads via the browser. Warning: Setting this option to a value which is too low could cause many masks in your OTRS instance to stop working (probably any mask which takes input from the user).</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
@@ -3588,7 +3588,7 @@ via the Preferences button after logging in.
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer::Auth</SubGroup>
         <Setting>
-            <Option SelectedID="bcrypt">
+            <Option SelectedID="sha2">
                 <Item Key="crypt">Crypt</Item>
                 <Item Key="md5">MD5-Crypt</Item>
                 <Item Key="plain">Plain</Item>

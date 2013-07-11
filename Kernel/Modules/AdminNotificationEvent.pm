@@ -57,9 +57,9 @@ sub new {
         ObjectType => ['Ticket'],
     );
 
-    $Self->{EventObject}        = Kernel::System::Event->new(
+    $Self->{EventObject} = Kernel::System::Event->new(
         %Param,
-        DynamicFieldObject =>  $Self->{DynamicFieldObject},
+        DynamicFieldObject => $Self->{DynamicFieldObject},
     );
 
     return $Self;
@@ -372,6 +372,12 @@ sub _Edit {
     $Self->{LayoutObject}->Block( Name => 'ActionList' );
     $Self->{LayoutObject}->Block( Name => 'ActionOverview' );
 
+    # get list type
+    my $TreeView = 0;
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::ListType') eq 'tree' ) {
+        $TreeView = 1;
+    }
+
     $Param{RecipientsStrg} = $Self->{LayoutObject}->BuildSelection(
         Data => {
             AgentOwner            => 'Agent (Owner)',
@@ -418,12 +424,12 @@ sub _Edit {
     }
 
     my %RegisteredEvents = $Self->{EventObject}->EventList(
-        ObjectTypes => ['Ticket', 'Article',],
+        ObjectTypes => [ 'Ticket', 'Article', ],
     );
 
     my @Events;
-    for my $ObjectType (sort keys %RegisteredEvents) {
-        push @Events, @{ $RegisteredEvents{$ObjectType} ||  [] };
+    for my $ObjectType ( sort keys %RegisteredEvents ) {
+        push @Events, @{ $RegisteredEvents{$ObjectType} || [] };
     }
 
     # Build the list...
@@ -454,6 +460,7 @@ sub _Edit {
         Size               => 5,
         Multiple           => 1,
         Name               => 'QueueID',
+        TreeView           => $TreeView,
         SelectedIDRefArray => $Param{Data}->{QueueID},
         OnChangeSubmit     => 0,
     );
@@ -528,7 +535,11 @@ sub _Edit {
     if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
 
         # get list type
-        my %Service = $Self->{ServiceObject}->ServiceList( UserID => $Self->{UserID}, );
+        my %Service = $Self->{ServiceObject}->ServiceList(
+            Valid        => 1,
+            KeepChildren => 1,
+            UserID       => $Self->{UserID},
+        );
         $Param{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Service,
             Name        => 'ServiceID',
@@ -537,6 +548,7 @@ sub _Edit {
             Multiple    => 1,
             Translation => 0,
             Max         => 200,
+            TreeView    => $TreeView,
         );
         my %SLA = $Self->{SLAObject}->SLAList( UserID => $Self->{UserID}, );
         $Param{SLAsStrg} = $Self->{LayoutObject}->BuildSelection(

@@ -100,7 +100,7 @@ sub Run {
         return $Self->{LayoutObject}->ErrorScreen();
     }
 
-    if ($Self->{Subaction} eq 'Run') {
+    if ( $Self->{Subaction} eq 'Run' ) {
 
         return $Self->_MaskRun();
     }
@@ -124,7 +124,7 @@ sub Run {
             qw(TicketNumber Title From To Cc Subject Body CustomerID
             CustomerUserLogin Agent SearchInArchive
             NewTitle
-            NewCustomerID NewCustomerUserLogin
+            NewCustomerID NewPendingTime NewPendingTimeType NewCustomerUserLogin
             NewStateID NewQueueID NewPriorityID NewOwnerID NewResponsibleID
             NewTypeID NewServiceID NewSLAID
             NewNoteFrom NewNoteSubject NewNoteBody NewNoteTimeUnits NewModule
@@ -484,6 +484,37 @@ sub _MaskUpdate {
         Multiple   => 0,
         SelectedID => $JobData{NewStateID},
     );
+    $JobData{NewPendingTimeTypeStrg} = $Self->{LayoutObject}->BuildSelection(
+        Data => [
+            {
+                Key   => 60,
+                Value => 'minute(s)',
+            },
+            {
+                Key   => 3600,
+                Value => 'hour(s)',
+            },
+            {
+                Key   => 86400,
+                Value => 'day(s)',
+            },
+            {
+                Key   => 2592000,
+                Value => 'month(s)',
+            },
+            {
+                Key   => 31536000,
+                Value => 'year(s)',
+            },
+
+        ],
+        Name        => 'NewPendingTimeType',
+        Size        => 1,
+        Multiple    => 0,
+        SelectedID  => $JobData{NewPendingTimeType},
+        Translation => 1,
+        Title       => $Self->{LayoutObject}->{LanguageObject}->Get('Time unit'),
+    );
     $JobData{QueuesStrg} = $Self->{LayoutObject}->AgentQueueListOption(
         Data               => { $Self->{QueueObject}->GetAllQueues(), },
         Size               => 5,
@@ -709,7 +740,12 @@ sub _MaskUpdate {
     if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
 
         # get list type
-        my %Service = $Self->{ServiceObject}->ServiceList( UserID => $Self->{UserID}, );
+        my %Service = $Self->{ServiceObject}->ServiceList(
+            Valid        => 1,
+            KeepChildren => 1,
+            UserID       => $Self->{UserID},
+        );
+        my %NewService = %Service;
         $JobData{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Service,
             Name        => 'ServiceIDs',
@@ -721,11 +757,11 @@ sub _MaskUpdate {
             Max         => 200,
         );
         $JobData{NewServicesStrg} = $Self->{LayoutObject}->BuildSelection(
-            Data        => \%Service,
+            Data        => \%NewService,
             Name        => 'NewServiceID',
             SelectedID  => $JobData{NewServiceID},
             Size        => 5,
-            Multiple    => 0,
+            Multiple    => 1,
             TreeView    => $TreeView,
             Translation => 0,
             Max         => 200,
@@ -874,10 +910,10 @@ sub _MaskUpdate {
         );
 
         # check if field has PossibleValues property in its configuration
-        if ( IsHashRefWithData( $PossibleValues ) ) {
+        if ( IsHashRefWithData($PossibleValues) ) {
 
             # convert possible values key => value to key => key for ACLs usign a Hash slice
-            my %AclData = %{ $PossibleValues };
+            my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
             # set possible values filter from ACLs
@@ -930,7 +966,7 @@ sub _MaskUpdate {
 
     # get registered event triggers from the config
     my %RegisteredEvents = $Self->{EventObject}->EventList(
-        ObjectTypes => ['Ticket', 'Article'],
+        ObjectTypes => [ 'Ticket', 'Article' ],
     );
 
     # create the event triggers table
@@ -940,7 +976,7 @@ sub _MaskUpdate {
         my $EventType;
         EVENTTYPE:
         for my $Type ( sort keys %RegisteredEvents ) {
-            if ( grep {$_ eq $Event } @{ $RegisteredEvents{$Type} } ) {
+            if ( grep { $_ eq $Event } @{ $RegisteredEvents{$Type} } ) {
                 $EventType = $Type;
                 last EVENTTYPE;
             }
@@ -950,8 +986,8 @@ sub _MaskUpdate {
         $Self->{LayoutObject}->Block(
             Name => 'EventRow',
             Data => {
-                Event        => $Event,
-                EventType    => $EventType || '-',
+                Event => $Event,
+                EventType => $EventType || '-',
             },
         );
     }
@@ -973,9 +1009,9 @@ sub _MaskUpdate {
 
         # paint each selector
         my $EventStrg = $Self->{LayoutObject}->BuildSelection(
-            Data         => $RegisteredEvents{$Type} || [],
-            Name         => $Type . 'Event',
-            Sort         => 'AlphanumericValue',
+            Data => $RegisteredEvents{$Type} || [],
+            Name => $Type . 'Event',
+            Sort => 'AlphanumericValue',
             PossibleNone => 0,
             Class        => 'EventList GenericInterfaceSpacing ' . $EventListHidden,
             Title        => $Self->{LayoutObject}->{LanguageObject}->Get('Event'),
@@ -999,7 +1035,7 @@ sub _MaskUpdate {
         SelectedValue => $SelectedEventType,
         PossibleNone  => 0,
         Class         => '',
-        Title        => $Self->{LayoutObject}->{LanguageObject}->Get('Type'),
+        Title         => $Self->{LayoutObject}->{LanguageObject}->Get('Type'),
     );
     $Self->{LayoutObject}->Block(
         Name => 'EventTypeStrg',
@@ -1024,6 +1060,30 @@ sub _MaskRun {
     }
     $JobData{Profile} = $Self->{Profile};
 
+    # dynamic fields search parameters for ticket search
+    my %DynamicFieldSearchParameters;
+
+    # cycle trough the activated Dynamic Fields for this screen
+    DYNAMICFIELD:
+    for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
+        next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+        next DYNAMICFIELD
+            if !$JobData{ 'Search_DynamicField_' . $DynamicFieldConfig->{Name} };
+
+        # extract the dynamic field value form the profile
+        my $SearchParameter = $Self->{BackendObject}->SearchFieldParameterBuild(
+            DynamicFieldConfig => $DynamicFieldConfig,
+            Profile            => \%JobData,
+            LayoutObject       => $Self->{LayoutObject},
+        );
+
+        # set search parameter
+        if ( defined $SearchParameter ) {
+            $DynamicFieldSearchParameters{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
+                = $SearchParameter->{Parameter};
+        }
+    }
+
     # perform ticket search
     my $Counter = $Self->{TicketObject}->TicketSearch(
         Result          => 'COUNT',
@@ -1033,6 +1093,7 @@ sub _MaskRun {
         Limit           => 60_000,
         ConditionInline => 1,
         %JobData,
+        %DynamicFieldSearchParameters,
     ) || 0;
 
     my @TicketIDs = $Self->{TicketObject}->TicketSearch(
@@ -1043,6 +1104,7 @@ sub _MaskRun {
         Limit           => 30,
         ConditionInline => 1,
         %JobData,
+        %DynamicFieldSearchParameters,
     );
 
     $Self->{LayoutObject}->Block( Name => 'ActionList', );

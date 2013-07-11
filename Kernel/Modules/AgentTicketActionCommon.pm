@@ -264,8 +264,10 @@ sub Run {
 
     # rewrap body if no rich text is used
     if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
-        my $Size = $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote') || 70;
-        $GetParam{Body} =~ s/(^>.+|.{4,$Size})(?:\s|\z)/$1\n/gm;
+        $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+            MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+            PlainText     => $GetParam{Body},
+        );
     }
 
     if ( $Self->{Subaction} eq 'Store' ) {
@@ -280,8 +282,13 @@ sub Run {
         my $IsUpload = 0;
 
         # attachment delete
+        my @AttachmentIDs = map {
+            my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+            $ID ? $ID : ();
+        } $Self->{ParamObject}->GetParamNames();
+
         COUNT:
-        for my $Count ( 1 .. 32 ) {
+        for my $Count ( reverse sort @AttachmentIDs ) {
             my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
             next COUNT if !$Delete;
             %Error = ();
@@ -430,10 +437,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -926,6 +933,7 @@ sub Run {
             my $ACL = $Self->{TicketObject}->TicketAcl(
                 %GetParam,
                 Action        => $Self->{Action},
+                TicketID      => $Self->{TicketID},
                 QueueID       => $QueueID,
                 ReturnType    => 'Ticket',
                 ReturnSubType => 'DynamicField_' . $DynamicFieldConfig->{Name},
@@ -1065,10 +1073,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs

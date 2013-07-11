@@ -15,8 +15,7 @@ use warnings;
 use Kernel::System::Cache;
 use Kernel::System::Valid;
 
-use vars qw(@ISA $VERSION);
-$VERSION = qw($Revision: 0.1 $) [1];
+use vars qw(@ISA);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -457,7 +456,7 @@ sub _CustomerCompanyCacheClear {
 
     $Self->{CacheObject}->Delete(
         Type => $Self->{CacheType},
-        Key  => "CustomerComapnyGet::$Param{CustomerID}",
+        Key  => "CustomerCompanyGet::$Param{CustomerID}",
     );
 
     # delete all search cache entries

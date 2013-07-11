@@ -1,9 +1,7 @@
 #!/usr/bin/perl -w
 # --
 # bin/otrs.ImportACLsFromConfig.pl - import existing ACLs from Config.pm to database
-# Copyright (C) 2003-2013 OTRS AG, http://otrs.com/
-# --
-# $Id: otrs.ImportACLsFromConfig.pl,v 1.6 2013/05/08 17:18:35 mab Exp $
+# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU AFFERO General Public License as published by
@@ -31,9 +29,6 @@ use FindBin qw($RealBin);
 use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
-
-use vars qw($VERSION);
-$VERSION = qw($Revision: 1.6 $) [1];
 
 use Kernel::Config;
 use Kernel::System::DB;

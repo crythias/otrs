@@ -407,10 +407,10 @@ sub Form {
         );
 
         # check if field has PossibleValues property in its configuration
-        if ( IsHashRefWithData( $PossibleValues ) ) {
+        if ( IsHashRefWithData($PossibleValues) ) {
 
             # convert possible values key => value to key => key for ACLs using a Hash slice
-            my %AclData = %{ $PossibleValues };
+            my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
             # set possible values filter from ACLs
@@ -611,10 +611,10 @@ sub SendEmail {
         );
 
         # check if field has PossibleValues property in its configuration
-        if ( IsHashRefWithData( $PossibleValues ) ) {
+        if ( IsHashRefWithData($PossibleValues) ) {
 
             # convert possible values key => value to key => key for ACLs using a Hash slice
-            my %AclData = %{ $PossibleValues };
+            my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
             # set possible values filter from ACLs
@@ -742,9 +742,15 @@ sub SendEmail {
     }
 
     # attachment delete
-    for my $Count ( 1 .. 32 ) {
+    my @AttachmentIDs = map {
+        my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+        $ID ? $ID : ();
+    } $Self->{ParamObject}->GetParamNames();
+
+    COUNT:
+    for my $Count ( reverse sort @AttachmentIDs ) {
         my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
-        next if !$Delete;
+        next COUNT if !$Delete;
         %Error = ();
         $Error{AttachmentDelete} = 1;
         $Self->{UploadCacheObject}->FormIDRemoveFile(

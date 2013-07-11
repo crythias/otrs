@@ -267,10 +267,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -363,19 +363,27 @@ sub Run {
 
         my %Error;
 
-        # rewrap body if exists
-        if ( $Self->{LayoutObject}->{BrowserRichText} && $GetParam{Body} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # If is an action about attachments
         my $IsUpload = 0;
 
         # attachment delete
-        for my $Count ( 1 .. 32 ) {
+        my @AttachmentIDs = map {
+            my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+            $ID ? $ID : ();
+        } $Self->{ParamObject}->GetParamNames();
+
+        COUNT:
+        for my $Count ( reverse sort @AttachmentIDs ) {
             my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
-            next if !$Delete;
+            next COUNT if !$Delete;
             $Error{AttachmentDelete} = 1;
             $Self->{UploadCacheObject}->FormIDRemoveFile(
                 FormID => $Self->{FormID},
@@ -454,10 +462,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -636,7 +644,7 @@ sub Run {
             my $From = $LastCustomerArticle{From};
 
             # If we don't have a customer article, use the agent as From
-            if (!$From) {
+            if ( !$From ) {
                 my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
                 $From = $TemplateGenerator->Sender(
                     QueueID => $Ticket{QueueID},
@@ -645,16 +653,16 @@ sub Run {
             }
 
             my $ArticleID = $Self->{TicketObject}->ArticleCreate(
-                TicketID    => $Self->{TicketID},
-                ArticleType => $Self->{Config}->{ArticleType},
-                SenderType  => $Self->{Config}->{SenderType},
-                From        => $From,
-                Subject     => $GetParam{Subject},
-                Body        => $GetParam{Body},
-                MimeType    => $MimeType,
-                Charset     => $Self->{LayoutObject}->{UserCharset},
-                UserID      => $Self->{UserID},
-                HistoryType => $Self->{Config}->{HistoryType},
+                TicketID       => $Self->{TicketID},
+                ArticleType    => $Self->{Config}->{ArticleType},
+                SenderType     => $Self->{Config}->{SenderType},
+                From           => $From,
+                Subject        => $GetParam{Subject},
+                Body           => $GetParam{Body},
+                MimeType       => $MimeType,
+                Charset        => $Self->{LayoutObject}->{UserCharset},
+                UserID         => $Self->{UserID},
+                HistoryType    => $Self->{Config}->{HistoryType},
                 HistoryComment => $Self->{Config}->{HistoryComment} || '%%',
             );
 

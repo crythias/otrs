@@ -331,7 +331,7 @@ and will transform dates to the current user's timezone.
     my $ValueStrg = $BackendObject->DisplayValueRender(
         DynamicFieldConfig => $DynamicFieldConfig,      # complete config of the DynamicField
         Value              => 'Any value',              # Optional
-        HTMLOutput         => 1,                        # or 0, defult 1, to return HTML ready
+        HTMLOutput         => 1,                        # or 0, default 1, to return HTML ready
                                                         #    values
         ValueMaxChars      => 20,                       # Optional (for HTMLOutput only)
         TitleMaxChars      => 20,                       # Optional (for HTMLOutput only)
@@ -1332,8 +1332,8 @@ build the search parameters to be passed to the search engine.
 
     my $DynamicFieldSearchParameter = $BackendObject->SearchFieldParameterBuild(
         DynamicFieldConfig   => $DynamicFieldConfig,    # complete config of the DynamicField
-        LayoutObject         => $LayoutObject,
-        Profile              => $ProfileData,           # the serach profile
+        LayoutObject         => $LayoutObject,          # optional
+        Profile              => $ProfileData,           # the search profile
     );
 
     Returns
@@ -1357,7 +1357,7 @@ sub SearchFieldParameterBuild {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(DynamicFieldConfig LayoutObject Profile)) {
+    for my $Needed (qw(DynamicFieldConfig Profile)) {
         if ( !$Param{$Needed} ) {
             $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
@@ -1467,11 +1467,11 @@ sub StatsFieldParameterBuild {
 
 }
 
-=item CommonSearchFieldParameterBuild()
+=item StatsSearchFieldParameterBuild()
 
 build the search parameters to be passed to the search engine within the stats module.
 
-    my $DynamicFieldStatsSearchParameter = $BackendObject->CommonSearchFieldParameterBuild(
+    my $DynamicFieldStatsSearchParameter = $BackendObject->StatsSearchFieldParameterBuild(
         DynamicFieldConfig   => $DynamicFieldConfig,    # complete config of the DynamicField
         Value                => $Value,                 # the serach profile
     );
@@ -1491,7 +1491,7 @@ build the search parameters to be passed to the search engine within the stats m
     };
 =cut
 
-sub CommonSearchFieldParameterBuild {
+sub StatsSearchFieldParameterBuild {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -1534,7 +1534,7 @@ sub CommonSearchFieldParameterBuild {
     }
 
     # return value from the specific backend
-    return $Self->{$DynamicFieldBackend}->CommonSearchFieldParameterBuild(%Param);
+    return $Self->{$DynamicFieldBackend}->StatsSearchFieldParameterBuild(%Param);
 
 }
 

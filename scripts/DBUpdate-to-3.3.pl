@@ -28,8 +28,6 @@ use FindBin qw($RealBin);
 use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 
-use vars qw($VERSION);
-
 use Getopt::Std qw();
 use Kernel::Config;
 use Kernel::System::Log;
@@ -51,7 +49,7 @@ use Kernel::System::VariableCheck qw(:all);
     if ( exists $Opts{h} ) {
         print <<"EOF";
 
-DBUpdate-to-3.3.pl <Revision $VERSION> - Upgrade scripts for OTRS 3.2.x to 3.3.x migration.
+DBUpdate-to-3.3.pl - Upgrade scripts for OTRS 3.2.x to 3.3.x migration.
 Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 
 EOF
@@ -323,7 +321,7 @@ sub _MigrateOTRSExternalTicketNumberRecognition {
     my $SysConfigObject = Kernel::System::SysConfig->new( %{$CommonObject} );
 
     # convert settings
-    for my $Number ( 1..4 ) {
+    for my $Number ( 1 .. 4 ) {
 
         # get original setting (from FAO using old name)
         my $Setting = $CommonObject->{ConfigObject}->Get('PostMaster::PreFilterModule')
@@ -334,7 +332,7 @@ sub _MigrateOTRSExternalTicketNumberRecognition {
             # set new setting, notice that it has an extra 0 in the name
             my $Success = $SysConfigObject->ConfigItemUpdate(
                 Valid => 1,
-                Key   =>
+                Key =>
                     'PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition' . $Number,
                 Value => $Setting,
             );
@@ -355,10 +353,11 @@ safe uninstall packages from the database.
 sub _UninstallMergedFeatureAddOns {
     my $CommonObject = shift;
 
-    my $PackageObject = Kernel::System::Package->new( %{$CommonObject});
+    my $PackageObject = Kernel::System::Package->new( %{$CommonObject} );
 
     # qw( ) contains a list of the feture add-ons to uninstall
-    for my $PackageName (qw(
+    for my $PackageName (
+        qw(
         OTRSPostMasterFilterExtensions
         OTRSFreeTextFromCustomerUser
         OTRSExternalTicketNumberRecognition
@@ -372,8 +371,10 @@ sub _UninstallMergedFeatureAddOns {
         OTRSEventBasedTicketActions
         OTRSKeepFAQAttachments
         OTRSTicketAclEditor
-    )) {
-        my $Success = $PackageObject->_PackageUninstallMerged (
+        )
+        )
+    {
+        my $Success = $PackageObject->_PackageUninstallMerged(
             Name => $PackageName,
         );
         if ( !$Success ) {

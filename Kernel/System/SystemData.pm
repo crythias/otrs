@@ -85,7 +85,7 @@ sub new {
         $Self->{$_} = $Param{$_} || die "Got no $_!";
     }
 
-    # create addititional objects
+    # create additional objects
     $Self->{ValidObject}         = Kernel::System::Valid->new(%Param);
     $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
         %Param,
@@ -119,11 +119,15 @@ sub SystemDataAdd {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Key Value UserID)) {
+    for (qw(Key UserID)) {
         if ( !$Param{$_} ) {
             $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
+    }
+    if ( !defined $Param{Value} ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => "Need Value!" );
+        return;
     }
 
     # lowercase key
@@ -185,7 +189,7 @@ sub SystemDataGet {
     return $Cache if $Cache;
 
     return if !$Self->{DBObject}->Prepare(
-        SQL   => '
+        SQL => '
             SELECT data_value
             FROM system_data
             WHERE data_key = ?
@@ -201,7 +205,7 @@ sub SystemDataGet {
 
     # set cache
     $Self->{CacheInternalObject}->Set(
-        Key   => $CacheKey,
+        Key => $CacheKey,
         Value => $Value || '',
     );
 
@@ -231,11 +235,15 @@ sub SystemDataUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Key Value UserID)) {
+    for (qw(Key UserID)) {
         if ( !$Param{$_} ) {
             $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
+    }
+    if ( !defined $Param{Value} ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => "Need Value!" );
+        return;
     }
 
     # lowercase key
@@ -325,7 +333,6 @@ sub SystemDataDelete {
 
     return 1;
 }
-
 
 1;
 

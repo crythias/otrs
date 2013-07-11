@@ -346,7 +346,11 @@ sub Run {
             }
 
             my $CustomerKey = '';
-            if ( defined $CustomerDataFrom{UserEmail} && $CustomerDataFrom{UserEmail} eq $EmailAddress ) {
+            if (
+                defined $CustomerDataFrom{UserEmail}
+                && $CustomerDataFrom{UserEmail} eq $EmailAddress
+                )
+            {
                 $CustomerKey = $Article{CustomerUserID};
             }
 
@@ -461,10 +465,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -659,6 +663,19 @@ sub Run {
         }
         my $NextState = $StateData{Name} || '';
         my $Dest = $Self->{ParamObject}->GetParam( Param => 'Dest' ) || '';
+
+        # see if only a name has been passed
+        if ( $Dest && $Dest !~ m{^\d+} ) {
+
+            # see if we can get an ID for this queue name
+            my $DestID = $Self->{QueueObject}->QueueLookup(
+                Queue => $Dest,
+            );
+            if ($DestID) {
+                $Dest = $DestID . '||' . $Dest;
+            }
+        }
+
         my ( $NewQueueID, $To ) = split( /\|\|/, $Dest );
         my $CustomerUser = $Self->{ParamObject}->GetParam( Param => 'CustomerUser' )
             || $Self->{ParamObject}->GetParam( Param => 'PreSelectedCustomerUser' )
@@ -697,16 +714,24 @@ sub Run {
             }
         }
 
-        # rewrap body if exists
-        if ( $Self->{LayoutObject}->{BrowserRichText} && $GetParam{Body} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # attachment delete
-        for my $Count ( 1 .. 16 ) {
+        my @AttachmentIDs = map {
+            my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+            $ID ? $ID : ();
+        } $Self->{ParamObject}->GetParamNames();
+
+        COUNT:
+        for my $Count ( reverse sort @AttachmentIDs ) {
             my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
-            next if !$Delete;
+            next COUNT if !$Delete;
             $Error{AttachmentDelete} = 1;
             $Self->{UploadCacheObject}->FormIDRemoveFile(
                 FormID => $Self->{FormID},
@@ -768,20 +793,21 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs using a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
                 my $ACL = $Self->{TicketObject}->TicketAcl(
                     %GetParam,
-                    Action        => $Self->{Action},
-                    ReturnType    => 'Ticket',
-                    ReturnSubType => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data          => \%AclData,
-                    UserID        => $Self->{UserID},
+                    CustomerUserID => $CustomerUser || '',
+                    Action         => $Self->{Action},
+                    ReturnType     => 'Ticket',
+                    ReturnSubType  => 'DynamicField_' . $DynamicFieldConfig->{Name},
+                    Data           => \%AclData,
+                    UserID         => $Self->{UserID},
                 );
                 if ($ACL) {
                     my %Filter = $Self->{TicketObject}->TicketAclData();
@@ -1171,8 +1197,10 @@ sub Run {
             UserID           => $Self->{UserID},
             HistoryType      => $Self->{Config}->{HistoryType},
             HistoryComment   => $Self->{Config}->{HistoryComment} || '%%',
-            AutoResponseType => 'auto reply',
-            OrigHeader       => {
+            AutoResponseType => ( $Self->{ConfigObject}->Get('AutoResponseForWebTickets') )
+            ? 'auto reply'
+            : '',
+            OrigHeader => {
                 From    => $GetParam{From},
                 To      => $GetParam{To},
                 Subject => $GetParam{Subject},
@@ -1419,12 +1447,13 @@ sub Run {
             my $ACL = $Self->{TicketObject}->TicketAcl(
                 %GetParam,
                 %ACLCompatGetParam,
-                Action        => $Self->{Action},
-                QueueID       => $QueueID || 0,
-                ReturnType    => 'Ticket',
-                ReturnSubType => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                Data          => \%AclData,
-                UserID        => $Self->{UserID},
+                CustomerUserID => $CustomerUser || '',
+                Action         => $Self->{Action},
+                QueueID        => $QueueID      || 0,
+                ReturnType     => 'Ticket',
+                ReturnSubType  => 'DynamicField_' . $DynamicFieldConfig->{Name},
+                Data           => \%AclData,
+                UserID         => $Self->{UserID},
             );
             if ($ACL) {
                 my %Filter = $Self->{TicketObject}->TicketAclData();

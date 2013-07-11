@@ -1,6 +1,6 @@
 # --
 # Kernel/System/Ticket/Event/DynamicFieldFromCustomerUser.pm - ticket event module
-# Copyright (C) 2003-2012 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -14,9 +14,6 @@ use warnings;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
-
-use vars qw($VERSION);
-$VERSION = qw($Revision: 1.4 $) [1];
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -85,10 +82,10 @@ sub Run {
     # also continue if there was no CustomerUser data found - erase values
     # loop over the configured mapping of customer data variables to dynamic fields
     CUSTOMERUSERVARIABLENAME:
-    for my $CustomerUserVariableName (sort keys %Mapping) {
+    for my $CustomerUserVariableName ( sort keys %Mapping ) {
 
         # check config for the particular mapping
-        if (!defined $Self->{DynamicFields}->{$Mapping{$CustomerUserVariableName}} ) {
+        if ( !defined $Self->{DynamicFields}->{ $Mapping{$CustomerUserVariableName} } ) {
             $Self->{LogObject}->Log(
                 Priority => 'error',
                 Message =>
@@ -105,7 +102,7 @@ sub Run {
         $Self->{BackendObject}->ValueSet(
             DynamicFieldConfig => $DynamicFieldConfig,
             ObjectID           => $Param{Data}->{TicketID},
-            Value              => $CustomerUserData{ $CustomerUserVariableName } || '',
+            Value              => $CustomerUserData{$CustomerUserVariableName} || '',
             UserID             => $Param{UserID},
         );
     }

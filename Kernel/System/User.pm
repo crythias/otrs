@@ -646,7 +646,7 @@ sub SetPassword {
     my $CryptedPw = '';
 
     # get crypt type
-    my $CryptType = $Self->{ConfigObject}->Get('AuthModule::DB::CryptType') || 'bcrypt';
+    my $CryptType = $Self->{ConfigObject}->Get('AuthModule::DB::CryptType') || 'sha2';
 
     # crypt plain (no crypt at all)
     if ( $CryptType eq 'plain' ) {
@@ -685,21 +685,30 @@ sub SetPassword {
         $CryptedPw = $SHAObject->hexdigest();
     }
 
-    # always crypt with bcrypt if possible
-    elsif ( $Self->{MainObject}->Require('Crypt::Eksblowfish::Bcrypt', Silent => 1) ) {
+    # bcrypt
+    elsif ( $CryptType eq 'bcrypt' ) {
+
+        if ( !$Self->{MainObject}->Require('Crypt::Eksblowfish::Bcrypt') ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message =>
+                    "User: '$User{UserLogin}' tried to store password with bcrypt but 'Crypt::Eksblowfish::Bcrypt' is not installed!",
+            );
+            return;
+        }
 
         my $Cost = 9;
         my $Salt = $Self->{MainObject}->GenerateRandomString( Length => 16 );
 
         # remove UTF8 flag, required by Crypt::Eksblowfish::Bcrypt
-        $Self->{EncodeObject}->EncodeOutput(\$Pw);
+        $Self->{EncodeObject}->EncodeOutput( \$Pw );
 
         # calculate password hash
         my $Octets = Crypt::Eksblowfish::Bcrypt::bcrypt_hash(
             {
-                    key_nul => 1,
-                    cost => 9,
-                    salt => $Salt,
+                key_nul => 1,
+                cost    => 9,
+                salt    => $Salt,
             },
             $Pw
         );
@@ -709,8 +718,7 @@ sub SetPassword {
         $CryptedPw = "BCRYPT:$Cost:$Salt:" . Crypt::Eksblowfish::Bcrypt::en_base64($Octets);
     }
 
-    # crypt with sha256
-    # if $CryptType is set to anything else including sha2
+    # crypt with sha256 as fallback
     else {
 
         my $SHAObject = Digest::SHA->new('sha256');
@@ -906,7 +914,8 @@ sub UserList {
     # sql query
     if ($Valid) {
         return if !$Self->{DBObject}->Prepare(
-            SQL => "SELECT $SelectStr FROM $Self->{ConfigObject}->{DatabaseUserTable} WHERE valid_id IN "
+            SQL =>
+                "SELECT $SelectStr FROM $Self->{ConfigObject}->{DatabaseUserTable} WHERE valid_id IN "
                 . "( ${\(join ', ', $Self->{ValidObject}->ValidIDsGet())} )",
         );
     }
@@ -926,7 +935,8 @@ sub UserList {
             $Users{ $Row[0] } = "$Row[1], $Row[2] ($Row[3])";
         }
     }
-     # check vacation option
+
+    # check vacation option
     for my $UserID ( sort keys %Users ) {
         next if !$UserID;
 

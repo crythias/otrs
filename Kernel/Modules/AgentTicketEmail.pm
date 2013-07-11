@@ -420,10 +420,10 @@ sub Run {
                 );
 
                 # check if field has PossibleValues property in its configuration
-                if ( IsHashRefWithData( $PossibleValues ) ) {
+                if ( IsHashRefWithData($PossibleValues) ) {
 
                     # convert possible values key => value to key => key for ACLs usign a Hash slice
-                    my %AclData = %{ $PossibleValues };
+                    my %AclData = %{$PossibleValues};
                     @AclData{ keys %AclData } = keys %AclData;
 
                     # set possible values filter from ACLs
@@ -671,9 +671,15 @@ sub Run {
         }
 
         # attachment delete
-        for my $Count ( 1 .. 32 ) {
+        my @AttachmentIDs = map {
+            my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+            $ID ? $ID : ();
+        } $Self->{ParamObject}->GetParamNames();
+
+        COUNT:
+        for my $Count ( reverse sort @AttachmentIDs ) {
             my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
-            next if !$Delete;
+            next COUNT if !$Delete;
             $Error{AttachmentDelete} = 1;
             $Self->{UploadCacheObject}->FormIDRemoveFile(
                 FormID => $Self->{FormID},
@@ -712,21 +718,22 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
                 my $ACL = $Self->{TicketObject}->TicketAcl(
                     %GetParam,
                     %ACLCompatGetParam,
-                    Action        => $Self->{Action},
-                    ReturnType    => 'Ticket',
-                    ReturnSubType => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data          => \%AclData,
-                    UserID        => $Self->{UserID},
+                    CustomerUserID => $CustomerUser || '',
+                    Action         => $Self->{Action},
+                    ReturnType     => 'Ticket',
+                    ReturnSubType  => 'DynamicField_' . $DynamicFieldConfig->{Name},
+                    Data           => \%AclData,
+                    UserID         => $Self->{UserID},
                 );
                 if ($ACL) {
                     my %Filter = $Self->{TicketObject}->TicketAclData();
@@ -1399,13 +1406,14 @@ sub Run {
             my $ACL = $Self->{TicketObject}->TicketAcl(
                 %GetParam,
                 %ACLCompatGetParam,
-                Action        => $Self->{Action},
-                TicketID      => $Self->{TicketID},
-                QueueID       => $QueueID || 0,
-                ReturnType    => 'Ticket',
-                ReturnSubType => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                Data          => \%AclData,
-                UserID        => $Self->{UserID},
+                CustomerUserID => $CustomerUser || '',
+                Action         => $Self->{Action},
+                TicketID       => $Self->{TicketID},
+                QueueID        => $QueueID      || 0,
+                ReturnType     => 'Ticket',
+                ReturnSubType  => 'DynamicField_' . $DynamicFieldConfig->{Name},
+                Data           => \%AclData,
+                UserID         => $Self->{UserID},
             );
             if ($ACL) {
                 my %Filter = $Self->{TicketObject}->TicketAclData();
@@ -1913,7 +1921,7 @@ sub _MaskEmailNew {
             Size           => 0,
             Class          => 'Validate_Required' . ( $Param{Errors}->{DestinationInvalid} || ' ' ),
             Name           => 'Dest',
-            TreeView   => $TreeView,
+            TreeView       => $TreeView,
             SelectedID     => $Param{FromSelected},
             OnChangeSubmit => 0,
         );

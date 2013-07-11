@@ -145,10 +145,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -245,9 +245,15 @@ sub Run {
         my $IsUpload = 0;
 
         # attachment delete
-        for my $Count ( 1 .. 32 ) {
+        my @AttachmentIDs = map {
+            my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+            $ID ? $ID : ();
+        } $Self->{ParamObject}->GetParamNames();
+
+        COUNT:
+        for my $Count ( reverse sort @AttachmentIDs ) {
             my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
-            next if !$Delete;
+            next COUNT if !$Delete;
             $Error{AttachmentDelete} = 1;
             $Self->{UploadCacheObject}->FormIDRemoveFile(
                 FormID => $Self->{FormID},
@@ -290,10 +296,10 @@ sub Run {
             );
 
             # check if field has PossibleValues property in its configuration
-            if ( IsHashRefWithData( $PossibleValues ) ) {
+            if ( IsHashRefWithData($PossibleValues) ) {
 
                 # convert possible values key => value to key => key for ACLs usign a Hash slice
-                my %AclData = %{ $PossibleValues };
+                my %AclData = %{$PossibleValues};
                 @AclData{ keys %AclData } = keys %AclData;
 
                 # set possible values filter from ACLs
@@ -362,10 +368,12 @@ sub Run {
                 );
         }
 
-        # rewrap body if rich text is used
-        if ( $Self->{LayoutObject}->{BrowserRichText} && $GetParam{Body} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # check queue
@@ -374,7 +382,7 @@ sub Run {
         }
 
         # prevent tamper with (Queue/Dest), see bug#9408
-        if ($NewQueueID && !$IsUpload) {
+        if ( $NewQueueID && !$IsUpload ) {
 
             # get the original list of queues to display
             my $Tos = $Self->_GetTos(
@@ -390,7 +398,7 @@ sub Run {
             }
 
             # set the correct queue name in $To if it was altered
-            if ( $To ne $Tos->{$NewQueueID} ){
+            if ( $To ne $Tos->{$NewQueueID} ) {
                 $To = $Tos->{$NewQueueID}
             }
         }
@@ -504,8 +512,10 @@ sub Run {
             UserID           => $Self->{ConfigObject}->Get('CustomerPanelUserID'),
             HistoryType      => $Self->{Config}->{HistoryType},
             HistoryComment   => $Self->{Config}->{HistoryComment} || '%%',
-            AutoResponseType => 'auto reply',
-            OrigHeader       => {
+            AutoResponseType => ( $Self->{ConfigObject}->Get('AutoResponseForWebTickets') )
+            ? 'auto reply'
+            : '',
+            OrigHeader => {
                 From    => $From,
                 To      => $Self->{UserLogin},
                 Subject => $GetParam{Subject},
