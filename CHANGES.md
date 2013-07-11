@@ -1,7 +1,56 @@
-#3.2.8 2013-??-??
+#3.2.10 2013-??-??
+ - 2013-07-10 Fixed bug#[9598](http://bugs.otrs.org/show_bug.cgi?id=9598) - Typo in vacation message for German locale.
+ - 2013-07-10 Fixed bug#[9595](http://bugs.otrs.org/show_bug.cgi?id=9595) - Incomplete page reload handling in merge and bounce.
+ - 2013-07-10 Fixed bug#[9537](http://bugs.otrs.org/show_bug.cgi?id=9537) - DB.pm 'QueryCondition' removes backslashes (from CustomerUserID/CustomerUserLogin).
+ - 2013-07-10 Fixed bug#[5307](http://bugs.otrs.org/show_bug.cgi?id=5307) - Tickets can be raised against an invalid Customer Company.
+ - 2013-07-10 Fixed bug#[9596](http://bugs.otrs.org/show_bug.cgi?id=9596) - On merge and bounce screens is confusing when fill or not 'To',  'Subject' and 'Body' fields.
+ - 2013-07-10 Fixed bug#[9514](http://bugs.otrs.org/show_bug.cgi?id=9514) - Bulk action (send email) uses senders address instead of customer id.
+ - 2013-07-10 Fixed bug#[9595](http://bugs.otrs.org/show_bug.cgi?id=9595) - Incomplete page reload handling in merge and bounce.
+ - 2013-07-10 Fixed bug#[9570](http://bugs.otrs.org/show_bug.cgi?id=9570) - AgentTicketSearch with exclamation mark emits invalid SQL
+ - 2013-07-09 Fixed bug#[3007](http://bugs.otrs.org/show_bug.cgi?id=3007) - CheckMXRecord and CheckEmailAddresses have no effect on AgentTicketBounce.
+ - 2013-07-09 Fixed bug#[9512](http://bugs.otrs.org/show_bug.cgi?id=9512) - Database error for invalid date in AgentTicketSearch.
+ - 2013-07-09 Fixed bug#[4465](http://bugs.otrs.org/show_bug.cgi?id=4465) - Spell checker ispell ignores some characters such German umlauts.
+ - 2013-07-09 Fixed bug#[8428](http://bugs.otrs.org/show_bug.cgi?id=8428) - Bad usability of multiple sender/recipient feature.
+ - 2013-07-09 Fixed bug#[9556](http://bugs.otrs.org/show_bug.cgi?id=9556) - Bounce and merge require notification recipient, subject and body even if no notification is sent.
+ - 2013-07-09 Fixed bug#[9584](http://bugs.otrs.org/show_bug.cgi?id=9584) - No server side validation of To/Subject/Body in merge mask.
+ - 2013-07-09 Fixed bug#[9578](http://bugs.otrs.org/show_bug.cgi?id=9578) - DynamicField sorting does not work on TicketSearch results in Customer Interface.
+ - 2013-07-08 Fixed bug#[9579](http://bugs.otrs.org/show_nug.cgi?id=9579) - SOAP Serializer used in Kernel/GenericInterface/Transport/HTTP/SOAP.pm does not correctly set namespace.
+ - 2013-07-08 Fixed bug#[9577](http://bugs.otrs.org/show_bug.cgi?id=9577) - Engine translate date to dado from english to pt_BR.
+ - 2013-07-08 Fixed bug#[7359](http://bugs.otrs.org/show_bug.cgi?id=7359) - Setting pending states via generic agent does not set pending time.
+ - 2013-07-08 Fixed bug#[5920](http://bugs.otrs.org/show_bug.cgi?id=5920) - Search restriction for dates is not displayed in customer interface.
+ - 2013-07-08 Fixed bug#[8380](http://bugs.otrs.org/show_bug.cgi?id=8380) - Middle name not displayed in AdminCustomerUser.
+ - 2013-07-05 Fixed bug#[9576](http://bugs.otrs.org/show_bug.cgi?id=9576) - GI TicketSearch Date and Date/Time dynamic fields are ignored.
+ - 2013-07-04 Changed Dynamic Field SearchFieldParameterBuild() API, LayoutObject is now optional.
+ - 2013-07-04 Fixed bug#[9573](http://bugs.otrs.org/show_bug.cgi?id=9573) - Date and DateTime dynamic fields not considered in GenericAgent Jobs.
+
+#3.2.9 2013-07-09
+ - 2013-07-03 Fixed bug#[9561](http://bugs.otrs.org/show_bug.cgi?id=9561) - ACL restriction with CustomerID for DynamicFields at new Ticket screen not working.
+ - 2013-07-02 Fixed bug#[8728](http://bugs.otrs.org/show_bug.cgi?id=8728) - Problem loading otrs-initial_insert.oracle.sql.
+ - 2013-07-01 Fixed bug#[9481](http://bugs.otrs.org/show_bug.cgi?id=9481) - Possible to select invalid services in SLA admin screen.
+ - 2013-06-29 Fixed bug#[9539](http://bugs.otrs.org/show_bug.cgi?id=9539) - Cannot send notification to a group of customers.
+ - 2013-06-28 Fixed bug#[8273](http://bugs.otrs.org/show_bug.cgi?id=8273) - Copying text in preview mode not possible.
+ - 2013-06-28 Fixed bug#[9557](http://bugs.otrs.org/show_bug.cgi?id=9557) - Cannot see quoted text in customer ticket zoom.
+ - 2013-06-27 Fixed bug#[9011](http://bugs.otrs.org/show_bug.cgi?id=9011) - GenericInterface: New value after value mapping can't be 0.
+ - 2013-06-25 Improved parameter quoting in various places.
+ - 2013-06-24 Fixed bug#[9104](http://bugs.otrs.org/show_bug.cgi?id=9104) - Group permission for customer subset overwrites permissions for other customers.
+ - 2013-06-21 Fixed bug#[9434](http://bugs.otrs.org/show_bug.cgi?id=9434) - Activities are not translated.
+ - 2013-06-21 Fixed bug#[9261](http://bugs.otrs.org/show_bug.cgi?id=9261) - Ticket Inbound changes FROM in view.
+ - 2013-06-21 Fixed bug#[9540](http://bugs.otrs.org/show_bug.cgi?id=9540) - AgentTicketOwner doesn't activate PreviousOwner if new owner is selected.
+ - 2013-06-21 Fixed bug#[9365](http://bugs.otrs.org/show_bug.cgi?id=9365) - AgentLinkObject screen does not provide a search restriction for ticket type.
+ - 2013-06-19 Fixed bug#[9533](http://bugs.otrs.org/show_bug.cgi?id=9533) - Delete Inactive Process button not aligned.
+ - 2013-06-18 Fixed bug#[9504](http://bugs.otrs.org/show_bug.cgi?id=9504) - wrong status after answer via customer portal.
+ - 2013-06-18 Fixed bug#[9425](http://bugs.otrs.org/show_bug.cgi?id=9425) - Wrong created date for queue view.
+ - 2013-06-18 Follow-up fix for bug#[8880](http://bugs.otrs.org/show_bug.cgi?id=8880) - No inline image shown if HTML email contains 'base' tag.
+ - 2013-06-17 Updated Spanish translation, thanks to Enrique Matías Sánchez!
+ - 2013-06-17 Fixed bug#[8112](http://bugs.otrs.org/show_bug.cgi?id=8112) - Display issue in FROM column of AgentTicketZoom with some agent names.
+ - 2013-06-14 Fixed bug#[9524](http://bugs.otrs.org/show_bug.cgi?id=9524) - Uninitialized  value after step2 in TicketAccountedTime stats.
+ - 2013-06-14 Fixed bug#[9511](http://bugs.otrs.org/show_bug.cgi?id=9511) - ProcessManagement: No SLA verification after Service update.
+ - 2013-06-14 Fixed bug#[9513](http://bugs.otrs.org/show_bug.cgi?id=9513) - Frontend::ToolBarModule###11-CICSearchCustomerUser does not use settings of Frontend::Agent::CustomerSearch.
+ - 2013-06-13 Fixed bug#[8719](http://bugs.otrs.org/show_bug.cgi?id=8719) - PasswordMin2Lower2UpperCharacters problem.
+
+#3.2.8 2013-06-18
  - 2013-06-13 Fixed bug#[9464](http://bugs.otrs.org/show_bug.cgi?id=9464) - Unique email address only checked during CustomerUserAdd, not during Update.
  - 2013-06-11 Fixed bug#[9497](http://bugs.otrs.org/show_bug.cgi?id=9497) - AgentTicketSearch logs a Uninitialized error message in Oracle.
- - 2013-06-11 Fixed bug#[9481](http://bugs.otrs.org/show_bug.cgi?id=9481) - Possible to select invalid services in SLA admin screen.
  - 2013-06-11 Fixed bug#[9451](http://bugs.otrs.org/show_bug.cgi?id=9451) - Possible to select invalid autoresponses for queues.
  - 2013-06-11 Fixed bug#[9516](http://bugs.otrs.org/show_bug.cgi?id=9516) - Field names for account signups in some languages are broken.
  - 2013-06-08 Fixed bug#[9501](http://bugs.otrs.org/show_bug.cgi?id=9501) - Missing values in GenericAgent ticket list for tickets without articles.

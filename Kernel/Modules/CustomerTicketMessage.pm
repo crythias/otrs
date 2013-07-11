@@ -353,10 +353,12 @@ sub Run {
                 );
         }
 
-        # rewrap body if rich text is used
-        if ( $Self->{LayoutObject}->{BrowserRichText} && $GetParam{Body} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # check queue
@@ -365,7 +367,7 @@ sub Run {
         }
 
         # prevent tamper with (Queue/Dest), see bug#9408
-        if ($NewQueueID && !$IsUpload) {
+        if ( $NewQueueID && !$IsUpload ) {
 
             # get the original list of queues to display
             my $Tos = $Self->_GetTos(
@@ -373,15 +375,15 @@ sub Run {
                 %ACLCompatGetParam,
                 QueueID => $NewQueueID,
             );
-    
+
             # check if current selected QueueID exists in the list of queues,\
             # otherwise rise an error
             if ( !$Tos->{$NewQueueID} ) {
                 $Error{QueueInvalid} = 'ServerError';
             }
-    
+
             # set the correct queue name in $To if it was altered
-            if ( $To ne $Tos->{$NewQueueID} ){
+            if ( $To ne $Tos->{$NewQueueID} ) {
                 $To = $Tos->{$NewQueueID}
             }
         }

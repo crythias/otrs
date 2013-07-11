@@ -129,8 +129,10 @@ sub Run {
                     Type  => 'Small',
                 );
                 $Output .= $Self->{LayoutObject}->Warning(
-                    Message => $Self->{LayoutObject}->{LanguageObject}->Get('Sorry, you need to be the ticket owner to perform this action.'),
-                    Comment => $Self->{LayoutObject}->{LanguageObject}->Get('Please change the owner first.'),
+                    Message => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Sorry, you need to be the ticket owner to perform this action.'),
+                    Comment => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Please change the owner first.'),
                 );
                 $Output .= $Self->{LayoutObject}->Footer(
                     Type => 'Small',
@@ -167,8 +169,10 @@ sub Run {
 
         # rewrap body if no rich text is used
         if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
-            my $Size = $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote') || 70;
-            $GetParam{Body} =~ s/(^>.+|.{4,$Size})(?:\s|\z)/$1\n/gm;
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # removing blank spaces from the ticket number
@@ -188,9 +192,38 @@ sub Run {
             $Error{'MainTicketNumberInvalid'} = 'ServerError';
         }
 
-        for my $Parameter (qw( To Subject Body )) {
-            if ( !$Parameter ) {
-                $Error{ $Parameter . 'Invalid' } = 'ServerError';
+        if ( $GetParam{InformSender} ) {
+            for my $Parameter (qw( To Subject Body )) {
+                if ( !$GetParam{$Parameter} ) {
+                    $Error{ $Parameter . 'Invalid' } = 'ServerError';
+                }
+            }
+
+            # check forward email address(es)
+            if ( $GetParam{To} ) {
+                for my $Email ( Mail::Address->parse( $GetParam{To} ) ) {
+                    my $Address = $Email->address();
+                    if (
+                        $Self->{SystemAddress}->SystemAddressIsLocalAddress( Address => $Address )
+                        )
+                    {
+                        $Self->{LayoutObject}->Block( Name => 'ToCustomerGenericServerErrorMsg' );
+                        $Error{'ToInvalid'} = 'ServerError';
+                    }
+
+                    # check email address
+                    elsif ( !$Self->{CheckItemObject}->CheckEmail( Address => $Address ) ) {
+                        my $ToErrorMsg =
+                            'To'
+                            . $Self->{CheckItemObject}->CheckErrorType()
+                            . 'ServerErrorMsg';
+                        $Self->{LayoutObject}->Block( Name => $ToErrorMsg );
+                        $Error{'ToInvalid'} = 'ServerError';
+                    }
+                }
+            }
+            else {
+                $Self->{LayoutObject}->Block( Name => 'ToCustomerGenericServerErrorMsg' );
             }
         }
 
@@ -212,6 +245,8 @@ sub Run {
                 );
 
             }
+
+            $Param{InformSenderChecked} = $GetParam{InformSender} ? 'checked="checked"' : '';
 
             $Output .= $Self->{LayoutObject}->Output(
                 TemplateFile => 'AgentTicketMerge',
@@ -279,28 +314,6 @@ sub Run {
 
             # send customer info?
             if ( $GetParam{InformSender} ) {
-
-                # check notify email address
-                if ( $GetParam{To} ) {
-                    for my $Email ( Mail::Address->parse( $GetParam{To} ) ) {
-                        my $Address = $Email->address();
-                        if (
-                            $Self->{SystemAddress}->SystemAddressIsLocalAddress(
-                                Address => $Address
-                            )
-                            )
-                        {
-
-                            # error page
-                            return $Self->{LayoutObject}->ErrorScreen(
-                                Message => "Can't send notification to $Address! It's a local "
-                                    . "address! You need to move it!",
-                                Comment => 'Please contact the admin.',
-                            );
-                        }
-                    }
-                }
-
                 my $MimeType = 'text/plain';
                 if ( $Self->{LayoutObject}->{BrowserRichText} ) {
                     $MimeType = 'text/html';

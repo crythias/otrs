@@ -923,7 +923,8 @@ sub TicketSearch {
 
             $SQLExt .= " AND tf$Index.ticket_key = '" . $Self->{DBObject}->Quote($Key) . "'";
             $SQLExt .= " AND tf$Index.ticket_value = '" . $Self->{DBObject}->Quote($Value) . "'";
-            $SQLExt .= " AND tf$Index.create_by = " . $Self->{DBObject}->Quote($TicketFlagUserID);
+            $SQLExt .= " AND tf$Index.create_by = "
+                . $Self->{DBObject}->Quote( $TicketFlagUserID, 'Integer' );
 
             $Index++;
         }
@@ -1123,6 +1124,15 @@ sub TicketSearch {
                 Minute => $5,
                 Second => $6,
             );
+            if ( !$SystemTime ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message =>
+                        "Search not executed due to invalid time '"
+                        . $Param{ $Key . 'OlderDate' } . "'!",
+                );
+                return;
+            }
 
             $SQLExt .= " AND $ArticleTime{$Key} <= '" . $SystemTime . "'";
 
@@ -1151,6 +1161,15 @@ sub TicketSearch {
                 Minute => $5,
                 Second => $6,
             );
+            if ( !$SystemTime ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message =>
+                        "Search not executed due to invalid time '"
+                        . $Param{ $Key . 'NewerDate' } . "'!",
+                );
+                return;
+            }
 
             $SQLExt .= " AND $ArticleTime{$Key} >= '" . $SystemTime . "'";
         }
@@ -1225,6 +1244,15 @@ sub TicketSearch {
             my $Time = $Self->{TimeObject}->TimeStamp2SystemTime(
                 String => $Param{ $Key . 'OlderDate' },
             );
+            if ( !$Time ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message =>
+                        "Search not executed due to invalid time '"
+                        . $Param{ $Key . 'OlderDate' } . "'!",
+                );
+                return;
+            }
             $SQLExt .= " AND $TicketTime{$Key} <= $Time";
         }
 
@@ -1249,6 +1277,15 @@ sub TicketSearch {
             my $Time = $Self->{TimeObject}->TimeStamp2SystemTime(
                 String => $Param{ $Key . 'NewerDate' },
             );
+            if ( !$Time ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message =>
+                        "Search not executed due to invalid time '"
+                        . $Param{ $Key . 'NewerDate' } . "'!",
+                );
+                return;
+            }
             $SQLExt .= " AND $TicketTime{$Key} >= $Time";
         }
     }
@@ -1466,6 +1503,15 @@ sub TicketSearch {
         my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
             String => $Param{TicketPendingTimeOlderDate},
         );
+        if ( !$TimeStamp ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message =>
+                    "Search not executed due to invalid time '"
+                    . $Param{TicketPendingTimeOlderDate} . "'!",
+            );
+            return;
+        }
         $SQLExt .= " AND st.until_time <= $TimeStamp";
     }
 
@@ -1485,6 +1531,15 @@ sub TicketSearch {
         my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
             String => $Param{TicketPendingTimeNewerDate},
         );
+        if ( !$TimeStamp ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message =>
+                    "Search not executed due to invalid time '"
+                    . $Param{TicketPendingTimeNewerDate} . "'!",
+            );
+            return;
+        }
         $SQLExt .= " AND st.until_time >= $TimeStamp";
     }
 

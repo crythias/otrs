@@ -422,7 +422,7 @@ sub Run {
 
             # create head (actual head and head for data fill)
             my @TmpCSVHead = @{ $Self->{Config}->{SearchCSVData} };
-            my @CSVHead = @{ $Self->{Config}->{SearchCSVData} };
+            my @CSVHead    = @{ $Self->{Config}->{SearchCSVData} };
 
             # include the selected dynamic fields in CVS results
             DYNAMICFIELD:
@@ -432,7 +432,7 @@ sub Run {
                 next DYNAMICFIELD if $DynamicFieldConfig->{Name} eq '';
 
                 push @TmpCSVHead, 'DynamicField_' . $DynamicFieldConfig->{Name};
-                push @CSVHead, $DynamicFieldConfig->{Label};
+                push @CSVHead,    $DynamicFieldConfig->{Label};
             }
 
             my @CSVData;
@@ -694,7 +694,7 @@ sub Run {
                         $Self->{SortBy}
                         && (
                             $Self->{SortBy} eq
-                            ( 'Search_DynamicField_' . $DynamicFieldConfig->{Name} )
+                            ( 'DynamicField_' . $DynamicFieldConfig->{Name} )
                         )
                         )
                     {
@@ -941,18 +941,54 @@ sub Run {
                 }
                 $Value = $Item;
             }
+            if ( $Key eq 'TimeSearchType' ) {
 
-            if ( $Key ne 'TimeSearchType' ) {
-                $Self->{LayoutObject}->Block(
-                    Name => 'SearchTerms',
-                    Data => {
-                        %Param,
-                        Attribute => $Attribute,
-                        Key       => $Key,
-                        Value     => $Value,
-                    },
-                );
+                if ( $GetParam{TimeSearchType} eq 'TimeSlot' ) {
+
+                    my $StartDate = $Self->{LayoutObject}->{LanguageObject}->FormatTimeString(
+                        $GetParam{TicketCreateTimeStartYear}
+                            . '-' . $GetParam{TicketCreateTimeStartMonth}
+                            . '-' . $GetParam{TicketCreateTimeStartDay}
+                            . ' 00:00:00', 'DateFormatShort'
+                    );
+
+                    my $StopDate = $Self->{LayoutObject}->{LanguageObject}->FormatTimeString(
+                        $GetParam{TicketCreateTimeStopYear}
+                            . '-' . $GetParam{TicketCreateTimeStopMonth}
+                            . '-' . $GetParam{TicketCreateTimeStopDay}
+                            . ' 00:00:00', 'DateFormatShort'
+                    );
+
+                    $Attribute = 'Created between';
+                    $Value
+                        = $StartDate . ' '
+                        . $Self->{LayoutObject}->{LanguageObject}->Get('and') . ' '
+                        . $StopDate;
+                }
+                else {
+
+                    my $Mapping = {
+                        'Last'   => 'Created within the last',
+                        'Before' => 'Created more than ... ago',
+                    };
+
+                    $Attribute = $Mapping->{ $GetParam{TicketCreateTimePointStart} };
+                    $Value
+                        = $GetParam{TicketCreateTimePoint} . ' '
+                        . $Self->{LayoutObject}->{LanguageObject}
+                        ->Get( $GetParam{TicketCreateTimePointFormat} . '(s)' );
+                }
             }
+
+            $Self->{LayoutObject}->Block(
+                Name => 'SearchTerms',
+                Data => {
+                    %Param,
+                    Attribute => $Attribute,
+                    Key       => $Key,
+                    Value     => $Value,
+                },
+            );
         }
 
         # cycle through the activated Dynamic Fields for this screen
@@ -1268,8 +1304,9 @@ sub MaskForm {
             Last   => 'last',
             Before => 'before',
         },
-        Name => 'TicketCreateTimePointStart',
-        SelectedID => $Param{TicketCreateTimePointStart} || 'Last',
+        Translation => 1,
+        Name        => 'TicketCreateTimePointStart',
+        SelectedID  => $Param{TicketCreateTimePointStart} || 'Last',
     );
     $Param{TicketCreateTimePointFormat} = $Self->{LayoutObject}->BuildSelection(
         Data => {
@@ -1280,8 +1317,9 @@ sub MaskForm {
             month  => 'month(s)',
             year   => 'year(s)',
         },
-        Name       => 'TicketCreateTimePointFormat',
-        SelectedID => $Param{TicketCreateTimePointFormat},
+        Translation => 1,
+        Name        => 'TicketCreateTimePointFormat',
+        SelectedID  => $Param{TicketCreateTimePointFormat},
     );
     $Param{TicketCreateTimeStart} = $Self->{LayoutObject}->BuildDateSelection(
         %Param,

@@ -232,9 +232,10 @@ sub EditFieldRender {
     # is configured for this dynamic field
     if (
         IsHashRefWithData( $Param{Template} )
-        && defined $Param{Template}->{ $FieldName }
-    ) {
-        $Value = $Param{Template}->{ $FieldName };
+        && defined $Param{Template}->{$FieldName}
+        )
+    {
+        $Value = $Param{Template}->{$FieldName};
     }
 
     #d extract the dynamic field value form the web request
@@ -698,9 +699,13 @@ sub SearchFieldParameterBuild {
 
                 # set the display value
                 my $DisplayItem = $Param{DynamicFieldConfig}->{Config}->{PossibleValues}->{$Item};
-                if ( $Param{DynamicFieldConfig}->{Config}->{TranslatableValues} ) {
 
-                    # translate the value
+                # translate the value
+                if (
+                    $Param{DynamicFieldConfig}->{Config}->{TranslatableValues}
+                    && defined $Param{LayoutObject}
+                    )
+                {
                     $DisplayItem = $Param{LayoutObject}->{LanguageObject}->Get($DisplayItem);
                 }
 
@@ -715,9 +720,12 @@ sub SearchFieldParameterBuild {
             # set the display value
             $DisplayValue = $Param{DynamicFieldConfig}->{PossibleValues}->{$Value};
 
-            if ( $Param{DynamicFieldConfig}->{Config}->{TranslatableValues} ) {
-
-                # translate the value
+            # translate the value
+            if (
+                $Param{DynamicFieldConfig}->{Config}->{TranslatableValues}
+                && defined $Param{LayoutObject}
+                )
+            {
                 $DisplayValue = $Param{LayoutObject}->{LanguageObject}->Get($DisplayValue);
             }
         }

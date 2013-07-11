@@ -308,10 +308,12 @@ sub Run {
         my $NextScreen = $Self->{NextScreen} || $Self->{Config}->{NextScreenAfterFollowUp};
         my %Error;
 
-        # rewrap body if rich text is used
-        if ( $GetParam{Body} && $Self->{LayoutObject}->{BrowserRichText} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # get follow up option (possible or not)
@@ -336,10 +338,12 @@ sub Run {
             return $Output;
         }
 
-        # rewrap body if rich text is used
-        if ( $GetParam{Body} && $Self->{LayoutObject}->{BrowserRichText} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # for attachment actions
@@ -556,13 +560,17 @@ sub Run {
             return $Output;
         }
 
-        if ( $Self->{Config}->{State} ) {
-
-            # set state
+        # set state
+        my $NextState = $Self->{Config}->{StateDefault} || 'open';
+        if ( $GetParam{StateID} && $Self->{Config}->{State} ) {
             my %NextStateData = $Self->{StateObject}->StateGet( ID => $GetParam{StateID} );
-            my $NextState = $NextStateData{Name}
-                || $Self->{Config}->{StateDefault}
-                || 'open';
+            $NextState = $NextStateData{Name};
+        }
+
+        # change state if
+        # customer set another state
+        # or the ticket is not new
+        if ( $Ticket{StateType} !~ /^new/ || $GetParam{StateID} ) {
             $Self->{TicketObject}->StateSet(
                 TicketID  => $Self->{TicketID},
                 ArticleID => $ArticleID,

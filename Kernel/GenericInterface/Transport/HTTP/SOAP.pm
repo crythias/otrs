@@ -343,7 +343,7 @@ sub ProviderGenerateResponse {
     }
     my $Serialized = SOAP::Serializer
         ->autotype(0)
-        ->ns( $Self->{TransportConfig}->{Config}->{NameSpace} )
+        ->default_ns( $Self->{TransportConfig}->{Config}->{NameSpace} )
         ->envelope(@CallData);
     my $SerializedFault = $@ || '';
     if ($SerializedFault) {
@@ -807,7 +807,7 @@ sub _Output {
 
     # set keep-alive
     my $ConfigKeepAlive = $Self->{ConfigObject}->Get('SOAP::Keep-Alive');
-    my $Connection      = $ConfigKeepAlive ? 'Keep-Alive' : 'close';
+    my $Connection = $ConfigKeepAlive ? 'Keep-Alive' : 'close';
 
     # in the constructor of this module STDIN and STDOUT are set to binmode without any additional
     # layer (according to the documentation this is the same as set :raw). Previous solutions for

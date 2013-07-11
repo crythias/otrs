@@ -120,6 +120,16 @@ sub AgentCustomerViewTable {
                 Name => 'CustomerRow',
                 Data => \%Record,
             );
+
+            if ( $Param{Data}->{Config}->{CustomerCompanySupport} && $Field->[0] eq 'CustomerCompanyName' ) {
+                my $CompanyValid = $Param{Data}->{ CustomerCompanyValid };
+
+                if ($CompanyValid && $CompanyValid !~ m{^valid}) {
+                    $Self->Block(
+                        Name => 'CustomerRowCustomerCompanyInvalid',
+                    );
+                }
+            }
         }
     }
 
@@ -620,8 +630,10 @@ sub ArticleQuote {
         $Article{ContentType} = 'text/plain';
     }
     else {
-        my $Size = $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaEmail') || 82;
-        $Article{Body} =~ s/(^>.+|.{4,$Size})(?:\s|\z)/$1\n/gm;
+        $Article{Body} = $Self->WrapPlainText(
+            MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaEmail') || 82,
+            PlainText     => $Article{Body},
+        );
     }
 
     # attach attachments

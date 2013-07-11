@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-05-31 15:12:48
+    # Last translation file sync: 2013-06-14 08:49:32
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -876,7 +876,7 @@ sub Data {
 
         # Template: AdminCustomerUser
         'Customer Management' => 'ग्राहक प्रबंधन',
-        'Back to search result' => '',
+        'Back to search results' => '',
         'Add customer' => 'ग्राहक जोड़ें',
         'Select' => 'चुनें',
         'Hint' => 'संकेत',
@@ -913,7 +913,7 @@ sub Data {
         'Select the customer:group permissions.' => 'ग्राहक:समूह अनुमतियाँ चुनें।',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
             'अगर कुछ भी नहीं चुना जाता है,तो फिर इस समूह में कोई अनुमतियाँ नहीं हैं(टिकट ग्राहकों के लिए उपलब्ध नहीं होगा)। ',
-        'Search Result:' => 'खोज परिणाम:',
+        'Search Results' => 'खोज परिणाम:',
         'Customers' => 'ग्राहकों',
         'Groups' => 'समूहों',
         'No matches found.' => 'कोई मिलान नहीं मिले।',
@@ -1669,6 +1669,7 @@ sub Data {
             '',
         'This TransitionAction is already used in this Path. You cannot use it twice!' =>
             '',
+        'Remove the Transition from this Process' => '',
         'No TransitionActions assigned.' => '',
         'The Start Event cannot loose the Start Transition!' => '',
         'No dialogs assigned yet. Just pick an activity dialog from the list on the left and drag it here.' =>
@@ -2457,11 +2458,8 @@ sub Data {
         'Please fill out this form to receive login credentials.' => '',
         'How we should address you' => 'हम आपको कैसे संबोधित करें',
         'Your First Name' => 'आपका पहला नाम',
-        'Please supply a first name' => 'कृपया पहला नाम प्रदान करें',
         'Your Last Name' => 'आपका आखिरी नाम',
-        'Please supply a last name' => 'कृपया आखिरी नाम प्रदान करें',
         'Your email address (this will become your username)' => '',
-        'Please supply a' => 'कृपया प्रदान करें',
 
         # Template: CustomerNavigationBar
         'Edit personal preferences' => 'व्यक्तिगत वरीयताएँ संपादित करें',
@@ -3596,6 +3594,7 @@ sub Data {
         'DynamicField object registration.' => '',
         'Edit customer company' => '',
         'Email Addresses' => 'ईमेल पते',
+        'Enable keep-alive connection header for SOAP responses.' => '',
         'Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.' =>
             'PDF उत्पादन सक्षम बनाता है। CPAN मॉड्यूल PDF: API2 की आवश्यकता है,यदि स्थापित नहीं है,PDF उत्पादन निष्क्रिय कर दिया जाएगा।',
         'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
@@ -4567,6 +4566,9 @@ sub Data {
         'Maximum size (in characters) of the customer info table in the queue view.' =>
             'श्रेणीं दृश्य में ग्राहक जानकारी तालिका का अधिकतम आकार(अक्षरों में)।',
         'Package verification failed!' => 'संकुल पुष्टिकरण असफल रहा।',
+        'Please supply a' => 'कृपया प्रदान करें',
+        'Please supply a first name' => 'कृपया पहला नाम प्रदान करें',
+        'Please supply a last name' => 'कृपया आखिरी नाम प्रदान करें',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'सुरक्षित मोड का उपयोग करके अक्षम किया जाना चाहिए वेब इंस्टॉलर से उसके पुन:स्थापित के लिए।',
 

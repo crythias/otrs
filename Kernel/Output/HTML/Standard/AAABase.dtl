@@ -25,6 +25,11 @@ $Text{"Reset"}
 
 $Text{"last"}
 $Text{"before"}
+$Text{"more than ... ago"}
+$Text{"within the last ..."}
+$Text{"within the next ..."}
+$Text{"Created within the last"}
+$Text{"Created more than ... ago"}
 $Text{"Today"}
 $Text{"Tomorrow"}
 $Text{"Next week"}
@@ -54,6 +59,7 @@ $Text{"second(s)"}
 $Text{"seconds"}
 $Text{"second"}
 $Text{"s"}
+$Text{"Time unit"}
 
 $Text{"wrote"}
 $Text{"Message"}
@@ -277,6 +283,7 @@ $Text{"Type updated!"}
 $Text{"Customer updated!"}
 $Text{"Customer company added!"}
 $Text{"Customer company updated!"}
+$Text{"Note: Company is invalid!"}
 $Text{"Mail account added!"}
 $Text{"Mail account updated!"}
 $Text{"System e-mail address added!"}

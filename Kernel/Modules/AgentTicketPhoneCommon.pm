@@ -160,8 +160,10 @@ sub Run {
                     Type  => 'Small',
                 );
                 $Output .= $Self->{LayoutObject}->Warning(
-                    Message => $Self->{LayoutObject}->{LanguageObject}->Get('Sorry, you need to be the ticket owner to perform this action.'),
-                    Comment => $Self->{LayoutObject}->{LanguageObject}->Get('Please change the owner first.'),
+                    Message => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Sorry, you need to be the ticket owner to perform this action.'),
+                    Comment => $Self->{LayoutObject}->{LanguageObject}
+                        ->Get('Please change the owner first.'),
                 );
                 $Output .= $Self->{LayoutObject}->Footer(
                     Type => 'Small',
@@ -356,10 +358,12 @@ sub Run {
 
         my %Error;
 
-        # rewrap body if exists
-        if ( $Self->{LayoutObject}->{BrowserRichText} && $GetParam{Body} ) {
-            $GetParam{Body}
-                =~ s/(^>.+|.{4,$Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote')})(?:\s|\z)/$1\n/gm;
+        # rewrap body if no rich text is used
+        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
+            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
+                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
+                PlainText     => $GetParam{Body},
+            );
         }
 
         # If is an action about attachments
@@ -617,23 +621,34 @@ sub Run {
                 );
             }
 
-            my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
-            my $Sender = $TemplateGenerator->Sender(
-                QueueID => $Ticket{QueueID},
-                UserID  => $Self->{UserID},
+            # Use customer data as From, if possible
+            my %LastCustomerArticle = $Self->{TicketObject}->ArticleLastCustomerArticle(
+                TicketID      => $Self->{TicketID},
+                DynamicFields => 0,
             );
 
+            my $From = $LastCustomerArticle{From};
+
+            # If we don't have a customer article, use the agent as From
+            if ( !$From ) {
+                my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
+                $From = $TemplateGenerator->Sender(
+                    QueueID => $Ticket{QueueID},
+                    UserID  => $Self->{UserID},
+                );
+            }
+
             my $ArticleID = $Self->{TicketObject}->ArticleCreate(
-                TicketID    => $Self->{TicketID},
-                ArticleType => $Self->{Config}->{ArticleType},
-                SenderType  => $Self->{Config}->{SenderType},
-                From        => $Sender,
-                Subject     => $GetParam{Subject},
-                Body        => $GetParam{Body},
-                MimeType    => $MimeType,
-                Charset     => $Self->{LayoutObject}->{UserCharset},
-                UserID      => $Self->{UserID},
-                HistoryType => $Self->{Config}->{HistoryType},
+                TicketID       => $Self->{TicketID},
+                ArticleType    => $Self->{Config}->{ArticleType},
+                SenderType     => $Self->{Config}->{SenderType},
+                From           => $From,
+                Subject        => $GetParam{Subject},
+                Body           => $GetParam{Body},
+                MimeType       => $MimeType,
+                Charset        => $Self->{LayoutObject}->{UserCharset},
+                UserID         => $Self->{UserID},
+                HistoryType    => $Self->{Config}->{HistoryType},
                 HistoryComment => $Self->{Config}->{HistoryComment} || '%%',
             );
 
