@@ -316,8 +316,8 @@ sub Run {
         my $DBType        = $Self->{ParamObject}->GetParam( Param => 'DBType' );
         my $DBInstallType = $Self->{ParamObject}->GetParam( Param => 'DBInstallType' );
 
-        # use non-instantiated module to generate a password
-        my $GeneratedPassword = Kernel::System::User->GenerateRandomPassword( Size => 16 );
+        # use MainObject to generate a password
+        my $GeneratedPassword = $Self->{MainObject}->GenerateRandomString();
 
         if ( $DBType eq 'mysql' ) {
             my $Output =
@@ -1219,7 +1219,7 @@ sub ConnectToDB {
     }
 
     # extract driver to load for install test
-    my ($Driver) = ( $Param{DSN} =~ /^DBI:(.*?):/);
+    my ($Driver) = ( $Param{DSN} =~ /^DBI:(.*?):/ );
     if ( !$Self->{MainObject}->Require( 'DBD::' . $Driver ) ) {
         return (
             Successful => 0,
@@ -1227,7 +1227,7 @@ sub ConnectToDB {
             Comment    => "",
             DB         => undef,
             DBH        => undef,
-        );        
+        );
     }
 
     my $DBH = DBI->connect(

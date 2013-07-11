@@ -287,6 +287,13 @@ sub Run {
         )
         )
     {
+
+        # get process id (if any, a process should be pre-selected)
+        $Param{ProcessID} = $Self->{ParamObject}->GetParam( Param => 'ID' );
+        if ( $Param{ProcessID} ) {
+            $Param{PreSelectProcess} = 1;
+        }
+
         return $Self->_DisplayProcessList(
             %Param,
             ProcessList     => $ProcessList,
@@ -465,7 +472,7 @@ sub _RenderAjax {
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
-            my $PossibleValues = $Self->{BackendObject}->AJAXPossibleValuesGet(
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
             my %DynamicFieldCheckParam = map { $_ => $Param{GetParam}{$_} }
@@ -492,12 +499,18 @@ sub _RenderAjax {
                 %{$PossibleValues} = map { $_ => $PossibleValues->{$_} } keys %Filter;
             }
 
+            my $DataValues = $Self->{BackendObject}->BuildSelectionDataGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                PossibleValues     => $PossibleValues,
+                Value              => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
+            ) || $PossibleValues;
+
             # add dynamic field to the JSONCollector
             push(
                 @JSONCollector,
                 {
                     Name        => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data        => $PossibleValues,
+                    Data        => $DataValues,
                     SelectedID  => $DynamicFieldValues{ $DynamicFieldConfig->{Name} },
                     Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
                     Max         => 100,
@@ -2064,16 +2077,21 @@ sub _RenderDynamicField {
 
     my $PossibleValuesFilter;
 
+    # get PossibleValues
+    my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+        DynamicFieldConfig => $DynamicFieldConfig,
+    );
+
     # All Ticket DynamicFields
     # used for ACL checking
     my %DynamicFieldCheckParam = map { $_ => $Param{GetParam}{$_} }
         grep {m{^DynamicField_}xms} ( keys %{ $Param{GetParam} } );
 
     # check if field has PossibleValues property in its configuration
-    if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+    if ( IsHashRefWithData($PossibleValues) ) {
 
         # convert possible values key => value to key => key for ACLs usign a Hash slice
-        my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+        my %AclData = %{$PossibleValues};
         @AclData{ keys %AclData } = keys %AclData;
 
         # set possible values filter from ACLs
@@ -2091,7 +2109,7 @@ sub _RenderDynamicField {
 
             # convert Filer key => key back to key => value using map
             %{$PossibleValuesFilter}
-                = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} } keys %Filter;
+                = map { $_ => $PossibleValues->{$_} } keys %Filter;
         }
     }
 
@@ -3679,8 +3697,13 @@ sub _StoreActivityDialog {
     my $IsUpload = 0;
 
     # attachment delete
+    my @AttachmentIDs = map {
+        my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+        $ID ? $ID : ();
+    } $Self->{ParamObject}->GetParamNames();
+
     COUNT:
-    for my $Count ( 1 .. 32 ) {
+    for my $Count ( reverse sort @AttachmentIDs ) {
         my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
         next COUNT if !$Delete;
         %Error = ();
@@ -4334,6 +4357,41 @@ sub _StoreActivityDialog {
                             TicketID         => $TicketID,
                             UserID           => $Self->{UserID},
                         );
+
+                        # in case of a new service and no new SLA is to be set, check if current
+                        # asssined SLA is still valid
+                        if (
+                            $UpdateFieldName eq 'ServiceID'
+                            && !defined $TicketParam{SLAID}
+                            )
+                        {
+
+                            # get ticket details
+                            my %Ticket = $Self->{TicketObject}->TicketGet(
+                                TicketID      => $TicketID,
+                                DynamicFields => 0,
+                                UserID        => $Self->{UserID},
+                            );
+
+                            # if ticket already have an SLA assigned get the list SLAs for the new
+                            # service
+                            if ( IsPositiveInteger( $Ticket{SLAID} ) ) {
+                                my %SLAList = $Self->{SLAObject}->SLAList(
+                                    ServiceID => $TicketParam{ $Self->{NameToID}{$CurrentField} },
+                                    UserID    => $Self->{UserID},
+                                );
+
+                                # if the current SLA is not in the list of SLA for new service
+                                # remove SLA from ticket
+                                if ( !$SLAList{ $Ticket{SLAID} } ) {
+                                    $Self->{TicketObject}->TicketSLASet(
+                                        SLAID    => '',
+                                        TicketID => $TicketID,
+                                        UserID   => $Self->{UserID},
+                                    );
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -4390,6 +4448,15 @@ sub _DisplayProcessList {
         $Self->{LayoutObject}->Block(
             Name => 'RichText',
             Data => \%Param,
+        );
+    }
+
+    if ( $Param{PreSelectProcess} && $Param{ProcessID} ) {
+        $Self->{LayoutObject}->Block(
+            Name => 'PreSelectProcess',
+            Data => {
+                ProcessID => $Param{ProcessID},
+            },
         );
     }
 

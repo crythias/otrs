@@ -1,6 +1,6 @@
 # --
 # Kernel/Output/HTML/DashboardTicketQueueOverview.pm
-# Copyright (C) 2003-2013 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,9 +13,6 @@ use strict;
 use warnings;
 
 use Kernel::System::State;
-
-use vars qw($VERSION);
-$VERSION = qw($Revision: 1.5 $) [1];
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -167,7 +164,7 @@ sub Run {
         $Self->{LayoutObject}->Block(
             Name => 'ContentLargeTicketGenericHeaderStatus',
             Data => {
-                Text  => $HeaderItem,
+                Text => $HeaderItem,
             },
         );
     }
@@ -224,6 +221,23 @@ sub Run {
                 QueueIDs => $QueueIDURL,
                 StateID  => $States{ ${ $Self->{Config}->{States} }{$StateOrderID} },
                 Sort     => $Sort,
+            },
+        );
+    }
+
+    # check for refresh time
+    my $Refresh = '';
+    if ( $Self->{UserRefreshTime} ) {
+        $Refresh = 60 * $Self->{UserRefreshTime};
+        my $NameHTML = $Self->{Name};
+        $NameHTML =~ s{-}{_}xmsg;
+        $Self->{LayoutObject}->Block(
+            Name => 'ContentLargeTicketGenericRefresh',
+            Data => {
+                %{ $Self->{Config} },
+                Name        => $Self->{Name},
+                NameHTML    => $NameHTML,
+                RefreshTime => $Refresh,
             },
         );
     }

@@ -15,6 +15,7 @@ use warnings;
 use Kernel::System::Cache;
 use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
+use Kernel::System::State;
 use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
@@ -109,6 +110,15 @@ sub new {
     $Self->{CacheObject}        = Kernel::System::Cache->new( %{$Self} );
     $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
     $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{StateObject}        = Kernel::System::State->new(%Param);
+
+    my %PendingStates = $Self->{StateObject}->StateGetStatesByType(
+        StateType => [ 'pending auto', 'pending reminder' ],
+        Result => 'HASH',
+    );
+
+    $Self->{PendingStateList} = \%PendingStates || {};
+    $Self->{CurrentSystemTime} = $Self->{TimeObject}->SystemTime();
 
     # get the dynamic fields for ticket object
     $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
@@ -300,28 +310,23 @@ sub JobRun {
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
+        next DYNAMICFIELD
+            if !$DynamicFieldSearchTemplate{ 'Search_DynamicField_' . $DynamicFieldConfig->{Name} };
 
-        # get field value from the information extracted from Generic Agent job
-        my $Value = $Self->{BackendObject}->SearchFieldValueGet(
+        # extract the dynamic field value form the Generic Agent Job
+        my $SearchParameter = $Self->{BackendObject}->SearchFieldParameterBuild(
             DynamicFieldConfig => $DynamicFieldConfig,
             Profile            => \%DynamicFieldSearchTemplate,
-        ) || '';
+        );
 
-        if ($Value) {
-
-            # get search attibutes
-            my $SearchParameter = $Self->{BackendObject}->CommonSearchFieldParameterBuild(
-                DynamicFieldConfig => $DynamicFieldConfig,
-                Value              => $Value,
-            );
-
-            # add search attribute to the search structure
+        # set search parameter
+        if ( defined $SearchParameter ) {
             $DynamicFieldSearchParameters{ 'DynamicField_' . $DynamicFieldConfig->{Name} }
-                = $SearchParameter;
+                = $SearchParameter->{Parameter};
         }
     }
 
-    if ($Param{OnlyTicketID}) {
+    if ( $Param{OnlyTicketID} ) {
         $Job{TicketID} = $Param{OnlyTicketID};
     }
     my %Tickets;
@@ -516,7 +521,7 @@ sub JobList {
 
     # check cache
     my $CacheKey = "JobList";
-    my $Cache = $Self->{CacheObject}->Get(
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
@@ -561,14 +566,14 @@ sub JobGet {
 
     # check cache
     my $CacheKey = 'JobGet::' . $Param{Name};
-    my $Cache = $Self->{CacheObject}->Get(
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
     return %{$Cache} if ref $Cache;
 
     return if !$Self->{DBObject}->Prepare(
-        SQL  => '
+        SQL => '
             SELECT job_key, job_value
             FROM generic_agent_jobs
             WHERE job_name = ?',
@@ -687,9 +692,19 @@ sub JobGet {
                     $Time = $Data{ $Type . 'TimePoint' } * 60 * 24 * 356;
                 }
                 if ( $Data{ $Type . 'TimePointStart' } eq 'Before' ) {
+
+                    # more than ... ago
                     $Data{ $Type . 'TimeOlderMinutes' } = $Time;
                 }
+                elsif ( $Data{ $Type . 'TimePointStart' } eq 'Next' ) {
+
+                    # within the next ...
+                    $Data{ $Type . 'TimeNewerMinutes' } = 0;
+                    $Data{ $Type . 'TimeOlderMinutes' } = -$Time;
+                }
                 else {
+                    # within the last ...
+                    $Data{ $Type . 'TimeOlderMinutes' } = 0;
                     $Data{ $Type . 'TimeNewerMinutes' } = $Time;
                 }
             }
@@ -780,7 +795,7 @@ sub JobAdd {
     );
 
     $Self->{CacheObject}->CleanUp(
-        Type  => 'GenericAgent',
+        Type => 'GenericAgent',
     );
 
     return 1;
@@ -816,7 +831,7 @@ sub JobDelete {
     );
 
     $Self->{CacheObject}->CleanUp(
-        Type  => 'GenericAgent',
+        Type => 'GenericAgent',
     );
 
     return 1;
@@ -835,7 +850,7 @@ sub JobEventList {
 
     # check cache
     my $CacheKey = "JobEventList";
-    my $Cache = $Self->{CacheObject}->Get(
+    my $Cache    = $Self->{CacheObject}->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
@@ -847,7 +862,7 @@ sub JobEventList {
     for my $JobName ( sort keys %JobList ) {
         my %Job = $Self->JobGet( Name => $JobName );
         next JOB_NAME if !$Job{Valid};
-        $Data{ $JobName } = $Job{ EventValues };
+        $Data{$JobName} = $Job{EventValues};
     }
 
     $Self->{CacheObject}->Set(
@@ -957,6 +972,8 @@ sub _JobRunTicket {
         }
     }
 
+    my $IsPendingState;
+
     # set new state
     if ( $Param{Config}->{New}->{State} ) {
         if ( $Self->{NoticeSTDOUT} ) {
@@ -967,6 +984,9 @@ sub _JobRunTicket {
             UserID   => $Param{UserID},
             State    => $Param{Config}->{New}->{State},
         );
+
+        $IsPendingState
+            = grep { $_ eq $Param{Config}->{New}->{State} } values %{ $Self->{PendingStateList} };
     }
     if ( $Param{Config}->{New}->{StateID} ) {
         if ( $Self->{NoticeSTDOUT} ) {
@@ -977,6 +997,43 @@ sub _JobRunTicket {
             UserID   => $Param{UserID},
             StateID  => $Param{Config}->{New}->{StateID},
         );
+
+        $IsPendingState
+            = grep { $_ == $Param{Config}->{New}->{StateID} } keys %{ $Self->{PendingStateList} };
+    }
+
+    # set pending time, if new state is pending state
+    if ($IsPendingState) {
+        if ( $Param{Config}->{New}->{PendingTime} ) {
+
+            # pending time
+            my $PendingTime = $Param{Config}->{New}->{PendingTime};
+
+            # calculate pending time based on hours, minutes, years...
+            if ( $Param{Config}->{New}->{PendingTimeType} ) {
+                $PendingTime *= $Param{Config}->{New}->{PendingTimeType};
+            }
+
+            # add systemtime
+            $PendingTime += $Self->{CurrentSystemTime};
+
+            # get date
+            my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
+                = $Self->{TimeObject}->SystemTime2Date(
+                SystemTime => $PendingTime,
+                );
+
+            # set pending time
+            $Self->{TicketObject}->TicketPendingTimeSet(
+                Year     => $Year,
+                Month    => $Month,
+                Day      => $Day,
+                Hour     => $Hour,
+                Minute   => $Min,
+                TicketID => $Param{TicketID},
+                UserID   => $Param{UserID},
+            );
+        }
     }
 
     # set customer id and customer user
@@ -1192,7 +1249,8 @@ sub _JobRunTicket {
                 $DynamicFieldConfig->{Config}->{PossibleNone}
                 || $Value ne ''
             )
-        ) {
+            )
+        {
             my $Success = $Self->{BackendObject}->ValueSet(
                 DynamicFieldConfig => $DynamicFieldConfig,
                 ObjectID           => $Param{TicketID},

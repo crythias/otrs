@@ -28,8 +28,6 @@ use FindBin qw($RealBin);
 use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 
-use vars qw($VERSION);
-
 use Getopt::Std qw();
 use Kernel::Config;
 use Kernel::System::Log;
@@ -51,7 +49,7 @@ use Kernel::System::VariableCheck qw(:all);
     if ( exists $Opts{h} ) {
         print <<"EOF";
 
-DBUpdate-to-3.3.pl <Revision $VERSION> - Upgrade scripts for OTRS 3.2.x to 3.3.x migration.
+DBUpdate-to-3.3.pl - Upgrade scripts for OTRS 3.2.x to 3.3.x migration.
 Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 
 EOF
@@ -69,7 +67,7 @@ EOF
     my $CommonObject = _CommonObjectsBase();
 
     # define the number of steps
-    my $Steps = 7;
+    my $Steps = 8;
     my $Step  = 1;
 
     print "Step $Step of $Steps: Refresh configuration cache... ";
@@ -89,6 +87,17 @@ EOF
     print "Step $Step of $Steps: Generate MessageID md5sums... ";
     _GenerateMessageIDMD5($CommonObject) || die;
     print "done.\n\n";
+    $Step++;
+
+    # migrate old settings
+    print "Step $Step of $Steps: Migrate old settings... ";
+    if ( _MigrateOldSettings($CommonObject) ) {
+        print "done.\n\n";
+    }
+    else {
+        print "error.\n\n";
+        die;
+    }
     $Step++;
 
     # migrate OTRSExternalTicketNumberRecognition
@@ -259,6 +268,35 @@ sub _GenerateMessageIDMD5 {
     return 1;
 }
 
+=item _MigrateOldSettings()
+
+Migrate settings that has changed it name.
+
+    _MigrateOldSettings($CommonObject);
+
+=cut
+
+sub _MigrateOldSettings {
+    my $CommonObject = shift;
+
+    my $SysConfigObject = Kernel::System::SysConfig->new( %{$CommonObject} );
+
+    # Ticket::Frontend::AgentTicketMove
+    # get original setting (old name)
+    my $Setting = $CommonObject->{ConfigObject}->Get('Ticket::DefaultNextMoveStateType');
+
+    if ( IsArrayRefWithData($Setting) ) {
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::AgentTicketMove###StateType',
+            Value => $Setting,
+        );
+    }
+    return 1;
+}
+
 =item _MigrateOTRSExternalTicketNumberRecognition()
 
 Migrate PostMaster ExternalTicketNumberRecognition settings to the new names and deletes the FAO
@@ -283,7 +321,7 @@ sub _MigrateOTRSExternalTicketNumberRecognition {
     my $SysConfigObject = Kernel::System::SysConfig->new( %{$CommonObject} );
 
     # convert settings
-    for my $Number ( 1..4 ) {
+    for my $Number ( 1 .. 4 ) {
 
         # get original setting (from FAO using old name)
         my $Setting = $CommonObject->{ConfigObject}->Get('PostMaster::PreFilterModule')
@@ -294,7 +332,7 @@ sub _MigrateOTRSExternalTicketNumberRecognition {
             # set new setting, notice that it has an extra 0 in the name
             my $Success = $SysConfigObject->ConfigItemUpdate(
                 Valid => 1,
-                Key   =>
+                Key =>
                     'PostMaster::PreFilterModule###000-ExternalTicketNumberRecognition' . $Number,
                 Value => $Setting,
             );
@@ -315,21 +353,28 @@ safe uninstall packages from the database.
 sub _UninstallMergedFeatureAddOns {
     my $CommonObject = shift;
 
-    my $PackageObject = Kernel::System::Package->new( %{$CommonObject});
+    my $PackageObject = Kernel::System::Package->new( %{$CommonObject} );
 
     # qw( ) contains a list of the feture add-ons to uninstall
-    for my $PackageName (qw(
+    for my $PackageName (
+        qw(
         OTRSPostMasterFilterExtensions
         OTRSFreeTextFromCustomerUser
         OTRSExternalTicketNumberRecognition
         OTRSDashboardQueueOverview
+        OTRSImportantArticles
+        OTRSImportantArticlesITSM
         OTRSDashboardTicketCalendar
         OTRSMultiServiceSelect
         OTRSMultiQueueSelect
+        OTRSDynamicFieldMultiLevelSelection
         OTRSEventBasedTicketActions
         OTRSKeepFAQAttachments
-    )) {
-        my $Success = $PackageObject->_PackageUninstallMerged (
+        OTRSTicketAclEditor
+        )
+        )
+    {
+        my $Success = $PackageObject->_PackageUninstallMerged(
             Name => $PackageName,
         );
         if ( !$Success ) {

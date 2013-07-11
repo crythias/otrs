@@ -618,6 +618,13 @@ Core.Agent.Admin.GenericAgent.Init({
                         </div>
                         <div class="Clear"></div>
 
+                        <label for="NewPendingTime">$Text{"Pending date"}:</label>
+                        <div class="Field">
+                            <input type="text" name="NewPendingTime" id="NewPendingTime" value="$QData{"NewPendingTime"}" class="W10pc"/>
+                            $Data{"NewPendingTimeTypeStrg"}
+                        </div>
+                        <div class="Clear"></div>
+
                         <label for="NewOwnerID">$Text{"Set new agent"}/$Text{"new owner"}:</label>
                         <div class="Field">
                             $Data{"NewOwnerStrg"}
@@ -710,7 +717,7 @@ Core.Agent.Admin.GenericAgent.Init({
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="NewNoteTimeUnits">$Text{"Time units"}$Text{"$Config{"Ticket::Frontend::TimeUnits"}"}:</label>
+                        <label for="NewNoteTimeUnits">$Text{"Time units"} $Text{"$Config{"Ticket::Frontend::TimeUnits"}"}:</label>
                         <div class="Field">
                             <input type="text" name="NewNoteTimeUnits" id="NewNoteTimeUnits" value="$QData{"NewNoteTimeUnits"}" class="W20pc"/>
                         </div>
@@ -915,12 +922,3 @@ Core.Agent.Admin.GenericAgent.Init({
     </div>
     <div class="Clear"></div>
 </div>
-<!--dtl:js_on_document_complete-->
-<script type="text/javascript">//<![CDATA[
-    // Register event for tree selection dialog
-    $('.Field').on('click', '.ShowTreeSelection', function (Event) {
-        Core.UI.TreeSelection.ShowTreeSelection($(this));
-        return false;
-    });
-//]]></script>
-<!--dtl:js_on_document_complete-->

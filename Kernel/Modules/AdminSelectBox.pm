@@ -22,7 +22,7 @@ sub new {
     bless( $Self, $Type );
 
     # check needed objects
-    for my $Needed (qw(ParamObject DBObject LayoutObject LogObject ConfigObject)) {
+    for my $Needed (qw(ParamObject DBObject LayoutObject LogObject ConfigObject TimeObject)) {
         $Self->{LayoutObject}->FatalError( Message => "Got no $Needed!" ) if !$Self->{$Needed};
     }
 
@@ -69,10 +69,9 @@ sub Run {
 
             # fetch database and add row blocks
             if ( $Self->{DBObject}->Prepare( SQL => $Param{SQL}, Limit => $Param{Max} ) ) {
-                my $Count = 0;
-                my @Head;
+
                 my @Data;
-                my $TableOpened;
+                my $MatchesFound;
 
                 # add result block
                 $Self->{LayoutObject}->Block(
@@ -80,33 +79,25 @@ sub Run {
                     Data => \%Param,
                 );
 
-                my $MatchesFound;
+                my @Head = $Self->{DBObject}->GetColumnNames();
+                for my $Column (@Head) {
+                    $Self->{LayoutObject}->Block(
+                        Name => 'ColumnHead',
+                        Data => {
+                            ColumnName => $Column,
+                        },
+                    );
+                }
 
                 # if there are any matching rows, they are shown
                 while ( my @Row = $Self->{DBObject}->FetchrowArray( RowNames => 1 ) ) {
 
                     $MatchesFound = 1;
 
-                    if ( !$TableOpened ) {
-                        $Self->{LayoutObject}->Block(
-                            Name => 'ResultTableStart',
-                        );
-                        $Self->{LayoutObject}->Block(
-                            Name => 'ResultTableEnd',
-                        );
-                        $TableOpened++;
-                    }
-
                     # get csv data
                     if ( $Param{ResultFormat} eq 'CSV' ) {
-                        $Count++;
-                        if ( $Count == 1 ) {
-                            @Head = @Row;
-                            next;
-                        }
                         push @Data, \@Row;
                         next;
-                        last if $Count > 2000;
                     }
 
                     $Self->{LayoutObject}->Block(
@@ -133,6 +124,9 @@ sub Run {
                 if ( !$MatchesFound ) {
                     $Self->{LayoutObject}->Block(
                         Name => 'NoMatches',
+                        Data => {
+                            Colspan => scalar @Head,
+                        },
                     );
                 }
 
@@ -144,6 +138,11 @@ sub Run {
                     $UserCSVSeparator = $UserData{UserCSVSeparator};
                 }
 
+                my $TimeStamp = $Self->{TimeObject}->CurrentTimestamp();
+                $TimeStamp =~ s/[:-]//g;
+                $TimeStamp =~ s/ /-/;
+                my $FileName = 'admin-select-' . $TimeStamp . '.csv';
+
                 # generate csv output
                 if ( $Param{ResultFormat} eq 'CSV' ) {
                     my $CSV = $Self->{CSVObject}->Array2CSV(
@@ -152,7 +151,7 @@ sub Run {
                         Separator => $UserCSVSeparator,
                     );
                     return $Self->{LayoutObject}->Attachment(
-                        Filename    => 'admin-select.csv',
+                        Filename    => "$FileName",
                         ContentType => 'text/csv',
                         Content     => $CSV,
                         Type        => 'attachment'

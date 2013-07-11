@@ -14,6 +14,7 @@ use warnings;
 
 use Kernel::System::NotificationEvent;
 use Kernel::System::Priority;
+use Kernel::System::Event;
 use Kernel::System::Lock;
 use Kernel::System::Service;
 use Kernel::System::SLA;
@@ -54,6 +55,11 @@ sub new {
     $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
         Valid      => 1,
         ObjectType => ['Ticket'],
+    );
+
+    $Self->{EventObject} = Kernel::System::Event->new(
+        %Param,
+        DynamicFieldObject => $Self->{DynamicFieldObject},
     );
 
     return $Self;
@@ -366,6 +372,12 @@ sub _Edit {
     $Self->{LayoutObject}->Block( Name => 'ActionList' );
     $Self->{LayoutObject}->Block( Name => 'ActionOverview' );
 
+    # get list type
+    my $TreeView = 0;
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::ListType') eq 'tree' ) {
+        $TreeView = 1;
+    }
+
     $Param{RecipientsStrg} = $Self->{LayoutObject}->BuildSelection(
         Data => {
             AgentOwner            => 'Agent (Owner)',
@@ -411,54 +423,18 @@ sub _Edit {
         $EventClass .= ' ' . $Param{EventsServerError};
     }
 
-    # build dynamic field list
-    # get the dynamic fields for ticket object
-    my $DynamicFields = $Self->{DynamicFieldObject}->DynamicFieldList(
-        Valid      => 1,
-        ObjectType => ['Ticket'],
-        ResultType => 'HASH',
+    my %RegisteredEvents = $Self->{EventObject}->EventList(
+        ObjectTypes => [ 'Ticket', 'Article', ],
     );
-    my %DynamicFieldList =
-        map { 'TicketDynamicFieldUpdate_' . $_ => 'TicketDynamicFieldUpdate_' . $_ }
-        sort values %{$DynamicFields};
+
+    my @Events;
+    for my $ObjectType ( sort keys %RegisteredEvents ) {
+        push @Events, @{ $RegisteredEvents{$ObjectType} || [] };
+    }
 
     # Build the list...
     $Param{EventsStrg} = $Self->{LayoutObject}->BuildSelection(
-        Data => {
-            TicketStateUpdate                  => 'TicketStateUpdate',
-            TicketQueueUpdate                  => 'TicketQueueUpdate',
-            TicketCreate                       => 'TicketCreate',
-            TicketTitleUpdate                  => 'TicketTitleUpdate',
-            TicketTypeUpdate                   => 'TicketTypeUpdate',
-            TicketServiceUpdate                => 'TicketServiceUpdate',
-            TicketSLAUpdate                    => 'TicketSLAUpdate',
-            TicketUnlockTimeoutUpdate          => 'TicketUnlockTimeoutUpdate',
-            TicketCustomerUpdate               => 'TicketCustomerUpdate',
-            TicketPendingTimeUpdate            => 'TicketPendingTimeUpdate',
-            TicketLockUpdate                   => 'TicketLockUpdate',
-            TicketOwnerUpdate                  => 'TicketOwnerUpdate',
-            TicketResponsibleUpdate            => 'TicketResponsibleUpdate',
-            TicketPriorityUpdate               => 'TicketPriorityUpdate',
-            TicketSubscribe                    => 'TicketSubscribe',
-            TicketUnsubscribe                  => 'TicketUnsubscribe',
-            TicketAccountTime                  => 'TicketAccountTime',
-            TicketMerge                        => 'TicketMerge',
-            ArticleCreate                      => 'ArticleCreate',
-            ArticleSend                        => 'ArticleSend',
-            ArticleBounce                      => 'ArticleBounce',
-            EscalationResponseTimeNotifyBefore => 'EscalationResponseTimeNotifyBefore',
-            EscalationUpdateTimeNotifyBefore   => 'EscalationUpdateTimeNotifyBefore',
-            EscalationSolutionTimeNotifyBefore => 'EscalationSolutionTimeNotifyBefore',
-            EscalationResponseTimeStart        => 'EscalationResponseTimeStart',
-            EscalationUpdateTimeStart          => 'EscalationUpdateTimeStart',
-            EscalationSolutionTimeStart        => 'EscalationSolutionTimeStart',
-            EscalationResponseTimeStop         => 'EscalationResponseTimeStop',
-            EscalationUpdateTimeStop           => 'EscalationUpdateTimeStop',
-            EscalationSolutionTimeStop         => 'EscalationSolutionTimeStop',
-
-            # Special events for each DynamicField
-            %DynamicFieldList,
-        },
+        Data       => \@Events,
         Name       => 'Events',
         Multiple   => 1,
         Size       => 5,
@@ -484,6 +460,7 @@ sub _Edit {
         Size               => 5,
         Multiple           => 1,
         Name               => 'QueueID',
+        TreeView           => $TreeView,
         SelectedIDRefArray => $Param{Data}->{QueueID},
         OnChangeSubmit     => 0,
     );
@@ -558,7 +535,11 @@ sub _Edit {
     if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
 
         # get list type
-        my %Service = $Self->{ServiceObject}->ServiceList( UserID => $Self->{UserID}, );
+        my %Service = $Self->{ServiceObject}->ServiceList(
+            Valid        => 1,
+            KeepChildren => 1,
+            UserID       => $Self->{UserID},
+        );
         $Param{ServicesStrg} = $Self->{LayoutObject}->BuildSelection(
             Data        => \%Service,
             Name        => 'ServiceID',
@@ -567,6 +548,7 @@ sub _Edit {
             Multiple    => 1,
             Translation => 0,
             Max         => 200,
+            TreeView    => $TreeView,
         );
         my %SLA = $Self->{SLAObject}->SLAList( UserID => $Self->{UserID}, );
         $Param{SLAsStrg} = $Self->{LayoutObject}->BuildSelection(

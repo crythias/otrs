@@ -120,6 +120,16 @@ sub AgentCustomerViewTable {
                 Name => 'CustomerRow',
                 Data => \%Record,
             );
+
+            if ( $Param{Data}->{Config}->{CustomerCompanySupport} && $Field->[0] eq 'CustomerCompanyName' ) {
+                my $CompanyValid = $Param{Data}->{ CustomerCompanyValid };
+
+                if ($CompanyValid && $CompanyValid !~ m{^valid}) {
+                    $Self->Block(
+                        Name => 'CustomerRowCustomerCompanyInvalid',
+                    );
+                }
+            }
         }
     }
 
@@ -362,8 +372,9 @@ sub AgentQueueListOption {
     }
     $Param{MoveQueuesStrg} .= "</select>\n";
 
-    if ($Param{TreeView}) {
-        $Param{MoveQueuesStrg} .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+    if ( $Param{TreeView} ) {
+        $Param{MoveQueuesStrg}
+            .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
     }
 
     return $Param{MoveQueuesStrg};
@@ -625,8 +636,10 @@ sub ArticleQuote {
         $Article{ContentType} = 'text/plain';
     }
     else {
-        my $Size = $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaEmail') || 82;
-        $Article{Body} =~ s/(^>.+|.{4,$Size})(?:\s|\z)/$1\n/gm;
+        $Article{Body} = $Self->WrapPlainText(
+            MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaEmail') || 82,
+            PlainText     => $Article{Body},
+        );
     }
 
     # attach attachments
@@ -1020,7 +1033,7 @@ sub TicketMetaItems {
                 Image      => $Image,
                 Title      => 'Unread article(s) available',
                 Class      => 'UnreadArticles',
-                ClassSpan  => 'UnreadArticles Important',
+                ClassSpan  => 'UnreadArticles Remarkable',
                 ClassTable => 'UnreadArticles',
             };
         }
@@ -1029,7 +1042,7 @@ sub TicketMetaItems {
                 Image      => $Image,
                 Title      => 'Unread article(s) available',
                 Class      => 'UnreadArticles',
-                ClassSpan  => 'UnreadArticles Unimportant',
+                ClassSpan  => 'UnreadArticles Ordinary',
                 ClassTable => 'UnreadArticles',
             };
         }

@@ -15,8 +15,7 @@ use warnings;
 use Kernel::System::Cache;
 use Kernel::System::Valid;
 
-use vars qw(@ISA $VERSION);
-$VERSION = qw($Revision: 0.1 $) [1];
+use vars qw(@ISA);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -108,11 +107,15 @@ sub CustomerCompanyList {
         $Valid = 0;
     }
 
-    my $CacheType = $Self->{CacheType} . '_CustomerCompanyList';
-    my $CacheKey = "CustomerCompanyList::${Valid}::" . ( $Param{Search} || '' );
+    my $CacheType;
+    my $CacheKey;
 
     # check cache
     if ( $Self->{CacheObject} ) {
+
+        $CacheType = $Self->{CacheType} . '_CustomerCompanyList';
+        $CacheKey = "CustomerCompanyList::${Valid}::" . ( $Param{Search} || '' );
+
         my $Data = $Self->{CacheObject}->Get(
             Type => $CacheType,
             Key  => $CacheKey,
@@ -313,7 +316,7 @@ sub CustomerCompanyAdd {
         $SQL .= ', ' if ($ValueInserted);
 
         if ( $Entry->[5] =~ /^int$/i ) {
-            $SQL .= " " . $Self->{DBObject}->Quote( $Param{ $Entry->[0] } );
+            $SQL .= " " . $Self->{DBObject}->Quote( $Param{ $Entry->[0] }, 'Integer' );
         }
         else {
             $SQL .= " '" . $Self->{DBObject}->Quote( $Param{ $Entry->[0] } ) . "'";
@@ -453,7 +456,7 @@ sub _CustomerCompanyCacheClear {
 
     $Self->{CacheObject}->Delete(
         Type => $Self->{CacheType},
-        Key  => "CustomerComapnyGet::$Param{CustomerID}",
+        Key  => "CustomerCompanyGet::$Param{CustomerID}",
     );
 
     # delete all search cache entries

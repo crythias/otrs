@@ -1,5 +1,5 @@
 # --
-# Kernel/System/DynamicField/Backend/Dropdown.pm - Delegate for DynamicField Dropdown backend
+# Kernel/System/DynamicField/Driver/Dropdown.pm - Delegate for DynamicField Dropdown Driver
 # Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,22 +7,23 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::DynamicField::Backend::Dropdown;
+package Kernel::System::DynamicField::Driver::Dropdown;
 
 use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::DynamicFieldValue;
-use Kernel::System::DynamicField::Backend::BackendCommon;
+
+use base qw(Kernel::System::DynamicField::Driver::DriverBaseSelect);
 
 =head1 NAME
 
-Kernel::System::DynamicField::Backend::Dropdown
+Kernel::System::DynamicField::Driver::Dropdown
 
 =head1 SYNOPSIS
 
-DynamicFields Dropdown backend delegate
+DynamicFields Dropdown Driver delegate
 
 =head1 PUBLIC INTERFACE
 
@@ -54,8 +55,6 @@ sub new {
 
     # create additional objects
     $Self->{DynamicFieldValueObject} = Kernel::System::DynamicFieldValue->new( %{$Self} );
-    $Self->{BackendCommonObject}
-        = Kernel::System::DynamicField::Backend::BackendCommon->new( %{$Self} );
 
     return $Self;
 }
@@ -101,29 +100,6 @@ sub ValueSet {
     return $Success;
 }
 
-sub ValueDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->ValueDelete(
-        FieldID  => $Param{DynamicFieldConfig}->{ID},
-        ObjectID => $Param{ObjectID},
-        UserID   => $Param{UserID},
-    );
-
-    return $Success;
-}
-
-sub AllValuesDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->AllValuesDelete(
-        FieldID => $Param{DynamicFieldConfig}->{ID},
-        UserID  => $Param{UserID},
-    );
-
-    return $Success;
-}
-
 sub ValueValidate {
     my ( $Self, %Param ) = @_;
 
@@ -135,47 +111,6 @@ sub ValueValidate {
     );
 
     return $Success;
-}
-
-sub SearchSQLGet {
-    my ( $Self, %Param ) = @_;
-
-    my %Operators = (
-        Equals            => '=',
-        GreaterThan       => '>',
-        GreaterThanEquals => '>=',
-        SmallerThan       => '<',
-        SmallerThanEquals => '<=',
-    );
-
-    if ( $Operators{ $Param{Operator} } ) {
-        my $SQL = " $Param{TableAlias}.value_text $Operators{$Param{Operator}} '";
-        $SQL .= $Self->{DBObject}->Quote( $Param{SearchTerm} ) . "' ";
-        return $SQL;
-    }
-
-    if ( $Param{Operator} eq 'Like' ) {
-
-        my $SQL = $Self->{DBObject}->QueryCondition(
-            Key   => "$Param{TableAlias}.value_text",
-            Value => $Param{SearchTerm},
-        );
-
-        return $SQL;
-    }
-
-    $Self->{'LogObject'}->Log(
-        'Priority' => 'error',
-        'Message'  => "Unsupported Operator $Param{Operator}",
-    );
-
-    return;
-}
-
-sub SearchSQLOrderFieldGet {
-    my ( $Self, %Param ) = @_;
-
-    return "$Param{TableAlias}.value_text";
 }
 
 sub EditFieldRender {
@@ -198,9 +133,10 @@ sub EditFieldRender {
     # is configured for this dynamic field
     if (
         IsHashRefWithData( $Param{Template} )
-        && defined $Param{Template}->{ $FieldName }
-    ) {
-        $Value = $Param{Template}->{ $FieldName };
+        && defined $Param{Template}->{$FieldName}
+        )
+    {
+        $Value = $Param{Template}->{$FieldName};
     }
 
     # extract the dynamic field value form the web request
@@ -225,21 +161,14 @@ sub EditFieldRender {
     # set error css class
     $FieldClass .= ' ServerError' if $Param{ServerError};
 
+    # set TreeView class
+    $FieldClass .= ' DynamicFieldWithTreeView' if $FieldConfig->{TreeView};
+
     # set PossibleValues
-    my $PossibleValues = $FieldConfig->{PossibleValues};
+    my $PossibleValues = $Self->PossibleValuesGet(%Param);
 
     # use PossibleValuesFilter if defined
-    $PossibleValues = $Param{PossibleValuesFilter}
-        if defined $Param{PossibleValuesFilter};
-
-    # set PossibleNone attribute
-    my $FieldPossibleNone;
-    if ( defined $Param{OverridePossibleNone} ) {
-        $FieldPossibleNone = $Param{OverridePossibleNone};
-    }
-    else {
-        $FieldPossibleNone = $FieldConfig->{PossibleNone} || 0;
-    }
+    $PossibleValues = $Param{PossibleValuesFilter} if defined $Param{PossibleValuesFilter};
 
     my $Size = 1;
 
@@ -252,16 +181,26 @@ sub EditFieldRender {
         $Size = 5;
     }
 
-    my $HTMLString = $Param{LayoutObject}->BuildSelection(
-        Data         => $PossibleValues || {},
-        SelectedID   => $Value,
-        Name         => $FieldName,
-        Translation  => $FieldConfig->{TranslatableValues} || 0,
-        PossibleNone => $FieldPossibleNone,
-        Class        => $FieldClass,
-        Size         => $Size,
-        HTMLQuote    => 1,
+    my $DataValues = $Self->BuildSelectionDataGet(
+        DynamicFieldConfig => $Param{DynamicFieldConfig},
+        PossibleValues     => $PossibleValues,
+        Value              => $Value,
     );
+
+    my $HTMLString = $Param{LayoutObject}->BuildSelection(
+        Data => $DataValues || {},
+        Name => $FieldName,
+        SelectedID  => $Value,
+        Translation => $FieldConfig->{TranslatableValues} || 0,
+        Class       => $FieldClass,
+        Size        => $Size,
+        HTMLQuote   => 1,
+    );
+
+    if ( $FieldConfig->{TreeView} ) {
+        $HTMLString
+            .= ' <a href="#" title="$Text{"Show Tree Selection"}" class="ShowTreeSelection">$Text{"Show Tree Selection"}</a>';
+    }
 
     if ( $Param{Mandatory} ) {
         my $DivID = $FieldName . 'Error';
@@ -319,13 +258,19 @@ EOF
     \$('$FieldSelector').bind('change', function (Event) {
         Core.AJAX.FormUpdate(\$(this).parents('form'), 'AJAXUpdate', '$FieldName', [ $FieldsToUpdate ]);
     });
+    Core.App.Subscribe('Event.AJAX.FormUpdate.Callback', function(Data) {
+        var FieldName = '$FieldName';
+        if (Data[FieldName] && \$('#' + FieldName).hasClass('DynamicFieldWithTreeView')) {
+            Core.UI.TreeSelection.RestoreDynamicFieldTreeView(\$('#' + FieldName), Data[FieldName], '' , 1);
+        }
+    });
 //]]></script>
 <!--dtl:js_on_document_complete-->
 EOF
     }
 
-    # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
+    # call EditLabelRender on the common Driver
+    my $LabelString = $Self->EditLabelRender(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         Mandatory          => $Param{Mandatory} || '0',
         FieldName          => $FieldName,
@@ -374,7 +319,7 @@ sub EditFieldValueValidate {
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         ParamObject        => $Param{ParamObject},
 
-        # not necessary for this backend but place it for consistency reasons
+        # not necessary for this Driver but place it for consistency reasons
         ReturnValueStructure => 1,
     );
 
@@ -480,115 +425,6 @@ sub IsSortable {
     return 1;
 }
 
-sub SearchFieldRender {
-    my ( $Self, %Param ) = @_;
-
-    # take config from field config
-    my $FieldConfig = $Param{DynamicFieldConfig}->{Config};
-    my $FieldName   = 'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name};
-    my $FieldLabel  = $Param{DynamicFieldConfig}->{Label};
-
-    my $Value;
-
-    my @DefaultValue;
-
-    if ( defined $Param{DefaultValue} ) {
-        my @DefaultValue = split /;/, $Param{DefaultValue};
-    }
-
-    # set the field value
-    if (@DefaultValue) {
-        $Value = \@DefaultValue;
-    }
-
-    # get the field value, this fuction is always called after the profile is loaded
-    my $FieldValues = $Self->SearchFieldValueGet(
-        %Param,
-    );
-
-    if ( defined $FieldValues ) {
-        $Value = $FieldValues;
-    }
-
-    # check and set class if necessary
-    my $FieldClass = 'DynamicFieldMultiSelect';
-
-    # set PossibleValues
-    my $SelectionData = $FieldConfig->{PossibleValues};
-
-    # get historical values from database
-    my $HistoricalValues = $Self->HistoricalValuesGet(%Param);
-
-    # add historic values to current values (if they don't exist anymore)
-    if ( IsHashRefWithData($HistoricalValues) ) {
-        for my $Key ( sort keys %{$HistoricalValues} ) {
-            if ( !$SelectionData->{$Key} ) {
-                $SelectionData->{$Key} = $HistoricalValues->{$Key}
-            }
-        }
-    }
-
-    # use PossibleValuesFilter if defined
-    $SelectionData = $Param{PossibleValuesFilter}
-        if defined $Param{PossibleValuesFilter};
-
-    my $HTMLString = $Param{LayoutObject}->BuildSelection(
-        Data         => $SelectionData,
-        Name         => $FieldName,
-        SelectedID   => $Value,
-        Translation  => $FieldConfig->{TranslatableValues} || 0,
-        PossibleNone => 0,
-        Class        => $FieldClass,
-        Multiple     => 1,
-        HTMLQuote    => 1,
-    );
-
-    # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
-        DynamicFieldConfig => $Param{DynamicFieldConfig},
-        FieldName          => $FieldName,
-    );
-
-    my $Data = {
-        Field => $HTMLString,
-        Label => $LabelString,
-    };
-
-    return $Data;
-}
-
-sub SearchFieldValueGet {
-    my ( $Self, %Param ) = @_;
-
-    my $Value;
-
-    # get dynamic field value form param object
-    if ( defined $Param{ParamObject} ) {
-        my @FieldValues = $Param{ParamObject}->GetArray(
-            Param => 'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name}
-        );
-
-        $Value = \@FieldValues;
-    }
-
-    # otherwise get the value from the profile
-    elsif ( defined $Param{Profile} ) {
-        $Value = $Param{Profile}->{ 'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name} };
-    }
-    else {
-        return;
-    }
-
-    if ( defined $Param{ReturnProfileStructure} && $Param{ReturnProfileStructure} eq 1 ) {
-        return {
-            'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name} => $Value,
-        };
-    }
-
-    return $Value;
-
-}
-
 sub SearchFieldParameterBuild {
     my ( $Self, %Param ) = @_;
 
@@ -606,9 +442,13 @@ sub SearchFieldParameterBuild {
                 # set the display value
                 my $DisplayItem = $Param{DynamicFieldConfig}->{Config}->{PossibleValues}->{$Item}
                     || $Item;
-                if ( $Param{DynamicFieldConfig}->{Config}->{TranslatableValues} ) {
 
-                    # translate the value
+                # translate the value
+                if (
+                    $Param{DynamicFieldConfig}->{Config}->{TranslatableValues}
+                    && defined $Param{LayoutObject}
+                    )
+                {
                     $DisplayItem = $Param{LayoutObject}->{LanguageObject}->Get($DisplayItem);
                 }
 
@@ -623,9 +463,12 @@ sub SearchFieldParameterBuild {
             # set the display value
             $DisplayValue = $Param{DynamicFieldConfig}->{PossibleValues}->{$Value};
 
-            if ( $Param{DynamicFieldConfig}->{Config}->{TranslatableValues} ) {
-
-                # translate the value
+            # translate the value
+            if (
+                $Param{DynamicFieldConfig}->{Config}->{TranslatableValues}
+                && defined $Param{LayoutObject}
+                )
+            {
                 $DisplayValue = $Param{LayoutObject}->{LanguageObject}->Get($DisplayValue);
             }
         }
@@ -668,17 +511,6 @@ sub StatsFieldParameterBuild {
         Name               => $Param{DynamicFieldConfig}->{Label},
         Element            => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
         TranslatableValues => $Param{DynamicFieldconfig}->{Config}->{TranslatableValues},
-    };
-}
-
-sub CommonSearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    my $Operator = 'Equals';
-    my $Value    = $Param{Value};
-
-    return {
-        $Operator => $Value,
     };
 }
 
@@ -734,39 +566,6 @@ sub TemplateValueTypeGet {
     }
 }
 
-sub IsAJAXUpdateable {
-    my ( $Self, %Param ) = @_;
-
-    return 1;
-}
-
-sub RandomValueSet {
-    my ( $Self, %Param ) = @_;
-
-    my $Value = int( rand(500) );
-
-    my $Success = $Self->ValueSet(
-        %Param,
-        Value => $Value,
-    );
-
-    if ( !$Success ) {
-        return {
-            Success => 0,
-        };
-    }
-    return {
-        Success => 1,
-        Value   => $Value,
-    };
-}
-
-sub IsMatchable {
-    my ( $Self, %Param ) = @_;
-
-    return 1;
-}
-
 sub ObjectMatch {
     my ( $Self, %Param ) = @_;
 
@@ -781,29 +580,6 @@ sub ObjectMatch {
     }
 
     return 1;
-}
-
-sub AJAXPossibleValuesGet {
-    my ( $Self, %Param ) = @_;
-
-    # to store the possible values
-    my %PossibleValues;
-
-    # set none value if defined on field config
-    if ( $Param{DynamicFieldConfig}->{Config}->{PossibleNone} ) {
-        %PossibleValues = ( '' => '-' );
-    }
-
-    # set all other possible values if defined on field config
-    if ( IsHashRefWithData( $Param{DynamicFieldConfig}->{Config}->{PossibleValues} ) ) {
-        %PossibleValues = (
-            %PossibleValues,
-            %{ $Param{DynamicFieldConfig}->{Config}->{PossibleValues} },
-        );
-    }
-
-    # return the possible values hash as a reference
-    return \%PossibleValues;
 }
 
 sub HistoricalValuesGet {
@@ -849,6 +625,108 @@ sub ValueLookup {
     }
 
     return $Value;
+}
+
+sub BuildSelectionDataGet {
+    my ( $Self, %Param ) = @_;
+
+    my $FieldConfig            = $Param{DynamicFieldConfig}->{Config};
+    my $FilteredPossibleValues = $Param{PossibleValues};
+
+    # get the possible values again as it might or might not contain the possible none and it could
+    # oso ve overritten
+    my $ConfigPossibleValues = $Self->PossibleValuesGet(%Param);
+
+    # check if $PossibleValues differs from configured PossibleValues
+    # and show values which are not contained as disabled if TreeView => 1
+    if ( $FieldConfig->{TreeView} ) {
+
+        if ( keys %{$ConfigPossibleValues} != keys %{$FilteredPossibleValues} ) {
+
+            # define variables to use later in the for loop
+            my @Values;
+            my $Parents;
+            my %DisabledElements;
+            my %ProcessedElements;
+            my $PosibleNoneSet;
+
+            # loop on all filtred possible values
+            for my $Key ( sort keys %{$FilteredPossibleValues} ) {
+
+                # special case for possible none
+                if ( !$Key && !$PosibleNoneSet && $FieldConfig->{PossibleNone} ) {
+
+                    # add possible none
+                    push @Values, {
+                        Key      => $Key,
+                        Value    => $ConfigPossibleValues->{$Key} || '-',
+                        Selected => defined $Param{Value} || !$Param{Value} ? 1 : 0,
+                    };
+                }
+
+                # try to split its parents GrandParent::Parent::Son
+                my @Elements = split /::/, $Key;
+
+                # reset parents
+                $Parents = '';
+
+                # get each element in the hierarchy
+                ELEMENT:
+                for my $Element (@Elements) {
+
+                    # add its own parents for the complete name
+                    my $ElementLongName = $Parents . $Element;
+
+                    # set new parent (before skip already processed)
+                    $Parents .= $Element . '::';
+
+                    # skip if already processed
+                    next ELEMENT if $ProcessedElements{$ElementLongName};
+
+                    my $Disabled;
+
+                    # check if element exists in the original data or if it is already marked
+                    if (
+                        !defined $FilteredPossibleValues->{$ElementLongName}
+                        && !$DisabledElements{$ElementLongName}
+                        )
+                    {
+
+                        # mark element as disabled
+                        $DisabledElements{$ElementLongName} = 1;
+
+                        # also set the disabled flag for current emlement to add
+                        $Disabled = 1;
+                    }
+
+                    # set element as already processed
+                    $ProcessedElements{$ElementLongName} = 1;
+
+                    # check if the current element is the selected one
+                    my $Selected;
+                    if (
+                        defined $Param{Value}
+                        && $Param{Value}
+                        && $ElementLongName eq $Param{Value}
+                        )
+                    {
+                        $Selected = 1;
+                    }
+
+                    # add element to the new list of possible values (now including missing parents)
+                    push @Values, {
+                        Key      => $ElementLongName,
+                        Value    => $ConfigPossibleValues->{$ElementLongName} || $ElementLongName,
+                        Disabled => $Disabled,
+                        Selected => $Selected,
+                    };
+                }
+            }
+            $FilteredPossibleValues = \@Values;
+        }
+    }
+
+    return $FilteredPossibleValues;
 }
 
 1;

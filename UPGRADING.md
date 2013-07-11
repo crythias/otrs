@@ -123,11 +123,11 @@ MySQL:
 
 PostgreSQL 8.2+:
 
-    shell> cat scripts/DBUpdate-to-3.3.postgresql.sql | psql otrs
+    shell> cat scripts/DBUpdate-to-3.3.postgresql.sql | psql otrs otrs
 
 PostgreSQL, older versions:
 
-    shell> cat scripts/DBUpdate-to-3.3.postgresql_before_8_2.sql | psql otrs
+    shell> cat scripts/DBUpdate-to-3.3.postgresql_before_8_2.sql | psql otrs otrs
 
 
  NOTE: If you use PostgreSQL 8.1 or earlier, you need to activate the new legacy driver
@@ -180,10 +180,15 @@ installed before):
 - OTRSFreeTextFromCustomerUser
 - OTRSExternalTicketNumberRecognition
 - OTRSDashboardQueueOverview
+- OTRSImportantArticles
+- OTRSImportantArticlesITSM
 - OTRSDashboardTicketCalendar
 - OTRSMultiServiceSelect
 - OTRSMultiQueueSelect
+- OTRSDynamicFieldMultiLevelSelection
 - OTRSKeepFAQAttachments
+- OTRSTicketAclEditor
+
 
 13. Check config settings of OTRSFreeTextFromCustomerUser
 -------------------------------------------------------
@@ -200,5 +205,16 @@ activate this feature and configure the mapping in the setting
 "DynamicFieldFromCustomerUser::Mapping".
 
 
-14. Well done!
+14. Import your ACLs to the new ACL editor (optional)
+-------------------------------------------------------
+
+In OTRS 3.3, there is a graphical editor for ACLs in the administration interface. You will need to
+import your existing ACLs (e.g. in Config.pm or additional files) to the editor by using
+bin/otrs.ImportACLsFromConfig.pl in order to make them available in the editor. Please make sure to
+delete any ACLs from Config.pm (or other files) after successfully finishing the import procedure. Also
+you will need to use the deploy button in the ACL administration frontend in order to re-deploy the imported
+ACLs to your system.
+
+
+15. Well done!
 --------------

@@ -907,6 +907,22 @@ Description>
             <String Regex="^[0-9]{1,3}$">22</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::DynamicFieldsZoomMaxSizeSidebar" Required="1" Valid="1">
+        <Description Translatable="1">Maximum length (in characters) of the dynamic field in the sidebar of the ticket zoom view.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,3}$">18</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::DynamicFieldsZoomMaxSizeArticle" Required="1" Valid="1">
+        <Description Translatable="1">Maximum length (in characters) of the dynamic field in the article of the ticket zoom view.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <String Regex="^[0-9]{1,3}$">160</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::CustomerTicketOverviewSortable" Required="0" Valid="1">
         <Description Translatable="1">Controls if customers have the ability to sort their tickets.</Description>
         <Group>Ticket</Group>
@@ -3794,7 +3810,7 @@ Description>
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Ticket::DefaultNextMoveStateType" Required="1" Valid="1">
+    <ConfigItem Name="Ticket::Frontend::AgentTicketMove###StateType" Required="1" Valid="1">
         <Description Translatable="1">Defines the next state of a ticket after being moved to another queue, in the move ticket screen of the agent interface.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
@@ -4386,6 +4402,13 @@ $QData{"Body"}
                 <Item Key="Size">10</Item>
                 <Item Key="CSS">Core.Agent.Toolbar.CICSearch.css</Item>
                 <Item Key="Priority">1990030</Item>
+                <Item Key="Data">
+                    <Hash>
+                        <Item Key="MinQueryLength">2</Item>
+                        <Item Key="QueryDelay">100</Item>
+                        <Item Key="MaxResultsDisplayed">20</Item>
+                    </Hash>
+                </Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -4402,6 +4425,13 @@ $QData{"Body"}
                 <Item Key="Size">10</Item>
                 <Item Key="CSS">Core.Agent.Toolbar.CICSearch.css</Item>
                 <Item Key="Priority">1990040</Item>
+                <Item Key="Data">
+                    <Hash>
+                        <Item Key="MinQueryLength">2</Item>
+                        <Item Key="QueryDelay">100</Item>
+                        <Item Key="MaxResultsDisplayed">20</Item>
+                    </Hash>
+                </Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -5376,15 +5406,15 @@ $QData{"Body"}
         <SubGroup>Frontend::Agent::Dashboard::EventsTicketCalendar</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Type">Type</Item>
-                <Item Key="CustomerUserID">Customer user</Item>
                 <Item Key="CustomerID">Customer ID</Item>
-                <Item Key="ServiceID">Service</Item>
-                <Item Key="SLAID">SLA</Item>
-                <Item Key="Queue">Queue</Item>
-                <Item Key="Title">Title</Item>
+                <Item Key="CustomerUserID">Customer user</Item>
                 <Item Key="Priority">Priority</Item>
+                <Item Key="Queue">Queue</Item>
+                <Item Key="SLA">SLA</Item>
+                <Item Key="Service">Service</Item>
                 <Item Key="State">State</Item>
+                <Item Key="Title">Title</Item>
+                <Item Key="Type">Type</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -6924,6 +6954,30 @@ $QData{"Body"}
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AdminACL" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description>Admin</Description>
+                <Title Translatable="1">Access Control Lists (ACL)</Title>
+                <NavBarName>Admin</NavBarName>
+                <Loader>
+                    <CSS>Core.Agent.Admin.ACL.css</CSS>
+                    <JavaScript>Core.Agent.Admin.ACL.js</JavaScript>
+                </Loader>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBarModuleAdmin</Module>
+                    <Name Translatable="1">Access Control Lists (ACL)</Name>
+                    <Description Translatable="1">Configure and manage ACLs.</Description>
+                    <Block>Ticket</Block>
+                    <Prio>750</Prio>
+                </NavBarModule>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::Module###AdminQueue" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>Ticket</Group>
@@ -7520,6 +7574,138 @@ $QData{"Body"}
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel1Match" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in first level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Properties">Properties</Item>
+                <Item Key="PropertiesDatabase">PropertiesDatabase</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel1Change" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in first level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Possible">Possible</Item>
+                <Item Key="PossibleNot">PossibleNot</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel2::Possible" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in second level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Action">Action</Item>
+                <Item Key="ActivityDialog">ActivityDialog</Item>
+                <Item Key="Form">Form</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel2::PossibleNot" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in second level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Ticket">Ticket</Item>
+                <Item Key="Action">Action</Item>
+                <Item Key="ActivityDialog">ActivityDialog</Item>
+                <Item Key="Form">Form</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel2::Properties" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in second level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="User">User</Item>
+                <Item Key="CustomerUser">CustomerUser</Item>
+                <Item Key="Queue">Queue</Item>
+                <Item Key="Service">Service</Item>
+                <Item Key="Type">Type</Item>
+                <Item Key="Priority">Priority</Item>
+                <Item Key="SLA">SLA</Item>
+                <Item Key="State">State</Item>
+                <Item Key="Owner">Owner</Item>
+                <Item Key="Process">Process</Item>
+                <Item Key="Responsible">Responsible</Item>
+                <Item Key="DynamicField">DynamicField</Item>
+                <Item Key="Frontend">Frontend</Item>
+                <Item Key="Ticket">Ticket</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel2::PropertiesDatabase" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available in second level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="User">User</Item>
+                <Item Key="CustomerUser">CustomerUser</Item>
+                <Item Key="Queue">Queue</Item>
+                <Item Key="Service">Service</Item>
+                <Item Key="Type">Type</Item>
+                <Item Key="Priority">Priority</Item>
+                <Item Key="SLA">SLA</Item>
+                <Item Key="State">State</Item>
+                <Item Key="Owner">Owner</Item>
+                <Item Key="Process">Process</Item>
+                <Item Key="Responsible">Responsible</Item>
+                <Item Key="DynamicField">DynamicField</Item>
+                <Item Key="Ticket">Ticket</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACLKeysLevel3::Actions###100-Default" Required="0" Valid="1">
+        <Description Translatable="1">Defines which items are available for 'Action' in third level of the ACL structure.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <Array>
+                <Item>AgentTicketBounce</Item>
+                <Item>AgentTicketClose</Item>
+                <Item>AgentTicketCompose</Item>
+                <Item>AgentTicketCustomer</Item>
+                <Item>AgentTicketForward</Item>
+                <Item>AgentTicketFreeText</Item>
+                <Item>AgentTicketHistory</Item>
+                <Item>AgentTicketLink</Item>
+                <Item>AgentTicketLock</Item>
+                <Item>AgentTicketMerge</Item>
+                <Item>AgentTicketMove</Item>
+                <Item>AgentTicketNote</Item>
+                <Item>AgentTicketOwner</Item>
+                <Item>AgentTicketPending</Item>
+                <Item>AgentTicketPhone</Item>
+                <Item>AgentTicketPhoneInbound</Item>
+                <Item>AgentTicketPhoneOutbound</Item>
+                <Item>AgentTicketPrint</Item>
+                <Item>AgentTicketPriority</Item>
+                <Item>AgentTicketResponsible</Item>
+                <Item>AgentTicketWatcher</Item>
+                <Item>AgentLinkObject</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="ACL::CacheTTL" Required="1" Valid="1">
+        <Description Translatable="1">Cache time in seconds for the DB ACL backend.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::TicketACL</SubGroup>
+        <Setting>
+            <String Regex="">3600</String><!-- default 1 hour -->
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="PostmasterMaxEmails" Required="1" Valid="1">
         <Description Translatable="1">Maximal auto email responses to own email-address a day (Loop-Protection).</Description>
         <Group>Ticket</Group>
@@ -7997,6 +8183,17 @@ Thanks for your help!
             <String Regex="">(MAILER-DAEMON|postmaster|abuse)@.+?\..+?</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AutoResponseForWebTickets" Required="1" Valid="1">
+        <Description Translatable="1">If this option is set to 'Yes', tickets created via the web interface, via Customers or Agents, will receive an autoresponse if configured. If this option is set to 'No', no autoresponses will be sent.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="LinkObject::PossibleLink###0200" Required="0" Valid="1">
         <Description Translatable="1">Links 2 tickets with a "Normal" type link.</Description>
         <Group>Ticket</Group>
@@ -8253,7 +8450,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Text</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::Text</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Text</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldText</Item>
             </Hash>
         </Setting>
@@ -8265,7 +8462,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Textarea</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::TextArea</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::TextArea</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldText</Item>
             </Hash>
         </Setting>
@@ -8277,7 +8474,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Checkbox</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::Checkbox</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Checkbox</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldCheckbox</Item>
             </Hash>
         </Setting>
@@ -8289,7 +8486,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Dropdown</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::Dropdown</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Dropdown</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldDropdown</Item>
             </Hash>
         </Setting>
@@ -8301,7 +8498,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Date / Time</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::DateTime</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::DateTime</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldDateTime</Item>
             </Hash>
         </Setting>
@@ -8313,7 +8510,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Date</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::Date</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Date</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldDateTime</Item>
             </Hash>
         </Setting>
@@ -8326,7 +8523,7 @@ Thanks for your help!
         <Setting>
             <Hash>
                 <Item Key="DisplayName" Translatable="1">Multiselect</Item>
-                <Item Key="Module">Kernel::System::DynamicField::Backend::Multiselect</Item>
+                <Item Key="Module">Kernel::System::DynamicField::Driver::Multiselect</Item>
                 <Item Key="ConfigDialog">AdminDynamicFieldMultiselect</Item>
                 <Item Key="ItemSeparator">, </Item>
             </Hash>

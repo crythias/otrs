@@ -1,6 +1,34 @@
 -- ----------------------------------------------------------
---  driver: mssql, generated: 2013-05-03 02:53:20
+--  driver: mssql, generated: 2013-06-24 12:38:54
 -- ----------------------------------------------------------
+-- ----------------------------------------------------------
+--  create table acl
+-- ----------------------------------------------------------
+CREATE TABLE acl (
+    id INTEGER NOT NULL IDENTITY(1,1) ,
+    name NVARCHAR (200) NOT NULL,
+    comments NVARCHAR (250) NOT NULL,
+    description NVARCHAR (250) NULL,
+    valid_id SMALLINT NOT NULL,
+    stop_after_match SMALLINT NULL,
+    config_match NVARCHAR (MAX) NULL,
+    config_change NVARCHAR (MAX) NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT acl_name UNIQUE (name)
+);
+-- ----------------------------------------------------------
+--  create table acl_sync
+-- ----------------------------------------------------------
+CREATE TABLE acl_sync (
+    acl_id NVARCHAR (200) NOT NULL,
+    sync_state NVARCHAR (30) NOT NULL,
+    create_time DATETIME NOT NULL,
+    change_time DATETIME NOT NULL
+);
 -- ----------------------------------------------------------
 --  create table valid
 -- ----------------------------------------------------------
@@ -1039,6 +1067,18 @@ CREATE TABLE link_relation (
     create_time DATETIME NOT NULL,
     create_by INTEGER NOT NULL,
     CONSTRAINT link_relation_view UNIQUE (source_object_id, source_key, target_object_id, target_key, type_id)
+);
+-- ----------------------------------------------------------
+--  create table system_data
+-- ----------------------------------------------------------
+CREATE TABLE system_data (
+    data_key NVARCHAR (160) NOT NULL,
+    data_value NVARCHAR (MAX) NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(data_key)
 );
 -- ----------------------------------------------------------
 --  create table xml_storage

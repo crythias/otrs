@@ -1,5 +1,5 @@
 # --
-# Kernel/System/DynamicField/Backend/TextArea.pm - Delegate for DynamicField TextArea backend
+# Kernel/System/DynamicField/Driver/Checkbox.pm - Delegate for DynamicField Checkbox Driver
 # Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,22 +7,23 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::DynamicField::Backend::TextArea;
+package Kernel::System::DynamicField::Driver::Checkbox;
 
 use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::DynamicFieldValue;
-use Kernel::System::DynamicField::Backend::BackendCommon;
+
+use base qw(Kernel::System::DynamicField::Driver::DriverBase);
 
 =head1 NAME
 
-Kernel::System::DynamicField::Backend::TextArea
+Kernel::System::DynamicField::Driver::Checkbox
 
 =head1 SYNOPSIS
 
-DynamicFields TextArea backend delegate
+DynamicFields Checkbox Driver delegate
 
 =head1 PUBLIC INTERFACE
 
@@ -54,12 +55,6 @@ sub new {
 
     # create additional objects
     $Self->{DynamicFieldValueObject} = Kernel::System::DynamicFieldValue->new( %{$Self} );
-    $Self->{BackendCommonObject}
-        = Kernel::System::DynamicField::Backend::BackendCommon->new( %{$Self} );
-
-    # set the maximum lenght for the textarea fields to still be a searchable field in some
-    # databases
-    $Self->{MaxLength} = 3800;
 
     return $Self;
 }
@@ -76,18 +71,30 @@ sub ValueGet {
     return if !IsArrayRefWithData($DFValue);
     return if !IsHashRefWithData( $DFValue->[0] );
 
-    return $DFValue->[0]->{ValueText};
+    return $DFValue->[0]->{ValueInt};
 }
 
 sub ValueSet {
     my ( $Self, %Param ) = @_;
+
+    # check value for just 1 or 0
+    if ( defined $Param{Value} && !$Param{Value} ) {
+        $Param{Value} = 0;
+    }
+    elsif ( $Param{Value} && $Param{Value} !~ m{\A [0|1]? \z}xms ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Value $Param{Value} is invalid for Checkbox fields!",
+        );
+        return;
+    }
 
     my $Success = $Self->{DynamicFieldValueObject}->ValueSet(
         FieldID  => $Param{DynamicFieldConfig}->{ID},
         ObjectID => $Param{ObjectID},
         Value    => [
             {
-                ValueText => $Param{Value},
+                ValueInt => $Param{Value},
             },
         ],
         UserID => $Param{UserID},
@@ -96,35 +103,24 @@ sub ValueSet {
     return $Success;
 }
 
-sub ValueDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->ValueDelete(
-        FieldID  => $Param{DynamicFieldConfig}->{ID},
-        ObjectID => $Param{ObjectID},
-        UserID   => $Param{UserID},
-    );
-
-    return $Success;
-}
-
-sub AllValuesDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->AllValuesDelete(
-        FieldID => $Param{DynamicFieldConfig}->{ID},
-        UserID  => $Param{UserID},
-    );
-
-    return $Success;
-}
-
 sub ValueValidate {
     my ( $Self, %Param ) = @_;
 
+    # check value for just 1 or 0
+    if ( defined $Param{Value} && !$Param{Value} ) {
+        $Param{Value} = 0;
+    }
+    elsif ( $Param{Value} && $Param{Value} !~ m{\A [0|1]? \z}xms ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Value $Param{Value} is invalid for Checkbox fields!",
+        );
+        return;
+    }
+
     my $Success = $Self->{DynamicFieldValueObject}->ValueValidate(
         Value => {
-            ValueText => $Param{Value},
+            ValueInt => $Param{Value},
         },
         UserID => $Param{UserID}
     );
@@ -135,27 +131,9 @@ sub ValueValidate {
 sub SearchSQLGet {
     my ( $Self, %Param ) = @_;
 
-    my %Operators = (
-        Equals            => '=',
-        GreaterThan       => '>',
-        GreaterThanEquals => '>=',
-        SmallerThan       => '<',
-        SmallerThanEquals => '<=',
-    );
-
-    if ( $Operators{ $Param{Operator} } ) {
-        my $SQL = " $Param{TableAlias}.value_text $Operators{$Param{Operator}} '";
-        $SQL .= $Self->{DBObject}->Quote( $Param{SearchTerm} ) . "' ";
-        return $SQL;
-    }
-
-    if ( $Param{Operator} eq 'Like' ) {
-
-        my $SQL = $Self->{DBObject}->QueryCondition(
-            Key   => "$Param{TableAlias}.value_text",
-            Value => $Param{SearchTerm},
-        );
-
+    if ( $Param{Operator} eq 'Equals' ) {
+        my $SQL = " $Param{TableAlias}.value_int = ";
+        $SQL .= $Self->{DBObject}->Quote( $Param{SearchTerm}, 'Integer' ) . ' ';
         return $SQL;
     }
 
@@ -170,7 +148,7 @@ sub SearchSQLGet {
 sub SearchSQLOrderFieldGet {
     my ( $Self, %Param ) = @_;
 
-    return "$Param{TableAlias}.value_text";
+    return "$Param{TableAlias}.value_int";
 }
 
 sub EditFieldRender {
@@ -181,34 +159,43 @@ sub EditFieldRender {
     my $FieldName   = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
     my $FieldLabel  = $Param{DynamicFieldConfig}->{Label};
 
-    my $Value = '';
+    my $Value;
 
     # set the field value or default
     if ( $Param{UseDefaultValue} ) {
-        $Value = ( defined $FieldConfig->{DefaultValue} ? $FieldConfig->{DefaultValue} : '' );
+        $Value = $FieldConfig->{DefaultValue} || '';
     }
     $Value = $Param{Value} if defined $Param{Value};
 
     # extract the dynamic field value form the web request
     my $FieldValue = $Self->EditFieldValueGet(
+        ReturnValueStructure => 1,
         %Param,
     );
 
     # set values from ParamObject if present
-    if ( defined $FieldValue ) {
-        $Value = $FieldValue;
+    if ( defined $FieldValue && IsHashRefWithData($FieldValue) ) {
+        if (
+            !defined $FieldValue->{FieldValue} &&
+            defined $FieldValue->{UsedValue}   && $FieldValue->{UsedValue} eq '1'
+            )
+        {
+            $Value = '0';
+        }
+        elsif (
+            defined $FieldValue->{FieldValue} && $FieldValue->{FieldValue} eq '1' &&
+            defined $FieldValue->{UsedValue} && $FieldValue->{UsedValue} eq '1'
+            )
+        {
+            $Value = '1';
+        }
     }
 
-    # set the rows number
-    my $RowsNumber
-        = defined $FieldConfig->{Rows} && $FieldConfig->{Rows} ? $FieldConfig->{Rows} : '7';
-
-    # set the cols number
-    my $ColsNumber
-        = defined $FieldConfig->{Cols} && $FieldConfig->{Cols} ? $FieldConfig->{Cols} : '42';
+    # set as checked if necessary
+    my $FieldChecked = ( defined $Value && $Value eq '1' ? 'checked="checked"' : '' );
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldTextArea';
+    my $FieldClass = 'DynamicFieldCheckbox';
     if ( defined $Param{Class} && $Param{Class} ne '' ) {
         $FieldClass .= ' ' . $Param{Class};
     }
@@ -219,41 +206,46 @@ sub EditFieldRender {
     # set error css class
     $FieldClass .= ' ServerError' if $Param{ServerError};
 
-    # set validation class for maximum characters
-    $FieldClass .= ' Validate_MaxLength';
+    my $FieldNameUsed = $FieldName . "Used";
 
-    # create field HTML
-    # the XHTML definition does not support maxlenght attribute for a textarea field, therefore
-    # is nedded to be set by JS code (otherwise wc3 validator will complaint about it)
-    # notice that some browsers count new lines \n\r as only 1 character in this cases the
-    # validation framework might rise an error while the user is still capable to enter text in the
-    # textarea, otherwise the maxlenght property will prevent to enter more text than the maximum
     my $HTMLString = <<"EOF";
-<textarea class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabel" rows="$RowsNumber" cols="$ColsNumber" >$Value</textarea>
-<!--dtl:js_on_document_complete-->
-<script type="text/javascript">//<![CDATA[
-  \$('#$FieldName').attr('maxlength','$Self->{MaxLength}');
-//]]></script>
-<!--dtl:js_on_document_complete-->
+<input type="hidden" id="$FieldNameUsed" name="$FieldNameUsed" value="1" />
 EOF
 
-    # for client side validation
-    my $DivID = $FieldName . 'Error';
+    if ( $Param{ConfirmationNeeded} ) {
 
-    if ( $Param{Mandatory} ) {
-        $HTMLString .= <<"EOF";
-    <div id="$DivID" class="TooltipErrorMessage">
-        <p>
-            \$Text{"This field is required or The field content is too long! Maximum size is $Self->{MaxLength} characters."}
-        </p>
-    </div>
+        # set checked property
+        my $FieldUsedChecked0 = '';
+        my $FieldUsedChecked1 = '';
+        if ( $FieldValue->{UsedValue} ) {
+            $FieldUsedChecked1 = 'checked="checked"';
+        }
+        else {
+            $FieldUsedChecked0 = 'checked="checked"';
+        }
+
+        my $FieldNameUsed0 = $FieldNameUsed . '0';
+        my $FieldNameUsed1 = $FieldNameUsed . '1';
+        $HTMLString = <<"EOF";
+<input type="radio" id="$FieldNameUsed0" name="$FieldNameUsed" value="" $FieldUsedChecked0 />
+Ignore this field.
+<div class="clear"></div>
+<input type="radio" id="$FieldNameUsed1" name="$FieldNameUsed" value="1" $FieldUsedChecked1 />
 EOF
     }
-    else {
+
+    $HTMLString .= <<"EOF";
+<input type="checkbox" class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabel" $FieldChecked value="1" />
+EOF
+
+    if ( $Param{Mandatory} ) {
+        my $DivID = $FieldName . 'Error';
+
+        # for client side validation
         $HTMLString .= <<"EOF";
     <div id="$DivID" class="TooltipErrorMessage">
         <p>
-            \$Text{"The field content is too long! Maximum size is $Self->{MaxLength} characters."}
+            \$Text{"This field is required."}
         </p>
     </div>
 EOF
@@ -275,7 +267,7 @@ EOF
     }
 
     # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
+    my $LabelString = $Self->EditLabelRender(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         Mandatory          => $Param{Mandatory} || '0',
         FieldName          => $FieldName,
@@ -294,25 +286,50 @@ sub EditFieldValueGet {
 
     my $FieldName = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
 
-    my $Value;
+    my %Data;
 
     # check if there is a Template and retreive the dinalic field value from there
     if ( IsHashRefWithData( $Param{Template} ) ) {
-        $Value = $Param{Template}->{$FieldName};
+
+        # get dynamic field value form Template
+        $Data{FieldValue} = $Param{Template}->{$FieldName};
+
+        # get dynamic field used value form Template
+        $Data{UsedValue} = $Param{Template}->{ $FieldName . 'Used' };
     }
 
     # otherwise get dynamic field value form param
     else {
-        $Value = $Param{ParamObject}->GetParam( Param => $FieldName );
+
+        # get dynamic field value form param
+        $Data{FieldValue} = $Param{ParamObject}->GetParam( Param => $FieldName );
+
+        # get dynamic field used value form param
+        $Data{UsedValue} = $Param{ParamObject}->GetParam( Param => $FieldName . 'Used' );
     }
 
+    # check if return value structure is nedded
+    if ( defined $Param{ReturnValueStructure} && $Param{ReturnValueStructure} eq '1' ) {
+        return \%Data;
+    }
+
+    # check if return template structure is nedded
     if ( defined $Param{ReturnTemplateStructure} && $Param{ReturnTemplateStructure} eq '1' ) {
         return {
-            $FieldName => $Value,
+            $FieldName          => $Data{FieldValue},
+            $FieldName . 'Used' => $Data{UsedValue},
         };
     }
 
-    # for this field the normal return an the ReturnValueStructure are the same
+    # return undef if the hidden value is not present
+    return if !$Data{UsedValue};
+
+    # set the correct return value
+    my $Value = '0';
+    if ( $Data{FieldValue} ) {
+        $Value = $Data{FieldValue};
+    }
+
     return $Value;
 }
 
@@ -320,26 +337,27 @@ sub EditFieldValueValidate {
     my ( $Self, %Param ) = @_;
 
     # get the field value from the http request
-    my $Value = $Self->EditFieldValueGet(
+    my $FieldValue = $Self->EditFieldValueGet(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         ParamObject        => $Param{ParamObject},
 
         # not necessary for this backend but place it for consistency reasons
         ReturnValueStructure => 1,
     );
+    my $Value = $FieldValue->{FieldValue} || '';
 
     my $ServerError;
     my $ErrorMessage;
 
     # perform necessary validations
-    if ( $Param{Mandatory} && $Value eq '' ) {
+    if ( $Param{Mandatory} && !$Value ) {
         $ServerError = 1;
     }
 
-    if ( length $Value > $Self->{MaxLength} ) {
-        $ServerError = 1;
-        $ErrorMessage
-            = "The field content is too long! Maximum size is $Self->{MaxLength} characters.";
+    # validate only 0 or 1 as possible values
+    if ( $Value && $Value ne 1 ) {
+        $ServerError  = 1;
+        $ErrorMessage = 'The field content is invalid';
     }
 
     # create resulting structure
@@ -354,37 +372,27 @@ sub EditFieldValueValidate {
 sub DisplayValueRender {
     my ( $Self, %Param ) = @_;
 
-    # set HTMLOuput as default if not specified
-    if ( !defined $Param{HTMLOutput} ) {
-        $Param{HTMLOutput} = 1;
+    # check for Null value
+    if ( !defined $Param{Value} ) {
+        return {
+            Value => '',
+            Title => '',
+            Link  => '',
+        };
     }
 
-    # get raw Title and Value strings from field value
-    my $Value = defined $Param{Value} ? $Param{Value} : '';
+    # convert value to user frendly string
+    my $Value = 'Checked';
+    if ( $Param{Value} ne 1 ) {
+        $Value = 'Unchecked';
+    }
+
+    # always translate value
+    $Value = $Param{LayoutObject}->{LanguageObject}->Get($Value);
+
+    # in this backend there is no need for HTMLOutput
+    # Title is always equal to Value
     my $Title = $Value;
-
-    # HTMLOuput transformations
-    if ( $Param{HTMLOutput} ) {
-
-        $Value = $Param{LayoutObject}->Ascii2Html(
-            Text           => $Value,
-            HTMLResultMode => 1,
-            Max            => $Param{ValueMaxChars} || '',
-        );
-
-        $Title = $Param{LayoutObject}->Ascii2Html(
-            Text => $Title,
-            Max => $Param{TitleMaxChars} || '',
-        );
-    }
-    else {
-        if ( $Param{ValueMaxChars} && length($Value) > $Param{ValueMaxChars} ) {
-            $Value = substr( $Value, 0, $Param{ValueMaxChars} ) . '...';
-        }
-        if ( $Param{TitleMaxChars} && length($Title) > $Param{TitleMaxChars} ) {
-            $Title = substr( $Title, 0, $Param{TitleMaxChars} ) . '...';
-        }
-    }
 
     # this field type does not support the Link Feature
     my $Link;
@@ -402,7 +410,7 @@ sub DisplayValueRender {
 sub IsSortable {
     my ( $Self, %Param ) = @_;
 
-    return 0;
+    return 1;
 }
 
 sub SearchFieldRender {
@@ -413,8 +421,17 @@ sub SearchFieldRender {
     my $FieldName   = 'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name};
     my $FieldLabel  = $Param{DynamicFieldConfig}->{Label};
 
+    my $Value;
+    my @DefaultValue;
+
+    if ( defined $Param{DefaultValue} ) {
+        my @DefaultValue = split /;/, $Param{DefaultValue};
+    }
+
     # set the field value
-    my $Value = ( defined $Param{DefaultValue} ? $Param{DefaultValue} : '' );
+    if (@DefaultValue) {
+        $Value = \@DefaultValue;
+    }
 
     # get the field value, this fuction is always called after the profile is loaded
     my $FieldValue = $Self->SearchFieldValueGet(%Param);
@@ -424,20 +441,39 @@ sub SearchFieldRender {
         $Value = $FieldValue;
     }
 
-    # check if value is an arrayref (GenericAgent Jobs and NotificationEvents)
-    if ( IsArrayRefWithData($Value) ) {
-        $Value = @{$Value}[0];
+    for my $Item ( @{$Value} ) {
+
+        # value must be 1, '' or -1
+        if ( !defined $Item || !$Item ) {
+            $Item = '';
+        }
+        elsif ( $Item && $Item >= 1 ) {
+            $Item = 1;
+        }
+        else {
+            $Item = -1;
+        }
     }
 
     # check and set class if necessary
-    my $FieldClass = 'DynamicFieldText';
+    my $FieldClass = 'DynamicFieldDropdown';
 
-    my $HTMLString = <<"EOF";
-<input type="text" class="$FieldClass" id="$FieldName" name="$FieldName" title="$FieldLabel" value="$Value" />
-EOF
+    my $HTMLString = $Param{LayoutObject}->BuildSelection(
+        Data => {
+            1  => 'Checked',
+            -1 => 'Unchecked',
+        },
+        Name         => $FieldName,
+        SelectedID   => $Value || '',
+        Translation  => 1,
+        PossibleNone => 1,
+        Class        => $FieldClass,
+        Multiple     => 1,
+        HTMLQuote    => 1,
+    );
 
     # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
+    my $LabelString = $Self->EditLabelRender(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         FieldName          => $FieldName,
     );
@@ -457,9 +493,11 @@ sub SearchFieldValueGet {
 
     # get dynamic field value form param object
     if ( defined $Param{ParamObject} ) {
-        $Value = $Param{ParamObject}->GetParam(
+        my @FieldValues = $Param{ParamObject}->GetArray(
             Param => 'Search_DynamicField_' . $Param{DynamicFieldConfig}->{Name}
         );
+
+        $Value = \@FieldValues;
     }
 
     # otherwise get the value from the profile
@@ -477,7 +515,6 @@ sub SearchFieldValueGet {
     }
 
     return $Value;
-
 }
 
 sub SearchFieldParameterBuild {
@@ -486,21 +523,66 @@ sub SearchFieldParameterBuild {
     # get field value
     my $Value = $Self->SearchFieldValueGet(%Param);
 
-    if ( !$Value ) {
-        return {
-            Parameter => {
-                'Like' => '',
-            },
-            Display => '',
+    my $DisplayValue;
+
+    if ($Value) {
+
+        if ( ref $Value eq "ARRAY" ) {
+            my @DisplayItemList;
+            ITEM:
+            for my $Item ( @{$Value} ) {
+
+                # set the display value
+                my $DisplayItem
+                    = $Item eq 1
+                    ? 'Checked'
+                    : $Item eq -1 ? 'Unchecked'
+                    :               '';
+
+                # translate the value
+                if ( defined $Param{LayoutObject} ) {
+                    $DisplayItem = $Param{LayoutObject}->{LanguageObject}->Get($DisplayItem);
+                }
+
+                push @DisplayItemList, $DisplayItem;
+
+                # set the correct value for "unchecked" (-1) search options
+                if ( $Item && $Item eq -1 ) {
+                    $Item = '0';
+                }
             }
+
+            # combine different values into one string
+            $DisplayValue = join ' + ', @DisplayItemList;
+
+        }
+        else {
+
+            # set the display value
+            $DisplayValue
+                = $Value eq 1
+                ? 'Checked'
+                : $Value eq -1 ? 'Unchecked'
+                :                '';
+
+            # translate the value
+            if ( defined $Param{LayoutObject} ) {
+                $DisplayValue = $Param{LayoutObject}->{LanguageObject}->Get($DisplayValue);
+            }
+        }
+
+        # set the correct value for "unchecked" (-1) search options
+        if ( $Value && $Value eq -1 ) {
+            $Value = '0';
+        }
     }
 
     # return search parameter structure
     return {
         Parameter => {
-            'Like' => '*' . $Value . '*',
+            Equals => $Value,
         },
-        Display => $Value,
+        Display => $DisplayValue,
     };
 }
 
@@ -508,16 +590,38 @@ sub StatsFieldParameterBuild {
     my ( $Self, %Param ) = @_;
 
     return {
-        Name    => $Param{DynamicFieldConfig}->{Label},
-        Element => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
+        Values => {
+            '1'  => 'Checked',
+            '-1' => 'Unchecked',
+        },
+        Name               => $Param{DynamicFieldConfig}->{Label},
+        Element            => 'DynamicField_' . $Param{DynamicFieldConfig}->{Name},
+        TranslatableValues => 1,
     };
 }
 
-sub CommonSearchFieldParameterBuild {
+sub StatsSearchFieldParameterBuild {
     my ( $Self, %Param ) = @_;
 
     my $Operator = 'Equals';
     my $Value    = $Param{Value};
+
+    if ( IsArrayRefWithData($Value) ) {
+        for my $Item ( @{$Value} ) {
+
+            # set the correct value for "unchecked" (-1) search options
+            if ( $Item && $Item eq '-1' ) {
+                $Item = '0';
+            }
+        }
+    }
+    else {
+
+        # set the correct value for "unchecked" (-1) search options
+        if ( $Value && $Value eq '-1' ) {
+            $Value = '0';
+        }
+    }
 
     return {
         $Operator => $Value,
@@ -528,15 +632,9 @@ sub ReadableValueRender {
     my ( $Self, %Param ) = @_;
 
     my $Value = defined $Param{Value} ? $Param{Value} : '';
-    my $Title = $Value;
 
-    # cut strings if needed
-    if ( $Param{ValueMaxChars} && length($Value) > $Param{ValueMaxChars} ) {
-        $Value = substr( $Value, 0, $Param{ValueMaxChars} ) . '...';
-    }
-    if ( $Param{TitleMaxChars} && length($Title) > $Param{TitleMaxChars} ) {
-        $Title = substr( $Title, 0, $Param{TitleMaxChars} ) . '...';
-    }
+    # Title is always equal to Value
+    my $Title = $Value;
 
     # create return structure
     my $Data = {
@@ -554,7 +652,7 @@ sub TemplateValueTypeGet {
 
     # set the field types
     my $EditValueType   = 'SCALAR';
-    my $SearchValueType = 'SCALAR';
+    my $SearchValueType = 'ARRAY';
 
     # return the correct structure
     if ( $Param{FieldType} eq 'Edit' ) {
@@ -584,7 +682,7 @@ sub IsAJAXUpdateable {
 sub RandomValueSet {
     my ( $Self, %Param ) = @_;
 
-    my $Value = int( rand(500) );
+    my $Value = int( rand(2) );
 
     my $Success = $Self->ValueSet(
         %Param,
@@ -624,20 +722,13 @@ sub ObjectMatch {
     return 1;
 }
 
-sub AJAXPossibleValuesGet {
-    my ( $Self, %Param ) = @_;
-
-    # not supported
-    return;
-}
-
 sub HistoricalValuesGet {
     my ( $Self, %Param ) = @_;
 
     # get historical values from database
     my $HistoricalValues = $Self->{DynamicFieldValueObject}->HistoricalValueGet(
         FieldID   => $Param{DynamicFieldConfig}->{ID},
-        ValueType => 'Text',
+        ValueType => 'Integer',
     );
 
     # return the historical values from database
@@ -647,7 +738,18 @@ sub HistoricalValuesGet {
 sub ValueLookup {
     my ( $Self, %Param ) = @_;
 
-    my $Value = defined $Param{Key} ? $Param{Key} : '';
+    return if !defined $Param{Key};
+
+    return '' if $Param{Key} eq '';
+
+    my $Value = defined $Param{Key} && $Param{Key} eq '1' ? 'Checked' : 'Unchecked';
+
+    # check if translation is possible
+    if ( defined $Param{LanguageObject} ) {
+
+        # translate value
+        $Value = $Param{LanguageObject}->Get($Value);
+    }
 
     return $Value;
 }

@@ -77,10 +77,10 @@
                     Core.Form.Validate.Init();
 
                     // Register event for tree selection dialog
-                    $('.ShowTreeSelection').bind('click', function (Event) {
-                        Core.UI.TreeSelection.ShowTreeSelection($(this));
-                        return false;
-                    });
+                    Core.UI.TreeSelection.InitTreeSelection();
+
+                    // Initially display dynamic fields with TreeMode = 1 correctly
+                    Core.UI.TreeSelection.InitDynamicFieldTreeViewRestore();
 
                     $('#AJAXLoader').addClass('Hidden');
                     $('#AJAXDialog').val('1');
@@ -101,4 +101,9 @@
         return false;
     });
 //]]></script>
+<!-- dtl:block:PreSelectProcess -->
+<script type="text/javascript">//<![CDATA[
+$('#ProcessEntityID').val('$QData{"ProcessID"}').trigger('change');
+//]]></script>
+<!-- dtl:block:PreSelectProcess -->
 <!-- dtl:js_on_document_complete -->

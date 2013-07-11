@@ -36,6 +36,9 @@ sub LoadPreferences {
     $Self->{'DB::CaseSensitive'}        = 1;
     $Self->{'DB::LikeEscapeString'}     = q{ESCAPE '\\'};
 
+    # how to determine server version
+    $Self->{'DB::Version'} = 'SELECT * FROM V$VERSION WHERE BANNER LIKE \'Oracle%\'';
+
     # dbi attributes
     $Self->{'DB::Attribute'} = {
         LongTruncOk => 1,
@@ -49,9 +52,10 @@ sub LoadPreferences {
     $Self->{'DB::Encode'} = 0;
 
     # shell setting
-    $Self->{'DB::Comment'}      = '-- ';
-    $Self->{'DB::ShellCommit'}  = ';';
-    $Self->{'DB::ShellConnect'} = 'SET DEFINE OFF';
+    $Self->{'DB::Comment'}     = '-- ';
+    $Self->{'DB::ShellCommit'} = ';';
+    $Self->{'DB::ShellConnect'}
+        = "SET DEFINE OFF;\nSET SQLBLANKLINES ON";    # must be on separate lines!
 
     # init sql setting on db connect
     #$Self->{'DB::Connect'} = '';
@@ -795,9 +799,6 @@ sub Insert {
             }
         }
         else {
-            if ( $Self->{ConfigObject}->Get('Database::ShellOutput') ) {
-                $Tmp =~ s/\n/\r/g;
-            }
             $Value .= $Tmp;
         }
     }

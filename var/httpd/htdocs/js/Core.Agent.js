@@ -30,6 +30,9 @@ Core.Agent = (function (TargetNS) {
     if (!Core.Debug.CheckDependency('Core.Agent', 'Core.UI.Accessibility', 'Core.UI.Accessibility')) {
         return;
     }
+    if (!Core.Debug.CheckDependency('Core.Agent', 'Core.UI.TreeSelection', 'Core.UI.TreeSelection')) {
+        return;
+    }
     if (!Core.Debug.CheckDependency('Core.Agent', 'Core.AJAX', 'Core.AJAX')) {
         return;
     }
@@ -156,11 +159,12 @@ Core.Agent = (function (TargetNS) {
         InitNavigation();
         Core.Exception.Init();
         Core.UI.Table.InitCSSPseudoClasses();
-        Core.UI.Table.InitFixedHeader();
         Core.UI.InitWidgetActionToggle();
         Core.UI.InitMessageBoxClose();
         Core.Form.Validate.Init();
         Core.UI.Popup.Init();
+        Core.UI.TreeSelection.InitTreeSelection();
+        Core.UI.TreeSelection.InitDynamicFieldTreeViewRestore();
         // late execution of accessibility code
         Core.UI.Accessibility.Init();
     };

@@ -108,6 +108,7 @@ sub GetObjectAttributes {
             Element          => 'QueueIDs',
             Block            => 'MultiSelectField',
             Translation      => 0,
+            TreeView         => 1,
             Values           => \%QueueList,
         },
         {
@@ -145,6 +146,7 @@ sub GetObjectAttributes {
             Element          => 'CreatedQueueIDs',
             Block            => 'MultiSelectField',
             Translation      => 0,
+            TreeView         => 1,
             Values           => \%QueueList,
         },
         {
@@ -337,6 +339,7 @@ sub GetObjectAttributes {
                 Element          => 'ServiceIDs',
                 Block            => 'MultiSelectField',
                 Translation      => 0,
+                TreeView         => 1,
                 Values           => \%Service,
             },
             {
@@ -482,8 +485,13 @@ sub GetObjectAttributes {
 
         my $PossibleValuesFilter;
 
+        # get PossibleValues
+        my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+            DynamicFieldConfig => $DynamicFieldConfig,
+        );
+
         # convert possible values key => value to key => key for ACLs usign a Hash slice
-        my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} || {} };
+        my %AclData = %{ $PossibleValues || {} };
         @AclData{ keys %AclData } = keys %AclData;
 
         # set possible values filter from ACLs
@@ -500,7 +508,7 @@ sub GetObjectAttributes {
 
             # convert Filer key => key back to key => value using map
             %{$PossibleValuesFilter}
-                = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} } keys %Filter;
+                = map { $_ => $PossibleValues->{$_} } keys %Filter;
         }
 
         # get field html
@@ -521,6 +529,8 @@ sub GetObjectAttributes {
                     Block            => 'MultiSelectField',
                     Values           => $DynamicFieldStatsParameter->{Values},
                     Translation      => 0,
+                    IsDynamicField   => 1,
+                    ShowAsTree       => $DynamicFieldConfig->{Config}->{TreeView} || 0,
                 );
                 push @ObjectAttributes, \%ObjectAttribute;
             }
@@ -567,7 +577,7 @@ sub GetStatElement {
 
                 # get new search parameter
                 my $DynamicFieldStatsSearchParameter
-                    = $Self->{BackendObject}->CommonSearchFieldParameterBuild(
+                    = $Self->{BackendObject}->StatsSearchFieldParameterBuild(
                     DynamicFieldConfig => $DynamicFieldConfig,
                     Value              => $Param{$ParameterName},
                     );

@@ -184,9 +184,12 @@ sub Run {
         }
 
         # get group data
-        my %UserData = $Self->{CustomerUserObject}->CustomerUserList( Valid => 1 );
+        my %UserData
+            = $Self->{CustomerUserObject}->CustomerSearch( Search => $Param{CustomerUserSearch}, );
+
         my %NewPermission;
         for my $UserID ( sort keys %UserData ) {
+
             for my $Permission ( sort keys %Permissions ) {
                 $NewPermission{$Permission} = 0;
                 my @Array = @{ $Permissions{$Permission} };

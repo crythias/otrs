@@ -163,7 +163,7 @@ sub Run {
         # build URL to customer interface
         my $URL = $Self->{ConfigObject}->Get('HttpType')
             . '://'
-            . $ENV{HTTP_HOST}
+            . $Self->{ConfigObject}->Get('FQDN')
             . '/'
             . $Self->{ConfigObject}->Get('ScriptAlias')
             . 'customer.pl';
@@ -682,6 +682,10 @@ sub _Overview {
             for my $ListKey ( sort { lc($a) cmp lc($b) } keys %List ) {
 
                 my %UserData = $Self->{CustomerUserObject}->CustomerUserDataGet( User => $ListKey );
+                $UserData{UserFullname} = $Self->{CustomerUserObject}->CustomerName(
+                    UserLogin => $UserData{UserLogin},
+                );
+
                 $Self->{LayoutObject}->Block(
                     Name => 'OverviewResultRow',
                     Data => {

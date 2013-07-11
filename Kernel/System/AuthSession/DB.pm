@@ -12,7 +12,6 @@ package Kernel::System::AuthSession::DB;
 use strict;
 use warnings;
 
-use Digest::MD5;
 use Storable;
 
 sub new {
@@ -23,7 +22,7 @@ sub new {
     bless( $Self, $Type );
 
     # check needed objects
-    for (qw(LogObject ConfigObject DBObject TimeObject EncodeObject)) {
+    for (qw(LogObject MainObject ConfigObject DBObject TimeObject EncodeObject)) {
         $Self->{$_} = $Param{$_} || die "No $_!";
     }
 
@@ -272,16 +271,14 @@ sub CreateSessionID {
     my $RemoteUserAgent = $ENV{HTTP_USER_AGENT} || 'none';
 
     # create session id
-    my $MD5 = Digest::MD5->new();
-    $MD5->add(
-        ( $TimeNow . int( rand 999999999 ) . $Self->{SystemID} ) . $RemoteAddr . $RemoteUserAgent
+    my $SessionID = $Self->{MainObject}->GenerateRandomString(
+        Length => 32,
     );
-    my $SessionID = $Self->{SystemID} . $MD5->hexdigest();
 
     # create challenge token
-    $MD5 = Digest::MD5->new();
-    $MD5->add( $TimeNow . $SessionID );
-    my $ChallengeToken = $MD5->hexdigest();
+    my $ChallengeToken = $Self->{MainObject}->GenerateRandomString(
+        Length => 32,
+    );
 
     my %Data;
     KEY:
@@ -473,7 +470,7 @@ sub CleanUp {
 
     # use 'truncate table' if possible in order to reset the auto increment value
     if (
-        $Self->{DBType}    eq 'mysql'
+        $Self->{DBType} eq 'mysql'
         || $Self->{DBType} eq 'postgresql'
         || $Self->{DBType} eq 'oracle'
         || $Self->{DBType} eq 'mssql'
@@ -591,7 +588,7 @@ sub _SQLCreate {
             my $Serialized = 0;
 
             if (
-                ref $Value    eq 'HASH'
+                ref $Value eq 'HASH'
                 || ref $Value eq 'ARRAY'
                 || ref $Value eq 'SCALAR'
                 )
@@ -641,7 +638,7 @@ sub _SQLCreate {
 
             if (
                 !defined $Value
-                || $Value     eq ''
+                || $Value eq ''
                 || ref $Value eq 'HASH'
                 || ref $Value eq 'ARRAY'
                 || ref $Value eq 'SCALAR'
@@ -721,7 +718,7 @@ sub _SQLCreate {
             my $Serialized = 0;
 
             if (
-                ref $Value    eq 'HASH'
+                ref $Value eq 'HASH'
                 || ref $Value eq 'ARRAY'
                 || ref $Value eq 'SCALAR'
                 )

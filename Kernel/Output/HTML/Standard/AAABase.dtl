@@ -23,8 +23,11 @@ $Text{"Done"}
 $Text{"Cancel"}
 $Text{"Reset"}
 
-$Text{"last"}
-$Text{"before"}
+$Text{"more than ... ago"}
+$Text{"within the last ..."}
+$Text{"within the next ..."}
+$Text{"Created within the last"}
+$Text{"Created more than ... ago"}
 $Text{"Today"}
 $Text{"Tomorrow"}
 $Text{"Next week"}
@@ -54,6 +57,7 @@ $Text{"second(s)"}
 $Text{"seconds"}
 $Text{"second"}
 $Text{"s"}
+$Text{"Time unit"}
 
 $Text{"wrote"}
 $Text{"Message"}
@@ -274,6 +278,7 @@ $Text{"Type updated!"}
 $Text{"Customer updated!"}
 $Text{"Customer company added!"}
 $Text{"Customer company updated!"}
+$Text{"Note: Company is invalid!"}
 $Text{"Mail account added!"}
 $Text{"Mail account updated!"}
 $Text{"System e-mail address added!"}
@@ -350,6 +355,8 @@ $Text{"7 Day Stats"}
 $Text{"Process Management information from database is not in sync with the system configuration, please synchronize all processes."}
 $Text{"Package not verified by the OTRS Group! It is recommended not to use this package."}
 $Text{"<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>"}
+$Text{"Mark article as important"}
+$Text{"Remove important mark"}
 
 # richtext editor
 $Text{"Bold"}

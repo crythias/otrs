@@ -1,5 +1,5 @@
 # --
-# Kernel/System/DynamicField/Backend/Date.pm - Delegate for DynamicField Date backend
+# Kernel/System/DynamicField/Driver/Date.pm - Delegate for DynamicField Date Driver
 # Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,7 +7,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::DynamicField::Backend::Date;
+package Kernel::System::DynamicField::Driver::Date;
 
 use strict;
 use warnings;
@@ -15,15 +15,16 @@ use warnings;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::DynamicFieldValue;
 use Kernel::System::Time;
-use Kernel::System::DynamicField::Backend::BackendCommon;
+
+use base qw(Kernel::System::DynamicField::Driver::DriverBaseDate);
 
 =head1 NAME
 
-Kernel::System::DynamicField::Backend::Date
+Kernel::System::DynamicField::Driver::Date
 
 =head1 SYNOPSIS
 
-DynamicFields Date backend delegate
+DynamicFields Date Driver delegate
 
 =head1 PUBLIC INTERFACE
 
@@ -56,25 +57,8 @@ sub new {
     # create additional objects
     $Self->{DynamicFieldValueObject} = Kernel::System::DynamicFieldValue->new( %{$Self} );
     $Self->{TimeObject}              = Kernel::System::Time->new( %{$Self} );
-    $Self->{BackendCommonObject}
-        = Kernel::System::DynamicField::Backend::BackendCommon->new( %{$Self} );
 
     return $Self;
-}
-
-sub ValueGet {
-    my ( $Self, %Param ) = @_;
-
-    my $DFValue = $Self->{DynamicFieldValueObject}->ValueGet(
-        FieldID  => $Param{DynamicFieldConfig}->{ID},
-        ObjectID => $Param{ObjectID},
-    );
-
-    return if !$DFValue;
-    return if !IsArrayRefWithData($DFValue);
-    return if !IsHashRefWithData( $DFValue->[0] );
-
-    return $DFValue->[0]->{ValueDateTime};
 }
 
 sub ValueSet {
@@ -99,29 +83,6 @@ sub ValueSet {
             },
         ],
         UserID => $Param{UserID},
-    );
-
-    return $Success;
-}
-
-sub ValueDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->ValueDelete(
-        FieldID  => $Param{DynamicFieldConfig}->{ID},
-        ObjectID => $Param{ObjectID},
-        UserID   => $Param{UserID},
-    );
-
-    return $Success;
-}
-
-sub AllValuesDelete {
-    my ( $Self, %Param ) = @_;
-
-    my $Success = $Self->{DynamicFieldValueObject}->AllValuesDelete(
-        FieldID => $Param{DynamicFieldConfig}->{ID},
-        UserID  => $Param{UserID},
     );
 
     return $Success;
@@ -180,12 +141,6 @@ sub SearchSQLGet {
     );
 
     return;
-}
-
-sub SearchSQLOrderFieldGet {
-    my ( $Self, %Param ) = @_;
-
-    return "$Param{TableAlias}.value_date";
 }
 
 sub EditFieldRender {
@@ -308,8 +263,8 @@ EOF
 EOF
     }
 
-    # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
+    # call EditLabelRender on the common Driver
+    my $LabelString = $Self->EditLabelRender(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         Mandatory          => $Param{Mandatory} || '0',
         FieldName          => $FieldName . 'Used',
@@ -412,45 +367,6 @@ sub EditFieldValueGet {
     return $ManualTimeStamp;
 }
 
-sub EditFieldValueValidate {
-    my ( $Self, %Param ) = @_;
-
-    # get the field value from the http request
-    my $Value = $Self->EditFieldValueGet(
-        DynamicFieldConfig   => $Param{DynamicFieldConfig},
-        ParamObject          => $Param{ParamObject},
-        ReturnValueStructure => 1,
-    );
-
-    # on normal basis Used field could be empty but if there was no value from EditFieldValueGet()
-    # it must be an error
-    if ( !defined $Value ) {
-        return {
-            ServerError  => 1,
-            ErrorMessage => 'Invalid Date!'
-            }
-    }
-
-    my $ServerError;
-    my $ErrorMessage;
-
-    # set the date time prefix as field name
-    my $Prefix = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
-
-    # perform necessary validations
-    if ( $Param{Mandatory} && !$Value->{ $Prefix . 'Used' } ) {
-        $ServerError = 1;
-    }
-
-    # create resulting structure
-    my $Result = {
-        ServerError  => $ServerError,
-        ErrorMessage => $ErrorMessage,
-    };
-
-    return $Result;
-}
-
 sub DisplayValueRender {
     my ( $Self, %Param ) = @_;
 
@@ -464,7 +380,7 @@ sub DisplayValueRender {
         );
     }
 
-    # in this backend there is no need for HTMLOutput
+    # in this Driver there is no need for HTMLOutput
     # Title is always equal to Value
     my $Title = $Value;
 
@@ -480,10 +396,23 @@ sub DisplayValueRender {
     return $Data;
 }
 
-sub IsSortable {
+sub ReadableValueRender {
     my ( $Self, %Param ) = @_;
 
-    return 1;
+    my $Value = defined $Param{Value} ? $Param{Value} : '';
+
+    # only keep date part, loose time part of timestamp
+    $Value =~ s{ \A (\d{4} - \d{2} - \d{2}) }{$1}xms;
+
+    # Title is always equal to Value
+    my $Title = $Value;
+
+    my $Data = {
+        Value => $Value,
+        Title => $Title,
+    };
+
+    return $Data;
 }
 
 sub SearchFieldRender {
@@ -579,8 +508,8 @@ EOF
         $AdditionalText = 'between';
     }
 
-    # call EditLabelRender on the common backend
-    my $LabelString = $Self->{BackendCommonObject}->EditLabelRender(
+    # call EditLabelRender on the common Driver
+    my $LabelString = $Self->EditLabelRender(
         DynamicFieldConfig => $Param{DynamicFieldConfig},
         FieldName          => $FieldName,
         AdditionalText     => $AdditionalText,
@@ -751,70 +680,6 @@ sub SearchFieldParameterBuild {
     return;
 }
 
-sub StatsFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    # this field should not be shown in stats
-    return;
-}
-
-sub CommonSearchFieldParameterBuild {
-    my ( $Self, %Param ) = @_;
-
-    # this field should not be shown in stats
-    return;
-}
-
-sub ReadableValueRender {
-    my ( $Self, %Param ) = @_;
-
-    my $Value = defined $Param{Value} ? $Param{Value} : '';
-
-    # Title is always equal to Value
-    my $Title = $Value;
-
-    my $Data = {
-        Value => $Value,
-        Title => $Title,
-    };
-
-    return $Data;
-}
-
-sub TemplateValueTypeGet {
-    my ( $Self, %Param ) = @_;
-
-    my $FieldName = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
-
-    # set the field types
-    my $EditValueType   = 'SCALAR';
-    my $SearchValueType = 'SCALAR';
-
-    # return the correct structure
-    if ( $Param{FieldType} eq 'Edit' ) {
-        return {
-            $FieldName => $EditValueType,
-            }
-    }
-    elsif ( $Param{FieldType} eq 'Search' ) {
-        return {
-            'Search_' . $FieldName => $SearchValueType,
-            }
-    }
-    else {
-        return {
-            $FieldName             => $EditValueType,
-            'Search_' . $FieldName => $SearchValueType,
-            }
-    }
-}
-
-sub IsAJAXUpdateable {
-    my ( $Self, %Param ) = @_;
-
-    return 0;
-}
-
 sub RandomValueSet {
     my ( $Self, %Param ) = @_;
 
@@ -838,49 +703,6 @@ sub RandomValueSet {
         Success => 1,
         Value   => $Value,
     };
-}
-
-sub IsMatchable {
-    my ( $Self, %Param ) = @_;
-
-    return 0;
-}
-
-sub ObjectMatch {
-    my ( $Self, %Param ) = @_;
-
-    my $FieldName = 'DynamicField_' . $Param{DynamicFieldConfig}->{Name};
-
-    # not supported
-    return 0;
-}
-
-sub AJAXPossibleValuesGet {
-    my ( $Self, %Param ) = @_;
-
-    # not supported
-    return;
-}
-
-sub HistoricalValuesGet {
-    my ( $Self, %Param ) = @_;
-
-    # get historical values from database
-    my $HistoricalValues = $Self->{DynamicFieldValueObject}->HistoricalValueGet(
-        FieldID   => $Param{DynamicFieldConfig}->{ID},
-        ValueType => 'DateTime',
-    );
-
-    # return the historical values from database
-    return $HistoricalValues;
-}
-
-sub ValueLookup {
-    my ( $Self, %Param ) = @_;
-
-    my $Value = defined $Param{Key} ? $Param{Key} : '';
-
-    return $Value;
 }
 
 1;

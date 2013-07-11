@@ -93,13 +93,14 @@ sub ActionRow {
     if (
         $Param{Config}->{OverviewMenuModules}
         && ref $Self->{ConfigObject}->Get('Ticket::Frontend::OverviewMenuModule') eq 'HASH'
-    ) {
+        )
+    {
 
         my %Menus = %{ $Self->{ConfigObject}->Get('Ticket::Frontend::OverviewMenuModule') };
         MENUMODULE:
         for my $Menu ( sort keys %Menus ) {
 
-            next MENUMODULE if !IsHashRefWithData($Menus{$Menu});
+            next MENUMODULE if !IsHashRefWithData( $Menus{$Menu} );
             next MENUMODULE if ( $Menus{$Menu}->{View} && $Menus{$Menu}->{View} ne $Param{View} );
 
             # load module
@@ -142,9 +143,9 @@ sub ActionRow {
                 $Self->{LayoutObject}->Block(
                     Name => $Item->{Block},
                     Data => {
-                        ID          => $Item->{ID},
-                        Name        => $Self->{LayoutObject}->{LanguageObject}->Get( $Item->{Name} ),
-                        Link        => $Self->{LayoutObject}->{Baselink} . $Item->{Link},
+                        ID   => $Item->{ID},
+                        Name => $Self->{LayoutObject}->{LanguageObject}->Get( $Item->{Name} ),
+                        Link => $Self->{LayoutObject}->{Baselink} . $Item->{Link},
                         Description => $Item->{Description},
                         Block       => $Item->{Block},
                         Class       => $Class,
@@ -313,18 +314,24 @@ sub _Show {
         Type     => 'move_into',
     );
 
-    # get last article
+    # get last customer article
     my %Article = $Self->{TicketObject}->ArticleLastCustomerArticle(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
 
+    # get ticket data
+    my %Ticket = $Self->{TicketObject}->TicketGet(
+        TicketID      => $Param{TicketID},
+        DynamicFields => 0,
+    );
+
+    # show ticket create time in current view
+    $Article{Created} = $Ticket{Created};
+
     # Fallback for tickets without articles: get at least basic ticket data
     if ( !%Article ) {
-        %Article = $Self->{TicketObject}->TicketGet(
-            TicketID      => $Param{TicketID},
-            DynamicFields => 0,
-        );
+        %Article = %Ticket;
         if ( !$Article{Title} ) {
             $Article{Title} = $Self->{LayoutObject}->{LanguageObject}->Get(
                 'This ticket has no title or subject'

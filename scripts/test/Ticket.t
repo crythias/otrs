@@ -511,6 +511,34 @@ $Self->True(
     'TicketSearch() (HASH:Body,StateType:Open)',
 );
 
+$TicketObject->MoveTicket(
+    Queue              => 'Junk',
+    TicketID           => $TicketID,
+    SendNoNotification => 1,
+    UserID             => 1,
+);
+
+$TicketObject->MoveTicket(
+    Queue              => 'Raw',
+    TicketID           => $TicketID,
+    SendNoNotification => 1,
+    UserID             => 1,
+);
+
+my %HD = $TicketObject->HistoryTicketGet(
+    StopYear  => 4000,
+    StopMonth => 1,
+    StopDay   => 1,
+    TicketID  => $TicketID,
+    Force     => 1,
+);
+my $QueueLookupID = $QueueObject->QueueLookup( Queue => $HD{Queue} );
+$Self->Is(
+    $QueueLookupID,
+    $HD{QueueID},
+    'HistoryTicketGet() Check history queue',
+);
+
 my $TicketMove = $TicketObject->MoveTicket(
     Queue              => 'Junk',
     TicketID           => $TicketID,
@@ -1789,6 +1817,30 @@ $Self->Is(
     "TicketPendingTimeSet() - Pending Time - not set",
 );
 
+my $Diff               = 60;
+my $CurrentSystemTime  = $Self->{TimeObject}->SystemTime();
+my $PendingTimeSetDiff = $TicketObject->TicketPendingTimeSet(
+    Diff     => $Diff,
+    TicketID => $TicketID,
+    UserID   => 1,
+);
+
+$Self->True(
+    $PendingTimeSetDiff,
+    "TicketPendingTimeSet() - Pending Time - set diff",
+);
+
+%TicketPending = $TicketObject->TicketGet(
+    TicketID => $TicketID,
+    UserID   => 1,
+);
+
+$Self->Is(
+    $TicketPending{RealTillTimeNotUsed},
+    $CurrentSystemTime + $Diff * 60,
+    "TicketPendingTimeSet() - diff time check",
+);
+
 my $PendingTimeSet = $TicketObject->TicketPendingTimeSet(
     TicketID => $TicketID,
     UserID   => 1,
@@ -1993,6 +2045,25 @@ for my $NewStateID (@NewStates) {
         ValidID => 1,
         UserID  => 1,
     );
+}
+
+# check response of ticket search for invalid timestamps
+for my $SearchParam (qw(ArticleCreateTime TicketCreateTime TicketPendingTime)) {
+    for my $ParamOption (qw(OlderDate NewerDate)) {
+        $TicketObject->TicketSearch(
+            $SearchParam . $ParamOption => '2000-02-31 00:00:00',
+            UserID                      => 1,
+        );
+        my $ErrorMessage = $Self->{LogObject}->GetLogEntry(
+            Type => 'error',
+            What => 'Message',
+        );
+        $Self->Is(
+            $ErrorMessage,
+            "Search not executed due to invalid time '2000-02-31 00:00:00'!",
+            "TicketSearch() (Handling invalid timestamp in '$SearchParam$ParamOption')",
+        );
+    }
 }
 
 1;

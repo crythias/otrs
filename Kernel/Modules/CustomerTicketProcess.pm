@@ -342,7 +342,7 @@ sub _RenderAjax {
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
-            my $PossibleValues = $Self->{BackendObject}->AJAXPossibleValuesGet(
+            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
             my %DynamicFieldCheckParam = map { $_ => $Param{GetParam}{$_} }
@@ -369,12 +369,19 @@ sub _RenderAjax {
                 %{$PossibleValues} = map { $_ => $PossibleValues->{$_} } keys %Filter;
             }
 
+            my $DataValues = $Self->{BackendObject}->BuildSelectionDataGet(
+                DynamicFieldConfig => $DynamicFieldConfig,
+                PossibleValues     => $PossibleValues,
+                Value
+                    => $Param{GetParam}{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
+            ) || $PossibleValues;
+
             # add dynamic field to the JSONCollector
             push(
                 @JSONCollector,
                 {
                     Name       => 'DynamicField_' . $DynamicFieldConfig->{Name},
-                    Data       => $PossibleValues,
+                    Data       => $DataValues,
                     SelectedID => $Param{GetParam}{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
                     Translation => $DynamicFieldConfig->{Config}->{TranslatableValues} || 0,
                     Max         => 100,
@@ -1012,16 +1019,21 @@ sub _RenderDynamicField {
 
     my $PossibleValuesFilter;
 
+    # get PossibleValues
+    my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+        DynamicFieldConfig => $DynamicFieldConfig,
+    );
+
     # All Ticket DynamicFields
     # used for ACL checking
     my %DynamicFieldCheckParam = map { $_ => $Param{GetParam}{$_} }
         grep {m{^DynamicField_}xms} ( keys %{ $Param{GetParam} } );
 
     # check if field has PossibleValues property in its configuration
-    if ( IsHashRefWithData( $DynamicFieldConfig->{Config}->{PossibleValues} ) ) {
+    if ( IsHashRefWithData($PossibleValues) ) {
 
         # convert possible values key => value to key => key for ACLs usign a Hash slice
-        my %AclData = %{ $DynamicFieldConfig->{Config}->{PossibleValues} };
+        my %AclData = %{$PossibleValues};
         @AclData{ keys %AclData } = keys %AclData;
 
         # set possible values filter from ACLs
@@ -1039,7 +1051,7 @@ sub _RenderDynamicField {
 
             # convert Filer key => key back to key => value using map
             %{$PossibleValuesFilter}
-                = map { $_ => $DynamicFieldConfig->{Config}->{PossibleValues}->{$_} } keys %Filter;
+                = map { $_ => $PossibleValues->{$_} } keys %Filter;
         }
     }
 
@@ -1224,8 +1236,13 @@ sub _StoreActivityDialog {
     my $IsUpload = 0;
 
     # attachment delete
+    my @AttachmentIDs = map {
+        my ($ID) = $_ =~ m{ \A AttachmentDelete (\d+) \z }xms;
+        $ID ? $ID : ();
+    } $Self->{ParamObject}->GetParamNames();
+
     COUNT:
-    for my $Count ( 1 .. 32 ) {
+    for my $Count ( reverse sort @AttachmentIDs ) {
         my $Delete = $Self->{ParamObject}->GetParam( Param => "AttachmentDelete$Count" );
         next COUNT if !$Delete;
         %Error = ();
