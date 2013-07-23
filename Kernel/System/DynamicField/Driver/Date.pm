@@ -16,7 +16,7 @@ use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::DynamicFieldValue;
 use Kernel::System::Time;
 
-use base qw(Kernel::System::DynamicField::Driver::DriverBaseDate);
+use base qw(Kernel::System::DynamicField::Driver::BaseDateTime);
 
 =head1 NAME
 
@@ -57,6 +57,15 @@ sub new {
     # create additional objects
     $Self->{DynamicFieldValueObject} = Kernel::System::DynamicFieldValue->new( %{$Self} );
     $Self->{TimeObject}              = Kernel::System::Time->new( %{$Self} );
+
+    # set field behaviors
+    $Self->{Behaviors} = {
+        'IsACLReducible'               => 0,
+        'IsNotificationEventCondition' => 0,
+        'IsSortable'                   => 1,
+        'IsStatsCondition'             => 0,
+        'IsCustomerInterfaceCapable'   => 1,
+    };
 
     return $Self;
 }
@@ -402,7 +411,7 @@ sub ReadableValueRender {
     my $Value = defined $Param{Value} ? $Param{Value} : '';
 
     # only keep date part, loose time part of timestamp
-    $Value =~ s{ \A (\d{4} - \d{2} - \d{2}) }{$1}xms;
+    $Value =~ s{ \A (\d{4} - \d{2} - \d{2}) .+?\z }{$1}xms;
 
     # Title is always equal to Value
     my $Title = $Value;

@@ -123,20 +123,17 @@ sub new {
         QueueObject          => $Self->{QueueObject},
         StateObject          => $Self->{StateObject},
         PriorityObject       => $Self->{PriorityObject},
-        LoopProtectionObject => $Self->{LoopProtectionObject},
     );
     $Self->{FollowUp} = Kernel::System::PostMaster::FollowUp->new(
         %Param,
         Debug                => $Self->{Debug},
         TicketObject         => $Self->{TicketObject},
-        LoopProtectionObject => $Self->{LoopProtectionObject},
         ParserObject         => $Self->{ParserObject},
     );
     $Self->{Reject} = Kernel::System::PostMaster::Reject->new(
         %Param,
         Debug                => $Self->{Debug},
         TicketObject         => $Self->{TicketObject},
-        LoopProtectionObject => $Self->{LoopProtectionObject},
         ParserObject         => $Self->{ParserObject},
     );
 
@@ -251,7 +248,7 @@ sub Run {
     # should I ignore the incoming mail?
     if ( $GetParam->{'X-OTRS-Ignore'} && $GetParam->{'X-OTRS-Ignore'} =~ /(yes|true)/i ) {
         $Self->{LogObject}->Log(
-            Priority => 'notice',
+            Priority => 'info',
             Message =>
                 "Ignored Email (From: $GetParam->{'From'}, Message-ID: $GetParam->{'Message-ID'}) "
                 . "because the X-OTRS-Ignore is set (X-OTRS-Ignore: $GetParam->{'X-OTRS-Ignore'})."
@@ -292,7 +289,7 @@ sub Run {
         # create a new ticket
         if ( $FollowUpPossible =~ /new ticket/i && $State{TypeName} =~ /^close/i ) {
             $Self->{LogObject}->Log(
-                Priority => 'notice',
+                Priority => 'info',
                 Message  => "Follow up for [$Tn] but follow up not possible ($Ticket{State})."
                     . " Create new ticket."
             );
@@ -335,7 +332,7 @@ sub Run {
         # reject follow up
         elsif ( $FollowUpPossible =~ /reject/i && $State{TypeName} =~ /^close/i ) {
             $Self->{LogObject}->Log(
-                Priority => 'notice',
+                Priority => 'info',
                 Message  => "Follow up for [$Tn] but follow up not possible. Follow up rejected."
             );
 
