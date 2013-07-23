@@ -15,7 +15,7 @@ use warnings;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::DynamicFieldValue;
 
-use base qw(Kernel::System::DynamicField::Driver::DriverBaseSelect);
+use base qw(Kernel::System::DynamicField::Driver::BaseSelect);
 
 =head1 NAME
 
@@ -55,6 +55,15 @@ sub new {
 
     # create additional objects
     $Self->{DynamicFieldValueObject} = Kernel::System::DynamicFieldValue->new( %{$Self} );
+
+    # set field behaviors
+    $Self->{Behaviors} = {
+        'IsACLReducible'               => 1,
+        'IsNotificationEventCondition' => 1,
+        'IsSortable'                   => 0,
+        'IsStatsCondition'             => 1,
+        'IsCustomerInterfaceCapable'   => 1,
+    };
 
     return $Self;
 }
@@ -508,12 +517,6 @@ sub DisplayValueRender {
     };
 
     return $Data;
-}
-
-sub IsSortable {
-    my ( $Self, %Param ) = @_;
-
-    return 0;
 }
 
 sub SearchFieldParameterBuild {
