@@ -1,7 +1,17 @@
 #3.2.10 2013-??-??
+ - 2013-07-22 Fixed bug#[9541](http://bugs.otrs.org/show_bug.cgi?id=9541) - Package manager cannot use https proxy.
+ - 2013-07-22 Fixed bug pull#[83](https://github.com/OTRS/otrs/pull/83) - Pagination next page link, thanks to Renée Bäcker.
+ - 2013-07-18 Fixed bug#[9613](http://bugs.otrs.org/show_bug.cgi?id=9613) - CustomerTicketZoom shows JSLint error if no dynamic fields are configured
+ - 2013-07-17 Updated Turkish translation, thanks to Sefer Şimşek @ Network Group!
+ - 2013-07-17 Fixed bug#[9594](http://bugs.otrs.org/show_bug.cgi?id=9594) - No auro-reply sent with multiple From addresses in
+    AgentTicketPhone on PostgreSQL and Oracle.
+ - 2013-07-12 Fixed bug#[3434](http://bugs.otrs.org/show_bug.cgi?id=3434) - Validity of search time frame not checked by OTRS.
+ - 2013-07-12 Fixed bug#[5475](http://bugs.otrs.org/show_bug.cgi?id=5475) - Incorrectly limited ticket list queries in queue view.
+ - 2013-07-12 Fixed bug#[8667](http://bugs.otrs.org/show_bug.cgi?id=8667) - No error Message when tryiing to Merge Ticket with itself.
+ - 2013-07-12 Fixed bug#[6985](http://bugs.otrs.org/show_bug.cgi?id=6985) - SMTPTLS backend requires username and password.
+ - 2013-07-12 Fixed bug#[3434](http://bugs.otrs.org/show_bug.cgi?id=3434) - Validity of search time frame not checked by OTRS.
  - 2013-07-10 Fixed bug#[9598](http://bugs.otrs.org/show_bug.cgi?id=9598) - Typo in vacation message for German locale.
  - 2013-07-10 Fixed bug#[9595](http://bugs.otrs.org/show_bug.cgi?id=9595) - Incomplete page reload handling in merge and bounce.
- - 2013-07-10 Fixed bug#[9537](http://bugs.otrs.org/show_bug.cgi?id=9537) - DB.pm 'QueryCondition' removes backslashes (from CustomerUserID/CustomerUserLogin).
  - 2013-07-10 Fixed bug#[5307](http://bugs.otrs.org/show_bug.cgi?id=5307) - Tickets can be raised against an invalid Customer Company.
  - 2013-07-10 Fixed bug#[9596](http://bugs.otrs.org/show_bug.cgi?id=9596) - On merge and bounce screens is confusing when fill or not 'To',  'Subject' and 'Body' fields.
  - 2013-07-10 Fixed bug#[9514](http://bugs.otrs.org/show_bug.cgi?id=9514) - Bulk action (send email) uses senders address instead of customer id.

@@ -88,6 +88,9 @@ create a new object
         TicketObject
         GroupObject
 
+    in addition for AgentCustomerViewTable() you need
+        DBObject
+
 =cut
 
 sub new {
@@ -2662,7 +2665,7 @@ sub PageNavBar {
         elsif ( $i > ( $WindowStart + $WindowSize ) ) {
             my $StartWindow     = $WindowStart + $WindowSize + 1;
             my $LastStartWindow = int( $Pages / $WindowSize );
-            my $BaselinkAllBack = $Baselink . "StartHit=" . ( $i - 1 ) * $Param{PageShown};
+            my $BaselinkAllBack = $Baselink . "StartHit=" . ( ( $i - 1 ) * $Param{PageShown} + 1 );
             my $BaselinkAllNext
                 = $Baselink . "StartHit=" . ( ( $Param{PageShown} * ( $Pages - 1 ) ) + 1 );
 
@@ -5228,11 +5231,11 @@ sub _RemoveScriptTags {
 
 This sub has two main functionalities:
 1. Check every line and make sure that "\n" is the ending of the line.
-2. If the line does _not_ start with ">" (e.g. not cited text) 
+2. If the line does _not_ start with ">" (e.g. not cited text)
 wrap it after the number of "MaxCharacters" (e.g. if MaxCharacters is "80" wrap after 80 characters).
 Do this _just_ if the line, that should be wrapped, contains space characters at which the line can be wrapped.
 
-If you need more info to understand what it does, take a look at the UnitTest WrapPlainText.t to see 
+If you need more info to understand what it does, take a look at the UnitTest WrapPlainText.t to see
 use cases there.
 
 my $WrappedPlainText = $LayoutObject->WrapPlainText(

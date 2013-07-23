@@ -122,9 +122,17 @@ sub AgentCustomerViewTable {
             );
 
             if ( $Param{Data}->{Config}->{CustomerCompanySupport} && $Field->[0] eq 'CustomerCompanyName' ) {
-                my $CompanyValid = $Param{Data}->{ CustomerCompanyValid };
+                my $CompanyValidID = $Param{Data}->{ CustomerCompanyValidID };
 
-                if ($CompanyValid && $CompanyValid !~ m{^valid}) {
+                if ( !$Self->{MainObject}->Require( 'Kernel::System::Valid' ) ) {
+                    $Self->FatalDie();
+                }
+                
+                my $ValidObject    = Kernel::System::Valid->new( %{$Self} );
+                my @ValidIDs       = $ValidObject->ValidIDsGet();
+                my $CompanyIsValid = grep { $CompanyValidID == $_ } @ValidIDs;
+
+                if ( !$CompanyIsValid ) {
                     $Self->Block(
                         Name => 'CustomerRowCustomerCompanyInvalid',
                     );
