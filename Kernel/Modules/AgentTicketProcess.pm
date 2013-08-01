@@ -273,6 +273,18 @@ sub Run {
         );
     }
 
+    # validate the ProcessList with stored acls
+    $Self->{TicketObject}->TicketAcl(
+        ReturnType    => 'Ticket',
+        ReturnSubType => '-',
+        Data          => $ProcessList,
+        UserID        => $Self->{UserID},
+    );
+
+    $ProcessList = $Self->{TicketObject}->TicketAclProcessData(
+        Processes => $ProcessList,
+    );
+
     # set AJAXDialog for proper error responses and screen display
     $Self->{AJAXDialog} = $Self->{ParamObject}->GetParam( Param => 'AJAXDialog' ) || '';
 
@@ -473,7 +485,7 @@ sub _RenderAjax {
                 DynamicFieldConfig => $DynamicFieldConfig,
                 Behavior           => 'IsACLReducible',
             );
-            next DYNAMICFIELD if !$IsACLReducible;
+            next DIALOGFIELD if !$IsACLReducible;
 
             my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
@@ -650,6 +662,14 @@ sub _RenderAjax {
         }
         elsif ( $Self->{NameToID}{$CurrentField} eq 'SLAID' ) {
             next DIALOGFIELD if $FieldsProcessed{ $Self->{NameToID}{$CurrentField} };
+
+            # if SLA is render before service (by it order in the fields) it needs to create
+            # the service list
+            if ( !IsHashRefWithData($Services) ) {
+                $Services = $Self->_GetServices(
+                    %{ $Param{GetParam} },
+                );
+            }
 
             my $Data = $Self->_GetSLAs(
                 %{ $Param{GetParam} },
@@ -2400,9 +2420,6 @@ sub _RenderCustomer {
         };
     }
 
-    my $AutoCompleteConfig
-        = $Self->{ConfigObject}->Get('Ticket::Frontend::CustomerSearchAutoComplete');
-
     my %CustomerUserData = ();
 
     my $SubmittedCustomerUserID = $Param{GetParam}{CustomerUserID};
@@ -2433,12 +2450,6 @@ sub _RenderCustomer {
     # set some customer search autocomplete properties
     $Self->{LayoutObject}->Block(
         Name => 'CustomerSearchAutoComplete',
-        Data => {
-            minQueryLength      => $AutoCompleteConfig->{MinQueryLength}      || 2,
-            queryDelay          => $AutoCompleteConfig->{QueryDelay}          || 100,
-            maxResultsDisplayed => $AutoCompleteConfig->{MaxResultsDisplayed} || 20,
-            ActiveAutoComplete  => $AutoCompleteConfig->{Active},
-        },
     );
 
     if (

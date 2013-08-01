@@ -1,4 +1,8 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-07-25 Fixed bug#[7759](http://bugs.otrs.org/show_bug.cgi?id=7759) - Ticket watcher ToolBar position configuration isn't applied.
+ - 2013-07-24 Added support for start processes in the Customer Interface.
+ - 2013-07-24 Added support to restrict processes by ACLs.
+ - 2013-07-23 Refactored AutoComplete feature (code cleanup, configuration cleanup).
  - 2013-07-22 Implemented bug#[8023](http://bugs.otrs.org/show_bug.cgi?id=8023) - Added possibility to set Owner or Responsible for tickets using Postmaster Filters.
  - 2013-07-18 Renamed CommonSearchFieldParameterBuild() to StatsSearchFieldParameterBuild() in Dynamic Fields BackendObject and Drivers.
  - 2013-07-18 Removed IsMatchable(), IsSortable(), IsAJAXUpdatable() from Dynamic Fields BackendObject and Drivers.
@@ -88,6 +92,15 @@
     and hard-coded to use /tmp.
 
 #3.2.10 2013-??-??
+ - 2013-08-01 Fixed bug#[9635](http://bugs.otrs.org/show_bug.cgi?id=9635) - article_search not updated on ticket merges.
+ - 2013-07-31 Fixed bug#[9629](http://bugs.otrs.org/show_bug.cgi?id=9629) - ORA-936 error in AgentTicketSearch with some search clauses.
+ - 2013-07-30 Fixed bug#[9631](http://bugs.otrs.org/show_bug.cgi?id=9631) - BuildSelection() Selected does not work if value contains strings that are HTML-escaped.
+ - 2013-07-30 Fixed bug#[9630](http://bugs.otrs.org/show_bug.cgi?id=9630) - Dynamic Fields of type Date can record wrong date when TimeZoneSettings are used.
+ - 2013-07-25 Fixed bug#[9316](http://bugs.otrs.org/show_bug.cgi?id=9316) - Under nginx CustomerInformationCenter search returns Bad Gateway.
+ - 2013-07-25 Fixed bug#[9610](http://bugs.otrs.org/show_bug.cgi?id=9610) - When email does not specify charset, content is not displayed in IE10.
+ - 2013-07-24 Fixed bug#[9622](http://bugs.otrs.org/show_bug.cgi?id=9622) - Actions in Small ticket overview don't work when cookies are turned off.
+ - 2013-07-24 Updated Danish translation, thanks to Lars Jørgensen!
+ - 2013-07-22 Fixed bug#[9541](http://bugs.otrs.org/show_bug.cgi?id=9541) - Package manager cannot use https proxy.
  - 2013-07-22 Fixed bug pull#[83](https://github.com/OTRS/otrs/pull/83) - Pagination next page link, thanks to Renée Bäcker.
  - 2013-07-18 Fixed bug#[9613](http://bugs.otrs.org/show_bug.cgi?id=9613) - CustomerTicketZoom shows JSLint error if no dynamic fields are configured
  - 2013-07-17 Updated Turkish translation, thanks to Sefer Şimşek @ Network Group!

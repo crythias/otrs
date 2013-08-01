@@ -251,14 +251,14 @@ sub EditFieldValueGet {
 
     my %DynamicFieldValues;
 
-    # check if there is a Template and retreive the dinalic field value from there
+    # check if there is a Template and retrieve the dynamic field value from there
     if ( IsHashRefWithData( $Param{Template} ) ) {
         for my $Type (qw(Used Year Month Day Hour Minute)) {
             $DynamicFieldValues{ $Prefix . $Type } = $Param{Template}->{ $Prefix . $Type };
         }
     }
 
-    # otherwise get dynamic field value form param
+    # otherwise get dynamic field value from param
     else {
         for my $Type (qw(Used Year Month Day Hour Minute)) {
             $DynamicFieldValues{ $Prefix . $Type } = $Param{ParamObject}->GetParam(
@@ -286,12 +286,12 @@ sub EditFieldValueGet {
         );
     }
 
-    # check if return value structure is nedded
+    # check if return value structure is needed
     if ( defined $Param{ReturnValueStructure} && $Param{ReturnValueStructure} eq '1' ) {
         return \%DynamicFieldValues;
     }
 
-    # check if return template structure is nedded
+    # check if return template structure is needed
     if ( defined $Param{ReturnTemplateStructure} && $Param{ReturnTemplateStructure} eq '1' ) {
         return \%DynamicFieldValues;
     }
@@ -303,15 +303,8 @@ sub EditFieldValueGet {
         # add a leading zero for date parts that could be less than ten to generate a correct
         # time stamp
         for my $Type (qw(Month Day Hour Minute Second)) {
-            if (
-                $DynamicFieldValues{ $Prefix . $Type }
-                && $DynamicFieldValues{ $Prefix . $Type } < 10
-                && $DynamicFieldValues{ $Prefix . $Type } !~ m{\A 0 \d \z}smx
-                )
-            {
-                $DynamicFieldValues{ $Prefix . $Type }
-                    = '0' . $DynamicFieldValues{ $Prefix . $Type };
-            }
+            $DynamicFieldValues{ $Prefix . $Type } = sprintf "%02d",
+                $DynamicFieldValues{ $Prefix . $Type };
         }
 
         my $Year   = $DynamicFieldValues{ $Prefix . 'Year' }   || '0000';
@@ -517,7 +510,7 @@ sub SearchFieldValueGet {
     for my $Type (qw(Start Stop)) {
         for my $Part (qw(Year Month Day Hour Minute)) {
 
-            # get dynamic field value form param object
+            # get dynamic field value from param object
             if ( defined $Param{ParamObject} ) {
 
                 # return if value was not checked (useful in customer interface)
@@ -556,7 +549,7 @@ sub SearchFieldValueGet {
 
     $DynamicFieldValues{$Prefix} = 1;
 
-    # check if return value structure is nedded
+    # check if return value structure is needed
     if ( defined $Param{ReturnProfileStructure} && $Param{ReturnProfileStructure} eq '1' ) {
         return \%DynamicFieldValues;
     }
@@ -565,15 +558,8 @@ sub SearchFieldValueGet {
     # time stamp
     for my $Type (qw(Start Stop)) {
         for my $Part (qw(Month Day Hour Minute Second)) {
-            if (
-                $DynamicFieldValues{ $Prefix . $Type . $Part }
-                && $DynamicFieldValues{ $Prefix . $Type . $Part } < 10
-                && length $DynamicFieldValues{ $Prefix . $Type . $Part } == 1
-                )
-            {
-                $DynamicFieldValues{ $Prefix . $Type . $Part }
-                    = '0' . $DynamicFieldValues{ $Prefix . $Type . $Part };
-            }
+            $DynamicFieldValues{ $Prefix . $Type . $Part } = sprintf "%02d",
+                $DynamicFieldValues{ $Prefix . $Type . $Part };
         }
     }
 
