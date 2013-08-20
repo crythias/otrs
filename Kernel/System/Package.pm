@@ -21,6 +21,7 @@ use Kernel::System::Loader;
 use Kernel::System::SysConfig;
 use Kernel::System::WebUserAgent;
 use Kernel::System::XML;
+use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
 
@@ -305,6 +306,11 @@ sub RepositoryAdd {
 
     # get package attributes
     my %Structure = $Self->PackageParse(%Param);
+
+    if ( !IsHashRefWithData( \%Structure ) ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => 'Invalid Package!' );
+        return;
+    }
     if ( !$Structure{Name} ) {
         $Self->{LogObject}->Log( Priority => 'error', Message => 'Need Name!' );
         return;
@@ -1943,7 +1949,17 @@ sub PackageParse {
         return %{$Cache} if $Cache;
     }
 
-    my @XMLARRAY = $Self->{XMLObject}->XMLParse(%Param);
+    my @XMLARRAY = eval {
+        $Self->{XMLObject}->XMLParse(%Param);
+    };
+
+    if ( !IsArrayRefWithData( \@XMLARRAY ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Invalid XMLParse in PackageParse()!",
+        );
+        return;
+    }
 
     # cleanup global vars
     undef $Self->{Package};
@@ -2062,7 +2078,16 @@ sub PackageParse {
         }
     }
 
-    # return package structur
+    # check if a structure is present
+    if ( !IsHashRefWithData( $Self->{Package} ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Invalid package structure in PackageParse()!",
+        );
+        return;
+    }
+
+    # return package structure
     my %Return = %{ $Self->{Package} };
     undef $Self->{Package};
 
