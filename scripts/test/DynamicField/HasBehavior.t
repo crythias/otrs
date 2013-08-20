@@ -157,7 +157,6 @@ my %DynamicFieldConfigs = (
     },
 );
 
-
 # define tests
 my @Tests = (
     {
@@ -185,6 +184,7 @@ my @Tests = (
             'IsACLReducible'               => 0,
             'IsNotificationEventCondition' => 1,
             'IsSortable'                   => 1,
+            'IsFiltrable'                  => 0,
             'IsStatsCondition'             => 1,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -198,6 +198,7 @@ my @Tests = (
             'IsACLReducible'               => 0,
             'IsNotificationEventCondition' => 1,
             'IsSortable'                   => 0,
+            'IsFiltrable'                  => 0,
             'IsStatsCondition'             => 1,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -211,6 +212,7 @@ my @Tests = (
             'IsACLReducible'               => 0,
             'IsNotificationEventCondition' => 1,
             'IsSortable'                   => 1,
+            'IsFiltrable'                  => 1,
             'IsStatsCondition'             => 1,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -224,6 +226,7 @@ my @Tests = (
             'IsACLReducible'               => 1,
             'IsNotificationEventCondition' => 1,
             'IsSortable'                   => 1,
+            'IsFiltrable'                  => 1,
             'IsStatsCondition'             => 1,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -237,6 +240,7 @@ my @Tests = (
             'IsACLReducible'               => 1,
             'IsNotificationEventCondition' => 1,
             'IsSortable'                   => 0,
+            'IsFiltrable'                  => 0,
             'IsStatsCondition'             => 1,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -250,6 +254,7 @@ my @Tests = (
             'IsACLReducible'               => 0,
             'IsNotificationEventCondition' => 0,
             'IsSortable'                   => 1,
+            'IsFiltrable'                  => 0,
             'IsStatsCondition'             => 0,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -263,6 +268,7 @@ my @Tests = (
             'IsACLReducible'               => 0,
             'IsNotificationEventCondition' => 0,
             'IsSortable'                   => 1,
+            'IsFiltrable'                  => 0,
             'IsStatsCondition'             => 0,
             'IsCustomerInterfaceCapable'   => 1,
         },
@@ -276,8 +282,8 @@ for my $Test (@Tests) {
     BEHAVIOR:
     for my $Behavior (
         qw(
-            IsACLReducible IsNotificationEventCondition IsSortable IsStatsCondition NotExisting
-            IsCustomerInterfaceCapable
+        IsACLReducible IsNotificationEventCondition IsSortable IsFiltrable IsStatsCondition
+        IsCustomerInterfaceCapable NotExisting
         )
         )
     {
@@ -294,7 +300,7 @@ for my $Test (@Tests) {
         }
 
         # call HasBehavior for each test for each known behavior
-        my $Success = $DFBackendObject->HasBehavior( %Config );
+        my $Success = $DFBackendObject->HasBehavior(%Config);
 
         # if the test is a success then check the expected results with true
         if ($Success) {

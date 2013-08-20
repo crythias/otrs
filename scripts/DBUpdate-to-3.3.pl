@@ -52,13 +52,21 @@ use Kernel::System::VariableCheck qw(:all);
 DBUpdate-to-3.3.pl - Upgrade scripts for OTRS 3.2.x to 3.3.x migration.
 Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
 
+Usage: $0 [-h]
+    Options are as follows:
+        -h      display this help
+
 EOF
         exit 1;
     }
 
     # UID check if not on Windows
     if ( $^O ne 'MSWin32' && $> == 0 ) {    # $EFFECTIVE_USER_ID
-        die "Cannot run this program as root. Please run it as the 'otrs' user.\n";
+        die "
+Cannot run this program as root.
+Please run it as the 'otrs' user or with the help of su:
+    su -c \"$0\" -s /bin/bash otrs
+";
     }
 
     print "\nMigration started...\n\n";
@@ -67,7 +75,7 @@ EOF
     my $CommonObject = _CommonObjectsBase();
 
     # define the number of steps
-    my $Steps = 8;
+    my $Steps = 11;
     my $Step  = 1;
 
     print "Step $Step of $Steps: Refresh configuration cache... ";
@@ -111,9 +119,36 @@ EOF
     }
     $Step++;
 
+    # migrate OTRSGenericStandardTemplates
+    print "Step $Step of $Steps: Migrate OTRSGenericStandardTemplates... ";
+    if ( _MigrateOTRSGenericStandardTemplates($CommonObject) ) {
+        print "done.\n\n";
+    }
+    else {
+        print "error.\n\n";
+        die;
+    }
+    $Step++;
+
+    print "Step $Step of $Steps: Checking if ACL tables already exist... ";
+    _AddACLTables($CommonObject) || die;
+    print "done.\n\n";
+    $Step++;
+
     # uninstall Merged Feature Add-Ons
     print "Step $Step of $Steps: Uninstall Merged Feature Add-Ons... ";
     if ( _UninstallMergedFeatureAddOns($CommonObject) ) {
+        print "done.\n\n";
+    }
+    else {
+        print "error.\n\n";
+        die;
+    }
+    $Step++;
+
+    # Delete Old Files
+    print "Step $Step of $Steps: Delete the files that are not longer needed... ";
+    if ( _DeleteOldFiles($CommonObject) ) {
         print "done.\n\n";
     }
     else {
@@ -235,6 +270,120 @@ sub _CheckFrameworkVersion {
     return 1;
 }
 
+
+=item _AddACLTables($CommonObject)
+
+This function checks if the acl and acl_sync tables already exist
+and creates them otherwise.
+
+    _AddACLTables($CommonObject);
+
+=cut
+
+sub _AddACLTables {
+    my $CommonObject = shift;
+
+    my $ACLTablesExist;
+    print "Check if ACL table exists.\n";
+    {
+        my $STDERR;
+
+        # Catch STDERR log messages to not confuse the user. The Prepare() will fail
+        #   if the columns are not present.
+        local *STDERR;
+        open STDERR, '>:utf8', \$STDERR;
+
+        $ACLTablesExist = $CommonObject->{DBObject}->Prepare(
+            SQL   => "SELECT * FROM acl WHERE 1=0",
+            Limit => 1,
+        );
+    }
+
+    my $XMLString;
+
+    if ( $ACLTablesExist ) {
+
+        print "ACL tables are present, no need to create them.\n";
+
+        # fetch data to avoid warnings
+        while ( my @Row = $CommonObject->{DBObject}->FetchrowArray() ) {
+
+            # noop
+        }
+
+        return 1;
+    }
+    else {
+
+        print "ACL tables not found, create it.\n";
+
+        $XMLString = '<?xml version="1.0" encoding="utf-8" ?>
+        <database Name="otrs">
+            <TableCreate Name="acl">
+                <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
+                <Column Name="name" Required="true" Type="VARCHAR" Size="200"/>
+                <Column Name="comments" Required="false" Size="250" Type="VARCHAR"/>
+                <Column Name="description" Required="false" Size="250" Type="VARCHAR"/>
+                <Column Name="valid_id" Required="true" Type="SMALLINT"/>
+                <Column Name="stop_after_match" Required="false" Type="SMALLINT"/>
+                <Column Name="config_match" Required="false" Type="LONGBLOB"/>
+                <Column Name="config_change" Required="false" Type="LONGBLOB"/>
+                <Column Name="create_time" Required="true" Type="DATE"/>
+                <Column Name="create_by" Required="true" Type="INTEGER"/>
+                <Column Name="change_time" Required="true" Type="DATE"/>
+                <Column Name="change_by" Required="true" Type="INTEGER"/>
+                <Unique Name="acl_name">
+                    <UniqueColumn Name="name"/>
+                </Unique>
+                <ForeignKey ForeignTable="valid">
+                    <Reference Local="valid_id" Foreign="id"/>
+                </ForeignKey>
+                <ForeignKey ForeignTable="users">
+                    <Reference Local="create_by" Foreign="id"/>
+                    <Reference Local="change_by" Foreign="id"/>
+                </ForeignKey>
+            </TableCreate>
+            <TableCreate Name="acl_sync">
+                <Column Name="acl_id" Required="true" Size="200" Type="VARCHAR"/>
+                <Column Name="sync_state" Required="true" Size="30" Type="VARCHAR"/>
+                <Column Name="create_time" Required="true" Type="DATE"/>
+                <Column Name="change_time" Required="true" Type="DATE"/>
+            </TableCreate>
+        </database>';
+    }
+
+    my @SQL;
+    my @SQLPost;
+
+    my $XMLObject = Kernel::System::XML->new( %{$CommonObject} );
+
+    # create database specific SQL and PostSQL commands
+    my @XMLARRAY = $XMLObject->XMLParse( String => $XMLString );
+
+    # create database specific SQL
+    push @SQL, $CommonObject->{DBObject}->SQLProcessor(
+        Database => \@XMLARRAY,
+    );
+
+    # create database specific PostSQL
+    push @SQLPost, $CommonObject->{DBObject}->SQLProcessorPost();
+
+    # execute SQL
+    for my $SQL ( @SQL, @SQLPost ) {
+        print $SQL . "\n";
+        my $Success = $CommonObject->{DBObject}->Do( SQL => $SQL );
+        if ( !$Success ) {
+            $CommonObject->{LogObject}->Log(
+                Priority => 'error',
+                Message  => "Error during execution of '$SQL'!",
+            );
+            return;
+        }
+    }
+    return 1;
+}
+
+
 =item _GenerateMessageIDMD5()
 
 Create md5sums of existing MessageIDs in Article table.
@@ -294,6 +443,21 @@ sub _MigrateOldSettings {
             Value => $Setting,
         );
     }
+
+    # StandardResponse2QueueByCreating
+    # get original setting (old name)
+    $Setting = $CommonObject->{ConfigObject}->Get('StandardResponse2QueueByCreating');
+
+    if ( IsArrayRefWithData($Setting) ) {
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'StandardTemplate2QueueByCreating',
+            Value => $Setting,
+        );
+    }
+
     return 1;
 }
 
@@ -342,6 +506,35 @@ sub _MigrateOTRSExternalTicketNumberRecognition {
     return 1;
 }
 
+=item _MigrateOTRSGenericStandardTemplates()
+
+Migrate Standard Templates Types to new style
+
+    _MigrateMigrateOTRSGenericStandardTemplates($CommonObject);
+
+=cut
+
+sub _MigrateOTRSGenericStandardTemplates {
+    my $CommonObject = shift;
+
+    # seach all templates with template type anwer or forward
+    for my $TemplateType qw(answer forward) {
+
+        # set new template type to Answer or Forward (with capital leter)
+        my $NewTemplateType = ucfirst $TemplateType;
+
+        # update DB
+        return if !$CommonObject->{DBObject}->Do(
+            SQL => 'UPDATE standard_template
+                SET template_type = ?
+                WHERE template_type = ?',
+            Bind => [ \$NewTemplateType, \$TemplateType, ],
+        );
+    }
+
+    return 1;
+}
+
 =item _UninstallMergedFeatureAddOns()
 
 safe uninstall packages from the database.
@@ -355,7 +548,7 @@ sub _UninstallMergedFeatureAddOns {
 
     my $PackageObject = Kernel::System::Package->new( %{$CommonObject} );
 
-    # qw( ) contains a list of the feture add-ons to uninstall
+    # qw( ) contains a list of the feature add-ons to uninstall
     for my $PackageName (
         qw(
         OTRSPostMasterFilterExtensions
@@ -369,9 +562,12 @@ sub _UninstallMergedFeatureAddOns {
         OTRSMultiQueueSelect
         OTRSDynamicFieldMultiLevelSelection
         OTRSEventBasedTicketActions
-        OTRSKeepFAQAttachments
         OTRSTicketAclEditor
         OTRSCustomerProcessSelection
+        OTRSACLExtensions
+        OTRSGenericStandardTemplates
+        OTRSExtendedDynamicDateFieldSearch
+        OTRSDashboardTicketOverviewFilters
         )
         )
     {
@@ -381,6 +577,49 @@ sub _UninstallMergedFeatureAddOns {
         if ( !$Success ) {
             print STDERR "There was an error uninstalling package $PackageName\n";
             return;
+        }
+    }
+    return 1;
+}
+
+=item _DeleteOldFiles()
+
+delete not longer needed files.
+
+    _DeleteOldFiles($CommonObject);
+
+=cut
+
+sub _DeleteOldFiles {
+    my $CommonObject = shift;
+
+    my $Home = $CommonObject->{ConfigObject}->Get('Home');
+
+    # qw( ) contains a list of the feature files to uninstall
+    for my $File (
+        qw(
+        bin/otrs.AddQueue2StdResponse.pl
+        Kernel/Modules/AdminQueueResponses.pm
+        Kernel/Modules/AdminResponse.pm
+        Kernel/Modules/AdminResponseAttachment.pm
+        Kernel/Output/HTML/Standard/AdminQueueResponses.dtl
+        Kernel/Output/HTML/Standard/AdminResponse.dtl
+        Kernel/Output/HTML/Standard/AdminResponseAttachment.dtl
+        )
+        )
+    {
+        # add home path
+        my $Location = $Home . '/' . $File;
+
+        # check if file exists
+        if ( -e $Location ) {
+
+            # delete file
+            my $Success = unlink $Location;
+            if ( !$Success ) {
+                print STDERR "Could not delete $Location: $!\n";
+                return;
+            }
         }
     }
     return 1;

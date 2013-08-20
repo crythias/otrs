@@ -29,6 +29,8 @@ var/httpd/htdocs/skins/Agent/default/css-cache
 var/httpd/htdocs/skins/Agent/default/css-cache/*
 var/httpd/htdocs/skins/Agent/ivory/css-cache
 var/httpd/htdocs/skins/Agent/ivory/css-cache/*
+var/httpd/htdocs/skins/Agent/ivory-slim/css-cache
+var/httpd/htdocs/skins/Agent/ivory-slim/css-cache/*
 var/httpd/htdocs/skins/Agent/slim/css-cache/*
 var/httpd/htdocs/skins/Customer/default/css-cache/*
 var/httpd/htdocs/skins/Customer/ivory/css-cache/*
@@ -75,3 +77,4 @@ scripts/test/OTRSCodePolicy.t
 var/stats/*.xml.installed
 bin/CodeInstall.pl
 bin/DatabaseInstall.pl
+perltidy.LOG

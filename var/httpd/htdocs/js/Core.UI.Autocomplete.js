@@ -44,6 +44,9 @@ Core.UI.Autocomplete = (function (TargetNS) {
             }
         });
 
+        // make sure, that the value of AutoCompleteActive is casted to int
+        Config.AutoCompleteActive = parseInt(Config.AutoCompleteActive, 10);
+
         // if button should be shown, set minlength to an unreachable value
         if (!Config.AutoCompleteActive) {
             Config.MinQueryLength = 500;
@@ -55,6 +58,9 @@ Core.UI.Autocomplete = (function (TargetNS) {
     TargetNS.GetConfig = function(Key) {
         return Config[Key];
     };
+
+    // Needed for the handling of searches with ActiveAutoComplete = 0
+    TargetNS.SearchButtonClicked = {};
 
     /**
      * @function
@@ -132,11 +138,15 @@ Core.UI.Autocomplete = (function (TargetNS) {
         });
 
         if (!Config.AutoCompleteActive) {
-            $Element.after('<button id="' + Core.App.EscapeSelector($Element.attr('id')) + 'Search" type="button">' + Config.ButtonText + '</button>');
-            $('#' + Core.App.EscapeSelector($Element.attr('id')) + 'Search').click(function () {
-                $Element.autocomplete("option", "minLength", 0);
-                $Element.autocomplete("search");
-                $Element.autocomplete("option", "minLength", 500);
+            $Element.each(function () {
+                var $SelectedElement = $(this);
+                $SelectedElement.after('<button id="' + Core.App.EscapeSelector($SelectedElement.attr('id')) + 'Search" type="button">' + Config.ButtonText + '</button>');
+                $('#' + Core.App.EscapeSelector($SelectedElement.attr('id')) + 'Search').click(function () {
+                    TargetNS.SearchButtonClicked[$SelectedElement.attr('id')] = true;
+                    $SelectedElement.autocomplete("option", "minLength", 0);
+                    $SelectedElement.autocomplete("search");
+                    $SelectedElement.autocomplete("option", "minLength", 500);
+                });
             });
         }
     };

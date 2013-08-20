@@ -19,6 +19,170 @@ Core.Agent = Core.Agent || {};
  *      This namespace contains the special module functions for the Dashboard.
  */
 Core.Agent.Dashboard = (function (TargetNS) {
+
+    /**
+     * @function
+     * @param {jQueryObject} $Input Input element to add auto complete to
+     * @return nothing
+     */
+    TargetNS.InitCustomerIDAutocomplete = function ($Input) {
+        $Input.autocomplete({
+            minLength: Core.Config.Get('CustomerAutocomplete.MinQueryLength'),
+            delay: Core.Config.Get('CustomerAutocomplete.QueryDelay'),
+            open: function() {
+                // force a higher z-index than the overlay/dialog
+                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
+                return false;
+            },
+            source: function (Request, Response) {
+                var URL = Core.Config.Get('Baselink'), Data = {
+                    Action: 'AgentCustomerInformationCenterSearch',
+                    Subaction: 'SearchCustomerID',
+                    Term: Request.term,
+                    MaxResults: Core.Config.Get('CustomerAutocomplete.MaxResultsDisplayed')
+                };
+
+                // if an old ajax request is already running, stop the old request and start the new one
+                if ($Input.data('AutoCompleteXHR')) {
+                    $Input.data('AutoCompleteXHR').abort();
+                    $Input.removeData('AutoCompleteXHR');
+                    // run the response function to hide the request animation
+                    Response({});
+                }
+
+                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                    var Data = [];
+                    $Input.removeData('AutoCompleteXHR');
+                    $.each(Result, function () {
+                        Data.push({
+                            label: this.Label + ' (' + this.Value + ')',
+                            value: this.Value
+                        });
+                    });
+                    Response(Data);
+                }));
+            },
+            select: function (Event, UI) {
+                $(Event.target)
+                    .parent()
+                    .find('select')
+                    .append('<option value="' + UI.item.value + '">SelectedItem</option>')
+                    .val(UI.item.value)
+                    .trigger('change');
+            }
+        });
+    };
+
+    /**
+     * @function
+     * @param {jQueryObject} $Input Input element to add auto complete to
+     * @param {String} Subaction Subaction to execute, "SearchCustomerID" or "SearchCustomerUser"
+     * @return nothing
+     */
+    TargetNS.InitCustomerUserAutocomplete = function ($Input) {
+        $Input.autocomplete({
+            minLength: Core.Config.Get('CustomerUserAutocomplete.MinQueryLength'),
+            delay: Core.Config.Get('CustomerUserAutocomplete.QueryDelay'),
+            open: function() {
+                // force a higher z-index than the overlay/dialog
+                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
+                return false;
+            },
+            source: function (Request, Response) {
+                var URL = Core.Config.Get('Baselink'), Data = {
+                    Action: 'AgentCustomerSearch',
+                    Term: Request.term,
+                    MaxResults: Core.Config.Get('CustomerUserAutocomplete.MaxResultsDisplayed')
+                };
+
+                // if an old ajax request is already running, stop the old request and start the new one
+                if ($Input.data('AutoCompleteXHR')) {
+                    $Input.data('AutoCompleteXHR').abort();
+                    $Input.removeData('AutoCompleteXHR');
+                    // run the response function to hide the request animation
+                    Response({});
+                }
+
+                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                    var Data = [];
+                    $Input.removeData('AutoCompleteXHR');
+                    $.each(Result, function () {
+                        Data.push({
+                            label: this.CustomerValue + " (" + this.CustomerKey + ")",
+                            value: this.CustomerValue,
+                            key: this.CustomerKey
+                        });
+                    });
+                    Response(Data);
+                }));
+            },
+            select: function (Event, UI) {
+                $(Event.target)
+                    .parent()
+                    .find('select')
+                    .append('<option value="' + UI.item.key + '">SelectedItem</option>')
+                    .val(UI.item.key)
+                    .trigger('change');
+            }
+        });
+    };
+
+    /**
+     * @function
+     * @param {jQueryObject} $Input Input element to add auto complete to
+     * @param {String} Subaction Subaction to execute, "SearchCustomerID" or "SearchCustomerUser"
+     * @return nothing
+     */
+    TargetNS.InitUserAutocomplete = function ($Input, Subaction) {
+        $Input.autocomplete({
+            minLength: Core.Config.Get('UserAutocomplete.MinQueryLength'),
+            delay: Core.Config.Get('UserAutocomplete.QueryDelay'),
+            open: function() {
+                // force a higher z-index than the overlay/dialog
+                $(this).autocomplete('widget').addClass('ui-overlay-autocomplete');
+                return false;
+            },
+            source: function (Request, Response) {
+                var URL = Core.Config.Get('Baselink'), Data = {
+                    Action: 'AgentUserSearch',
+                    Subaction: Subaction,
+                    Term: Request.term,
+                    MaxResults: Core.Config.Get('UserAutocomplete.MaxResultsDisplayed')
+                };
+
+                // if an old ajax request is already running, stop the old request and start the new one
+                if ($Input.data('AutoCompleteXHR')) {
+                    $Input.data('AutoCompleteXHR').abort();
+                    $Input.removeData('AutoCompleteXHR');
+                    // run the response function to hide the request animation
+                    Response({});
+                }
+
+                $Input.data('AutoCompleteXHR', Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                    var Data = [];
+                    $Input.removeData('AutoCompleteXHR');
+                    $.each(Result, function () {
+                        Data.push({
+                            label: this.UserValue + " (" + this.UserKey + ")",
+                            value: this.UserValue,
+                            key: this.UserKey
+                        });
+                    });
+                    Response(Data);
+                }));
+            },
+            select: function (Event, UI) {
+                $(Event.target)
+                    .parent()
+                    .find('select')
+                    .append('<option value="' + UI.item.key + '">SelectedItem</option>')
+                    .val(UI.item.key)
+                    .trigger('change');
+            }
+        });
+    };
+
+
     /**
      * @function
      * @return nothing
@@ -74,6 +238,61 @@ Core.Agent.Dashboard = (function (TargetNS) {
                 }
             }
         );
+
+        function UpdateAllocationList(Event, UI) {
+
+            var $ContainerObj = $(UI.sender).closest('.AllocationListContainer'),
+                Data = {},
+                FieldName;
+
+            if (Event.type === 'sortstop') {
+                $ContainerObj = $(UI.item).closest('.AllocationListContainer');
+            }
+
+            Data['Columns'] = {};
+            Data['Order']   = [];
+
+            $ContainerObj.find('.AvailableFields').find('li').each(function() {
+                FieldName = $(this).attr('data-fieldname');
+                Data.Columns[FieldName] = 0;
+            });
+
+            $ContainerObj.find('.AssignedFields').find('li').each(function() {
+                FieldName = $(this).attr('data-fieldname');
+                Data.Columns[FieldName] = 1;
+                Data['Order'].push(FieldName);
+            });
+            $ContainerObj.closest('form').find('.ColumnsJSON').val(Core.JSON.Stringify(Data));
+        }
+
+        $('.AllocationListContainer').each(function() {
+
+            var $ContainerObj = $(this),
+                DataEnabledJSON   = $ContainerObj.closest('form.WidgetSettingsForm').find('input.ColumnsEnabledJSON').val(),
+                DataAvailableJSON = $ContainerObj.closest('form.WidgetSettingsForm').find('input.ColumnsAvailableJSON').val(),
+                DataEnabled,
+                DataAvailable,
+                $FieldObj,
+                IDString = '#' + $ContainerObj.find('.AssignedFields').attr('id') + ', #' + $ContainerObj.find('.AvailableFields').attr('id');
+
+            if (DataEnabledJSON) {
+                DataEnabled = Core.JSON.Parse(DataEnabledJSON);
+            }
+            if (DataAvailableJSON) {
+                DataAvailable = Core.JSON.Parse(DataAvailableJSON);
+            }
+
+            $.each(DataEnabled, function(Index, Field) {
+                $FieldObj = $('<li />').attr('title', Field).attr('data-fieldname', Field).text(Field);
+                $ContainerObj.find('.AssignedFields').append($FieldObj);
+            });
+            $.each(DataAvailable, function(Index, Field) {
+                $FieldObj = $('<li />').attr('title', Field).attr('data-fieldname', Field).text(Field);
+                $ContainerObj.find('.AvailableFields').append($FieldObj);
+            });
+
+            Core.UI.AllocationList.Init(IDString, $ContainerObj.find('.AllocationList'), UpdateAllocationList, '', UpdateAllocationList);
+        });
     };
 
     /**
@@ -96,8 +315,6 @@ Core.Agent.Dashboard = (function (TargetNS) {
             });
         }
     };
-
-
 
     /**
      * @function

@@ -60,7 +60,20 @@ sub HasBehavior {
 
     # otherwise return fail
     return;
-};
+}
+
+sub SearchFieldPreferences {
+    my ( $Self, %Param ) = @_;
+
+    my @Preferences = (
+        {
+            Type        => '',
+            LabelSuffix => '',
+        },
+    );
+
+    return \@Preferences;
+}
 
 =item EditLabelRender()
 

@@ -1,4 +1,12 @@
 #3.3.0.beta1 2013-??-??
+ - 2013-08-15 Added possibility to negate postmaster filter settings, thanks to Renée Bäcker!
+ - 2013-08-15 Refactored email handling code. Added support for POP3/TLS connections.
+ - 2013-08-13 Added support for templates in phone and email ticket creation, forward, and inbound/outbound phone calls.
+ - 2013-08-13 Added experimental support for Plack/PSGI (see http://plackperl.org).
+ - 2013-08-12 Updated CKEditor to version 4.2.
+ - 2013-08-08 The OTRS Scheduler Service should now always be running, and not just if there is a web service configured; because it will
+    be used by more parts of OTRS than just the Generic Interface. The notification test to see if the Scheduler is running, is now always active.
+ - 2013-08-05 Fixed bug#[9644](http://bugs.otrs.org/show_bug.cgi?id=9644) - External Ticket Number filter does not work with Ticket::SubjectFormat None.
  - 2013-07-25 Fixed bug#[7759](http://bugs.otrs.org/show_bug.cgi?id=7759) - Ticket watcher ToolBar position configuration isn't applied.
  - 2013-07-24 Added support for start processes in the Customer Interface.
  - 2013-07-24 Added support to restrict processes by ACLs.
@@ -92,6 +100,9 @@
     and hard-coded to use /tmp.
 
 #3.2.10 2013-??-??
+ - 2013-08-20 Fixed bug#[9617](http://bugs.otrs.org/show_bug.cgi?id=9617) - Event-based notifications are not sent for process-tickets.
+ - 2013-08-14 Fixed bug#[9666](http://bugs.otrs.org/show_bug.cgi?id=9666) - Installing an invalid package cause an server error on package manager.
+ - 2013-08-06 Fixed bug#[8408](http://bugs.otrs.org/show_bug.cgi?id=8408) - No separator used in CSV files if UserCSVSeparator enabled and not set.
  - 2013-08-01 Fixed bug#[9635](http://bugs.otrs.org/show_bug.cgi?id=9635) - article_search not updated on ticket merges.
  - 2013-07-31 Fixed bug#[9629](http://bugs.otrs.org/show_bug.cgi?id=9629) - ORA-936 error in AgentTicketSearch with some search clauses.
  - 2013-07-30 Fixed bug#[9631](http://bugs.otrs.org/show_bug.cgi?id=9631) - BuildSelection() Selected does not work if value contains strings that are HTML-escaped.

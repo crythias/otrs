@@ -251,21 +251,15 @@ EOF
 
         my $FieldsToUpdate = '';
         if ( IsArrayRefWithData( $Param{UpdatableFields} ) ) {
-            my $FirstItem = 1;
-            FIELD:
-            for my $Field ( @{ $Param{UpdatableFields} } ) {
-                next FIELD if $Field eq $FieldName;
-                if ($FirstItem) {
-                    $FirstItem = 0;
-                }
-                else {
-                    $FieldsToUpdate .= ', ';
-                }
-                $FieldsToUpdate .= "'" . $Field . "'";
-            }
+
+            # Remove current field from updatable fields list
+            my @FieldsToUpdate = grep { $_ ne $FieldName } @{ $Param{UpdatableFields} };
+
+            # quote all fields, put commas in between them
+            $FieldsToUpdate = join( ', ', map {"'$_'"} @FieldsToUpdate );
         }
 
-        #add js to call FormUpdate()
+        # add js to call FormUpdate()
         $HTMLString .= <<"EOF";
 <!--dtl:js_on_document_complete-->
 <script type="text/javascript">//<![CDATA[
@@ -934,6 +928,43 @@ sub PossibleValuesGet {
 
     # return the possible values hash as a reference
     return \%PossibleValues;
+}
+
+sub ColumnFilterValuesGet {
+    my ( $Self, %Param ) = @_;
+
+    # take config from field config
+    my $FieldConfig = $Param{DynamicFieldConfig}->{Config};
+
+    # set PossibleValues
+    my $SelectionData = $FieldConfig->{PossibleValues};
+
+    # get column filter values from database
+    my $ColumnFilterValues = $Self->{ColumnFilterObject}->DynamicFieldFilterValuesGet(
+        TicketIDs => $Param{TicketIDs},
+        FieldID   => $Param{DynamicFieldConfig}->{ID},
+        ValueType => 'Text',
+    );
+
+    # get the display value if still exist in dynamic field configuration
+    for my $Key ( sort keys %{$ColumnFilterValues} ) {
+        if ( $SelectionData->{$Key} ) {
+            $ColumnFilterValues->{$Key} = $SelectionData->{$Key}
+        }
+    }
+
+    if ( $FieldConfig->{TranslatableValues} ) {
+
+        # translate the value
+        for my $ValueKey ( sort keys %{$ColumnFilterValues} ) {
+
+            my $OriginalValueName = $ColumnFilterValues->{$ValueKey};
+            $ColumnFilterValues->{$ValueKey}
+                = $Param{LayoutObject}->{LanguageObject}->Get($OriginalValueName);
+        }
+    }
+
+    return $ColumnFilterValues;
 }
 
 1;

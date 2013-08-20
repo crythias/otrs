@@ -1033,9 +1033,10 @@ sub Run {
 
         # add std. attachments to email
         if ( $GetParam{ResponseID} ) {
-            my %AllStdAttachments = $Self->{StdAttachmentObject}->StdAttachmentsByResponseID(
-                ID => $GetParam{ResponseID},
-            );
+            my %AllStdAttachments
+                = $Self->{StdAttachmentObject}->StdAttachmentStandardTemplateMemberList(
+                StandardTemplateID => $GetParam{ResponseID},
+                );
             for ( sort keys %AllStdAttachments ) {
                 my %Data = $Self->{StdAttachmentObject}->StdAttachmentGet( ID => $_ );
                 $Self->{UploadCacheObject}->FormIDAddFile(
@@ -1296,28 +1297,38 @@ sub Run {
 
         # get template
         my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
-        my %Response          = $TemplateGenerator->Response(
+
+        # use key StdResponse to pass the data to the template for legacy reasons,
+        #   because existing systems may have it in their configuration as that was
+        #   the key used before the internal switch to StandardResponse And StandardTemplate
+        $Data{StdResponse} = $TemplateGenerator->Template(
             TicketID   => $Self->{TicketID},
             ArticleID  => $GetParam{ArticleID},
-            ResponseID => $GetParam{ResponseID},
+            TemplateID => $GetParam{ResponseID},
             Data       => \%Data,
             UserID     => $Self->{UserID},
         );
 
-        $Data{Salutation} = $Response{Salutation};
-        $Data{Signature}  = $Response{Signature};
+        # get salutation
+        $Data{Salutation} = $TemplateGenerator->Salutation(
+            TicketID => $Self->{TicketID},
+            Data     => \%Data,
+            UserID   => $Self->{UserID},
+        );
 
-        # use key StdResponse to pass the data to the template for legacy reasons,
-        #   because existing systems may have it in their configuration as that was
-        #   the key used before the internal switch to StandardResponse
-        $Data{StdResponse} = $Response{StandardResponse};
+        # get signature
+        $Data{Signature} = $TemplateGenerator->Signature(
+            TicketID => $Self->{TicketID},
+            Data     => \%Data,
+            UserID   => $Self->{UserID},
+        );
 
+        # $TemplateGenerator->Attributes() does not overwrite %Data, but it adds more keys
         %Data = $TemplateGenerator->Attributes(
-            TicketID   => $Self->{TicketID},
-            ArticleID  => $GetParam{ArticleID},
-            ResponseID => $GetParam{ResponseID},
-            Data       => \%Data,
-            UserID     => $Self->{UserID},
+            TicketID  => $Self->{TicketID},
+            ArticleID => $GetParam{ArticleID},
+            Data      => \%Data,
+            UserID    => $Self->{UserID},
         );
 
         my $ResponseFormat = $Self->{ConfigObject}->Get('Ticket::Frontend::ResponseFormat')
@@ -1540,18 +1551,11 @@ sub _Mask {
         OnlyDynamicFields => 1
     );
 
-    # create a string with the quoted dynamic field names separated by a commas
+    # create a string with the quoted dynamic field names separated by commas
     if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        my $FirstItem = 1;
         FIELD:
         for my $Field ( @{$DynamicFieldNames} ) {
-            if ($FirstItem) {
-                $FirstItem = 0;
-            }
-            else {
-                $Param{DynamicFieldNamesStrg} .= ', ';
-            }
-            $Param{DynamicFieldNamesStrg} .= "'" . $Field . "'";
+            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
         }
     }
 

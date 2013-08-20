@@ -205,7 +205,7 @@ sub new {
 
                     next KEY;
                 }
-                my $Instance = $Object->new(%Param);
+                my $Instance = $Object->new( %{$Self} );
                 if ( ref $Instance ne $Object ) {
                     $Self->{'LogObject'}->Log(
                         'Priority' => 'error',
@@ -645,8 +645,6 @@ sub Prepare {
         );
         return;
     }
-
-    my $cols = $Self->{Cursor}->{NAME};
 
     for my $DBListener ( @{ $Self->{DBListeners} } ) {
         $DBListener->PostPrepare( SQL => $SQL, Bind => \@Array );
