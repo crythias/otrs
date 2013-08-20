@@ -61,6 +61,7 @@ sub new {
         'IsACLReducible'               => 1,
         'IsNotificationEventCondition' => 1,
         'IsSortable'                   => 0,
+        'IsFiltrable'                  => 0,
         'IsStatsCondition'             => 1,
         'IsCustomerInterfaceCapable'   => 1,
     };
@@ -280,21 +281,15 @@ EOF
 
         my $FieldsToUpdate;
         if ( IsArrayRefWithData( $Param{UpdatableFields} ) ) {
-            my $FirstItem = 1;
-            FIELD:
-            for my $Field ( @{ $Param{UpdatableFields} } ) {
-                next FIELD if $Field eq $FieldName;
-                if ($FirstItem) {
-                    $FirstItem = 0;
-                }
-                else {
-                    $FieldsToUpdate .= ', ';
-                }
-                $FieldsToUpdate .= "'" . $Field . "'";
-            }
+
+            # Remove current field from updatable fields list
+            my @FieldsToUpdate = grep { $_ ne $FieldName } @{ $Param{UpdatableFields} };
+
+            # quote all fields, put commas in between them
+            $FieldsToUpdate = join( ', ', map {"'$_'"} @FieldsToUpdate );
         }
 
-        #add js to call FormUpdate()
+        # add js to call FormUpdate()
         $HTMLString .= <<"EOF";
 <!--dtl:js_on_document_complete-->
 <script type="text/javascript">//<![CDATA[

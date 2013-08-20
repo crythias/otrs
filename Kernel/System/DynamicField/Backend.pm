@@ -1067,8 +1067,10 @@ creates the field HTML to be used in search masks.
                                                           #       . 'DynamicField_' . $DynamicFieldConfig->{Name} . 'StopSecond=59;';
                                                           #
                                                           #   $Value =  1;
-        ConfirmationCheckboxes => 0                       # or 1, to dislay confirmation checkboxes
-        UseLabelHints          => 1                       # or 0, default 1. To display seach hints in labels
+        ConfirmationCheckboxes => 0,                      # or 1, to dislay confirmation checkboxes
+        UseLabelHints          => 1,                      # or 0, default 1. To display seach hints in labels
+        Type                   => 'some type',            # search preference type
+
     );
 
     Returns {
@@ -1141,6 +1143,7 @@ extracts the value of a dynamic field from the param object or search profile.
         Profile                => $ProfileData,           # the serach profile
         ReturnProfileStructure => 0,                      # 0 || 1, default 0
                                                           #   Returns the structured values as got from the http request
+        Type                   => 'some type',            # search preference type
     );
 
     Returns $Value;                                       # depending on each field type e.g.
@@ -1268,6 +1271,84 @@ sub SearchFieldValueGet {
     return $Self->{$DynamicFieldBackend}->SearchFieldValueGet(%Param);
 }
 
+=item SearchFieldPreferences()
+
+Returns the search field preferences of the backend.
+
+    my $SearchFieldPreferences = $BackendObject->SearchFieldPreferences(
+        DynamicFieldConfig => $DynamicFieldConfig,       # complete config of the DynamicField
+    );
+
+    Returns (example for Date and DateTime):
+
+    $SearchFieldPreferences = [
+        {
+            Type        => 'TimePoint',
+            LabelSuffix => 'before/after',
+        },
+        {
+            Type        => 'TimeSlot',
+            LabelSuffix => 'between',
+        },
+    ];
+
+=cut
+
+sub SearchFieldPreferences {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(DynamicFieldConfig)) {
+        if ( !$Param{$Needed} ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    # check DynamicFieldConfig (general)
+    if ( !IsHashRefWithData( $Param{DynamicFieldConfig} ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "The field configuration is invalid",
+        );
+        return;
+    }
+
+    # check DynamicFieldConfig (internally)
+    for my $Needed (qw(ID FieldType ObjectType)) {
+        if ( !$Param{DynamicFieldConfig}->{$Needed} ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message  => "Need $Needed in DynamicFieldConfig!",
+            );
+            return;
+        }
+    }
+
+    # set the dynamic field specific backend
+    my $DynamicFieldBackend = 'DynamicField' . $Param{DynamicFieldConfig}->{FieldType} . 'Object';
+
+    if ( !$Self->{$DynamicFieldBackend} ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Backend $Param{DynamicFieldConfig}->{FieldType} is invalid!",
+        );
+        return;
+    }
+
+    # verify if function is available
+    return if !$Self->{$DynamicFieldBackend}->can('SearchFieldPreferences');
+
+    # call SearchFieldPreferences on the specific backend
+    return $Self->{$DynamicFieldBackend}->SearchFieldPreferences(
+        %Param,
+    );
+
+}
+
 =item SearchFieldParameterBuild()
 
 build the search parameters to be passed to the search engine.
@@ -1276,6 +1357,7 @@ build the search parameters to be passed to the search engine.
         DynamicFieldConfig   => $DynamicFieldConfig,    # complete config of the DynamicField
         LayoutObject         => $LayoutObject,          # optional
         Profile              => $ProfileData,           # the search profile
+        Type                 => 'some type',            # search preference type
     );
 
     Returns
@@ -1988,8 +2070,7 @@ sub BuildSelectionDataGet {
 
 =head2 Functions For IsStatsCondition Behavior
 
-The following functions should be only used if the dynamic field has
-IsStatsCondition behavior
+The following functions should be only used if the dynamic field has IsStatsCondition behavior
 
 =over 4
 
@@ -2143,8 +2224,8 @@ sub StatsSearchFieldParameterBuild {
 
 =head2 Functions For IsNotificationEventCondition Behavior
 
-The following functions should be only used if the dynamic field has
-IsNotificationEventCondition behavior
+The following functions should be only used if the dynamic field has IsNotificationEventCondition
+behavior
 
 =over 4
 
@@ -2220,6 +2301,88 @@ sub ObjectMatch {
 
     # call ObjectMatch on the specific backend
     return $Self->{$DynamicFieldBackend}->ObjectMatch(%Param);
+}
+
+=back
+
+=cut
+
+=head2 Functions For IsFiltrable Behavior
+
+The following functions should be only used if the dynamic field has IsFiltrable behavior
+
+=over 4
+
+=cut
+
+=item ColumnFilterValuesGet()
+
+get the list distinct values for a dynamic field from a list of tickets
+
+    my $ColumnFilterValues = $BackendObject->ColumnFilterValuesGet(
+        DynamicFieldConfig => $DynamicFieldConfig,      #DynamicField configuraction
+        LayoutObject       => $LayoutObject,
+        TicketIDs          => [23, 1, 56, 74],          # array ref list of ticket IDs
+    );
+
+    Returns:
+
+    $HistoricalValues{
+        ValueA => 'ValueA',
+        ValueB => 'ValueB',
+        ValueC => 'ValueC'
+    };
+=cut
+
+sub ColumnFilterValuesGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(DynamicFieldConfig LayoutObject TicketIDs)) {
+        if ( !$Param{$Needed} ) {
+            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
+            return;
+        }
+    }
+
+    # check DynamicFieldConfig (general)
+    if ( !IsHashRefWithData( $Param{DynamicFieldConfig} ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "The field configuration is invalid",
+        );
+        return;
+    }
+
+    # check DynamicFieldConfig (internally)
+    for my $Needed (qw(ID FieldType ObjectType)) {
+        if ( !$Param{DynamicFieldConfig}->{$Needed} ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message  => "Need $Needed in DynamicFieldConfig!"
+            );
+            return;
+        }
+    }
+
+    # set the dynamic filed specific backend
+    my $DynamicFieldBackend = 'DynamicField' . $Param{DynamicFieldConfig}->{FieldType} . 'Object';
+
+    if ( !$Self->{$DynamicFieldBackend} ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Backend $Param{DynamicFieldConfig}->{FieldType} is invalid!"
+        );
+        return;
+    }
+
+    # verify if function is available
+    return if !$Self->{$DynamicFieldBackend}->can('ColumnFilterValuesGet');
+
+    # call ColumnFilterValuesGet on the specific backend
+    return $Self->{$DynamicFieldBackend}->ColumnFilterValuesGet(
+        %Param
+    );
 }
 
 =back

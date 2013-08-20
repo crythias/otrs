@@ -251,7 +251,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichText" Required="1" Valid="1" ConfigLevel="200">
-        <Description Translatable="1">Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.</Description>
+        <Description Translatable="1">Uses richtext for viewing and editing: articles, salutations, signatures, standard templates, auto responses and notifications.</Description>
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
@@ -266,7 +266,7 @@
         <Group>Framework</Group>
         <SubGroup>Core::Web</SubGroup>
         <Setting>
-            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.0/</String>
+            <String Regex="">&lt;OTRS_CONFIG_Frontend::WebPath&gt;js/thirdparty/ckeditor-4.2/</String>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="Frontend::RichTextWidth" Required="1" Valid="1">
@@ -3968,11 +3968,13 @@ via the Preferences button after logging in.
                 </NavBar>
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
+                    <CSS>Core.AllocationList.css</CSS>
                     <CSS>thirdparty/fullcalendar-1.6.1/fullcalendar.css</CSS>
                     <JavaScript>thirdparty/flot-0.8.1/excanvas.js</JavaScript>
                     <JavaScript>thirdparty/flot-0.8.1/jquery.flot.js</JavaScript>
                     <JavaScript>Core.UI.Chart.js</JavaScript>
                     <JavaScript>Core.UI.DnD.js</JavaScript>
+                    <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.Dashboard.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-1.6.1/fullcalendar.min.js</JavaScript>
                 </Loader>
@@ -4011,10 +4013,12 @@ via the Preferences button after logging in.
                     <Prio>60</Prio>
                 </NavBar>
                 <Loader>
+                    <CSS>Core.AllocationList.css</CSS>
                     <JavaScript>thirdparty/flot-0.8.1/excanvas.js</JavaScript>
                     <JavaScript>thirdparty/flot-0.8.1/jquery.flot.js</JavaScript>
                     <JavaScript>Core.UI.Chart.js</JavaScript>
                     <JavaScript>Core.UI.DnD.js</JavaScript>
+                    <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.Dashboard.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -5693,8 +5697,8 @@ M
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="StandardResponse2QueueByCreating" Required="0" Valid="0">
-        <Description Translatable="1">List of default StandardResponses which are assigned automatically to new Queues upon creation.</Description>
+    <ConfigItem Name="StandardTemplate2QueueByCreating" Required="0" Valid="0">
+        <Description Translatable="1">List of default Standard Templates which are assigned automatically to new Queues upon creation.</Description>
         <Group>Framework</Group>
         <SubGroup>Core</SubGroup>
         <Setting>
@@ -6137,6 +6141,20 @@ M
                 <Item Key="QueryDelay">100</Item>
                 <Item Key="MaxResultsDisplayed">20</Item>
                 <Item Key="ButtonText" Translatable="1">Search Customer</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AutoComplete::Agent###UserSearch" Required="0" Valid="1">
+        <Description Translatable="1">Defines the config options for the autocompletion feature.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="AutoCompleteActive">1</Item>
+                <Item Key="MinQueryLength">2</Item>
+                <Item Key="QueryDelay">100</Item>
+                <Item Key="MaxResultsDisplayed">20</Item>
+                <Item Key="ButtonText" Translatable="1">Search User</Item>
             </Hash>
         </Setting>
     </ConfigItem>

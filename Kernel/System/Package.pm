@@ -21,8 +21,7 @@ use Kernel::System::Loader;
 use Kernel::System::SysConfig;
 use Kernel::System::WebUserAgent;
 use Kernel::System::XML;
-
-use Kernel::System::VariableCheck qw(IsArrayRefWithData);
+use Kernel::System::VariableCheck qw(:all);
 
 =head1 NAME
 
@@ -307,6 +306,11 @@ sub RepositoryAdd {
 
     # get package attributes
     my %Structure = $Self->PackageParse(%Param);
+
+    if ( !IsHashRefWithData( \%Structure ) ) {
+        $Self->{LogObject}->Log( Priority => 'error', Message => 'Invalid Package!' );
+        return;
+    }
     if ( !$Structure{Name} ) {
         $Self->{LogObject}->Log( Priority => 'error', Message => 'Need Name!' );
         return;
@@ -1949,7 +1953,17 @@ sub PackageParse {
         return %{$Cache} if $Cache;
     }
 
-    my @XMLARRAY = $Self->{XMLObject}->XMLParse(%Param);
+    my @XMLARRAY = eval {
+        $Self->{XMLObject}->XMLParse(%Param);
+    };
+
+    if ( !IsArrayRefWithData( \@XMLARRAY ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Invalid XMLParse in PackageParse()!",
+        );
+        return;
+    }
 
     # cleanup global vars
     undef $Self->{Package};
@@ -2066,6 +2080,15 @@ sub PackageParse {
 
             push @{ $Self->{Package}->{$Key}->{$Type} }, $Tag;
         }
+    }
+
+    # check if a structure is present
+    if ( !IsHashRefWithData( $Self->{Package} ) ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Invalid package structure in PackageParse()!",
+        );
+        return;
     }
 
     # return package structure
@@ -3008,7 +3031,7 @@ sub _Encode {
 =item _PackageUninstallMerged()
 
 ONLY CALL THIS METHOD FROM A DATABASE UPGRADING SCRIPT DURING FRAMEWORK UPDATES
-OR FROM A CODEUPGRADE SECTION IN AN SOPM FLE OF A PACKAGE THAT INCLUDES A MERGED FEATURE ADDON.
+OR FROM A CODEUPGRADE SECTION IN AN SOPM FILE OF A PACKAGE THAT INCLUDES A MERGED FEATURE ADDON.
 
 Uninstall an already framework (or module) merged package.
 

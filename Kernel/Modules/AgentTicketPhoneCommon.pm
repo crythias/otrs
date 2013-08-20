@@ -23,6 +23,8 @@ use Kernel::System::DynamicField;
 use Kernel::System::DynamicField::Backend;
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::TemplateGenerator;
+use Kernel::System::StdAttachment;
+use Kernel::System::StandardTemplate;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -41,13 +43,14 @@ sub new {
         }
     }
 
-    $Self->{SystemAddress}      = Kernel::System::SystemAddress->new(%Param);
-    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new(%Param);
-    $Self->{CheckItemObject}    = Kernel::System::CheckItem->new(%Param);
-    $Self->{StateObject}        = Kernel::System::State->new(%Param);
-    $Self->{UploadCacheObject}  = Kernel::System::Web::UploadCache->new(%Param);
-    $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
-    $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{SystemAddress}          = Kernel::System::SystemAddress->new(%Param);
+    $Self->{CustomerUserObject}     = Kernel::System::CustomerUser->new(%Param);
+    $Self->{CheckItemObject}        = Kernel::System::CheckItem->new(%Param);
+    $Self->{StateObject}            = Kernel::System::State->new(%Param);
+    $Self->{UploadCacheObject}      = Kernel::System::Web::UploadCache->new(%Param);
+    $Self->{DynamicFieldObject}     = Kernel::System::DynamicField->new(%Param);
+    $Self->{BackendObject}          = Kernel::System::DynamicField::Backend->new(%Param);
+    $Self->{StandardTemplateObject} = Kernel::System::StandardTemplate->new(%Param);
 
     # get form id
     $Self->{FormID} = $Self->{ParamObject}->GetParam( Param => 'FormID' );
@@ -188,7 +191,10 @@ sub Run {
 
     # get params
     my %GetParam;
-    for my $Key (qw(Body Subject TimeUnits NextStateID Year Month Day Hour Minute)) {
+    for my $Key (
+        qw(Body Subject TimeUnits NextStateID Year Month Day Hour Minute StandardTemplateID )
+        )
+    {
         $GetParam{$Key} = $Self->{ParamObject}->GetParam( Param => $Key );
     }
 
@@ -354,10 +360,11 @@ sub Run {
             NextStates   => $Self->_GetNextStates(
                 %GetParam,
             ),
-            CustomerData     => \%CustomerData,
-            Subject          => $Subject,
-            Body             => $Body,
-            DynamicFieldHTML => \%DynamicFieldHTML,
+            StandardTemplates => $Self->_GetStandardTemplates(%Ticket),
+            CustomerData      => \%CustomerData,
+            Subject           => $Subject,
+            Body              => $Body,
+            DynamicFieldHTML  => \%DynamicFieldHTML,
         );
         $Output .= $Self->{LayoutObject}->Footer(
             Type => 'Small',
@@ -596,8 +603,9 @@ sub Run {
                 NextStates   => $Self->_GetNextStates(
                     %GetParam,
                 ),
-                CustomerData => \%CustomerData,
-                Attachments  => \@Attachments,
+                StandardTemplates => $Self->_GetStandardTemplates(%Ticket),
+                CustomerData      => \%CustomerData,
+                Attachments       => \@Attachments,
                 %GetParam,
                 DynamicFieldHTML => \%DynamicFieldHTML,
                 Errors           => \%Error,
@@ -778,6 +786,7 @@ sub Run {
         }
     }
     elsif ( $Self->{Subaction} eq 'AJAXUpdate' ) {
+        my $ElementChanged = $Self->{ParamObject}->GetParam( Param => 'ElementChanged' ) || '';
 
         my $NextStates = $Self->_GetNextStates(
             %GetParam,
@@ -842,6 +851,71 @@ sub Run {
             );
         }
 
+        my @TemplateAJAX;
+
+        # update ticket body and attachements if needed.
+        if ( $ElementChanged eq 'StandardTemplateID' ) {
+            my @TicketAttachments;
+            my $TemplateText;
+
+            # remove all attachments from the Upload cache
+            my $RemoveSuccess = $Self->{UploadCacheObject}->FormIDRemove(
+                FormID => $Self->{FormID},
+            );
+            if ( !$RemoveSuccess ) {
+                $Self->{LogObject}->Log(
+                    Priority => 'error',
+                    Message  => "Form attachments coud not be deleted!",
+                );
+            }
+
+            # get the template text and set new attachments if a template is selected
+            if ( IsPositiveInteger( $GetParam{StandardTemplateID} ) ) {
+                my $TemplateGenerator = Kernel::System::TemplateGenerator->new( %{$Self} );
+
+                # set template text, replace smart tags (limited as ticket is not created)
+                $TemplateText = $TemplateGenerator->Template(
+                    TicketID   => $Self->{TicketID},
+                    TemplateID => $GetParam{StandardTemplateID},
+                    UserID     => $Self->{UserID},
+                );
+
+                # create StdAttachmentObject
+                my $StdAttachmentObject = Kernel::System::StdAttachment->new( %{$Self} );
+
+                # add std. attachments to ticket
+                my %AllStdAttachments
+                    = $StdAttachmentObject->StdAttachmentStandardTemplateMemberList(
+                    StandardTemplateID => $GetParam{StandardTemplateID},
+                    );
+                for ( sort keys %AllStdAttachments ) {
+                    my %AttachmentsData = $StdAttachmentObject->StdAttachmentGet( ID => $_ );
+                    $Self->{UploadCacheObject}->FormIDAddFile(
+                        FormID => $Self->{FormID},
+                        %AttachmentsData,
+                    );
+                }
+
+                # send a list of attachments in the upload cache back to the clientside JavaScript
+                # which renders then the list of currently uploaded attachments
+                @TicketAttachments = $Self->{UploadCacheObject}->FormIDGetAllFilesMeta(
+                    FormID => $Self->{FormID},
+                );
+            }
+
+            @TemplateAJAX = (
+                {
+                    Name => 'RichText',
+                    Data => $TemplateText || '',
+                },
+                {
+                    Name     => 'TicketAttachments',
+                    Data     => \@TicketAttachments,
+                    KeepData => 1,
+                },
+            );
+        }
+
         my $JSON = $Self->{LayoutObject}->BuildSelectionJSON(
             [
                 {
@@ -852,6 +926,7 @@ sub Run {
                     Max         => 100,
                 },
                 @DynamicFieldAJAX,
+                @TemplateAJAX,
             ],
         );
         return $Self->{LayoutObject}->Attachment(
@@ -925,6 +1000,40 @@ sub _GetUsers {
     return \%ShownUsers;
 }
 
+sub _GetStandardTemplates {
+    my ( $Self, %Param ) = @_;
+
+    # get create templates
+    my %Templates;
+
+    # check needed
+    return \%Templates if !$Param{QueueID} && !$Param{TicketID};
+
+    my $QueueID = $Param{QueueID} || '';
+    if ( !$Param{QueueID} && $Param{TicketID} ) {
+
+        # get QueueID from the ticket
+        my %Ticket = $Self->{TicketObject}->TicketGet(
+            TicketID      => $Param{TicketID},
+            DynamicFields => 0,
+            UserID        => $Self->{UserID},
+        );
+        $QueueID = $Ticket{QueueID} || '';
+    }
+
+    # fetch all std. templates
+    my %StandardTemplates = $Self->{QueueObject}->QueueStandardTemplateMemberList(
+        QueueID       => $QueueID,
+        TemplateTypes => 1,
+    );
+
+    # return empty hash if there are no templates for this screen
+    return \%Templates if !IsHashRefWithData( $StandardTemplates{PhoneCall} );
+
+    # return just the templates for this screen
+    return $StandardTemplates{PhoneCall};
+}
+
 sub _MaskPhone {
     my ( $Self, %Param ) = @_;
 
@@ -934,18 +1043,10 @@ sub _MaskPhone {
         OnlyDynamicFields => 1
     );
 
-    # create a string with the quoted dynamic field names separated by a commas
+    # create a string with the quoted dynamic field names separated by commas
     if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        my $FirstItem = 1;
-        FIELD:
         for my $Field ( @{$DynamicFieldNames} ) {
-            if ($FirstItem) {
-                $FirstItem = 0;
-            }
-            else {
-                $Param{DynamicFieldNamesStrg} .= ', ';
-            }
-            $Param{DynamicFieldNamesStrg} .= "'" . $Field . "'";
+            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
         }
     }
 
@@ -975,6 +1076,29 @@ sub _MaskPhone {
         $Self->{LayoutObject}->Block(
             Name => 'CustomerTable',
             Data => \%Param,
+        );
+    }
+
+    # check if exists create templates regardless the queue
+    my %StandardTemplates = $Self->{StandardTemplateObject}->StandardTemplateList(
+        Valid => 1,
+        Type  => 'PhoneCall',
+    );
+
+    # build text template string
+    if ( IsHashRefWithData( \%StandardTemplates ) ) {
+        $Param{StandardTemplateStrg} = $Self->{LayoutObject}->BuildSelection(
+            Data       => $Param{StandardTemplates}  || {},
+            Name       => 'StandardTemplateID',
+            SelectedID => $Param{StandardTemplateID} || '',
+            PossibleNone => 1,
+            Sort         => 'AlphanumericValue',
+            Translation  => 0,
+            Max          => 200,
+        );
+        $Self->{LayoutObject}->Block(
+            Name => 'StandardTemplate',
+            Data => {%Param},
         );
     }
 
@@ -1108,7 +1232,7 @@ sub _GetFieldsToUpdate {
 
     # set the fields that can be updateable via AJAXUpdate
     if ( !$Param{OnlyDynamicFields} ) {
-        @UpdatableFields = qw( NextStateID );
+        @UpdatableFields = qw( NextStateID StandardTemplateID );
     }
 
     # cycle through the activated Dynamic Fields for this screen

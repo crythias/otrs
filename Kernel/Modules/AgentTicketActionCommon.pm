@@ -424,7 +424,7 @@ sub Run {
                 )
             {
                 $Error{'SLAInvalid'} = ' ServerError';
-            }            
+            }
 
             # check time units, but only if the current screen has a note
             #   (accounted time can only be stored if and article is generated)
@@ -700,16 +700,17 @@ sub Run {
 
         # add note
         my $ArticleID = '';
-        if ( $Self->{Config}->{Note} && ($GetParam{Subject} || $GetParam{Body}) ) {
+        if ( $Self->{Config}->{Note} && ( $GetParam{Subject} || $GetParam{Body} ) ) {
 
-            if (!$GetParam{Subject}) {
-                if ($Self->{Config}->{Subject}) {
+            if ( !$GetParam{Subject} ) {
+                if ( $Self->{Config}->{Subject} ) {
                     my $Subject = $Self->{LayoutObject}->Output(
                         Template => $Self->{Config}->{Subject},
                     );
                     $GetParam{Subject} = $Subject;
                 }
-                $GetParam{Subject} = $GetParam{Subject} || $Self->{LayoutObject}->{LanguageObject}->Get('No subject');
+                $GetParam{Subject} = $GetParam{Subject}
+                    || $Self->{LayoutObject}->{LanguageObject}->Get('No subject');
             }
 
             # if there is no ArticleTypeID, use the default value
@@ -1221,18 +1222,10 @@ sub _Mask {
         OnlyDynamicFields => 1,
     );
 
-    # create a string with the quoted dynamic field names separated by a commas
+    # create a string with the quoted dynamic field names separated by commas
     if ( IsArrayRefWithData($DynamicFieldNames) ) {
-        my $FirstItem = 1;
-        FIELD:
         for my $Field ( @{$DynamicFieldNames} ) {
-            if ($FirstItem) {
-                $FirstItem = 0;
-            }
-            else {
-                $Param{DynamicFieldNamesStrg} .= ', ';
-            }
-            $Param{DynamicFieldNamesStrg} .= "'" . $Field . "'";
+            $Param{DynamicFieldNamesStrg} .= ", '" . $Field . "'";
         }
     }
 
@@ -1279,7 +1272,7 @@ sub _Mask {
                 Data         => $Services,
                 Name         => 'ServiceID',
                 SelectedID   => $Param{ServiceID},
-                Class        => 'Validate_Required '  . ($Param{ServiceInvalid} || ' '),
+                Class        => 'Validate_Required ' . ( $Param{ServiceInvalid} || ' ' ),
                 PossibleNone => 1,
                 TreeView     => $TreeView,
                 Sort         => 'TreeView',
@@ -1324,7 +1317,7 @@ sub _Mask {
                 Data         => \%SLA,
                 Name         => 'SLAID',
                 SelectedID   => $Param{SLAID},
-                Class        => 'Validate_Required '  . ($Param{SLAInvalid} || ' '),
+                Class        => 'Validate_Required ' . ( $Param{SLAInvalid} || ' ' ),
                 PossibleNone => 1,
                 Sort         => 'AlphanumericValue',
                 Translation  => 0,
