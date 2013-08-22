@@ -67,6 +67,11 @@ sub new {
     my @ColumnsEnabled;
     my @ColumnsAvailable;
 
+    # take general settings if not defined for the screen
+    if ( !defined $Self->{Config}->{DefaultColumns} ) {
+        $Self->{Config}->{DefaultColumns} = $Self->{ConfigObject}->Get('DefaultOverviewColumns');
+    }
+
     # check for default settings
     if (
         $Self->{Config}->{DefaultColumns}
@@ -103,6 +108,11 @@ sub new {
         }
     }
 
+    # always set TicketNumber
+    if ( !grep { $_ eq 'TicketNumber' } @ColumnsEnabled ) {
+        unshift @ColumnsEnabled, 'TicketNumber';
+    }
+
     $Self->{ColumnsEnabled}   = \@ColumnsEnabled;
     $Self->{ColumnsAvailable} = \@ColumnsAvailable;
 
@@ -131,7 +141,7 @@ sub new {
 
     # hash with all valid sortable columuns (taken from TicketSearch)
     # SortBy  => 'Age',   # Owner|Responsible|CustomerID|State|TicketNumber|Queue
-    # |Priority|Type|Lock|Title|Service|SLA|PendingTime|EscalationTime
+    # |Priority|Type|Lock|Title|Service|Changed|SLA|PendingTime|EscalationTime
     # | EscalationUpdateTime|EscalationResponseTime|EscalationSolutionTime
     $Self->{ValidSortableColumns} = {
         'Age'                    => 1,
@@ -146,6 +156,7 @@ sub new {
         'Lock'                   => 1,
         'Title'                  => 1,
         'Service'                => 1,
+        'Changed'                => 1,
         'SLA'                    => 1,
         'PendingTime'            => 1,
         'EscalationTime'         => 1,
@@ -271,6 +282,14 @@ sub SortOrderBar {
 
 sub Run {
     my ( $Self, %Param ) = @_;
+
+    # If $Param{EnableColumnFilters} is not sent, we want to disable all filters
+    #   for the current screen. We localize the setting for this sub and change it
+    #   after that, if needed. The original value will be restored after this function.
+    local $Self->{AvailableFilterableColumns} = $Self->{AvailableFilterableColumns};
+    if ( !$Param{EnableColumnFilters} ) {
+        $Self->{AvailableFilterableColumns} = {};    # disable all column filters
+    }
 
     # check needed stuff
     for (qw(TicketIDs PageShown StartHit)) {
@@ -526,34 +545,6 @@ sub Run {
             }
 
         }
-
-        #        # loop through all the general ticket data to get the ones that should be shown
-        #        COLUMN:
-        #        for my $Priority (sort { $a <=> $b} keys %ColumnPriorities ) {
-        #            $TicketData = $ColumnPriorities{$Priority};
-        #
-        #            next COLUMN if !$TicketData;
-        #
-        #            # verify if the current ticket data is defined in the preferences
-        #            if ( exists $Preferences{ 'OTRS' . $TicketData } ) {
-        #
-        #                # if it is enabled, the column should be shown
-        #                if (
-        #                    defined $Preferences{ 'OTRS' . $TicketData }
-        #                    && $Preferences{ 'OTRS' . $TicketData } ne ''
-        #                    )
-        #                {
-        #                    push @Col, $TicketData;
-        #                }
-        #            }
-        #
-        #            # otherwise, read the config
-        #            else {
-        #                if ( $Config->{GeneralTicketData}->{$TicketData} eq '1' ) {
-        #                    push @Col, $TicketData;
-        #                }
-        #            }
-        #        }
 
         my $CSS = '';
         my $OrderBy;

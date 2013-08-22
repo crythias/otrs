@@ -1172,6 +1172,7 @@ sub FatalError {
     $Output .= $Self->Error(%Param);
     $Output .= $Self->Footer();
     $Self->Print( Output => \$Output );
+    exit;
 }
 
 sub SecureMode {
@@ -1180,7 +1181,7 @@ sub SecureMode {
     my $Output = $Self->Header( Area => 'Frontend', Title => 'Secure Mode' );
     $Output .= $Self->Output( TemplateFile => 'AdminSecureMode', Data => \%Param );
     $Output .= $Self->Footer();
-    $Self->Print( Output => \$Output );
+    return $Output;
 }
 
 sub FatalDie {
@@ -3571,6 +3572,7 @@ sub CustomerFatalError {
     $Output .= $Self->Error(%Param);
     $Output .= $Self->CustomerFooter();
     $Self->Print( Output => \$Output );
+    exit;
 }
 
 sub CustomerNavigationBar {

@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-08-20 14:43:44
+    # Last translation file sync: 2013-08-22 10:05:44
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -720,6 +720,7 @@ sub Data {
         'Mark as Spam!' => 'Als Spam makieren!',
         'My Queues' => 'Meine Queues',
         'Shown Tickets' => 'Gezeigte Tickets',
+        'Shown Columns' => 'Gezeigte Spalten',
         'Your email with ticket number "<OTRS_TICKET>" is merged to "<OTRS_MERGE_TO_TICKET>".' =>
             'Ihre E-Mail mit Ticket-Nummer "<OTRS_TICKET>" wurde zu Ticket-Nummer "<OTRS_MERGE_TO_TICKET>" gemerged!',
         'Ticket %s: first response time is over (%s)!' => 'Ticket %s: Reaktionszeit ist abgelaufen (%s)!',
@@ -2708,11 +2709,11 @@ sub Data {
             'Wenn Sie diesen Schritt überspringen, wird die Registrierung Ihres OTRS-Systems ebenfalls übersprungen. Möchten Sie wirklich fortfahren?',
 
         # Template: InstallerDBResult
-        'Database setup successful!' => 'Datenbankeinrichtung erfolgreich!',
+        'Database setup successful!' => 'Datenbank erfolgreich erstellt!',
 
         # Template: InstallerDBStart
         'Install Type' => 'Installationstyp',
-        'Create a database for OTRS' => 'Datenbank für OTRS erstellen',
+        'Create a new database for OTRS' => 'Neue Datenbank für OTRS erstellen',
         'Use an existing database for OTRS' => 'Bestehende Datenbank für OTRS nutzen',
 
         # Template: InstallerDBmssql

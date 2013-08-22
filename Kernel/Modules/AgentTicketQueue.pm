@@ -62,6 +62,13 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    my $SortBy = $Self->{ParamObject}->GetParam( Param => 'SortBy' )
+        || $Self->{Config}->{'SortBy::Default'}
+        || 'Age';
+    my $OrderBy = $Self->{ParamObject}->GetParam( Param => 'OrderBy' )
+        || $Self->{Config}->{'Order::Default'}
+        || 'Up';
+
     # store last queue screen
     $Self->{SessionObject}->UpdateSessionID(
         SessionID => $Self->{SessionID},
@@ -137,16 +144,6 @@ sub Run {
             Equals => $FilterValue,
         };
         $GetColumnFilter{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $FilterValue;
-    }
-
-    my $SortBy = $Self->{Config}->{'SortBy::Default'} || 'Age';
-    if ( $Self->{ParamObject}->GetParam( Param => 'SortBy' ) ) {
-        $SortBy = $Self->{ParamObject}->GetParam( Param => 'SortBy' );
-    }
-
-    my $OrderBy;
-    if ( $Self->{ParamObject}->GetParam( Param => 'OrderBy' ) ) {
-        $OrderBy = $Self->{ParamObject}->GetParam( Param => 'OrderBy' );
     }
 
     # if we have only one queue, check if there
@@ -305,13 +302,14 @@ sub Run {
     if ( $Self->{Subaction} eq 'AJAXFilterUpdate' ) {
 
         my $FilterContent = $Self->{LayoutObject}->TicketListShow(
-            FilterContentOnly => 1,
-            HeaderColumn      => $HeaderColumn,
-            ElementChanged    => $ElementChanged,
-            OriginalTicketIDs => \@OriginalViewableTickets,
-            Action            => 'AgentTicketStatusView',
-            Env               => $Self,
-            View              => $Self->{View},
+            FilterContentOnly   => 1,
+            HeaderColumn        => $HeaderColumn,
+            ElementChanged      => $ElementChanged,
+            OriginalTicketIDs   => \@OriginalViewableTickets,
+            Action              => 'AgentTicketStatusView',
+            Env                 => $Self,
+            View                => $Self->{View},
+            EnableColumnFilters => 1,
         );
 
         if ( !$FilterContent ) {
@@ -378,13 +376,6 @@ sub Run {
             . '=' . $Self->{LayoutObject}->Ascii2Html( Text => $GetColumnFilter{$ColumnName} )
     }
 
-    my $LinkSort = 'QueueID='
-        . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{QueueID} )
-        . ';View=' . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{View} )
-        . ';Filter='
-        . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{Filter} )
-        . $ColumnFilterLink
-        . ';';
     my $LinkPage = 'QueueID='
         . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{QueueID} )
         . ';Filter='
@@ -394,8 +385,19 @@ sub Run {
         . ';OrderBy=' . $Self->{LayoutObject}->Ascii2Html( Text => $OrderBy )
         . $ColumnFilterLink
         . ';';
+    my $LinkSort = 'QueueID='
+        . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{QueueID} )
+        . ';View=' . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{View} )
+        . ';Filter='
+        . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{Filter} )
+        . $ColumnFilterLink
+        . ';';
+
     my $LinkFilter = 'QueueID='
         . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{QueueID} )
+        . ';SortBy=' . $Self->{LayoutObject}->Ascii2Html( Text => $SortBy )
+        . ';OrderBy=' . $Self->{LayoutObject}->Ascii2Html( Text => $OrderBy )
+        . ';View=' . $Self->{LayoutObject}->Ascii2Html( Text => $Self->{View} )
         . ';';
 
     my $LastColumnFilter = $Self->{ParamObject}->GetParam( Param => 'LastColumnFilter' ) || '';
@@ -442,8 +444,9 @@ sub Run {
             LinkSort   => $LinkSort,
             LinkFilter => $LinkFilter,
 
-            OrderBy => $OrderBy,
-            SortBy  => $SortBy,
+            OrderBy             => $OrderBy,
+            SortBy              => $SortBy,
+            EnableColumnFilters => 1,
 
         ),
     );
