@@ -1,4 +1,12 @@
-#3.2.10 2013-??-??
+#3.2.11 2013-??-??
+ - 2013-09-12 Fixed bug#[9728](http://bugs.otrs.org/show_bug.cgi?id=9728) - Bulk action (send email) ignores reply-to address from unknown customers.
+ - 2013-09-06 Fixed bug#[9661](http://bugs.otrs.org/show_bug.cgi?id=9661) - Useless code in DynamicField backend.
+ - 2013-09-06 Fixed bug#[9701](http://bugs.otrs.org/show_bug.cgi?id=9701) - Ticket overview Queue Sort Filter is missing.
+ - 2013-09-04 Fixed bug#[8173](http://bugs.otrs.org/show_bug.cgi?id=8173) - Dashboard Widget "Online" does not save state.
+ - 2013-09-04 Fixed bug#[9188](http://bugs.otrs.org/show_bug.cgi?id=9188) - AgentTicketEmail always loads a signature, even if no queue is selected.
+ - 2013-09-02 Fixed bug#[9672](http://bugs.otrs.org/show_bug.cgi?id=9672) - Undecrypted HTML part displayed when viewing a multipart/alternative PGP encrypted HTML mail.
+
+#3.2.10 2013-08-27
  - 2013-08-20 Fixed bug#[9617](http://bugs.otrs.org/show_bug.cgi?id=9617) - Event-based notifications are not sent for process-tickets.
  - 2013-08-14 Fixed bug#[9666](http://bugs.otrs.org/show_bug.cgi?id=9666) - Installing an invalid package cause an server error on package manager.
  - 2013-08-06 Fixed bug#[8408](http://bugs.otrs.org/show_bug.cgi?id=8408) - No separator used in CSV files if UserCSVSeparator enabled and not set.
@@ -12,7 +20,6 @@
  - 2013-07-24 Updated Danish translation, thanks to Lars Jørgensen!
  - 2013-07-22 Fixed bug#[9541](http://bugs.otrs.org/show_bug.cgi?id=9541) - Package manager cannot use https proxy.
  - 2013-07-22 Fixed bug pull#[83](https://github.com/OTRS/otrs/pull/83) - Pagination next page link, thanks to Renée Bäcker.
- - 2013-07-18 Fixed bug#[9613](http://bugs.otrs.org/show_bug.cgi?id=9613) - CustomerTicketZoom shows JSLint error if no dynamic fields are configured
  - 2013-07-17 Updated Turkish translation, thanks to Sefer Şimşek @ Network Group!
  - 2013-07-17 Fixed bug#[9594](http://bugs.otrs.org/show_bug.cgi?id=9594) - No auro-reply sent with multiple From addresses in
     AgentTicketPhone on PostgreSQL and Oracle.
