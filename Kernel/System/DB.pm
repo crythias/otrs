@@ -8,6 +8,7 @@
 # --
 
 package Kernel::System::DB;
+## nofilter(TidyAll::Plugin::OTRS::Perl::PODSpelling)
 
 use strict;
 use warnings;
@@ -16,8 +17,6 @@ use DBI;
 
 use Kernel::System::Time;
 use Kernel::System::VariableCheck qw(:all);
-
-use vars qw(@ISA);
 
 =head1 NAME
 
@@ -747,7 +746,12 @@ sub GetColumnNames {
 
     my $ColumnNames = $Self->{Cursor}->{NAME};
 
-    return @{$ColumnNames};
+    my @Result;
+    if ( ref $ColumnNames eq 'ARRAY' ) {
+        @Result = @{$ColumnNames};
+    }
+
+    return @Result;
 }
 
 =item SelectAll()
@@ -1001,7 +1005,9 @@ sub GetTableData {
     my %Data;
 
     my $SQL = "SELECT $What FROM $Table ";
-    $SQL .= ' WHERE ' . $Where if ($Where);
+    if ($Where) {
+        $SQL .= ' WHERE ' . $Where;
+    }
 
     if ( !$Where && $Valid ) {
         my @ValidIDs;

@@ -12,8 +12,6 @@ package Kernel::System::Loader;
 use strict;
 use warnings;
 
-use vars qw(@ISA);
-
 use Kernel::System::CacheInternal;
 
 use CSS::Minifier qw();
@@ -446,8 +444,8 @@ sub CacheDelete {
                 Directory => $Folder,
                 Filter    => 'css-cache',
             );
-            if (@CacheFolder) {
-                push @CacheFoldersList, $CacheFolder[0] if -d $CacheFolder[0];
+            if ( @CacheFolder && -d $CacheFolder[0] ) {
+                push @CacheFoldersList, $CacheFolder[0];
             }
         }
     }

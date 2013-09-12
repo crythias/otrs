@@ -17,7 +17,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-08-22 10:05:59
+    # Last translation file sync: 2013-09-05 16:51:54
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -48,6 +48,7 @@ sub Data {
         'Cancel' => '取消',
         'Reset' => 'リセット',
         'more than ... ago' => '',
+        'in more than ...' => '',
         'within the last ...' => '',
         'within the next ...' => '',
         'Created within the last' => '',
@@ -187,6 +188,7 @@ sub Data {
         'Search' => '検索',
         'and' => '?',
         'between' => 'この間',
+        'before/after' => '',
         'Fulltext Search' => '全文検索',
         'Data' => 'データ',
         'Options' => 'オプション',
@@ -689,7 +691,7 @@ sub Data {
         'Create new Email Ticket and send this out (Outbound)' => '新規メールチケットを作成し送信（外部）',
         'Create new Phone Ticket (Inbound)' => '新規電話チケット作成（受信）',
         'Address %s replaced with registered customer address.' => '',
-        'Customer automatically added in Cc.' => '',
+        'Customer user automatically added in Cc.' => '',
         'Overview of all open Tickets' => '全対応中チケット一覧',
         'Locked Tickets' => 'ロック済チケット',
         'My Locked Tickets' => '担当のロック済チケット',
@@ -936,26 +938,26 @@ sub Data {
         'Example response' => '応答例',
 
         # Template: AdminCustomerCompany
-        'Customer Company Management' => '顧客企業管理',
+        'Customer Management' => '顧客管理',
         'Wildcards like \'*\' are allowed.' => 'ワイルドカード（*）が使用できます。',
-        'Add customer company' => '顧客企業を追加',
+        'Add customer' => '顧客を追加',
         'Select' => '選択',
-        'Please enter a search term to look for customer companies.' => '顧客企業の検索文字を入力してください',
-        'Add Customer Company' => '顧客企業を追加',
+        'Please enter a search term to look for customers.' => '顧客の検索文字列を入力してください',
+        'Add Customer' => '顧客を追加',
+        'Edit Customer' => '顧客を編集',
 
         # Template: AdminCustomerUser
-        'Customer Management' => '顧客管理',
+        'Customer User Management' => '',
         'Back to search results' => '',
-        'Add customer' => '顧客を追加',
+        'Add customer user' => '',
         'Hint' => 'ヒント',
-        'Customer will be needed to have a customer history and to login via customer panel.' =>
-            '顧客は顧客履歴の使用と顧客パネルからログインするために必要です。',
-        'Please enter a search term to look for customers.' => '顧客の検索文字列を入力してください',
+        'Customer user are needed to have a customer history and to login via customer panel.' =>
+            '',
         'Last Login' => '最終ログイン',
         'Login as' => 'このアドレスとしてログイン',
         'Switch to customer' => '',
-        'Add Customer' => '顧客を追加',
-        'Edit Customer' => '顧客を編集',
+        'Add Customer User' => '',
+        'Edit Customer User' => '',
         'This field is required and needs to be a valid email address.' =>
             'ここは必須領域で、有効なメールアドレスである必要があります。',
         'This email address is not allowed due to the system configuration.' =>
@@ -1197,7 +1199,7 @@ sub Data {
         'Archive selected tickets' => '書庫の選択済みチケット',
         'Add Note' => '新規注釈',
         'Time units' => '時間単位',
-        '(work units)' => '(稼働時間)',
+        '(work units)' => '',
         'Ticket Commands' => 'チケットコマンド',
         'Send agent/customer notifications on changes' => '変更を担当者／顧客に通知する',
         'CMD' => 'コマンド',
@@ -1662,6 +1664,8 @@ sub Data {
         # Template: AdminProcessManagementActivityDialog
         'Please note that changing this activity dialog will affect the following activities' =>
             '',
+        'Please note that customer users will not be able to see or use the following fields: Owner, Responsible, Lock, PendingTime and CustomerID.' =>
+            '',
         'Activity Dialog' => '',
         'Activity dialog Name' => '',
         'Available in' => '',
@@ -2030,6 +2034,7 @@ sub Data {
         'Invalid year' => '無効な年',
         'Invalid month' => '無効な月',
         'Invalid day' => '無効な日',
+        'Show more' => '',
 
         # Template: AdminSystemAddress
         'System Email Addresses Management' => 'システムメールアドレスの管理',
@@ -2119,6 +2124,7 @@ sub Data {
         'It is going to be deleted from the field, please try again.' => '',
 
         # Template: AgentCustomerTableView
+        'Note: Customer is invalid!' => '',
 
         # Template: AgentDashboard
         'Dashboard' => 'ダッシュボード',
@@ -2356,9 +2362,10 @@ sub Data {
         # Template: AgentTicketEmail
         'Create New Email Ticket' => '新規メールチケットの作成',
         'From queue' => 'キューから',
-        'To customer' => '',
-        'Please include at least one customer for the ticket.' => '',
-        'Select this customer as the main customer.' => '',
+        'To customer user' => '',
+        'Please include at least one customer user for the ticket.' => '',
+        'Select this customer user as the main customer user.' => '',
+        'Remove Ticket Customer User' => '',
         'Get all' => '全てを取得',
         'Text Template' => '',
 
@@ -2411,7 +2418,8 @@ sub Data {
 
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => '新規電話チケットの作成',
-        'From customer' => '顧客メールアドレス',
+        'Please include at least one customer for the ticket.' => '',
+        'Select this customer as the main customer.' => '',
         'To queue' => 'キューへ',
 
         # Template: AgentTicketPhoneCommon
@@ -2573,6 +2581,7 @@ sub Data {
 
         # Template: CustomerTicketPrint
         'Ticket Print' => '',
+        'Ticket Dynamic Fields' => '',
 
         # Template: CustomerTicketProcess
 
@@ -2987,7 +2996,7 @@ sub Data {
         'Comment for new history entries in the customer interface.' => '顧客インタフェースの新規履歴エントリーのためのコメントです。',
         'Company Status' => '',
         'Company Tickets' => '企業チケット',
-        'Company name for the customer web interface. Will also be included in emails as an X-Header.' =>
+        'Company name which will be included in outgoing emails as an X-Header.' =>
             '',
         'Configure Processes.' => '',
         'Configure and manage ACLs.' => '',
@@ -3005,7 +3014,7 @@ sub Data {
         'Create and manage Service Level Agreements (SLAs).' => 'サービスレベル契約 (SLA) の作成と管理',
         'Create and manage agents.' => '担当者の作成と管理',
         'Create and manage attachments.' => '添付ファイルの作成と管理',
-        'Create and manage companies.' => '企業の作成と管理',
+        'Create and manage customer users.' => '',
         'Create and manage customers.' => '顧客の作成と管理',
         'Create and manage dynamic fields.' => '',
         'Create and manage event based notifications.' => 'イベント経由通知の作成と管理',
@@ -3028,6 +3037,8 @@ sub Data {
             '顧客に対して表示されるチケットがまだ無いページのための、カスタム・テキストです。',
         'Customer Company Administration' => '',
         'Customer Company Information' => '',
+        'Customer User <-> Groups' => '',
+        'Customer User <-> Services' => '',
         'Customer User Administration' => '',
         'Customer Users' => '顧客ユーザー',
         'Customer item (icon) which shows the closed tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
@@ -3036,7 +3047,6 @@ sub Data {
             '',
         'CustomerName' => '',
         'Customers <-> Groups' => '顧客 <-> グループ',
-        'Customers <-> Services' => '顧客 <-> サービス',
         'Data used to export the search result in CSV format.' => '検索結果をCSVフォーマットでエクスポートするために使用されるデータです。',
         'Date / Time' => '',
         'Debugs the translation set. If this is set to "Yes" all strings (text) without translations are written to STDERR. This can be helpful when you are creating a new translation file. Otherwise, this option should remain set to "No".' =>
@@ -3060,7 +3070,7 @@ sub Data {
         'Default value for NameX' => '',
         'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
             '定義された文字列（string）の後ろにリンクを追加するhtmlアウトプットのための、フィルタを定義します。エレメント・イメージは、2種類のインプットを許可します。すぐに、イメージの名前です（つまりfaq.png）。この場合、OTRSイメージ・パスが使用されます。2つめの可能性は、イメージにリンクを挿入することです。',
-        'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set manually. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values.' =>
+        'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the next setting below.' =>
             '',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
             '',
@@ -3198,8 +3208,8 @@ sub Data {
             '',
         'Defines the default body of a note in the ticket free text screen of the agent interface.' =>
             '担当者インタフェースのチケット・フリー・テキスト・スクリーンで、ノートのデフォルトの本文を定義します。',
-        'Defines the default front-end (HTML) theme to be used by the agents and customers. The default themes are Standard and Lite. If you like, you can add your own theme. Please refer the administrator manual located at http://doc.otrs.org/.' =>
-            'デフォルトのフロント・エンド（HTML）のテーマを、担当者および顧客によって使用できるように定義します。デフォルトのテーマは、Standard and Liteです。お望みであれば、独自にテーマを追加することもできます。管理者用マニュアルを参照ください。http://doc.otrs.org/',
+        'Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://doc.otrs.org/.' =>
+            '',
         'Defines the default front-end language. All the possible values are determined by the available language files on the system (see the next setting).' =>
             'デフォルトのフロント・エンドの言語を設定します。全ての可能性ある値は、システムの利用可能な言語ファイルによって定義されます（次の設定を参照ください)。.',
         'Defines the default history type in the customer interface.' => '顧客インタフェースのデフォルトの履歴タイプを定義します。',
@@ -3256,7 +3266,7 @@ sub Data {
             '顧客インタフェースのチケット・ズーム画面の、チケットに関するデフォルトの送信者タイプを定義します。',
         'Defines the default shown ticket search attribute for ticket search screen.' =>
             'チケット検索画面で、デフォルトの表示されるチケット検索属性を定義します。',
-        'Defines the default shown ticket search attribute for ticket search screen. Example: Text: \'a text\', Dropdown: \'1\', Date/Time: \'Search_DynamicField_NameXTimeSlotStartYear=1974; Search_DynamicField_NameXTimeSlotStartMonth=01; Search_DynamicField_NameXTimeSlotStartDay=26; Search_DynamicField_NameXTimeSlotStartHour=00; Search_DynamicField_NameXTimeSlotStartMinute=00; Search_DynamicField_NameXTimeSlotStartSecond=00; Search_DynamicField_NameXTimeSlotStopYear=2013; Search_DynamicField_NameXTimeSlotStopMonth=01; Search_DynamicField_NameXTimeSlotStopDay=26; Search_DynamicField_NameXTimeSlotStopHour=23; Search_DynamicField_NameXTimeSlotStopMinute=59; Search_DynamicField_NameXTimeSlotStopSecond=59;\' and or \'Search_DynamicField_NameXTimePointFormat=week; Search_DynamicField_NameXTimePointStart=Before; Search_DynamicField_NameXTimePointValue=7\';.' =>
+        'Defines the default shown ticket search attribute for ticket search screen. Example: "Key" must have the name of the Dynamic Field in this case \'X\', "Content" must have the value of the Dynamic Field depending on the Dynamic Field type,  Text: \'a text\', Dropdown: \'1\', Date/Time: \'Search_DynamicField_XTimeSlotStartYear=1974; Search_DynamicField_XTimeSlotStartMonth=01; Search_DynamicField_XTimeSlotStartDay=26; Search_DynamicField_XTimeSlotStartHour=00; Search_DynamicField_XTimeSlotStartMinute=00; Search_DynamicField_XTimeSlotStartSecond=00; Search_DynamicField_XTimeSlotStopYear=2013; Search_DynamicField_XTimeSlotStopMonth=01; Search_DynamicField_XTimeSlotStopDay=26; Search_DynamicField_XTimeSlotStopHour=23; Search_DynamicField_XTimeSlotStopMinute=59; Search_DynamicField_XTimeSlotStopSecond=59;\' and or \'Search_DynamicField_XTimePointFormat=week; Search_DynamicField_XTimePointStart=Before; Search_DynamicField_XTimePointValue=7\';.' =>
             '',
         'Defines the default sort criteria for all queues displayed in the queue view.' =>
             '',
@@ -3585,8 +3595,8 @@ sub Data {
         'Defines the subject for rejected emails.' => 'リジェクトされたEメールの件名を定義します。',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             'システム管理者のEメール・アドレスを定義します。アプリケーションのエラー画面に表示されるものです。',
-        'Defines the system identifier. Every ticket number and http session string contain this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
-            'システム識別子（アイデンティファー）の設定です。全てのチケット番号およびhttpセッションの文字列は、このIDを含んでいます。これにより、フォロー・アップの際などに、ご利用者（貴社）のシステムに属するチケットのみを処理するようになります（2つのOTRS間でやり取りをする際などに便利です）。',
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
+            '',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             '',
         'Defines the target attribute in the link to external customer database. E.g. \'target="cdb"\'.' =>
@@ -3598,8 +3608,8 @@ sub Data {
             '',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             '',
-        'Defines the type of protocol, used by ther web server, to serve the application. If https protocol will be used instead of plain http, it must be specified it here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
-            'アプリケーションをサーブするために、ウェブ・サーバによって使用されるプロトコルのタイプを定義します。もしhttpプロトコルが平素のhttpの代わりに使用されるのであれば、ここで特定する必要があります。また、それが、ウェブ・サーバの設定または振舞いには影響を与えることは無いため、アプリケーションへのアクセス方法を変更することはなく、もし不適切なものであってもご利用者のアプリケーションへのログインを妨げることはありません。この設定はOTRS_CONFIG_HttpType変数として使用され、これはアプリケーションによって使用されるメッセージングの全フォームに存在するものであり、ご利用のシステム内のチケットへのリンクを作成するために使用されます。',
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            '',
         'Defines the used character for email quotes in the ticket compose screen of the agent interface.' =>
             '担当者インタフェースのチケット構成画面で、Eメール引用のために使用されるキャラクタを定義します。',
         'Defines the user identifier for the customer panel.' => '顧客パネルのためのユーザ識別子を定義します。',
@@ -3744,8 +3754,8 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Enabled filters.' => '',
         'Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.' =>
             'PDF出力を有効にします。CPAN モジュール PDF::API2が必要となりますが、もしインストールされていなければPDF出力は無効にされます。',
-        'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
-            'PGPサポートを有効にします。PGPサポートがメールの署名およびセキュアリングのために有効となっている際は、ウェブ・サーバをOTRSユーザとして動作させることを強く推奨します。そうでない場合、.gnupgフォルダにアクセスする時の特権に関して問題が発生します。',
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            '',
         'Enables S/MIME support.' => 'S/MIMEサポートを有効にします。',
         'Enables customers to create their own accounts.' => '顧客に自らのアカウントを作成できるようにします。',
         'Enables file upload in the package manager frontend.' => 'パッケージ・マネジャー・フロントエンドでの、ファイル・アップロードを有効にします。',
@@ -3765,7 +3775,6 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
             '特定のチケットを追跡するため、チケット責任者機能を有効にします。',
         'Enables ticket watcher feature only for the listed groups.' => 'リストされたグループためにのみ、チケット監視機能を有効にします。',
         'Escalation view' => 'エスカレーション一覧',
-        'Event list to be displayed on GUI' => '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate).' =>
             '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate). This is only possible if all Ticket dynamic fields need the same event.' =>
@@ -3933,8 +3942,8 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
             '有効にすると、OTRSは全JavaScriptファイルを縮小した形式で配信します。',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             '有効にされた場合、TicketPhoneおよびTicketEmailは新しいウィンドウで開きます。',
-        'If enabled, the OTRS version tag will be removed from the HTTP headers.' =>
-            '有効にすると、OTRSバージョンのタグがHTTPヘッダーから除去されます。',
+        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails.' =>
+            '',
         'If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.' =>
             '',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
@@ -3942,6 +3951,8 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty.' =>
             '',
         'If set, this address is used as envelope sender in outgoing messages (not notifications - see below). If no address is specified, the envelope sender is equal to queue e-mail address.' =>
+            '',
+        'If this option is enabled, then the decrypted data will be stored in the database if they are displayed in AgentTicketZoom.' =>
             '',
         'If this option is set to \'Yes\', tickets created via the web interface, via Customers or Agents, will receive an autoresponse if configured. If this option is set to \'No\', no autoresponses will be sent.' =>
             '',
@@ -3973,8 +3984,8 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Link agents to groups.' => '担当者をグループへ連結',
         'Link agents to roles.' => '担当者を役割へ連結',
         'Link attachments to templates.' => '',
-        'Link customers to groups.' => '顧客をグループへ連結',
-        'Link customers to services.' => '顧客をサービスへ連結',
+        'Link customer user to groups.' => '',
+        'Link customer user to services.' => '',
         'Link queues to auto responses.' => 'キューを自動応答へ連結',
         'Link roles to groups.' => '役割をグループへ連結',
         'Link templates to queues.' => '',
@@ -3992,6 +4003,11 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
             '担当者インタフェースに対して、常にロードされるJSファイルのリストです。',
         'List of JS files to always be loaded for the customer interface.' =>
             '顧客インタフェースに対して、常にロードされるJSファイルのリストです。',
+        'List of all CustomerCompany events to be displayed in the GUI.' =>
+            '',
+        'List of all CustomerUser events to be displayed in the GUI.' => '',
+        'List of all article events to be displayed in the GUI.' => '',
+        'List of all ticket events to be displayed in the GUI.' => '',
         'List of default Standard Templates which are assigned automatically to new Queues upon creation.' =>
             '',
         'Log file for the ticket counter.' => 'チケット・カウンターのためのログ・ファイルです。',
@@ -4682,7 +4698,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
             'Eメール・リプライにおける件名の最初のテキストです。例：RE, AW, AS。',
         'The text at the beginning of the subject when an email is forwarded, e.g. FW, Fwd, or WG.' =>
             'Eメールが転送された際の、件名の最初のテキストです。例：FW, Fwd, WG。',
-        'This event module stores attributes from CustomerUser as DynamicFields tickets.' =>
+        'This event module stores attributes from CustomerUser as DynamicFields tickets. Please see the setting above for how to configure the mapping.' =>
             '',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '定義された場合、全てのリクエストに対して、本モジュールおよびそのPreRun()機能が実行されます。本モジュールは、いくつかのユーザ・オプションをチェックするため、または新しいアプリケーションのニュースを表示させるために、役立つものです。',
@@ -4739,7 +4755,10 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
+        ' (work units)' => ' (稼働時間)',
+        'Add Customer Company' => '顧客企業を追加',
         'Add Response' => '応答を登録',
+        'Add customer company' => '顧客企業を追加',
         'Add response' => '応答を追加',
         'Adds customers email addresses to recipients in the ticket compose screen of the agent interface.' =>
             '担当者インタフェースのチケット構成画面で、受領者に顧客Eメール・アドレスを追加します。',
@@ -4754,20 +4773,33 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Change Response Relations for Queue' => 'キューと応答の関連性を変更',
         'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
             'フル・テキストのインデックスを設定します。新しいインデックスを作成するには、"bin/otrs.RebuildFulltextIndex.pl"を実行してください。',
+        'Create and manage companies.' => '企業の作成と管理',
         'Create and manage response templates.' => '応答テンプレートの作成と管理',
         'Currently only MySQL is supported in the web installer.' => '現在のインストーラーはMySQLのみサポートしています。',
+        'Customer Company Management' => '顧客企業管理',
         'Customer Data' => '顧客情報',
+        'Customer will be needed to have a customer history and to login via customer panel.' =>
+            '顧客は顧客履歴の使用と顧客パネルからログインするために必要です。',
+        'Customers <-> Services' => '顧客 <-> サービス',
         'DB host' => 'データベース - ホスト',
         'Database-User' => 'データベースユーザー',
         'Default skin for interface.' => 'インタフェースのためのデフォルトのスキンです。',
+        'Defines the default front-end (HTML) theme to be used by the agents and customers. The default themes are Standard and Lite. If you like, you can add your own theme. Please refer the administrator manual located at http://doc.otrs.org/.' =>
+            'デフォルトのフロント・エンド（HTML）のテーマを、担当者および顧客によって使用できるように定義します。デフォルトのテーマは、Standard and Liteです。お望みであれば、独自にテーマを追加することもできます。管理者用マニュアルを参照ください。http://doc.otrs.org/',
         'Defines the maximal size (in bytes) for file uploads via the browser.' =>
             'ブラウザごとのファイル・アップロードの最大サイズ（バイト）を定義します。',
+        'Defines the system identifier. Every ticket number and http session string contain this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
+            'システム識別子（アイデンティファー）の設定です。全てのチケット番号およびhttpセッションの文字列は、このIDを含んでいます。これにより、フォロー・アップの際などに、ご利用者（貴社）のシステムに属するチケットのみを処理するようになります（2つのOTRS間でやり取りをする際などに便利です）。',
+        'Defines the type of protocol, used by ther web server, to serve the application. If https protocol will be used instead of plain http, it must be specified it here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+            'アプリケーションをサーブするために、ウェブ・サーバによって使用されるプロトコルのタイプを定義します。もしhttpプロトコルが平素のhttpの代わりに使用されるのであれば、ここで特定する必要があります。また、それが、ウェブ・サーバの設定または振舞いには影響を与えることは無いため、アプリケーションへのアクセス方法を変更することはなく、もし不適切なものであってもご利用者のアプリケーションへのログインを妨げることはありません。この設定はOTRS_CONFIG_HttpType変数として使用され、これはアプリケーションによって使用されるメッセージングの全フォームに存在するものであり、ご利用のシステム内のチケットへのリンクを作成するために使用されます。',
         'Delay time between autocomplete queries in milliseconds.' => 'オートコンプリート・クエリの間のディレイ・タイムをミリ秒単位で指定します。',
         'Determines if the search results container for the autocomplete feature should adjust its width dynamically.' =>
             'オートコンプリート機能の検索結果コンテナーについて、その幅を動的に変更するかどうかを定義します。',
         'Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If set to "No", the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If not active, it also disables the GenericAgent, PackageManager and SQL Box (to avoid the use of destructive queries, such as DROP DATABASE, and also to steal user passwords).' =>
             'ウェブ・インストーラーを無効にし(http://yourhost.example.com/otrs/installer.pl)、システムがハイジャックされるのを防ぎます。もし、“No”に設定されている場合は、システムは再インストールすることができ、現在の基本設定がインストーラー・スクリプト内の質問に事前投入されます。もしアクティブでなれけば、Generic Agent、パッケージ・マネジャー、SQLボックスも無効にします（これは、DROP DATABASEなどの破壊的クエリーの使用を避け、ユーザ・パスワードの盗難を防ぐためです）。',
         'Edit Response' => '応答を編集',
+        'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+            'PGPサポートを有効にします。PGPサポートがメールの署名およびセキュアリングのために有効となっている際は、ウェブ・サーバをOTRSユーザとして動作させることを強く推奨します。そうでない場合、.gnupgフォルダにアクセスする時の特権に関して問題が発生します。',
         'Enables or disables the autocomplete feature for the customer search in the agent interface.' =>
             '担当者インタフェースにおいて、顧客検索のためのオートコンプリート機能を、有効または無効にします。',
         'Escalation in' => 'エスカレーション: ',
@@ -4777,11 +4809,16 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Filter for Responses' => '応答フィルタ',
         'Filter name' => 'フィルタ名',
         'For more info see:' => '詳細情報：',
+        'From customer' => '顧客メールアドレス',
+        'If enabled, the OTRS version tag will be removed from the HTTP headers.' =>
+            '有効にすると、OTRSバージョンのタグがHTTPヘッダーから除去されます。',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'データベースのrootパスワードが設定されている場合、ここに入力する必要があります。されていない場合は空白にしてください。セキュリティ上の理由から、私たちはrootのパスワードを設定することをお勧めしません。詳しくはデータベースのマニュアルを参照してください。',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>
             'もしOTRSに違うタイプのデータベースをインストールしたい場合、README.databaseファイルを参照してください。',
         'Link attachments to responses templates.' => '添付ファイルを応答テンプレートへ連結',
+        'Link customers to groups.' => '顧客をグループへ連結',
+        'Link customers to services.' => '顧客をサービスへ連結',
         'Link responses to queues.' => '応答をキューへ連結',
         'List of IE7-specific CSS files to always be loaded for the customer interface.' =>
             '顧客インタフェースに対して、常にロードされるIE7特有のCSSファイルのリストです。',
@@ -4793,6 +4830,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Maximum size (in characters) of the customer info table in the queue view.' =>
             'キュー・ビューにおける、顧客情報テーブル（電話およびEメール）の最大サイズ（文字）です。',
         'Package verification failed!' => 'パッケージの検証に失敗しました',
+        'Please enter a search term to look for customer companies.' => '顧客企業の検索文字を入力してください',
         'Please supply a' => '入力してください: ',
         'Please supply a first name' => '名前を入力してください',
         'Please supply a last name' => '名字を入力してください。',

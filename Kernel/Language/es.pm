@@ -21,7 +21,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-08-22 10:05:46
+    # Last translation file sync: 2013-09-05 16:51:41
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -52,6 +52,7 @@ sub Data {
         'Cancel' => 'Cancelar',
         'Reset' => 'Restablecer',
         'more than ... ago' => 'hace más de ...',
+        'in more than ...' => '',
         'within the last ...' => 'en los últimos ...',
         'within the next ...' => 'en los próximos ...',
         'Created within the last' => 'Creado en los últimos',
@@ -191,6 +192,7 @@ sub Data {
         'Search' => 'Buscar',
         'and' => 'y',
         'between' => 'entre',
+        'before/after' => '',
         'Fulltext Search' => 'Búsqueda de texto completo',
         'Data' => 'Datos',
         'Options' => 'Opciones',
@@ -693,7 +695,7 @@ sub Data {
         'Create new Email Ticket and send this out (Outbound)' => 'Crea nuevo ticket por correo y enviar éste (saliente)',
         'Create new Phone Ticket (Inbound)' => 'Crea nuevo ticket telefónico (entrante)',
         'Address %s replaced with registered customer address.' => 'Dirección %s reemplaza con la del cliente registrado.',
-        'Customer automatically added in Cc.' => 'Cliente añadido automáticamente en Cc.',
+        'Customer user automatically added in Cc.' => '',
         'Overview of all open Tickets' => 'Vista general de todos los tickets abiertos',
         'Locked Tickets' => 'Tickets bloqueados',
         'My Locked Tickets' => 'Mis tickets bloqueados',
@@ -940,26 +942,26 @@ sub Data {
         'Example response' => 'Ejemplo de respuesta',
 
         # Template: AdminCustomerCompany
-        'Customer Company Management' => 'Gestión de las empresas cliente',
+        'Customer Management' => 'Gestión de clientes',
         'Wildcards like \'*\' are allowed.' => 'Se permiten caracteres comodín como «*».',
-        'Add customer company' => 'Añadir una empresa cliente',
+        'Add customer' => 'Añadir un cliente',
         'Select' => 'Seleccionar',
-        'Please enter a search term to look for customer companies.' => 'Introduzca un término de búsqueda para buscar empresas cliente.',
-        'Add Customer Company' => 'Añadir una empresa cliente',
+        'Please enter a search term to look for customers.' => 'Introduzca un términa de búsqueda para buscar clientes.',
+        'Add Customer' => 'Añadir un cliente',
+        'Edit Customer' => 'Editar el cliente',
 
         # Template: AdminCustomerUser
-        'Customer Management' => 'Gestión de clientes',
+        'Customer User Management' => '',
         'Back to search results' => 'Volver a los resultados de la búsqueda',
-        'Add customer' => 'Añadir un cliente',
+        'Add customer user' => '',
         'Hint' => 'Consejo',
-        'Customer will be needed to have a customer history and to login via customer panel.' =>
-            'El cliente tendrá que tener un historial e iniciar sesión por medio del panel de clientes',
-        'Please enter a search term to look for customers.' => 'Introduzca un términa de búsqueda para buscar clientes.',
+        'Customer user are needed to have a customer history and to login via customer panel.' =>
+            '',
         'Last Login' => 'Última sesión',
         'Login as' => 'Conectarse como',
         'Switch to customer' => 'Cambiar al cliente',
-        'Add Customer' => 'Añadir un cliente',
-        'Edit Customer' => 'Editar el cliente',
+        'Add Customer User' => '',
+        'Edit Customer User' => '',
         'This field is required and needs to be a valid email address.' =>
             'Este campo es necesario y tiene que ser una dirección de correo electrónico válida.',
         'This email address is not allowed due to the system configuration.' =>
@@ -1201,7 +1203,7 @@ sub Data {
         'Archive selected tickets' => 'Archivar los tickets seleccionados',
         'Add Note' => 'Añadir una nota',
         'Time units' => 'Unidades de tiempo',
-        '(work units)' => '(unidades de trabajo)',
+        '(work units)' => '',
         'Ticket Commands' => 'Órdenes de ticket',
         'Send agent/customer notifications on changes' => 'Enviar notificaciones al agente/cliente cuando haya cambios',
         'CMD' => 'CMD',
@@ -1666,6 +1668,8 @@ sub Data {
         # Template: AdminProcessManagementActivityDialog
         'Please note that changing this activity dialog will affect the following activities' =>
             '',
+        'Please note that customer users will not be able to see or use the following fields: Owner, Responsible, Lock, PendingTime and CustomerID.' =>
+            '',
         'Activity Dialog' => '',
         'Activity dialog Name' => '',
         'Available in' => '',
@@ -2034,6 +2038,7 @@ sub Data {
         'Invalid year' => 'Año no válido',
         'Invalid month' => 'Mes no válido',
         'Invalid day' => 'Día no válido',
+        'Show more' => '',
 
         # Template: AdminSystemAddress
         'System Email Addresses Management' => 'Gestión de Direcciones de Correo del sistema',
@@ -2123,6 +2128,7 @@ sub Data {
         'It is going to be deleted from the field, please try again.' => 'Se va a borrar del campo, inténtelo de nuevo.',
 
         # Template: AgentCustomerTableView
+        'Note: Customer is invalid!' => '',
 
         # Template: AgentDashboard
         'Dashboard' => 'Panel principal',
@@ -2360,9 +2366,10 @@ sub Data {
         # Template: AgentTicketEmail
         'Create New Email Ticket' => 'Crear un nuevo ticket por correo electrónico',
         'From queue' => 'De la cola',
-        'To customer' => 'Al cliente',
-        'Please include at least one customer for the ticket.' => 'Incluya al menos un cliente para el ticket',
-        'Select this customer as the main customer.' => 'Seleccionar a este cliente como el cliente principal.',
+        'To customer user' => '',
+        'Please include at least one customer user for the ticket.' => '',
+        'Select this customer user as the main customer user.' => '',
+        'Remove Ticket Customer User' => '',
         'Get all' => 'Obtener todo',
         'Text Template' => 'Plantilla de texto',
 
@@ -2415,7 +2422,8 @@ sub Data {
 
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'Crear un nuevo ticket telefónico',
-        'From customer' => 'Del cliente',
+        'Please include at least one customer for the ticket.' => 'Incluya al menos un cliente para el ticket',
+        'Select this customer as the main customer.' => 'Seleccionar a este cliente como el cliente principal.',
         'To queue' => 'A la cola',
 
         # Template: AgentTicketPhoneCommon
@@ -2577,6 +2585,7 @@ sub Data {
 
         # Template: CustomerTicketPrint
         'Ticket Print' => 'Imprimir el ticket',
+        'Ticket Dynamic Fields' => 'Campos dinámicos del ticket',
 
         # Template: CustomerTicketProcess
 
@@ -2991,7 +3000,7 @@ sub Data {
         'Comment for new history entries in the customer interface.' => '',
         'Company Status' => '',
         'Company Tickets' => '',
-        'Company name for the customer web interface. Will also be included in emails as an X-Header.' =>
+        'Company name which will be included in outgoing emails as an X-Header.' =>
             '',
         'Configure Processes.' => '',
         'Configure and manage ACLs.' => '',
@@ -3009,7 +3018,7 @@ sub Data {
         'Create and manage Service Level Agreements (SLAs).' => '',
         'Create and manage agents.' => '',
         'Create and manage attachments.' => '',
-        'Create and manage companies.' => '',
+        'Create and manage customer users.' => '',
         'Create and manage customers.' => '',
         'Create and manage dynamic fields.' => '',
         'Create and manage event based notifications.' => '',
@@ -3032,6 +3041,8 @@ sub Data {
             '',
         'Customer Company Administration' => 'Administración de las empresas cliente',
         'Customer Company Information' => 'Información de la empresa cliente',
+        'Customer User <-> Groups' => '',
+        'Customer User <-> Services' => '',
         'Customer User Administration' => 'Administración de los usuarios cliente',
         'Customer Users' => 'Clientes',
         'Customer item (icon) which shows the closed tickets of this customer as info block. Setting CustomerUserLogin to 1 searches for tickets based on login name rather than CustomerID.' =>
@@ -3040,7 +3051,6 @@ sub Data {
             '',
         'CustomerName' => '',
         'Customers <-> Groups' => '',
-        'Customers <-> Services' => '',
         'Data used to export the search result in CSV format.' => '',
         'Date / Time' => '',
         'Debugs the translation set. If this is set to "Yes" all strings (text) without translations are written to STDERR. This can be helpful when you are creating a new translation file. Otherwise, this option should remain set to "No".' =>
@@ -3064,7 +3074,7 @@ sub Data {
         'Default value for NameX' => '',
         'Define a filter for html output to add links behind a defined string. The element Image allows two input kinds. At once the name of an image (e.g. faq.png). In this case the OTRS image path will be used. The second possiblity is to insert the link to the image.' =>
             '',
-        'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set manually. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values.' =>
+        'Define a mapping between variables of the customer user data (keys) and dynamic fields of a ticket (values). The purpose is to store customer user data in ticket dynamic fields. The dynamic fields must be present in the system and should be enabled for AgentTicketFreeText, so that they can be set/updated manually by the agent. They mustn\'t be enabled for AgentTicketPhone, AgentTicketEmail and AgentTicketCustomer. If they were, they would have precedence over the automatically set values. To use this mapping, you have to also activate the next setting below.' =>
             '',
         'Define dynamic field name for end time. This field has to be manually added to the system as Ticket: "Date / Time" and must be activated in ticket creation screens and/or in any other ticket action screens.' =>
             '',
@@ -3202,7 +3212,7 @@ sub Data {
             '',
         'Defines the default body of a note in the ticket free text screen of the agent interface.' =>
             '',
-        'Defines the default front-end (HTML) theme to be used by the agents and customers. The default themes are Standard and Lite. If you like, you can add your own theme. Please refer the administrator manual located at http://doc.otrs.org/.' =>
+        'Defines the default front-end (HTML) theme to be used by the agents and customers. If you like, you can add your own theme. Please refer the administrator manual located at http://doc.otrs.org/.' =>
             '',
         'Defines the default front-end language. All the possible values are determined by the available language files on the system (see the next setting).' =>
             '',
@@ -3260,7 +3270,7 @@ sub Data {
             '',
         'Defines the default shown ticket search attribute for ticket search screen.' =>
             '',
-        'Defines the default shown ticket search attribute for ticket search screen. Example: Text: \'a text\', Dropdown: \'1\', Date/Time: \'Search_DynamicField_NameXTimeSlotStartYear=1974; Search_DynamicField_NameXTimeSlotStartMonth=01; Search_DynamicField_NameXTimeSlotStartDay=26; Search_DynamicField_NameXTimeSlotStartHour=00; Search_DynamicField_NameXTimeSlotStartMinute=00; Search_DynamicField_NameXTimeSlotStartSecond=00; Search_DynamicField_NameXTimeSlotStopYear=2013; Search_DynamicField_NameXTimeSlotStopMonth=01; Search_DynamicField_NameXTimeSlotStopDay=26; Search_DynamicField_NameXTimeSlotStopHour=23; Search_DynamicField_NameXTimeSlotStopMinute=59; Search_DynamicField_NameXTimeSlotStopSecond=59;\' and or \'Search_DynamicField_NameXTimePointFormat=week; Search_DynamicField_NameXTimePointStart=Before; Search_DynamicField_NameXTimePointValue=7\';.' =>
+        'Defines the default shown ticket search attribute for ticket search screen. Example: "Key" must have the name of the Dynamic Field in this case \'X\', "Content" must have the value of the Dynamic Field depending on the Dynamic Field type,  Text: \'a text\', Dropdown: \'1\', Date/Time: \'Search_DynamicField_XTimeSlotStartYear=1974; Search_DynamicField_XTimeSlotStartMonth=01; Search_DynamicField_XTimeSlotStartDay=26; Search_DynamicField_XTimeSlotStartHour=00; Search_DynamicField_XTimeSlotStartMinute=00; Search_DynamicField_XTimeSlotStartSecond=00; Search_DynamicField_XTimeSlotStopYear=2013; Search_DynamicField_XTimeSlotStopMonth=01; Search_DynamicField_XTimeSlotStopDay=26; Search_DynamicField_XTimeSlotStopHour=23; Search_DynamicField_XTimeSlotStopMinute=59; Search_DynamicField_XTimeSlotStopSecond=59;\' and or \'Search_DynamicField_XTimePointFormat=week; Search_DynamicField_XTimePointStart=Before; Search_DynamicField_XTimePointValue=7\';.' =>
             '',
         'Defines the default sort criteria for all queues displayed in the queue view.' =>
             '',
@@ -3589,7 +3599,7 @@ sub Data {
         'Defines the subject for rejected emails.' => '',
         'Defines the system administrator\'s email address. It will be displayed in the error screens of the application.' =>
             '',
-        'Defines the system identifier. Every ticket number and http session string contain this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
+        'Defines the system identifier. Every ticket number and http session string contains this ID. This ensures that only tickets which belong to your system will be processed as follow-ups (useful when communicating between two instances of OTRS).' =>
             '',
         'Defines the target attribute in the link to external customer database. E.g. \'AsPopup PopupType_TicketAction\'.' =>
             '',
@@ -3602,7 +3612,7 @@ sub Data {
             '',
         'Defines the time zone of the indicated calendar, which can be assigned later to a specific queue.' =>
             '',
-        'Defines the type of protocol, used by ther web server, to serve the application. If https protocol will be used instead of plain http, it must be specified it here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
+        'Defines the type of protocol, used by the web server, to serve the application. If https protocol will be used instead of plain http, it must be specified here. Since this has no affect on the web server\'s settings or behavior, it will not change the method of access to the application and, if it is wrong, it will not prevent you from logging into the application. This setting is only used as a variable, OTRS_CONFIG_HttpType which is found in all forms of messaging used by the application, to build links to the tickets within your system.' =>
             '',
         'Defines the used character for email quotes in the ticket compose screen of the agent interface.' =>
             '',
@@ -3746,7 +3756,7 @@ sub Data {
         'Enabled filters.' => '',
         'Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.' =>
             '',
-        'Enables PGP support. When PGP support is enabled for signing and securing mail, it is HIGHLY recommended that the web server be run as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
+        'Enables PGP support. When PGP support is enabled for signing and encrypting mail, it is HIGHLY recommended that the web server runs as the OTRS user. Otherwise, there will be problems with the privileges when accessing .gnupg folder.' =>
             '',
         'Enables S/MIME support.' => '',
         'Enables customers to create their own accounts.' => '',
@@ -3767,7 +3777,6 @@ sub Data {
             '',
         'Enables ticket watcher feature only for the listed groups.' => '',
         'Escalation view' => 'Vista de escalados',
-        'Event list to be displayed on GUI' => '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate).' =>
             '',
         'Event module registration. For more performance you can define a trigger event (e. g. Event => TicketCreate). This is only possible if all Ticket dynamic fields need the same event.' =>
@@ -3935,7 +3944,7 @@ sub Data {
             '',
         'If enabled, TicketPhone and TicketEmail will be open in new windows.' =>
             '',
-        'If enabled, the OTRS version tag will be removed from the HTTP headers.' =>
+        'If enabled, the OTRS version tag will be removed from the Webinterface, the HTTP headers and the X-Headers of outgoing mails.' =>
             '',
         'If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.' =>
             'Si se habilita, las diferentes vistas generales (panel principal, vista de bloqueados, vista de colas) se actualizarán automáticamente tras el tiempo indicado.',
@@ -3944,6 +3953,8 @@ sub Data {
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty.' =>
             '',
         'If set, this address is used as envelope sender in outgoing messages (not notifications - see below). If no address is specified, the envelope sender is equal to queue e-mail address.' =>
+            '',
+        'If this option is enabled, then the decrypted data will be stored in the database if they are displayed in AgentTicketZoom.' =>
             '',
         'If this option is set to \'Yes\', tickets created via the web interface, via Customers or Agents, will receive an autoresponse if configured. If this option is set to \'No\', no autoresponses will be sent.' =>
             '',
@@ -3975,8 +3986,8 @@ sub Data {
         'Link agents to groups.' => '',
         'Link agents to roles.' => '',
         'Link attachments to templates.' => '',
-        'Link customers to groups.' => '',
-        'Link customers to services.' => '',
+        'Link customer user to groups.' => '',
+        'Link customer user to services.' => '',
         'Link queues to auto responses.' => '',
         'Link roles to groups.' => '',
         'Link templates to queues.' => '',
@@ -3994,6 +4005,11 @@ sub Data {
             '',
         'List of JS files to always be loaded for the customer interface.' =>
             '',
+        'List of all CustomerCompany events to be displayed in the GUI.' =>
+            '',
+        'List of all CustomerUser events to be displayed in the GUI.' => '',
+        'List of all article events to be displayed in the GUI.' => '',
+        'List of all ticket events to be displayed in the GUI.' => '',
         'List of default Standard Templates which are assigned automatically to new Queues upon creation.' =>
             '',
         'Log file for the ticket counter.' => '',
@@ -4683,7 +4699,7 @@ sub Data {
             '',
         'The text at the beginning of the subject when an email is forwarded, e.g. FW, Fwd, or WG.' =>
             '',
-        'This event module stores attributes from CustomerUser as DynamicFields tickets.' =>
+        'This event module stores attributes from CustomerUser as DynamicFields tickets. Please see the setting above for how to configure the mapping.' =>
             '',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '',
@@ -4740,16 +4756,24 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
+        ' (work units)' => ' (unidades de trabajo)',
+        'Add Customer Company' => 'Añadir una empresa cliente',
+        'Add customer company' => 'Añadir una empresa cliente',
         'Attachments <-> Responses' => 'Adjuntos <-> Respuestas',
         'Can\'t update password, it must contain at least 2 lowercase and 2 uppercase characters!' =>
             'No es posible actualizar la contraseña, debe contener al menos 2 minúsculas y 2 mayúsculas.',
         'Currently only MySQL is supported in the web installer.' => 'Actualmente el instalador web sólo acepta MySQL.',
+        'Customer Company Management' => 'Gestión de las empresas cliente',
         'Customer Data' => 'Datos del cliente',
+        'Customer automatically added in Cc.' => 'Cliente añadido automáticamente en Cc.',
+        'Customer will be needed to have a customer history and to login via customer panel.' =>
+            'El cliente tendrá que tener un historial e iniciar sesión por medio del panel de clientes',
         'DB host' => 'Servidor de base de datos',
         'Database-User' => 'Usuario de la base de datos',
         'Escalation in' => 'Escalado en',
         'False' => 'Falso',
         'For more info see:' => 'Para mas información consulte:',
+        'From customer' => 'Del cliente',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Si ha establecido una contraseña de root para su base de datos, debe introducirla aquí. Si no, deje este campo en blanco. Por razones de seguridad, recomendamos establecer una contraseña para root. Para más información, consulte la documentación de su base de datos.',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>
@@ -4758,6 +4782,7 @@ sub Data {
         'Logout successful. Thank you for using OTRS!' => 'Sesión cerrada con éxito. ¡Gracias por utilizar OTRS!',
         'Package verification failed!' => '¡Error en la verificación del paquete!',
         'Password is required.' => 'Se precisa una contraseña.',
+        'Please enter a search term to look for customer companies.' => 'Introduzca un término de búsqueda para buscar empresas cliente.',
         'Please supply a' => 'Proporcione un',
         'Please supply a first name' => 'Indique un nombre',
         'Please supply a last name' => 'Inidque un apellido',
@@ -4766,7 +4791,7 @@ sub Data {
         'Show  article' => 'Mostrar el artículo',
         'There are currently no steps available for this process.' => 'Actualmente no hay pasos disponibles para este proceso.',
         'There are no further steps in this process' => 'Este proceso no tiene más pasos.',
-        'Ticket Dynamic Fields' => 'Campos dinámicos del ticket',
+        'To customer' => 'Al cliente',
         'before' => 'antes',
         'default \'hot\'' => 'por omisión \'hot\'',
         'settings' => 'configuración',

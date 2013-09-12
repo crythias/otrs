@@ -1062,8 +1062,9 @@ sub Run {
                 Filter     => $Self->{Filter},
                 FilterLink => $FilterLink,
 
-                OrderBy => $Self->{OrderBy},
-                SortBy  => $Self->{SortBy},
+                OrderBy      => $Self->{OrderBy},
+                SortBy       => $Self->{SortBy},
+                RequestedURL => 'Action=' . $Self->{Action} . ';' . $LinkPage,
             );
 
             # build footer
@@ -1350,7 +1351,7 @@ sub Run {
                         }
                     }
 
-                    # convert possible values key => value to key => key for ACLs usign a Hash slice
+                    # convert possible values key => value to key => key for ACLs using a Hash slice
                     my %AclData = %{$Data};
                     @AclData{ keys %AclData } = keys %AclData;
 

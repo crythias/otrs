@@ -147,7 +147,7 @@ sub ACLAdd {
     }
 
     # define Description field if not present
-    $Param{Description} = '' if !defined $Param{Description};
+    $Param{Description} //= '';
 
     my $ConfigMatch  = '';
     my $ConfigChange = '';
@@ -459,7 +459,7 @@ sub ACLUpdate {
     }
 
     # define Description field if not present
-    $Param{Description} = '' if !defined $Param{Description};
+    $Param{Description} //= '';
 
     my $ConfigMatch  = '';
     my $ConfigChange = '';
@@ -894,7 +894,7 @@ sub ACLDump {
     );
 
     my $Output = '';
-    for my $ACLName ( keys %ACLDump ) {
+    for my $ACLName ( sort keys %ACLDump ) {
 
         # create output
         $Output .= $Self->_ACLItemOutput(

@@ -19,8 +19,6 @@ use Kernel::System::VariableCheck qw(:all);
 
 use URI::Escape qw();
 
-use vars qw(@ISA);
-
 =head1 NAME
 
 Kernel::Output::HTML::Layout - all generic html functions
@@ -407,10 +405,10 @@ sub new {
         for my $File (@Files) {
             if ( $File !~ /Layout.pm$/ ) {
                 $File =~ s{\A.*\/(.+?).pm\z}{$1}xms;
-                if ( !$Self->{MainObject}->Require("Kernel::Output::HTML::$File") ) {
+                my $ClassName = "Kernel::Output::HTML::$File";
+                if ( !$Self->{MainObject}->RequireBaseClass($ClassName) ) {
                     $Self->FatalError();
                 }
-                push @ISA, "Kernel::Output::HTML::$File";
             }
         }
     }
@@ -855,7 +853,7 @@ sub Output {
 
         # find document ready
         $Output =~ s{
-                <!--\s{0,1}dtl:js_on_document_complete\s{0,1}-->(.+?)<!--\s{0,1}dtl:js_on_document_complete\s{0,1}-->
+                <!--[ ]?dtl:js_on_document_complete[ ]?-->(.+?)<!--[ ]?dtl:js_on_document_complete[ ]?-->
         }
         {
                 if (!$Self->{JSOnDocumentComplete}->{$1}) {
@@ -868,7 +866,7 @@ sub Output {
         # replace document ready placeholder (only if it's not included via $Include{""})
         if ( !$Param{Include} ) {
             $Output =~ s{
-                <!--\s{0,1}dtl:js_on_document_complete_placeholder\s{0,1}-->
+                <!--[ ]?dtl:js_on_document_complete_placeholder[ ]?-->
             }
             {
                 if ( $Self->{EnvRef}->{JSOnDocumentComplete} ) {
@@ -1623,7 +1621,7 @@ sub Footer {
     # AutoComplete-Config
     my $AutocompleteConfig = $Self->{ConfigObject}->Get('AutoComplete::Agent');
 
-    for my $ConfigElement ( keys %{$AutocompleteConfig} ) {
+    for my $ConfigElement ( sort keys %{$AutocompleteConfig} ) {
         $AutocompleteConfig->{$ConfigElement}->{ButtonText}
             = $Self->{LanguageObject}->Get( $AutocompleteConfig->{$ConfigElement}->{ButtonText} );
     }
@@ -3538,7 +3536,7 @@ sub CustomerFooter {
     # AutoComplete-Config
     my $AutocompleteConfig = $Self->{ConfigObject}->Get('AutoComplete::Customer');
 
-    for my $ConfigElement ( keys %{$AutocompleteConfig} ) {
+    for my $ConfigElement ( sort keys %{$AutocompleteConfig} ) {
         $AutocompleteConfig->{$ConfigElement}->{ButtonText}
             = $Self->{LanguageObject}->Get( $AutocompleteConfig->{$ConfigElement}{ButtonText} );
     }
@@ -4258,15 +4256,15 @@ sub RichTextDocumentCleanup {
 
 =cut
 
-sub _BlockTemplatePreferences {
+sub _BlocksByLayer {
     my ( $Self, %Param ) = @_;
 
     my %TagsOpen;
-    my @Preferences;
     my $LastLayerCount = 0;
-    my $Layer          = 0;
-    my $LastLayer      = '';
-    my $CurrentLayer   = '';
+    my $Layer          = -1;
+    my @Layer;
+    my $LastLayer    = '';
+    my $CurrentLayer = '';
     my %UsedNames;
     my $TemplateFile = $Param{TemplateFile} || '';
     if ( !defined $Param{Template} ) {
@@ -4279,7 +4277,7 @@ sub _BlockTemplatePreferences {
     }
 
     $Param{Template} =~ s{
-        <!--\s{0,1}dtl:block:(.+?)\s{0,1}-->
+        <!--[ ]?dtl:block:(.+?)[ ]?-->
     }
     {
         my $BlockName = $1;
@@ -4287,7 +4285,7 @@ sub _BlockTemplatePreferences {
             $Layer++;
             $TagsOpen{$BlockName} = 1;
             my $CL = '';
-            if ($Layer == 1) {
+            if ($Layer == 0) {
                 $LastLayer = '';
                 $CurrentLayer = $BlockName;
             }
@@ -4300,11 +4298,7 @@ sub _BlockTemplatePreferences {
             }
             $LastLayerCount = $Layer;
             if (!$UsedNames{$BlockName}) {
-                push (@Preferences, {
-                    Name => $BlockName,
-                    Layer => $Layer,
-                    },
-                );
+                push @{ $Layer[$Layer] }, $BlockName;
                 $UsedNames{$BlockName} = 1;
             }
         }
@@ -4328,10 +4322,10 @@ sub _BlockTemplatePreferences {
 
     # remember block data
     if ($TemplateFile) {
-        $Self->{PrasedBlockTemplatePreferences}->{$TemplateFile} = \@Preferences;
+        $Self->{PrasedBlockTemplatePreferences}->{$TemplateFile} = \@Layer;
     }
 
-    return \@Preferences;
+    return \@Layer;
 }
 
 sub _BlockTemplatesReplace {
@@ -4344,22 +4338,28 @@ sub _BlockTemplatesReplace {
     my $TemplateString = $Param{Template};
 
     # get availabe template block preferences
-    my $BlocksRef = $Self->_BlockTemplatePreferences(
+    my $BlocksByLayer = $Self->_BlocksByLayer(
         Template => $$TemplateString,
         TemplateFile => $Param{TemplateFile} || '',
     );
     my %BlockLayer;
     my %BlockTemplates;
-    for my $Block ( reverse @{$BlocksRef} ) {
+
+    for ( my $Layer = $#$BlocksByLayer; $Layer >= 0; $Layer-- ) {
+        my $Blocks = $BlocksByLayer->[$Layer];
+        my $Names = join '|', map { quotemeta $_ } @$Blocks;
         $$TemplateString =~ s{
-            <!--\s{0,1}dtl:block:$Block->{Name}\s{0,1}-->(.+?)<!--\s{0,1}dtl:block:$Block->{Name}\s{0,1}-->
+            <!--[ ]?dtl:block:($Names)[ ]?-->(.+?)<!--[ ]?dtl:block:\1[ ]?-->
         }
         {
-            $BlockTemplates{$Block->{Name}} = $1;
-            "<!-- dtl:place_block:$Block->{Name} -->";
+            $BlockTemplates{$1} = $2;
+            "<!-- dtl:place_block:$1 -->";
         }segxm;
-        $BlockLayer{ $Block->{Name} } = $Block->{Layer};
+        for my $Name (@$Blocks) {
+            $BlockLayer{$Name} = $Layer + 1;
+        }
     }
+    undef $BlocksByLayer;
 
     # create block template string
     my @BR;

@@ -180,7 +180,8 @@ table tr.MasterAction {
     background: linear-gradient(to bottom,  #b2b2b2 0%,#adadad 50%,#979797 50%,#959595 100%);
 }
 
-.DataTable thead .SortDescending > a:after {
+.DataTable thead .SortDescending > a:after,
+.TableSmall thead .SortDescending > a:after {
     content: "\25BC";
     display: block;
     position: absolute;
@@ -189,7 +190,8 @@ table tr.MasterAction {
     text-shadow: 1px 1px 0px #fff;
 }
 
-.DataTable thead .SortAscending > a:after {
+.DataTable thead .SortAscending > a:after,
+.TableSmall thead .SortAscending > a:after {
     content: "\25B2";
     display: block;
     position: absolute;
@@ -411,6 +413,14 @@ td.Attachment {
     padding: 0 5px 0 0;
 }
 
+.TableSmall thead span.UnreadArticles a i {
+    font-size: 12px;
+}
+
+.TableSmall thead span.UnreadArticles i:first-child {
+    font-size: 16px !important;
+}
+
 .TableSmall thead .SortAscending a,
 .TableSmall thead .SortDescending a,
 .TableSmall thead .headerSortUp a,
@@ -475,19 +485,11 @@ td.Attachment {
     background: url(../img/direction_header.png) no-repeat center;
 }
 
-.TableSmall thead .Attachments a span {
-    background: url(../img/attachment_header.png) no-repeat center;
-}
-
 .TableSmall thead a span.Flag {
     height: 9px;
     width: 16px;
     background-color: #999;
     margin-top: 6px;
-}
-
-.TableSmall thead .UnreadArticles span {
-    background-position: 0 -23px;
 }
 
 .TableSmall td {
@@ -604,9 +606,11 @@ td.Attachment {
     display: block;
     width: 24px;
     height: 16px;
-    text-indent: -9999px;
-    background: url(../img/attachment_sprite.png) no-repeat top center;
+    margin-top: -1px;
     cursor: pointer;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: center;
 }
 
 .TableSmall tbody td a.Attachment:hover {
@@ -641,6 +645,7 @@ td.Attachment {
 
 .TicketList table {
     border-collapse: separate;
+    position: relative;
 }
 
 .TicketList td {
@@ -768,13 +773,19 @@ select.ColumnFilter {
     display: block;
     width: 17px;
     height: 15px;
-    background: url(../img/icons/funnel-small.png) no-repeat right bottom;
     float: right;
     opacity: 0.5;
     padding: 0px;
     margin: 0px -19px 0px 0px;
     position: relative;
     z-index: 2;
+}
+
+.DataTable thead th.DashboardHeader .ColumnSettingsTrigger i,
+.TableSmall thead th.OverviewHeader .ColumnSettingsTrigger i {
+    color: #777777;
+    margin-left: 4px;
+    vertical-align: middle;
 }
 
 .TableSmall thead th.OverviewHeader .ColumnSettingsTrigger {
@@ -888,12 +899,15 @@ select.ColumnFilter {
 
 /* Delete filters */
 .ContextSettings.RemoveFilters a {
-    background: url(../img/widget_remove_filters.png) no-repeat 2px 6px;
     display: block;
 }
 
-.ContextSettings.RemoveFilters a:hover {
-    background-position: 2px -12px;
+.ContextSettings.RemoveFilters a i {
+    display: block !important;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+    vertical-align: middle;
 }
 
 /**

@@ -282,7 +282,6 @@ sub Run {
             )
             )
         {
-
             @OriginalViewableTickets = $Self->{TicketObject}->TicketSearch(
                 %{ $Filters{ $Self->{Filter} }->{Search} },
                 Limit  => $Limit,
@@ -292,7 +291,7 @@ sub Run {
             @ViewableTickets = $Self->{TicketObject}->TicketSearch(
                 %{ $Filters{ $Self->{Filter} }->{Search} },
                 %ColumnFilter,
-                Limit  => $Self->{Start} + 50,
+                Limit  => $Self->{Start} + $PageShown - 1,
                 Result => 'ARRAY',
             );
         }
@@ -367,7 +366,7 @@ sub Run {
 
     my $ColumnFilterLink = '';
     COLUMNNAME:
-    for my $ColumnName ( keys %GetColumnFilter ) {
+    for my $ColumnName ( sort keys %GetColumnFilter ) {
         next COLUMNNAME if !$ColumnName;
         next COLUMNNAME if !defined $GetColumnFilter{$ColumnName};
         next COLUMNNAME if $GetColumnFilter{$ColumnName} eq '';

@@ -18,8 +18,6 @@ use Kernel::System::XML;
 use Kernel::Config;
 use Kernel::Language;
 
-use vars qw(@ISA);
-
 =head1 NAME
 
 Kernel::System::SysConfig - to manage sys config settings
@@ -1893,7 +1891,7 @@ sub _FileWriteAtomic {
 
         $Self->{LogObject}->Log(
             Priority => 'error',
-            Message  => "Can't open file $TempFilename!",
+            Message  => "Can't open file $TempFilename: $!",
         );
         return;
     }
@@ -1904,7 +1902,7 @@ sub _FileWriteAtomic {
     if ( !rename $TempFilename, $Param{Filename} ) {
         $Self->{LogObject}->Log(
             Priority => 'error',
-            Message  => "Could not rename $TempFilename to $Param{Filename}!"
+            Message  => "Could not rename $TempFilename to $Param{Filename}: $!"
         );
         return;
     }
@@ -2183,7 +2181,9 @@ sub _XML2Perl {
                         }
                     }
                 }
-                $Hash{$Key} = \%Loader if (%Loader);
+                if (%Loader) {
+                    $Hash{$Key} = \%Loader;
+                }
             }
             else {
                 if ( $Key ne 'Content' ) {
