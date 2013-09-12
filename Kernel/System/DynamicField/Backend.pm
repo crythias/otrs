@@ -15,8 +15,6 @@ use warnings;
 use Scalar::Util qw(weaken);
 use Kernel::System::VariableCheck qw(:all);
 
-use vars qw(@ISA);
-
 =head1 NAME
 
 Kernel::System::DynamicField::Backend
@@ -227,12 +225,9 @@ sub new {
         next EXTENSION if !$Extension->{Module};
 
         # check if module can be loaded
-        if ( !$Self->{MainObject}->Require( $Extension->{Module} ) ) {
+        if ( !$Self->{MainObject}->RequireBaseClass( $Extension->{Module} ) ) {
             die "Can't load dynamic fields backend module $Extension->{Backend}! $@";
         }
-
-        # load the module
-        push @ISA, $Extension->{Module};
     }
 
     return $Self;

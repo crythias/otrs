@@ -101,11 +101,7 @@ sub new {
             Data => $Preferences{ $Self->{PrefKeyColumns} },
         );
 
-        COLUMNENABLED:
-        for my $Enabled ( @{$ColumnsEnabled} ) {
-            next COLUMNENABLED if grep { $_ eq $Enabled } @ColumnsEnabled;
-            push @ColumnsEnabled, $Enabled;
-        }
+        @ColumnsEnabled = @{$ColumnsEnabled};
     }
 
     # always set TicketNumber
@@ -264,6 +260,56 @@ sub ActionRow {
                 %Param,
             },
         );
+    }
+
+    # add translations for the allocation lists for regular columns
+    my $Columns = $Self->{ConfigObject}->Get('DefaultOverviewColumns') || {};
+    if ( $Columns && IsHashRefWithData($Columns) ) {
+        for my $Column ( sort keys %{$Columns} ) {
+            $Self->{LayoutObject}->Block(
+                Name => 'ColumnTranslation',
+                Data => {
+                    ColumnName      => $Column,
+                    TranslateString => $Column,
+                },
+            );
+            $Self->{LayoutObject}->Block(
+                Name => 'ColumnTranslationSeparator',
+            );
+        }
+    }
+
+    # add translations for the allocation lists for dynamic field columns
+    my $ColumnsDynamicField = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+        Valid      => 0,
+        ObjectType => ['Ticket'],
+    );
+
+    if ( $ColumnsDynamicField && IsArrayRefWithData($ColumnsDynamicField) ) {
+
+        my $Counter = 0;
+
+        DYNAMICFIELD:
+        for my $DynamicField ( sort @{$ColumnsDynamicField} ) {
+
+            next DYNAMICFIELD if !$DynamicField;
+
+            $Counter++;
+
+            $Self->{LayoutObject}->Block(
+                Name => 'ColumnTranslation',
+                Data => {
+                    ColumnName      => 'DynamicField_' . $DynamicField->{Name},
+                    TranslateString => $DynamicField->{Label},
+                },
+            );
+
+            if ( $Counter < scalar @{$ColumnsDynamicField} ) {
+                $Self->{LayoutObject}->Block(
+                    Name => 'ColumnTranslationSeparator',
+                );
+            }
+        }
     }
 
     my $Output = $Self->{LayoutObject}->Output(
@@ -488,6 +534,9 @@ sub Run {
 
         if ($BulkFeature) {
             $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewHeader',
+            );
+            $Self->{LayoutObject}->Block(
                 Name => 'BulkNavBar',
                 Data => \%Param,
             );
@@ -496,6 +545,10 @@ sub Run {
         # meta items
         my @TicketMetaItems = $Self->{LayoutObject}->TicketMetaItemsCount();
         for my $Item (@TicketMetaItems) {
+
+            $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewHeader',
+            );
 
             my $CSS = '';
             my $OrderBy;
@@ -552,6 +605,10 @@ sub Run {
         # show special ticket columns, if needed
         COLUMN:
         for my $Column (@Col) {
+
+            $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewHeader',
+            );
 
             $CSS = $Column;
             my $Title = $Column;
@@ -1216,6 +1273,9 @@ sub Run {
         # check if bulk feature is enabled
         if ($BulkFeature) {
             $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewRow',
+            );
+            $Self->{LayoutObject}->Block(
                 Name => 'Bulk',
                 Data => { %Article, %UserInfo },
             );
@@ -1226,6 +1286,9 @@ sub Run {
             Ticket => \%Article,
         );
         for my $Item (@TicketMetaItems) {
+            $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewRow',
+            );
             $Self->{LayoutObject}->Block(
                 Name => 'ContentLargeTicketGenericRowMeta',
                 Data => $Item,
@@ -1244,7 +1307,9 @@ sub Run {
         # show all needed columns
         TICKETCOLUMN:
         for my $TicketColumn (@Col) {
-
+            $Self->{LayoutObject}->Block(
+                Name => 'GeneralOverviewRow',
+            );
             if ( $TicketColumn !~ m{\A DynamicField_}xms ) {
                 $Self->{LayoutObject}->Block(
                     Name => 'RecordTicketData',
@@ -1769,7 +1834,10 @@ sub _ColumnFilterJSON {
             },
         ],
     );
+
     return $JSON;
 }
 
 1;
+
+=back

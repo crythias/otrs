@@ -551,6 +551,88 @@ sub _MigrateOldSettings {
         );
     }
 
+    # DashboardBackend should have default columns defined
+    my %DefaultColumns = (
+        Age                    => 2,
+        Changed                => 1,
+        CustomerID             => 1,
+        CustomerName           => 1,
+        CustomerUserID         => 1,
+        EscalationResponseTime => 1,
+        EscalationSolutionTime => 1,
+        EscalationTime         => 1,
+        EscalationUpdateTime   => 1,
+        Lock                   => 1,
+        Owner                  => 1,
+        PendingTime            => 1,
+        Priority               => 1,
+        Queue                  => 1,
+        Responsible            => 1,
+        SLA                    => 1,
+        Service                => 1,
+        State                  => 1,
+        TicketNumber           => 2,
+        Title                  => 2,
+        Type                   => 1
+    );
+
+    # dashboard backends
+    # get values from config
+    $Setting = $CommonObject->{ConfigObject}->Get('DashboardBackend');
+
+    # check config
+    DASHBOARDBACKEND:
+    for my $DashboardBackend ( sort keys %{$Setting} ) {
+        next DASHBOARDBACKEND if !IsHashRefWithData( $Setting->{$DashboardBackend} );
+
+        my $Module = $Setting->{$DashboardBackend}->{Module} || '';
+        next DASHBOARDBACKEND
+            if $Module ne 'Kernel::Output::HTML::DashboardTicketGeneric';
+
+        next DASHBOARDBACKEND
+            if IsHashRefWithData( $Setting->{$DashboardBackend}->{DefaultColumns} );
+
+        # set default column values
+        $Setting->{$DashboardBackend}->{DefaultColumns} = \%DefaultColumns;
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'DashboardBackend###' . $DashboardBackend,
+            Value => $Setting->{$DashboardBackend},
+        );
+    }
+
+    # customer information center backends
+    # get values from config
+    $Setting = $CommonObject->{ConfigObject}->Get('AgentCustomerInformationCenter::Backend');
+
+    # remove CustomerID for CIC
+    delete $DefaultColumns{CustomerID};
+
+    # check config
+    CICBACKEND:
+    for my $DashboardBackend ( sort keys %{$Setting} ) {
+        next CICBACKEND if !IsHashRefWithData( $Setting->{$DashboardBackend} );
+
+        my $Module = $Setting->{$DashboardBackend}->{Module} || '';
+        next CICBACKEND
+            if $Module ne 'Kernel::Output::HTML::DashboardTicketGeneric';
+
+        next CICBACKEND
+            if IsHashRefWithData( $Setting->{$DashboardBackend}->{DefaultColumns} );
+
+        # set default column values
+        $Setting->{$DashboardBackend}->{DefaultColumns} = \%DefaultColumns;
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'AgentCustomerInformationCenter::Backend###' . $DashboardBackend,
+            Value => $Setting->{$DashboardBackend},
+        );
+    }
+
     return 1;
 }
 
@@ -611,7 +693,7 @@ sub _MigrateOTRSGenericStandardTemplates {
     my $CommonObject = shift;
 
     # seach all templates with template type anwer or forward
-    for my $TemplateType qw(answer forward) {
+    for my $TemplateType (qw(answer forward)) {
 
         # set new template type to Answer or Forward (with capital leter)
         my $NewTemplateType = ucfirst $TemplateType;

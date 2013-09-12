@@ -8,6 +8,7 @@
 # --
 
 package Kernel::System::Main;
+## nofilter(TidyAll::Plugin::OTRS::Perl::Dumper)
 
 use strict;
 use warnings;
@@ -16,6 +17,7 @@ use Digest::MD5 qw(md5_hex);
 use Data::Dumper;
 use File::stat;
 use Unicode::Normalize;
+use List::Util qw();
 
 use Kernel::System::Encode;
 
@@ -162,6 +164,38 @@ sub Require {
             Message  => "Module: $Module loaded!",
         );
     }
+
+    return 1;
+}
+
+=item RequireBaseClass()
+
+require/load a module and add it as a base class to the
+calling package, if not already present (this check is needed
+for persistent environments).
+
+    my $Loaded = $MainObject->RequireBaseClass(
+        'Kernel::System::Example',
+    );
+
+=cut
+
+sub RequireBaseClass {
+    my ( $Self, $Module ) = @_;
+
+    # Load the module, if not already loaded.
+    return if !$Self->Require($Module);
+
+    no strict 'refs';    ## no critic
+    my $CallingClass = caller(0);
+
+    # Check if the base class was already loaded.
+    # This can happen in persistent environments as mod_perl (see bug#9686).
+    if ( List::Util::first { $_ eq $Module } @{"${CallingClass}::ISA"} ) {
+        return 1;    # nothing to do now
+    }
+
+    push @{"${CallingClass}::ISA"}, $Module;
 
     return 1;
 }

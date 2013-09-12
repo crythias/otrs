@@ -165,10 +165,14 @@ sub EditFieldRender {
     }
 
     # set field as mandatory
-    $FieldClass .= ' Validate_Required' if $Param{Mandatory};
+    if ( $Param{Mandatory} ) {
+        $FieldClass .= ' Validate_Required';
+    }
 
     # set error css class
-    $FieldClass .= ' ServerError' if $Param{ServerError};
+    if ( $Param{ServerError} ) {
+        $FieldClass .= ' ServerError';
+    }
 
     # to set the predefined based on a time difference
     my $DiffTime = $FieldConfig->{DefaultValue};
@@ -512,19 +516,19 @@ EOF
                 'Before' => 'more than ... ago',
                 'Last'   => 'within the last ...',
                 'Next'   => 'within the next ...',
-                'After'  => 'more than ...',
+                'After'  => 'in more than ...',
             },
             Sort           => 'IndividualKey',
             SortIndividual => [ 'Before', 'Last', 'Next', 'After' ],
             Name           => $FieldName . 'Start',
             SelectedID => $Value->{Start}->{ $FieldName . 'Start' } || 'Last',
         );
-        $HTMLString .= $Param{LayoutObject}->BuildSelection(
+        $HTMLString .= ' ' . $Param{LayoutObject}->BuildSelection(
             Data       => [ 1 .. 59 ],
             Name       => $FieldName . 'Value',
             SelectedID => $Value->{Value}->{ $FieldName . 'Value' } || 1,
         );
-        $HTMLString .= $Param{LayoutObject}->BuildSelection(
+        $HTMLString .= ' ' . $Param{LayoutObject}->BuildSelection(
             Data => {
                 minute => 'minute(s)',
                 hour   => 'hour(s)',

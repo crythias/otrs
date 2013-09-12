@@ -47,6 +47,9 @@
 <!-- dtl:block:TableHeader -->
             <thead>
                 <tr>
+
+<!-- dtl:block:GeneralOverviewHeader -->
+
 <!-- dtl:block:BulkNavBar -->
                     <th class="Checkbox">
                         <input type="checkbox" class="Checkbox" title="$Text{"Select all"}" id="SelectAllTickets" autocomplete="off" />
@@ -73,7 +76,9 @@
                     <th class="OverviewHeader $QData{"HeaderColumnName"} $QData{"CSS"}">
 
 <!-- dtl:block:OverviewNavBarPageColumnFilter -->
-                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}"></a>
+                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}">
+                            <i class="icon-filter"></i>
+                        </a>
                         <div class="ColumnSettingsContainer">
                             <div class="ColumnSettingsBox">
                                 $Data{"ColumnFilterStrg"}
@@ -96,7 +101,9 @@ Core.Agent.TableFilters.InitCustomerUserAutocomplete( $(".CustomerUserAutoComple
 <!-- dtl:block:OverviewNavBarPageColumnFilter -->
 
 <!-- dtl:block:OverviewNavBarPageColumnFilterLink -->
-                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}"></a>
+                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}">
+                            <i class="icon-filter"></i>
+                        </a>
                         <div class="ColumnSettingsContainer">
                             <div class="ColumnSettingsBox">
                                 $Data{"ColumnFilterStrg"}
@@ -161,7 +168,9 @@ Core.Agent.TableFilters.InitUserAutocomplete( $(".UserAutoComplete") );
 <!-- dtl:block:OverviewNavBarPageDynamicFieldFiltrableSortable -->
 
 <!-- dtl:block:OverviewNavBarPageDynamicFieldFiltrableNotSortable -->
-                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}"></a>
+                        <a href="#" class="ColumnSettingsTrigger" title="$Data{"FilterTitle"}">
+                            <i class="icon-filter"></i>
+                        </a>
                         <div class="ColumnSettingsContainer">
                             <div class="ColumnSettingsBox">
                                 $Data{"ColumnFilterStrg"}
@@ -172,6 +181,8 @@ Core.Agent.TableFilters.InitUserAutocomplete( $(".UserAutoComplete") );
 
                     </th>
 <!-- dtl:block:OverviewNavBarPageDynamicField -->
+
+<!-- dtl:block:GeneralOverviewHeader -->
 
 # example of how to use fixed dynamic field blocks for customizations
 # Note: Field1 and Field2 are the names of the fields and had to be replaced with the actual
@@ -305,6 +316,9 @@ $('.OverviewHeader').off('click').on('click', '.ColumnSettingsTrigger', function
             <tbody>
 <!-- dtl:block:Record -->
                 <tr id="TicketID_$QData{"TicketID"}" class="MasterAction">
+
+<!-- dtl:block:GeneralOverviewRow -->
+
 <!-- dtl:block:Bulk -->
                     <td class="Checkbox NonTextContent">
                         <input class="Checkbox" type="checkbox" name="TicketID" value="$QData{"TicketID"}"  autocomplete="off" />
@@ -314,7 +328,11 @@ $('.OverviewHeader').off('click').on('click', '.ColumnSettingsTrigger', function
                     <td class="$QData{"ClassTable"}" title="$Text{"$Data{"Title"}"}">
 <!-- dtl:block:ContentLargeTicketGenericRowMetaImage -->
                         <div class="$QData{"Class"} Small" title="$Text{"$Data{"Title"}"}">
-                            <span class="$QData{"ClassSpan"}">$Text{"$Data{"Title"}"}</span>
+                            <span class="$QData{"ClassSpan"}">
+                                <i class="icon-star"></i>
+                                <i class="icon-star"></i>
+                                <em>$Text{"$Data{"Title"}"}</em>
+                            </span>
                         </div>
 <!-- dtl:block:ContentLargeTicketGenericRowMetaImage -->
                     </td>
@@ -390,6 +408,9 @@ $('.OverviewHeader').off('click').on('click', '.ColumnSettingsTrigger', function
                         </div>
                     </td>
 <!-- dtl:block:RecordDynamicField -->
+
+<!-- dtl:block:GeneralOverviewRow -->
+
 # example of how to use fixed dynamic field blocks for customizations
 # Note: Field1 and Field2 are the names of the fields and had to be replaced with the actual
 # field names

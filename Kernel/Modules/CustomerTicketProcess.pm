@@ -8,6 +8,7 @@
 # --
 
 package Kernel::Modules::CustomerTicketProcess;
+## nofilter(TidyAll::Plugin::OTRS::Perl::DBObject)
 
 use strict;
 use warnings;
@@ -453,7 +454,7 @@ sub _RenderAjax {
             my %DynamicFieldCheckParam = map { $_ => $Param{GetParam}{$_} }
                 grep {m{^DynamicField_}xms} ( keys %{ $Param{GetParam} } );
 
-            # convert possible values key => value to key => key for ACLs usign a Hash slice
+            # convert possible values key => value to key => key for ACLs using a Hash slice
             my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 
@@ -1712,7 +1713,7 @@ sub _RenderDynamicField {
         # check if field has PossibleValues property in its configuration
         if ( IsHashRefWithData($PossibleValues) ) {
 
-            # convert possible values key => value to key => key for ACLs usign a Hash slice
+            # convert possible values key => value to key => key for ACLs using a Hash slice
             my %AclData = %{$PossibleValues};
             @AclData{ keys %AclData } = keys %AclData;
 

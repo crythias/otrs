@@ -8,6 +8,8 @@
 # --
 
 package Kernel::Modules::Installer;
+## nofilter(TidyAll::Plugin::OTRS::Perl::DBObject)
+## nofilter(TidyAll::Plugin::OTRS::Perl::Print)
 
 use strict;
 use warnings;
@@ -562,7 +564,7 @@ sub Run {
                 }
 
                 # strip off port, i.e. 'localhost:14962' should become 'localhost'
-                $DB{Host} =~ s{:\d*$}{}xms;
+                $DB{Host} =~ s{:\d*\z}{}xms;
 
                 @Statements = (
                     "CREATE DATABASE `$DB{DBName}` charset utf8",
