@@ -1,4 +1,10 @@
-#3.3.0 beta3 2013-??-??
+#3.3.0 beta4 2013-??-??
+ - 2013-09-24 Added otrs.AddCustomerUser2Group.pl command line script.
+ - 2013-09-20 Fixed bug#[9720](http://bugs.otrs.org/show_bug.cgi?id=9720) - CIC gives error message when clicking on phone ticket while that module is not registered.
+ - 2013-09-20 Fixed bug#[9742](http://bugs.otrs.org/show_bug.cgi?id=9742) - Double close icon on TreeView for Customer Interface.
+
+#3.3.0 beta3 2013-09-24
+ - 2013-09-20 Fixed bug#[9739](http://bugs.otrs.org/show_bug.cgi?id=9739) - Customer interface not working with MySQL 5.6.
  - 2013-09-12 Fixed bug#[9726](http://bugs.otrs.org/show_bug.cgi?id=9726) - otrs.DeleteCache.pl returns error state if cache was empty.
  - 2013-09-12 Fixed bug#[9728](http://bugs.otrs.org/show_bug.cgi?id=9728) - Bulk action (send email) ignores reply-to address from unknown customers.
  - 2013-09-10 Added md5sum.pl script in scripts/tools - to easily generate md5sums on platforms that need it (Windows).
@@ -8,7 +14,7 @@
  - 2013-09-06 Fixed bug#[9713](http://bugs.otrs.org/show_bug.cgi?id=9713) - Agent Ticket Search Results settings leads to Search screen.
  - 2013-09-06 Fixed bug#[9701](http://bugs.otrs.org/show_bug.cgi?id=9701) - Ticket overview Queue Sort Filter is missing.
  - 2013-09-06 Fixed bug#[8777](http://bugs.otrs.org/show_bug.cgi?id=8777) - 508 Compliance: No indication of the meaning of asterisks throughout the application.
- - Added Kernel::System::Environment, a module that has methods to get information about
+ - 2013-09-06 Added Kernel::System::Environment, a module that has methods to get information about
    the current system. Features information about OS, database, perl and OTRS.
 
 #3.3.0 beta2 2013-09-10
