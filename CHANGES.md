@@ -1,4 +1,7 @@
 #3.2.11 2013-??-??
+ - 2013-09-20 Fixed bug#[9739](http://bugs.otrs.org/show_bug.cgi?id=9739) - Customer interface not working with MySQL 5.6.
+ - 2013-09-20 Fixed bug#[8489](http://bugs.otrs.org/show_bug.cgi?id=8489) - setting Tickets per page resets AgentTicketQueue.
+ - 2013-09-20 Fixed bug#[9732](http://bugs.otrs.org/show_bug.cgi?id=9732) - German translation file de.pm incomplete.
  - 2013-09-12 Fixed bug#[9728](http://bugs.otrs.org/show_bug.cgi?id=9728) - Bulk action (send email) ignores reply-to address from unknown customers.
  - 2013-09-06 Fixed bug#[9661](http://bugs.otrs.org/show_bug.cgi?id=9661) - Useless code in DynamicField backend.
  - 2013-09-06 Fixed bug#[9701](http://bugs.otrs.org/show_bug.cgi?id=9701) - Ticket overview Queue Sort Filter is missing.
