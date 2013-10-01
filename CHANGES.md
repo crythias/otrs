@@ -1,4 +1,15 @@
 #3.3.0 beta4 2013-??-??
+ - 2013-10-01 Fixed bug#[9771](http://bugs.otrs.org/show_bug.cgi?id=9771) - SMTP backends ignore the port setting.
+ - 2013-09-30 Fixed bug#[9765](http://bugs.otrs.org/show_bug.cgi?id=9765) - Dynamic Field values are completely removed if one entry contains a dash.
+ - 2013-09-30 Fixed bug#[9768](http://bugs.otrs.org/show_bug.cgi?id=9768) - Ticket Queue Overview Dashboard widget has no proper "no data" message.
+ - 2013-09-27 Fixed bug#[9764](http://bugs.otrs.org/show_bug.cgi?id=9764) - ACL, Queue will ignored with customerID.
+ - 2013-09-27 Fixed bug#[9762](http://bugs.otrs.org/show_bug.cgi?id=9762) - Queue View - S / M / L views - not saved after logout.
+ - 2013-09-26 Fixed bug#[9580](http://bugs.otrs.org/show_bug.cgi?id=9580) - Time fields in TicketGetResponse Ticket element do not comply with xsd:DateTime format.
+ - 2013-09-26 Fixed bug#[9748](http://bugs.otrs.org/show_bug.cgi?id=9748) - ProcessManagement: Duplicate articles in a process-ticket (TransitionAction).
+ - 2013-09-26 Fixed bug#[9759](http://bugs.otrs.org/show_bug.cgi?id=9759) - Installer Error DB - max key length is 767 bytes.
+ - 2013-09-26 Fixed bug#[9747](http://bugs.otrs.org/show_bug.cgi?id=9747) - Only first selected process displays the RichText editor.
+ - 2013-09-25 Fixed bug#[9688](http://bugs.otrs.org/show_bug.cgi?id=9688) - ORA-01839 error occurs at DynamicField in TicketSearch.
+ - 2013-09-25 Fixed bug#[9435](http://bugs.otrs.org/show_bug.cgi?id=9435) - Ticket not created if first dialog has CustomerID configured as 'do not show'.
  - 2013-09-25 Fixed bug#[9751](http://bugs.otrs.org/show_bug.cgi?id=9751) - TimeUnits are not accepted with a value of 0.
  - 2013-09-24 Fixed bug#[9750](http://bugs.otrs.org/show_bug.cgi?id=9750) - Problem with SSO and security restricted iframes in IE8+WXP by adding SysConfig option *DisableMSIFrameSecurityRestricted*.
     Thanks to Pawel @ ib.pl.
