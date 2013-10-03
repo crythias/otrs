@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:44
+    # Last translation file sync: 2013-10-03 10:24:04
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1203,7 +1203,7 @@ sub Data {
         'Archive selected tickets' => 'آرشیو درخواست‌های انتخاب شده',
         'Add Note' => 'افزودن یادداشت',
         'Time units' => 'واحد زمان',
-        '(work units)' => '',
+        ' (work units)' => ' (واحد کار)',
         'Ticket Commands' => 'دستورهای درخواست',
         'Send agent/customer notifications on changes' => 'آگاه کردن کارشناس/مشتری به هنگام ایجاد تغییرات',
         'CMD' => 'CMD',
@@ -1855,6 +1855,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'اکنون عضو شوید',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => '',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'مدیریت نقش',
         'Add role' => 'افزودن نقش',
@@ -2369,7 +2436,7 @@ sub Data {
         'From queue' => 'از صف درخواست',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'گرفتن همه',
         'Text Template' => '',
@@ -2424,7 +2491,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'ساخت درخواست تلفنی جدید',
         'Please include at least one customer for the ticket.' => '',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'به صف درخواست',
 
         # Template: AgentTicketPhoneCommon
@@ -2557,7 +2623,6 @@ sub Data {
         'Forgot password?' => 'رمز عبور را فراموش کردید؟',
         'Log In' => 'ورود',
         'Not yet registered?' => 'هنوز ثبت نام نشده‌اید؟',
-        'Sign up now' => 'اکنون عضو شوید',
         'Request new password' => 'درخواست رمز عبور جدید',
         'Your User Name' => 'نام کاربری شما',
         'A new password will be sent to your email address.' => 'رمز عبور جدید برای آدرس ایمیل شما ارسال خواهد شد.',
@@ -2688,7 +2753,6 @@ sub Data {
         'JavaScript not available' => 'جاوا اسکریپت در دسترس نیست',
         'Database Settings' => 'تنظیمات پایگاه داده',
         'General Specifications and Mail Settings' => 'مشخصات عمومی و تنظیمات ایمیل',
-        'Registration' => '',
         'Welcome to %s' => 'به %s خوش آمدید',
         'Web site' => 'وب سایت',
         'Mail check successful.' => 'کنترل تنظیمات ایمیل موفقیت‌آمیز بود.',
@@ -2720,8 +2784,6 @@ sub Data {
         'Result of mail configuration check' => 'نتیجه کنترل پیکربندی ایمیل',
         'Check mail configuration' => 'کنترل پیکربندی ایمیل',
         'Skip this step' => 'از این مرحله بگذر',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            '',
 
         # Template: InstallerDBResult
         'Database setup successful!' => '',
@@ -2767,12 +2829,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'سازمان',
-        'Position' => '',
-        'Complete registration and continue' => '',
-        'Please fill in all fields marked as mandatory.' => '',
-
         # Template: InstallerSystem
         'SystemID' => 'شناسه سیستم',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2781,6 +2837,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'FQDN سیستم شما',
         'AdminEmail' => 'ایمیل مدیر',
         'Email address of the system administrator.' => 'آدرس ایمیل مدیریت سیستم',
+        'Organization' => 'سازمان',
         'Log' => 'وقایع ثبت شده',
         'LogModule' => 'ماژول ثبت وقایع',
         'Log backend to use.' => '',
@@ -2824,7 +2881,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => 'فایل مورد نظر تصویری نیست که بتواند به صورت inline نمایش داده شود.',
 
         # Template: PrintFooter
-        'URL' => 'مسیر',
 
         # Template: PrintHeader
         'printed by' => 'چاپ شده توسط  :',
@@ -3456,6 +3512,8 @@ sub Data {
             '',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             '',
@@ -3672,6 +3730,8 @@ sub Data {
         'Determines which options will be valid of the recepient (phone ticket) and the sender (email ticket) in the agent interface.' =>
             '',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
+            '',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
             '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             '',
@@ -4186,6 +4246,7 @@ sub Data {
             '',
         'Refresh Overviews after' => '',
         'Refresh interval' => 'بارگذاری مجدد ورودی',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4757,7 +4818,6 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (واحد کار)',
         'Add Customer Company' => 'افزودن شرکت مشترک ',
         'Add Response' => 'افزودن پاسخ',
         'Add customer company' => 'افزودن شرکت مشترک',
@@ -4812,6 +4872,7 @@ sub Data {
         'Responses <-> Queues' => 'پاسخ <-> لیست درخواست',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'برای باز-نصب از طریق وب باید حالت امن غیر فعال گردد',
+        'URL' => 'مسیر',
         'before' => 'قبل از',
         'default \'hot\'' => 'پیش فرض \'hot\'',
         'settings' => 'تنظیمات',

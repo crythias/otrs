@@ -2308,6 +2308,28 @@ sub NoPermission {
     my $WithHeader = $Param{WithHeader} || 'yes';
     $Param{Message} = 'Insufficient Rights.' if ( !$Param{Message} );
 
+    # get config option for possible next actions
+    my $PossibleNextActions = $Self->{ConfigObject}->Get('PossibleNextActions');
+
+    POSSIBLE:
+    if ( IsHashRefWithData($PossibleNextActions) ) {
+        $Self->Block(
+            Name => 'PossibleNextActionContainer',
+        );
+        for my $Key ( sort keys %{$PossibleNextActions} ) {
+            next POSSIBLE if !$Key;
+            next POSSIBLE if !$PossibleNextActions->{$Key};
+
+            $Self->Block(
+                Name => 'PossibleNextActionRow',
+                Data => {
+                    Link        => $PossibleNextActions->{$Key},
+                    Description => $Key,
+                },
+            );
+        }
+    }
+
     # create output
     my $Output;
     $Output = $Self->Header( Title => 'Insufficient Rights' ) if ( $WithHeader eq 'yes' );
@@ -3048,6 +3070,7 @@ sub BuildDateSelection {
         && $Param{ $Prefix . 'Year' }
         && $Param{ $Prefix . 'Month' }
         && $Param{ $Prefix . 'Day' }
+        && !$Param{OverrideTimeZone}
         )
     {
         my $TimeStamp = $Self->{TimeObject}->TimeStamp2SystemTime(
@@ -3713,7 +3736,7 @@ sub CustomerNavigationBar {
             if (
                 !$SelectedFlag
                 && $NavBarModule{$Item}->{Link} =~ /Action=$Self->{Action}/
-                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
+                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/     # Subaction can be empty
                 )
             {
                 $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -3745,7 +3768,7 @@ sub CustomerNavigationBar {
                 if (
                     !$SelectedFlag
                     && $ItemSub->{Link} =~ /Action=$Self->{Action}/
-                    && $ItemSub->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
+                    && $ItemSub->{Link} =~ /$Self->{Subaction}/       # Subaction can be empty
                     )
                 {
                     $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -4096,7 +4119,7 @@ sub RichTextDocumentServe {
 
             # replace charset in content
             $Param{Data}->{ContentType} =~ s/\Q$Charset\E/utf-8/gi;
-            $Param{Data}->{Content} =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
+            $Param{Data}->{Content}     =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
         }
     }
 

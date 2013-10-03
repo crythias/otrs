@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:40
+    # Last translation file sync: 2013-10-03 10:24:02
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1198,7 +1198,7 @@ sub Data {
         'Archive selected tickets' => 'Tickets seleccionados del archivo',
         'Add Note' => 'A√±adir Nota',
         'Time units' => 'Unidades de tiempo',
-        '(work units)' => '',
+        ' (work units)' => ' (unidades de trabajo)',
         'Ticket Commands' => 'Instrucciones de Ticket',
         'Send agent/customer notifications on changes' => 'Enviar notificaci√≥n de cambios al agente/cliente',
         'CMD' => 'CMD',
@@ -1850,6 +1850,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'Inscr√≠base ahora',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => 'Atributo',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'Administraci√≥n de Roles',
         'Add role' => 'A√±adir rol',
@@ -2364,7 +2431,7 @@ sub Data {
         'From queue' => 'De la fila',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Obtener todos',
         'Text Template' => '',
@@ -2419,7 +2486,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'Crear un Ticket Telef√≥nico Nuevo',
         'Please include at least one customer for the ticket.' => '',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'Para la fila',
 
         # Template: AgentTicketPhoneCommon
@@ -2552,7 +2618,6 @@ sub Data {
         'Forgot password?' => '¬øOlvid√≥ su contrase√±a?',
         'Log In' => 'Iniciar sesi√≥n',
         'Not yet registered?' => '¬øA√∫n no se ha registrado?',
-        'Sign up now' => 'Inscr√≠base ahora',
         'Request new password' => 'Solicitar una nueva contrase√±a',
         'Your User Name' => 'Su Nombre de Usuario',
         'A new password will be sent to your email address.' => 'Una contrase√±a nueva se enviar√° a su direcci√≥n de correo electr√≥nico.',
@@ -2683,7 +2748,6 @@ sub Data {
         'JavaScript not available' => 'JavaScript no disponible',
         'Database Settings' => 'Configuraciones de la Base de Datos',
         'General Specifications and Mail Settings' => 'Especificaciones Generales y Configuraciones de Correo',
-        'Registration' => '',
         'Welcome to %s' => 'Bienvenido a %s',
         'Web site' => 'Sitio web',
         'Mail check successful.' => 'Verificaci√≥n satisfactoria de correo',
@@ -2715,8 +2779,6 @@ sub Data {
         'Result of mail configuration check' => 'Resultado de la verificaci√≥n de la configuraci√≥n de correo.',
         'Check mail configuration' => 'Verificar configuraci√≥n de correo',
         'Skip this step' => 'Omitir este paso',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            '',
 
         # Template: InstallerDBResult
         'Database setup successful!' => 'Base de datos configurada con √©xito!',
@@ -2762,12 +2824,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'Organizaci√≥n',
-        'Position' => '',
-        'Complete registration and continue' => '',
-        'Please fill in all fields marked as mandatory.' => '',
-
         # Template: InstallerSystem
         'SystemID' => 'ID de sistema',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2776,6 +2832,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'Nombre de dominio totalmente calificado de su sistema.',
         'AdminEmail' => 'Correo del Administrador.',
         'Email address of the system administrator.' => 'Direcci√≥n de correo electr√≥nico del administrador del sistema.',
+        'Organization' => 'Organizaci√≥n',
         'Log' => 'Log',
         'LogModule' => 'M√≥duloLog',
         'Log backend to use.' => 'Backend a usar para el log.',
@@ -2819,7 +2876,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => '¬°El archivo no es una imagen que se pueda mostrar en l√≠nea!',
 
         # Template: PrintFooter
-        'URL' => 'URL',
 
         # Template: PrintHeader
         'printed by' => 'impreso por',
@@ -3451,6 +3507,8 @@ sub Data {
             'Define el tipo de v√≠nculo \'Grupos\'. Los tipos de v√≠nculo del mismo grupo se cancelan mutuamente. Por ejemplo: Si el ticket A est√° enlazado con el ticket B por un v√≠nculo \'Normal\', no es posible que estos mismos tickets adem√°s est√©n enlazados por un v√≠nculo de relaci√≥n \'PadreHijo\'.',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             'Define la ubicaci√≥n para obtener una lista de repositorios en l√≠nea para paquetes adicionales. Se usar√° el primer resultado disponible.',
@@ -3668,6 +3726,8 @@ sub Data {
             'Determina las opciones v√°lidas para el remitente (ticket telef√≥nico) y destinatario (ticket de correo electr√≥nico), en la interfaz del agente.',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
             'Determina las filas que ser√°n v√°lidas coom remitentes de los ticket, en la interfaz del cliente.',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
+            '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             'Deshabilita el env√≠o de notificaciones de recordatorio al agente responsable de un ticket (Ticket::Responsible tiene que estar activo).',
         'Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If set to "No", the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If not active, it also disables the GenericAgent, PackageManager and SQL Box.' =>
@@ -4181,6 +4241,7 @@ sub Data {
             '',
         'Refresh Overviews after' => '',
         'Refresh interval' => 'Intervalo de actualizaci√≥n',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4752,7 +4813,6 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (unidades de trabajo)',
         '%s Tickets affected! Do you really want to use this job?' => '%s Tickets afectados. ¬øRealmente desea utilizar esta tarea?',
         '(Checks MX recordes of used email addresses by composing an answer. Don\'t use CheckMXRecord if your OTRS machine is behinde a dial-up line $!)' =>
             '(Chequear registro MX de direcciones utilizadas al responder. ¬° No usarlo si su PC con OTRS est√° detr√°s de una l√≠nea telefonica $!)',
@@ -4902,7 +4962,6 @@ sub Data {
         'ArticleID' => 'Identificador de art√≠culo',
         'Attach' => 'Anexo',
         'Attachments <-> Responses' => 'Anexos <-> Respuestas',
-        'Attribute' => 'Atributo',
         'Auto Response From' => 'Respuesta Autom√°tica De',
         'Bounce Ticket: ' => 'Rebotar Ticket',
         'Bounce ticket' => 'Ticket rebotado',
@@ -5799,6 +5858,7 @@ sub Data {
         'Top of Page' => 'Inicio de p√°gina',
         'Total hits' => 'Total de coincidencias',
         'U' => 'A',
+        'URL' => 'URL',
         'Unable to parse Online Repository index document!' => 'Incapaz de interpretar el documento √≠ndice del Repositorio en L√≠nea',
         'Uniq' => '√önico',
         'Unlock Tickets' => 'Desbloquear Tickets',

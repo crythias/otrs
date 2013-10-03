@@ -3819,6 +3819,24 @@ sub _StoreActivityDialog {
 
             next DIALOGFIELD if $CheckedFields{ $Self->{NameToID}{'CustomerID'} };
 
+            # is not possible to a have an invisible field for this particular value
+            # on agent interface
+            if ( $ActivityDialog->{Fields}{$CurrentField}{Display} == 0 ) {
+
+                my $InvisibleFiledMessage =
+                    "Couldn't use CustomerID as an invisible field, please contact your system administrator!";
+                # does not show header and footer again
+                if ( $Self->{AJAXDialog} ) {
+                    return $Self->{LayoutObject}->Error(
+                        Message => $InvisibleFiledMessage,
+                    );
+                }
+
+                $Self->{LayoutObject}->FatalError(
+                    Message => $InvisibleFiledMessage,
+                );
+            }
+
             my $CustomerID = $Param{GetParam}{CustomerID};
             if ( !$CustomerID ) {
                 $Error{'CustomerID'} = 1;
