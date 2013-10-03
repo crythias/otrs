@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:45
+    # Last translation file sync: 2013-10-03 10:24:05
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1200,7 +1200,7 @@ sub Data {
         'Archive selected tickets' => '',
         'Add Note' => 'Lisää huomautus',
         'Time units' => 'Työaika',
-        '(work units)' => '',
+        ' (work units)' => ' (esim. minuutteina)',
         'Ticket Commands' => '',
         'Send agent/customer notifications on changes' => '',
         'CMD' => 'CMD',
@@ -1852,6 +1852,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'Luo tunnus nyt',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => '',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'Roolien hallinta',
         'Add role' => '',
@@ -2366,7 +2433,7 @@ sub Data {
         'From queue' => 'Jonosta',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Näytä kaikki',
         'Text Template' => '',
@@ -2421,7 +2488,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'Lisää uusi puhelintiketti',
         'Please include at least one customer for the ticket.' => 'Valitse ainakin yksi asiakas tiketille',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'Jonoon',
 
         # Template: AgentTicketPhoneCommon
@@ -2554,7 +2620,6 @@ sub Data {
         'Forgot password?' => 'Unohditko salasanasi?',
         'Log In' => 'Kirjaudu',
         'Not yet registered?' => 'Etkö ole vielä rekisteröitynyt?',
-        'Sign up now' => 'Luo tunnus nyt',
         'Request new password' => 'Pyydä uutta salasanaa',
         'Your User Name' => 'Sinun käyttäjänimi',
         'A new password will be sent to your email address.' => 'Uusi salasana lähetetään sinulle sähköpostilla.',
@@ -2685,7 +2750,6 @@ sub Data {
         'JavaScript not available' => 'JavaScript ei toiminnassa',
         'Database Settings' => 'Tietokanta-asetukset',
         'General Specifications and Mail Settings' => 'Yleiset määritykset ja sähköpostiasetukset',
-        'Registration' => 'Rekisteröityminen',
         'Welcome to %s' => 'Tervetuloa %s järjestelmään',
         'Web site' => 'Kotisivu',
         'Mail check successful.' => 'Sähköpostin tarkastus onnistunut.',
@@ -2717,8 +2781,6 @@ sub Data {
         'Result of mail configuration check' => 'Asetusten tarkistusten tulos',
         'Check mail configuration' => 'Tarkista sähköpostin asetukset',
         'Skip this step' => 'Ohita tämä vaihe',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            'Tämän vaiheen ohittaminen ohittaa OTRS:n rekisteröimisen. Haluatko varmasti jatkaa?',
 
         # Template: InstallerDBResult
         'Database setup successful!' => 'Tietokanta asennettu onnistuneesti!',
@@ -2764,12 +2826,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'Organisaatio',
-        'Position' => 'Asema',
-        'Complete registration and continue' => 'Suorita rekisteröinti ja jatka',
-        'Please fill in all fields marked as mandatory.' => 'Täytä kaikki vaaditut kentät',
-
         # Template: InstallerSystem
         'SystemID' => 'JärjestelmäID',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2778,6 +2834,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'Järjestelmäsi täydellinen verkkotunnus (FQDN).',
         'AdminEmail' => 'Ylläpidon sähköpostiosoite',
         'Email address of the system administrator.' => 'Järjestelmän ylläpitäjän sähköpostiosoite.',
+        'Organization' => 'Organisaatio',
         'Log' => 'Loki',
         'LogModule' => 'LokiModuuli',
         'Log backend to use.' => 'Käytettävä logijärjestelmä.',
@@ -2821,7 +2878,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => '',
 
         # Template: PrintFooter
-        'URL' => 'URL',
 
         # Template: PrintHeader
         'printed by' => 'tulostaja: ',
@@ -3453,6 +3509,8 @@ sub Data {
             '',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             '',
@@ -3669,6 +3727,8 @@ sub Data {
         'Determines which options will be valid of the recepient (phone ticket) and the sender (email ticket) in the agent interface.' =>
             '',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
+            '',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
             '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             '',
@@ -4183,6 +4243,7 @@ sub Data {
             '',
         'Refresh Overviews after' => '',
         'Refresh interval' => 'Päivitysväli',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4754,12 +4815,12 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (esim. minuutteina)',
         'Add Customer Company' => 'Lisää asiakasyritys',
         'Add customer company' => 'Lisää asiakasyritys',
         'Attachments <-> Responses' => 'Liitteet <-> Vastaukset',
         'Can\'t update password, it must contain at least 2 lowercase and 2 uppercase characters!' =>
             'Salasanan päivitys ei onnistunut, sen tulee sisältää vähintään 2 pientä ja 2 isoa kirjainta!',
+        'Complete registration and continue' => 'Suorita rekisteröinti ja jatka',
         'Create and manage companies.' => 'Luo ja hallinnoi yrityksiä.',
         'Create and manage response templates.' => 'Luo ja hallinnoi vastausmalleja.',
         'Currently only MySQL is supported in the web installer.' => 'Voit asentaa järjestelmän web näkymästä vain MySQL-tietokantaan.',
@@ -4781,14 +4842,20 @@ sub Data {
         'Log file location is only needed for File-LogModule!' => 'Lokitiedoston sijainti tarvitaan vain File-LogModulille',
         'Logout successful. Thank you for using OTRS!' => 'Uloskirjautuminen onnistui. Kiitos kun käytit OTRS-järjestelmää',
         'Please enter a search term to look for customer companies.' => 'Lisää hakutermi etsiäksesi asiakasyrityksiä',
+        'Please fill in all fields marked as mandatory.' => 'Täytä kaikki vaaditut kentät',
         'Please supply a' => 'Ole hyvä ja kirjoita',
         'Please supply a first name' => 'Ole hyvä ja anna etunimesi',
         'Please supply a last name' => 'Ole hyvä ja anna sukunimesi',
+        'Position' => 'Asema',
+        'Registration' => 'Rekisteröityminen',
         'Responses' => 'Vastaukset',
         'Responses <-> Queues' => 'Vastaukset <-> Jono',
         'Show  article' => 'Näytä artikkeli',
+        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
+            'Tämän vaiheen ohittaminen ohittaa OTRS:n rekisteröimisen. Haluatko varmasti jatkaa?',
         'There are no further steps in this process' => 'Tässä prosessissa ei ole enempää vaiheita',
         'To customer' => 'Asiakkaalle',
+        'URL' => 'URL',
         'before' => 'edellinen',
         'default \'hot\'' => 'oletuspalvelin',
 

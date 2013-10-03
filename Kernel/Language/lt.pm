@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:54
+    # Last translation file sync: 2013-10-03 10:24:11
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1198,7 +1198,7 @@ sub Data {
         'Archive selected tickets' => 'Archyvuoti pasirinktas triktis',
         'Add Note' => 'Pridėti pastabą',
         'Time units' => 'Laiko vienetai',
-        '(work units)' => '',
+        ' (work units)' => '',
         'Ticket Commands' => 'Trikčių komandos',
         'Send agent/customer notifications on changes' => 'Įvykus pasikeitimams siųsti perspėjimus agentams/klientams',
         'CMD' => 'CMD',
@@ -1850,6 +1850,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'Prisijunkite',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => '',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'Rolių valdymas',
         'Add role' => 'Pridėti rolę',
@@ -2364,7 +2431,7 @@ sub Data {
         'From queue' => 'iš eilės',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Gauti visus',
         'Text Template' => '',
@@ -2419,7 +2486,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'Sukurti naują telefoninę triktį',
         'Please include at least one customer for the ticket.' => '',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'Į eilę',
 
         # Template: AgentTicketPhoneCommon
@@ -2552,7 +2618,6 @@ sub Data {
         'Forgot password?' => 'Pamiršote slaptažodį?',
         'Log In' => 'Prisijungti',
         'Not yet registered?' => 'Neregistruotas?',
-        'Sign up now' => 'Prisijunkite',
         'Request new password' => 'Prašyti naujo slaptažodžio',
         'Your User Name' => 'Jūsų Naudotojo Vardas',
         'A new password will be sent to your email address.' => 'Naujas slaptažodis bus nusiųstas į Jūsų pašto dėžutę.',
@@ -2683,7 +2748,6 @@ sub Data {
         'JavaScript not available' => 'JavaScript neįjungtas.',
         'Database Settings' => 'Duomenų bazės nustatymai',
         'General Specifications and Mail Settings' => 'Bendrieji reikalavimai ir Pašto nustatymai',
-        'Registration' => '',
         'Welcome to %s' => 'Sveiki atvykę į %s',
         'Web site' => 'Interneto puslapis',
         'Mail check successful.' => 'El. pašto patikrinimas sėkmingas.',
@@ -2715,8 +2779,6 @@ sub Data {
         'Result of mail configuration check' => 'El. pašto konfigūracijos patikrinimo rezultatas',
         'Check mail configuration' => 'Patikrinti el. pašto konfigūraciją',
         'Skip this step' => 'Praleisti šį žingsnį',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            '',
 
         # Template: InstallerDBResult
         'Database setup successful!' => '',
@@ -2762,12 +2824,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'Organizacija',
-        'Position' => '',
-        'Complete registration and continue' => '',
-        'Please fill in all fields marked as mandatory.' => '',
-
         # Template: InstallerSystem
         'SystemID' => 'SystemID',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2776,6 +2832,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'Pilnas sistemos domeno pavadinimas (Fully qualified domain name).',
         'AdminEmail' => 'Administratoriaus el. pašto adresas',
         'Email address of the system administrator.' => 'Sistemos administratoriaus el. pašto adresas.',
+        'Organization' => 'Organizacija',
         'Log' => 'Žurnalas (log)',
         'LogModule' => 'Žurnalo modulis (log module)',
         'Log backend to use.' => 'Žurnalo posistemė.',
@@ -2819,7 +2876,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => 'Failas nėra paveikslėlis, kurį būtų galima rodyti tiesiogiai (? inline)',
 
         # Template: PrintFooter
-        'URL' => 'URL',
 
         # Template: PrintHeader
         'printed by' => 'atspausdino',
@@ -3451,6 +3507,8 @@ sub Data {
             '',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             '',
@@ -3667,6 +3725,8 @@ sub Data {
         'Determines which options will be valid of the recepient (phone ticket) and the sender (email ticket) in the agent interface.' =>
             '',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
+            '',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
             '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             '',
@@ -4181,6 +4241,7 @@ sub Data {
             '',
         'Refresh Overviews after' => '',
         'Refresh interval' => 'Atnaujinimo intervalas',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4803,6 +4864,7 @@ sub Data {
         'Responses <-> Queues' => 'Atsakymai <-> Eilės',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Norint įdiegti iš naujo, naudojant web-diegyklę, saugus režimas turi būti išjungtas.',
+        'URL' => 'URL',
         'before' => 'prieš',
         'default \'hot\'' => 'standartiškai \'hot\'',
         'settings' => 'nustatymai',

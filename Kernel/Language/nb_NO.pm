@@ -24,7 +24,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:57
+    # Last translation file sync: 2013-10-03 10:24:13
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1206,7 +1206,7 @@ sub Data {
         'Archive selected tickets' => 'Arkiver valgte saker',
         'Add Note' => 'Legg til notis',
         'Time units' => 'Tidsenheter',
-        '(work units)' => '',
+        ' (work units)' => ' (arbeidsenheter)',
         'Ticket Commands' => 'Sakskommandoer',
         'Send agent/customer notifications on changes' => 'Send en saksbehandler-/kunde-varsling ved endringer',
         'CMD' => 'Kommando',
@@ -1858,6 +1858,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'Registrer deg her',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => '',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'Administrasjon: Roller',
         'Add role' => 'Ny rolle',
@@ -2372,7 +2439,7 @@ sub Data {
         'From queue' => 'Fra kø',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'Hent alle',
         'Text Template' => '',
@@ -2427,7 +2494,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'Lag ny Telefon-sak',
         'Please include at least one customer for the ticket.' => 'Vennligst oppgi minst en kunde for denne saken',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'Til kø',
 
         # Template: AgentTicketPhoneCommon
@@ -2560,7 +2626,6 @@ sub Data {
         'Forgot password?' => 'Glemt passordet?',
         'Log In' => 'Logg inn',
         'Not yet registered?' => 'Ikke registrert enda?',
-        'Sign up now' => 'Registrer deg her',
         'Request new password' => 'Be om nytt passord',
         'Your User Name' => 'Ditt brukernavn',
         'A new password will be sent to your email address.' => 'Nytt passord vil bli sendt til din e-postadresse',
@@ -2691,7 +2756,6 @@ sub Data {
         'JavaScript not available' => 'JavaScript er ikke tilgjengelig',
         'Database Settings' => 'Databaseinnstillinger',
         'General Specifications and Mail Settings' => 'Generelle spesifikasjoner og e-post-innstillinger',
-        'Registration' => 'Registrering',
         'Welcome to %s' => 'Velkommen til %s',
         'Web site' => 'Websted',
         'Mail check successful.' => 'E-postsjekk fullført',
@@ -2723,8 +2787,6 @@ sub Data {
         'Result of mail configuration check' => 'Resultat for e-postsjekk',
         'Check mail configuration' => 'Sjekk e-postkonfigurasjonen',
         'Skip this step' => 'Hopp over dette steget',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            '',
 
         # Template: InstallerDBResult
         'Database setup successful!' => 'Konfigurasjon av databasen var vellykket',
@@ -2770,12 +2832,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'Organisasjon',
-        'Position' => 'Posisjon',
-        'Complete registration and continue' => 'Fullfør registreringen og fortsett',
-        'Please fill in all fields marked as mandatory.' => 'Vennligst fyll ut alle feltene som er markert som obligatoriske',
-
         # Template: InstallerSystem
         'SystemID' => 'System-ID',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2784,6 +2840,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'Fullt kvalifisert domene-navn for din tjener.',
         'AdminEmail' => 'Admin e-post',
         'Email address of the system administrator.' => 'E-postadresse til systemadministratoren',
+        'Organization' => 'Organisasjon',
         'Log' => 'Logg',
         'LogModule' => 'Logg-modul',
         'Log backend to use.' => 'Loggmetode som skal brukes',
@@ -2827,7 +2884,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => 'Filen er ikke et bilde som kan vises i nettleseren!',
 
         # Template: PrintFooter
-        'URL' => 'URL',
 
         # Template: PrintHeader
         'printed by' => 'skrevet ut av',
@@ -3459,6 +3515,8 @@ sub Data {
             '',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             '',
@@ -3675,6 +3733,8 @@ sub Data {
         'Determines which options will be valid of the recepient (phone ticket) and the sender (email ticket) in the agent interface.' =>
             '',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
+            '',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
             '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             '',
@@ -4189,6 +4249,7 @@ sub Data {
             '',
         'Refresh Overviews after' => 'Oppdater oversikter etter',
         'Refresh interval' => 'Automatisk innlasting',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4760,7 +4821,6 @@ sub Data {
         #
         # OBSOLETE ENTRIES FOR REFERENCE, DO NOT TRANSLATE!
         #
-        ' (work units)' => ' (arbeidsenheter)',
         'A response is a default text which helps your agents to write faster answers to customers.' =>
             'Et ferdigsvar er en standard tekst som hjelper saksbehandlere til å skrive raskere tilbakemeldinger til kunder',
         'Add Customer Company' => 'Legg til kundebedrift',
@@ -4780,6 +4840,7 @@ sub Data {
         'Change Response Relations for Queue' => 'Endre koplinger mellom køen og ferdigsvar.',
         'Company name for the customer web interface. Will also be included in emails as an X-Header.' =>
             'Firmanavn for kundegrensesnittet. Vil også bli inkludert i e-posten som en X-Hode',
+        'Complete registration and continue' => 'Fullfør registreringen og fortsett',
         'Configures the full-text index. Execute "bin/otrs.RebuildFulltextIndex.pl" in order to generate a new index.' =>
             'Setter opp fulltekstindeksen. Kjør "bin/otrs.RebuildFulltextIndex.pl" for å opprette en ny indeks.',
         'Create and manage companies.' => 'Administrasjon av firma',
@@ -4831,14 +4892,18 @@ sub Data {
         'Package verification failed!' => 'Pakkevalidering feilet!',
         'Password is required.' => 'Passord er påkrevd.',
         'Please enter a search term to look for customer companies.' => 'Skriv inn et søk for å lete etter kundebedrifter',
+        'Please fill in all fields marked as mandatory.' => 'Vennligst fyll ut alle feltene som er markert som obligatoriske',
         'Please supply a' => 'Vennligst oppgi en',
         'Please supply a first name' => 'Vennligst skriv inn et fornavn',
         'Please supply a last name' => 'Vennligst skriv inn et etternavn',
+        'Position' => 'Posisjon',
+        'Registration' => 'Registrering',
         'Responses' => 'Ferdigsvar',
         'Responses <-> Queues' => 'Ferdigsvar <-> Køer',
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Sikkermodus må skrus av for å re-installere via web-installerer.',
         'To customer' => 'Til kunde',
+        'URL' => 'URL',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
             'Bruker rikt tekstformat for visning og redigerer: innlegg, hilsninger, signaturer, standardsvar, autosvar og varslinger.',
         'before' => 'før',

@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-09-19 16:21:48
+    # Last translation file sync: 2013-10-03 10:24:07
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -1200,7 +1200,7 @@ sub Data {
         'Archive selected tickets' => 'संग्रह टिकट चयनित',
         'Add Note' => 'टिप्पणी जोड़ें',
         'Time units' => 'समय इकाइयों',
-        '(work units)' => '',
+        ' (work units)' => '',
         'Ticket Commands' => 'टिकट आदेश',
         'Send agent/customer notifications on changes' => 'बदलाव पर प्रतिनिधि/ग्राहक कि अधिसूचना भेजें',
         'CMD' => 'CMD',
@@ -1852,6 +1852,73 @@ sub Data {
         'Change Queue Relations for Template' => '',
         'Change Template Relations for Queue' => '',
 
+        # Template: AdminRegistration
+        'Registration Management' => '',
+        'Send update now' => '',
+        'Overview of registered systems' => '',
+        'Deregister system' => '',
+        'System Registration' => '',
+        'This system is registered with OTRS Group.' => '',
+        'Unique ID' => '',
+        'Last communication with registration server' => '',
+        'OTRS-ID Login' => '',
+        'System registration is a service of OTRS group, which provides a lot of advantages!' =>
+            '',
+        'Read more' => '',
+        'First you need to log in with your OTRS-ID.' => '',
+        'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
+            '',
+        'What are the advantages of system registration?' => '',
+        'You will receive updates about relevant security releases.' => '',
+        'With your system registration we can improve our services for you, because we have all relevant information available.' =>
+            '',
+        'This is only the beginning!' => '',
+        'We will inform you about our new services and offerings soon.' =>
+            '',
+        'Can I use OTRS without being registered?' => '',
+        'System registration is optional.' => '',
+        'You can download and use OTRS without being registered.' => '',
+        'Is it possible to deregister?' => '',
+        'You can deregister at any time.' => '',
+        'Which data is transfered when registering?' => '',
+        'A registered system sends the following data to OTRS:' => '',
+        'Fully Qualified Domain Name (FQDN), OTRS version, Database, Operating System and Perl version.' =>
+            '',
+        'Why do I have to provide a description for my system?' => '',
+        'The description of the system is optional.' => '',
+        'The description and system type you specify help you to identify and manage the details of your registered systems.' =>
+            '',
+        'How often does my OTRS system send updates?' => '',
+        'Your system will send updates to the registration server at regular intervals.' =>
+            '',
+        'Typically this would be around once every three days.' => '',
+        'In case you would have further questions we would be glad to answer them.' =>
+            '',
+        'Please visit our' => '',
+        'portal' => '',
+        'and file a request.' => '',
+        'If you deregister your system, you will loose these benefits:' =>
+            '',
+        'OTRS-ID' => '',
+        'You don\'t have an OTRS-ID yet?' => '',
+        'Sign up now' => 'अभी पंजीकरण करें',
+        'Forgot your password?' => '',
+        'Retrieve a new one' => '',
+        'This data will be frequently transferred to OTRS Group when you register this system.' =>
+            '',
+        'Attribute' => '',
+        'FQDN' => '',
+        'OTRS Version' => '',
+        'Operating System' => '',
+        'Perl Version' => '',
+        'System type' => '',
+        'Optional description of this system.' => '',
+        'Register' => '',
+        'Deregister System' => '',
+        'Continuing with this step will deregister the system from OTRS Group.' =>
+            '',
+        'Deregister' => '',
+
         # Template: AdminRole
         'Role Management' => 'भूमिका प्रबंधन',
         'Add role' => 'भूमिका जोड़ें',
@@ -2366,7 +2433,7 @@ sub Data {
         'From queue' => 'श्रेणी से',
         'To customer user' => '',
         'Please include at least one customer user for the ticket.' => '',
-        'Select this customer user as the main customer user.' => '',
+        'Select this customer as the main customer.' => '',
         'Remove Ticket Customer User' => '',
         'Get all' => 'सभी प्राप्त करें',
         'Text Template' => '',
@@ -2421,7 +2488,6 @@ sub Data {
         # Template: AgentTicketPhone
         'Create New Phone Ticket' => 'नया फोन टिकट बनाएँ',
         'Please include at least one customer for the ticket.' => '',
-        'Select this customer as the main customer.' => '',
         'To queue' => 'श्रेणी में',
 
         # Template: AgentTicketPhoneCommon
@@ -2554,7 +2620,6 @@ sub Data {
         'Forgot password?' => 'कूटशब्द भूल गए?',
         'Log In' => 'प्रवेश',
         'Not yet registered?' => 'अभी तक पंजीकृत नही?',
-        'Sign up now' => 'अभी पंजीकरण करें',
         'Request new password' => 'नए कूटशब्द के लिए अनुरोध',
         'Your User Name' => 'आपका उपयोगकर्ता नाम',
         'A new password will be sent to your email address.' => 'एक नया कूटशब्द आपके ईमेल पते पर भेजा जाएगा।',
@@ -2685,7 +2750,6 @@ sub Data {
         'JavaScript not available' => 'जावास्क्रिप्ट उपलब्ध नहीं है।',
         'Database Settings' => 'आंकड़ाकोष व्यवस्थाऐं',
         'General Specifications and Mail Settings' => 'सामान्य निर्दिष्टीकरण और मेल व्यवस्थाऐं',
-        'Registration' => '',
         'Welcome to %s' => '%s में आपका स्वागत है',
         'Web site' => 'वेबसाइट',
         'Mail check successful.' => 'मेल की जाँच सफल रही।',
@@ -2717,8 +2781,6 @@ sub Data {
         'Result of mail configuration check' => 'मेल विन्यास की जाँच के नतीजे',
         'Check mail configuration' => 'मेल विन्यास की जाँच करें',
         'Skip this step' => 'यह चरण छोड़ें',
-        'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
-            '',
 
         # Template: InstallerDBResult
         'Database setup successful!' => '',
@@ -2764,12 +2826,6 @@ sub Data {
 
         # Template: InstallerLicenseText
 
-        # Template: InstallerRegistration
-        'Organization' => 'संगठन',
-        'Position' => '',
-        'Complete registration and continue' => '',
-        'Please fill in all fields marked as mandatory.' => '',
-
         # Template: InstallerSystem
         'SystemID' => 'सिस्टम ID',
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -2778,6 +2834,7 @@ sub Data {
         'Fully qualified domain name of your system.' => 'पूरी तरह से योग्य आपके सिस्टम का प्रक्षेत्र नाम।',
         'AdminEmail' => 'व्यवस्थापक ईमेल',
         'Email address of the system administrator.' => 'प्रणाली प्रशासक का ईमेल पता।',
+        'Organization' => 'संगठन',
         'Log' => 'अभिलेख',
         'LogModule' => 'मॉड्यूल अभिलेख',
         'Log backend to use.' => 'अभिलेख का बैकेंड प्रयोग के लिये',
@@ -2821,7 +2878,6 @@ sub Data {
         'The file is not an image that can be shown inline!' => 'फ़ाइल एक छवि नहीं है जो इनलाइन दिखाया जा सकता है।',
 
         # Template: PrintFooter
-        'URL' => 'URL',
 
         # Template: PrintHeader
         'printed by' => 'के द्वारा मुद्रित',
@@ -3453,6 +3509,8 @@ sub Data {
             'लिंक के प्रकार समूहों को परिभाषित करता है। एक ही समूह के लिंक प्रकार एक दूसरे को रद्द कर देंगे।उदाहरण: यदि टिकट A टिकट B के साथ एक \'सामान्य\' लिंक के अनुसार जुड़ा हुआ है,तब इन टिकटों को \'जनक\बालक\' संबंध की लिंक के साथ नहीं जोड़ा जा सकता है।',
         'Defines the list of online repositories. Another installations can be used as repository, for example: Key="http://example.com/otrs/public.pl?Action=PublicRepository;File=" and Content="Some Name".' =>
             '',
+        'Defines the list of possible next actions on an error screen.' =>
+            '',
         'Defines the list of types for templates.' => '',
         'Defines the location to get online repository list for additional packages. The first available result will be used.' =>
             'अतिरिक्त संकुल के लिए ऑनलाइन भंडार सूची प्राप्त करने के लिए स्थान को परिभाषित करता है। पहले उपलब्ध परिणाम का उपयोग किया जाएगा।',
@@ -3670,6 +3728,8 @@ sub Data {
             'प्रतिनिधि अंतरफलक में प्राप्तकर्ता(फोन टिकट) और प्रेषक(ईमेल टिकट) के लिए जो विकल्प वैध होगें उनको निर्धारित करता है।',
         'Determines which queues will be valid for ticket\'s recepients in the customer interface.' =>
             'ग्राहक अंतरफलक में  टिकट प्राप्तकर्ताओं के लिए जो श्रेणी वैध होगी उनको निर्धारित करता है।',
+        'Disable restricted security for IFrames in IE. May be required for SSO to work in IE8.' =>
+            '',
         'Disables sending reminder notifications to the responsible agent of a ticket (Ticket::Responsible needs to be activated).' =>
             'एक टिकट के जिम्मेदार प्रतिनिधि को अनुस्मारक सूचनाएं भेजना निष्क्रिय करता है (टिकट:जिम्मेदार सक्रिय करने की जरूरत है)।',
         'Disables the web installer (http://yourhost.example.com/otrs/installer.pl), to prevent the system from being hijacked. If set to "No", the system can be reinstalled and the current basic configuration will be used to pre-populate the questions within the installer script. If not active, it also disables the GenericAgent, PackageManager and SQL Box.' =>
@@ -4183,6 +4243,7 @@ sub Data {
             '',
         'Refresh Overviews after' => '',
         'Refresh interval' => 'ताज़ाकरण अंतराल',
+        'Register, view or update system registration.' => '',
         'Removes the ticket watcher information when a ticket is archived.' =>
             '',
         'Replaces the original sender with current customer\'s email address on compose answer in the ticket compose screen of the agent interface.' =>
@@ -4840,6 +4901,7 @@ sub Data {
             'स्वत:पूर्ण क्वेरी से पहले वर्णों की न्यूनतम संख्या भेजी है यह स्थापित करता है।',
         'Sets the number of search results to be displayed for the autocomplete feature.' =>
             'खोज परिणामों की संख्या स्वत: पूर्ण सुविधा के लिए प्रदर्शित करने के लिए स्थापित करता है।',
+        'URL' => 'URL',
         'Uses richtext for viewing and editing: articles, salutations, signatures, standard responses, auto responses and notifications.' =>
             'देखने और संपादित करने के लिए समृद्ध पाठ का उपयोग करता है: अनुच्छेद,अभिवादन,हस्ताक्षर,मानक प्रतिक्रियाएं,स्वत प्रतिक्रियाओं और अधिसूचनाएं।',
         'When tickets are merged, a note will be added automatically to the ticket which is no longer active. In this text area you can define this text (This text cannot be changed by the agent).' =>
