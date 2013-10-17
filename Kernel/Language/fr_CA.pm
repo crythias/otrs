@@ -23,7 +23,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:27
+    # Last translation file sync: 2013-10-17 13:49:59
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -406,6 +406,11 @@ sub Data {
         'Redo' => 'Refaire',
         'Scheduler process is registered but might not be running.' => 'Le processus d\'ordonnancement est autorisé, mais n\'est peut-être pas en fonction.',
         'Scheduler is not running.' => 'L\'ordonnanceur n\'est pas en fonction.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Jour de l\'An',
@@ -479,6 +484,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Statistique',
         'Sum' => 'Somme',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Veuillez remplir les champs obligatoires.',
         'Please select a file!' => 'Sélectionnez un fichier.',
         'Please select an object!' => 'Sélectionnez un objet.',
@@ -1863,11 +1869,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1923,13 +1930,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Gestion des rôles',
@@ -2243,6 +2250,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Envoyé il y a %s',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Mes demandes verrouillées',
         'My watched tickets' => 'Mes demandes sous surveillance',
@@ -2331,6 +2342,15 @@ sub Data {
         'Use cache' => 'Utiliser le cache ',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'Un grand nombre de statistiques peut être emmagasiné en cache et ainsi accélérer l\'affichage de cette statistique.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Si l\'option « non admissible » est choisie, les utilisateurs finaux ne pourront pas générer les statistiques.',
 
         # Template: AgentStatsEditValueSeries
@@ -2373,10 +2393,13 @@ sub Data {
         'Graphsize' => 'Taille du graphique',
         'Cache' => 'Cache ',
         'Exchange Axis' => 'Échangez les axes',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Paramètres des statistiques configurables',
         'No element selected.' => 'Aucun élément n\'est sélectionné.',
         'maximal period from' => 'Période maximale depuis',
         'to' => 'vers',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Modifier le texte libre de la demande no ',
@@ -2751,9 +2774,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => '',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
         'You are logged in as' => 'Vous êtes connecté en tant que',
 
         # Template: HeaderSmall

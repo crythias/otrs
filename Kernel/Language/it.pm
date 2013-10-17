@@ -23,7 +23,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:31
+    # Last translation file sync: 2013-10-17 13:50:02
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -406,6 +406,11 @@ sub Data {
         'Redo' => 'Ripeti',
         'Scheduler process is registered but might not be running.' => 'Il processo Scheduler è registrato ma potrebbe non essere in funzione',
         'Scheduler is not running.' => 'Lo Schedulatore non sta funzionando',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Capodanno',
@@ -479,6 +484,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Statistiche',
         'Sum' => 'Somma',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Prego compilare i campi richiesti!',
         'Please select a file!' => 'Prego selezionare un file',
         'Please select an object!' => 'Prego selezionare un oggetto',
@@ -1863,11 +1869,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1923,13 +1930,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Gestione ruoli',
@@ -2243,6 +2250,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Inviato %s giorni fa.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Ticket assegnati a me',
         'My watched tickets' => 'Ticket che sorveglio',
@@ -2331,6 +2342,15 @@ sub Data {
         'Use cache' => 'Usa cache',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'le stat possono usare il meccanismo della cache ',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Se impostato a invalido gli utenti finali non possono generare la statistica.',
 
         # Template: AgentStatsEditValueSeries
@@ -2373,10 +2393,13 @@ sub Data {
         'Graphsize' => 'Dimensione Immagine',
         'Cache' => '',
         'Exchange Axis' => 'Scambia assi',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Parametri configurabili per le statistiche ',
         'No element selected.' => 'nessun elemento selezionato',
         'maximal period from' => 'Periodo massimo da ',
         'to' => 'a',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Cambia Testo Libero di un Ticket',
@@ -2751,9 +2774,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Ricerca testo libero',
-        'CustomerID Search' => 'Ricerca per Identificativo Cliente',
-        'CustomerUser Search' => 'Ricerca per Cliente',
         'You are logged in as' => 'Si è effettuato l\'accesso come',
 
         # Template: HeaderSmall
@@ -4854,6 +4874,8 @@ sub Data {
         'Customer Data' => 'Dati del cliente',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Il cliente necessiterà di uno storico, e di effettuare il login tramite il pannello cliente.',
+        'CustomerID Search' => 'Ricerca per Identificativo Cliente',
+        'CustomerUser Search' => 'Ricerca per Cliente',
         'Customers <-> Services' => 'Clienti <-> Servizi',
         'Database-User' => 'Utente DB',
         'Default skin for interface.' => 'Tema di default per l\'interfaccia.',
@@ -4867,6 +4889,7 @@ sub Data {
         'Filter name' => 'Nome del filtro',
         'For more info see:' => 'Per maggior informazioni vedi:',
         'From customer' => 'Dal cliente',
+        'Fulltext search' => 'Ricerca testo libero',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Se hei una passwd per accesso al db , devi inserirla qui. Se no lascia il campo vuoto. Per maggiori info sulla sicurezza sul db consulta il manuale ',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>

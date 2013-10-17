@@ -25,7 +25,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:39
+    # Last translation file sync: 2013-10-17 13:50:10
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -408,6 +408,11 @@ sub Data {
         'Redo' => 'Повторить',
         'Scheduler process is registered but might not be running.' => 'Процесс планировщика зарегистрирован, но может не быть запущен.',
         'Scheduler is not running.' => 'Планировщик не запущен.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Новый Год',
@@ -481,6 +486,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Статистика',
         'Sum' => 'Сумма',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Заполните обязательные поля!',
         'Please select a file!' => 'Выберите файл!',
         'Please select an object!' => 'Выберите объект!',
@@ -1865,11 +1871,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1925,13 +1932,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Управление ролями',
@@ -2245,6 +2252,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Опубликовано %s',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Мои заблокированные заявки',
         'My watched tickets' => 'Заявки в моем списке наблюдения',
@@ -2333,6 +2344,15 @@ sub Data {
         'Use cache' => 'Использовать кэш',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'Большинство отчетов могут кэшироваться. Это увеличит скорость показа отчетов.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Если установлен недействительным, конечные пользователи не могут генерировать этот отчет.',
 
         # Template: AgentStatsEditValueSeries
@@ -2375,10 +2395,13 @@ sub Data {
         'Graphsize' => 'Размер графика',
         'Cache' => 'Кэш',
         'Exchange Axis' => 'Поменять оси',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Конфигурируемые параметры статического отчета',
         'No element selected.' => 'Элементы не выбраны',
         'maximal period from' => 'Максимальный период с',
         'to' => 'по',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Изменить свободный текст заявки',
@@ -2753,9 +2776,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Полнотекстовый поиск',
-        'CustomerID Search' => 'Поиск по ID клиента',
-        'CustomerUser Search' => 'Поиск по логину',
         'You are logged in as' => 'Вы вошли как',
 
         # Template: HeaderSmall
@@ -4999,7 +5019,9 @@ sub Data {
             'Учетная запись клиента необходима для ведения истории клиента и для доступа к клиентской панели.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Учетная запись клиента необходима для ведения истории клиента и для доступа к клиентской панели.',
+        'CustomerID Search' => 'Поиск по ID клиента',
         'CustomerUser' => 'Клиент',
+        'CustomerUser Search' => 'Поиск по логину',
         'Customers <-> Services' => 'Клиенты <-> Сервисы',
         'D' => 'D',
         'DB connect host' => 'Сервер базы данных',
@@ -5060,6 +5082,7 @@ sub Data {
         'Foward ticket: ' => 'Переслать заявку',
         'From customer' => 'От клиента',
         'Frontend' => 'Режим пользователя',
+        'Fulltext search' => 'Полнотекстовый поиск',
         'Fulltext-Search in Article (e. g. "Mar*in" or "Baue*")' => 'Полнотекстовый поиск в заявке (например, «Mar*in» или «Baue*»)',
         'Go' => 'Выполнить',
         'Group Ro' => 'Группа только для чтения',

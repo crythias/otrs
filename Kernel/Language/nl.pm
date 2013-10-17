@@ -22,7 +22,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:36
+    # Last translation file sync: 2013-10-17 13:50:07
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -218,7 +218,7 @@ sub Data {
         'Medium' => 'Middel',
         'Large' => 'Groot',
         'Date picker' => 'Datumkiezer',
-        'Show Tree Selection' => '',
+        'Show Tree Selection' => 'Toon boomweergave',
         'New message' => 'Nieuw bericht',
         'New message!' => 'Nieuw bericht.',
         'Please answer this ticket(s) to get back to the normal queue view!' =>
@@ -347,7 +347,7 @@ sub Data {
             'Geen pakketten, of geen nieuwe pakketten, gevonden in de geselecteerde repository.',
         'Edit the system configuration settings.' => 'Bewerk de systeemconfiguratie.',
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
-            '',
+            'De ACL-informatie in de database is niet gesynchroniseerd met het systeem. Activeer alle ACLs.',
         'printed at' => 'afgedrukt op',
         'Loading...' => 'Bezig met laden...',
         'Dear Mr. %s,' => 'Geachte heer %s,',
@@ -405,6 +405,11 @@ sub Data {
         'Redo' => 'Herhalen',
         'Scheduler process is registered but might not be running.' => 'Schedulerproces is geregistreerd, maar niet actief.',
         'Scheduler is not running.' => 'De Scheduler is niet actief.',
+        'Can\'t contact registration server. Please try again later.' => 'Kan registratieserver niet bereiken. Probeer het later nogmaals.',
+        'No content received from registration server. Please try again later.' =>
+            'Geen data ontvangen van registratieserver. Probeer het later nogmaals.',
+        'Problems processing server result. Please try again later.' => 'Problemen met het verwerken van data van registratieserver. Probeer het later nogmaals.',
+        'Username and password do not match. Please try again.' => 'Gebruikersnaam en wachtwoord komen niet overeen.',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Nieuwjaarsdag',
@@ -478,6 +483,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Rapportage',
         'Sum' => 'Totaal',
+        'No (not supported)' => 'Nee (niet beschikbaar)',
         'Please fill out the required fields!' => 'Vul de verplichte velden in.',
         'Please select a file!' => 'Selecteer een bestand.',
         'Please select an object!' => 'Selecteer een object.',
@@ -802,7 +808,7 @@ sub Data {
             'Alle tickets met een herinnering waarbij het herinnermoment is bereikt',
         'Archived tickets' => 'Gearchiveerde tickets',
         'Unarchived tickets' => 'Ongearchiveerde tickets',
-        'Ticket Information' => '',
+        'Ticket Information' => 'Ticket-informatie',
         'History::Move' => 'Ticket verplaatst naar wachtrij "%s" (%s) van wachtrij "%s" (%s).',
         'History::TypeUpdate' => 'Type gewijzigd naar %s (ID=%s).',
         'History::ServiceUpdate' => 'Service gewijzigd naar %s (ID=%s).',
@@ -1862,11 +1868,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => 'Beheer systeemregistratie',
-        'Send update now' => 'Verstuur update',
+        'Edit details' => 'Bewerk gegevens',
         'Overview of registered systems' => 'Overzicht van geregistreerde systemen',
         'Deregister system' => 'Deregistreer systeem',
         'System Registration' => 'Systeemregistratie',
         'This system is registered with OTRS Group.' => 'Dit systeem is geregistreerd bij de OTRS Groep.',
+        'System type' => 'Systeemtype',
         'Unique ID' => 'Uniek ID',
         'Last communication with registration server' => 'Laatste communicatie met registratieserver',
         'OTRS-ID Login' => 'OTRS-ID',
@@ -1874,7 +1881,7 @@ sub Data {
             'Systeemregistratie is een service van de OTRS Groep, die een aantal voordelen biedt.',
         'Read more' => 'Lees meer',
         'You need to log in with your OTRS-ID to register your system.' =>
-            '',
+            'U moet inloggen met uw OTRS-ID om uw systeem te registreren',
         'Your OTRS-ID is the email address you used to sign up on the OTRS.com webpage.' =>
             'Uw OTRS-ID is het emailadres waarmee u zich heeft ingeschreven op de OTRS.com website.',
         'What are the advantages of system registration?' => 'Wat zijn de voordelen van systeemregistratie?',
@@ -1909,7 +1916,7 @@ sub Data {
         'If you deregister your system, you will loose these benefits:' =>
             'Als u uw systeem deregistreert, verliest u deze voordelen:',
         'You need to log in with your OTRS-ID to deregister your system.' =>
-            '',
+            'U moet inloggen met uw OTRS-ID om uw systeem te deregistreren.',
         'OTRS-ID' => 'OTRS-ID',
         'You don\'t have an OTRS-ID yet?' => 'Heeft u nog geen OTRS-ID?',
         'Sign up now' => 'Gebruikersnaam registreren',
@@ -1922,13 +1929,13 @@ sub Data {
         'OTRS Version' => 'OTRS-versie',
         'Operating System' => 'Besturingssysteem',
         'Perl Version' => 'Perl-versie',
-        'System type' => 'Systeemtype',
         'Optional description of this system.' => 'Optionele omschrijving van dit systeem.',
         'Register' => 'Registreer',
         'Deregister System' => 'Deregistreer systeem',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             'Doorgaan met deze stap zal uw systeem deregistreren bij de OTRS Groep.',
         'Deregister' => 'Deregistreer',
+        'You can modify the system type and description here.' => 'U kunt hier het type en de beschrijving van uw systeem aanpassen.',
 
         # Template: AdminRole
         'Role Management' => 'Beheer rollen',
@@ -2242,6 +2249,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Geplaatst %s geleden.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            'De inhoud van deze rapportage wordt voor u aangemaakt, even geduld.',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Mijn vergrendelde tickets',
         'My watched tickets' => 'Mijn gevolgde tickets',
@@ -2330,6 +2341,15 @@ sub Data {
         'Use cache' => 'Gebruik buffer',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'De meeste rapporten kunnen worden gebufferd, dit versnelt het genereren van het rapport.',
+        'Show as dashboard widget' => 'Toon als dashboard-widget',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            'Maak een dashboard-widget van dit rapport die behandelaars in hun dashboard kunnen activeren.',
+        'Please note' => 'Let op',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            'Als rapportages ook als dashboard widgets gebruikt worden dan wordt er caching voor dit rapport geactiveerd.',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            'Behandelaars kunnen geen datum-parameters voor widgets aanpassen',
+        'IE8 doesn\'t support statistics dashboard widgets.' => 'Internet Explorer 8 ondersteund geen rapport-widgets',
         'If set to invalid end users can not generate the stat.' => 'Als deze op ongeldig staat, kan het rapport niet gebruikt worden.',
 
         # Template: AgentStatsEditValueSeries
@@ -2372,10 +2392,13 @@ sub Data {
         'Graphsize' => 'Grafiek grootte',
         'Cache' => 'Cache',
         'Exchange Axis' => 'Wissel assen',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Configureerbare parameters voor rapport',
         'No element selected.' => 'Geen element geselecteerd.',
         'maximal period from' => 'Maximale periode van',
         'to' => 'tot',
+        'not changable for dashboard statistics' => 'niet aanpasbaar voor dashboard-widgets',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Wijzig vrije velden',
@@ -2444,7 +2467,7 @@ sub Data {
         'From queue' => 'In wachtrij',
         'To customer user' => 'Aan klant',
         'Please include at least one customer user for the ticket.' => 'Selecteer tenminste een klant voor dit ticket.',
-        'Select this customer as the main customer.' => '',
+        'Select this customer as the main customer.' => 'Selecteer deze klant als hoofd-klant',
         'Remove Ticket Customer User' => 'Verwijder klant van ticket',
         'Get all' => 'Gebruik alle',
         'Text Template' => 'Tekstsjabloon',
@@ -2750,9 +2773,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Zoeken',
-        'CustomerID Search' => 'Zoeken op klantcode',
-        'CustomerUser Search' => 'Zoeken op klant',
         'You are logged in as' => 'Ingelogd als',
 
         # Template: HeaderSmall
@@ -4848,6 +4868,8 @@ sub Data {
         'Customer automatically added in Cc.' => 'Klant automatisch toegevoegd als CC.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Klanten zijn nodig om een historie te kunnen inzien en om in te loggen via het klantenscherm.',
+        'CustomerID Search' => 'Zoeken op klantcode',
+        'CustomerUser Search' => 'Zoeken op klant',
         'Customers <-> Services' => 'Klanten <-> Services',
         'DB host' => 'Database host',
         'Database-User' => 'OTRS database gebruiker',
@@ -4862,6 +4884,7 @@ sub Data {
         'Filter name' => 'Filter naam',
         'For more info see:' => 'Voor meer informatie zie:',
         'From customer' => 'Van klant',
+        'Fulltext search' => 'Zoeken',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Als er een wachtwoord hoort bij dit account, vul deze hier in. Vanuit beveiligingsoogpunt is het aan te bevelen een wachtwoord te gebruiken. Kijk in de databasedocumentatie voor meer informatie.',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>
@@ -4892,6 +4915,7 @@ sub Data {
         'Secure mode must be disabled in order to reinstall using the web-installer.' =>
             'Secure Mode moet gedeactiveerd worden om te kunnen herinstalleren met de web-installer.',
         'Select this customer user as the main customer.' => 'Selecteer deze klant als hoofdcontact.',
+        'Send update now' => 'Verstuur update',
         'Show  article' => 'Toon interactie',
         'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
             'Als u deze stap overslaat dan slaat u ook de registratie van uw OTRS-systeem over. Weet u zeker dat u wilt doorgaan?',

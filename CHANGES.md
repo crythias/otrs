@@ -1,4 +1,16 @@
-#3.3.0 beta5 2013-??-??
+#3.3.0 beta5 2013-10-22
+ - 2013-10-17 Added new feature "management dashboard". This makes it possible to display statistic charts in the dashboard. Please not that IE8 does not support this feature.
+ - 2013-10-14 Fixed bug#[9804](http://bugs.otrs.org/show_bug.cgi?id=9804) - If access to a module not given permission, output the error to httpd log.
+ - 2013-10-14 Fixed bug#[9815](http://bugs.otrs.org/show_bug.cgi?id=9815) - Different FirstnameLastname Format in "Involved Agent" window.
+ - 2013-10-14 Fixed bug#[9819](http://bugs.otrs.org/show_bug.cgi?id=9819) - Inconsistent API in Date Dynamic Field EditFieldValueGet().
+ - 2013-10-14 Fixed bug#[9818](http://bugs.otrs.org/show_bug.cgi?id=9818) - Wrong default sorting in user out of office widget.
+ - 2013-10-14 Updated CPAN module SOAP::Lite to version 1.06.
+ - 2013-10-14 Fixed bug#[9817](http://bugs.otrs.org/show_bug.cgi?id=9817) - Wrong default sorting in user online widget.
+ - 2013-10-14 Fixed bug#[9814](http://bugs.otrs.org/show_bug.cgi?id=9814) - Tickets without articles not shown correcly in medium view.
+ - 2013-10-14 Fixed bug#[9391](http://bugs.otrs.org/show_bug.cgi?id=9391) - Incorrect permissions on .procmailrc.
+ - 2013-10-14 Fixed bug#[9812](http://bugs.otrs.org/show_bug.cgi?id=9812) - Sysconfig descriptions for tooltips and placeholder values of toolbar widgets are ignored.
+ - 2013-10-14 Fixed bug#[9811](http://bugs.otrs.org/show_bug.cgi?id=9811) - JavaScript is not executed in QueueView Large in Strict Mode.
+ - 2013-10-14 Fixed bug#[9810](http://bugs.otrs.org/show_bug.cgi?id=9810) - Queue View Settings cannot be opened in IE8.
  - 2013-10-10 Fixed bug#[9698](http://bugs.otrs.org/show_bug.cgi?id=9698) - Dynamic Fields with links open in same tab instead of in new window from overviews.
  - 2013-10-10 Fixed bug#[9788](http://bugs.otrs.org/show_bug.cgi?id=9788) - Preview overviews empty if no templates are available for queue.
  - 2013-10-10 Fixed bug#[9790](http://bugs.otrs.org/show_bug.cgi?id=9790) - OTRSExternalTicketNumberRecognition Feature addon settings are not migrated.

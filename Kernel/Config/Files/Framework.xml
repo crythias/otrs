@@ -4003,6 +4003,7 @@ via the Preferences button after logging in.
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
                     <CSS>thirdparty/fullcalendar-1.6.1/fullcalendar.css</CSS>
+                    <CSS>thirdparty/d3js/nv.d3.css</CSS>
                     <JavaScript>thirdparty/flot-0.8.1/excanvas.js</JavaScript>
                     <JavaScript>thirdparty/flot-0.8.1/jquery.flot.js</JavaScript>
                     <JavaScript>Core.UI.Chart.js</JavaScript>
@@ -4011,6 +4012,8 @@ via the Preferences button after logging in.
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
                     <JavaScript>Core.Agent.Dashboard.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-1.6.1/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/d3js/d3.v3.min.js</JavaScript>
+                    <JavaScript>thirdparty/d3js/nv.d3.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -5403,7 +5406,7 @@ via the Preferences button after logging in.
                 <Item Key="Title">Out Of Office</Item>
                 <Item Key="Description"></Item>
                 <Item Key="IdleMinutes">60</Item>
-                <Item Key="SortBy">UserLastname</Item>
+                <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">10</Item>
                 <Item Key="Group"></Item>
@@ -5423,7 +5426,7 @@ via the Preferences button after logging in.
                 <Item Key="Description"></Item>
                 <Item Key="ShowEmail">0</Item>
                 <Item Key="IdleMinutes">60</Item>
-                <Item Key="SortBy">UserLastname</Item>
+                <Item Key="SortBy">UserFullname</Item>
                 <Item Key="Filter">Agent</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">10</Item>

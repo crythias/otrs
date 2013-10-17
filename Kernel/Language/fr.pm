@@ -24,7 +24,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:27
+    # Last translation file sync: 2013-10-17 13:49:58
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -407,6 +407,11 @@ sub Data {
         'Redo' => 'Refaire',
         'Scheduler process is registered but might not be running.' => '',
         'Scheduler is not running.' => '',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Jour de l\'An',
@@ -480,6 +485,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Statistique',
         'Sum' => 'Somme',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Remplissez les champs obligatoires svp !',
         'Please select a file!' => 'Sélectionnez un fichier svp !',
         'Please select an object!' => 'Sélectionnez un objet svp !',
@@ -1864,11 +1870,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1924,13 +1931,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Gestion des Rôles',
@@ -2244,6 +2251,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Envoyé il y a %s',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Mes tickets verrouillés',
         'My watched tickets' => 'Mes tickets suivis',
@@ -2332,6 +2343,15 @@ sub Data {
         'Use cache' => 'Utiliser le cache',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'La plus grande part des stats peuvent être mise en cache. Cela accèlere leur présentation',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Si mis à invalide, les utilisateurs finaux ne pourront pas générer la statistique.',
 
         # Template: AgentStatsEditValueSeries
@@ -2374,10 +2394,13 @@ sub Data {
         'Graphsize' => 'Taille du graphique',
         'Cache' => 'Cache',
         'Exchange Axis' => 'Échangez les axes',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Paramètres modifiables des statistiques',
         'No element selected.' => 'Aucun élément sélectionné.',
         'maximal period from' => 'Période maximale depuis',
         'to' => 'vers',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Changer le Texte Libre du Ticket',
@@ -2752,9 +2775,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Recherche plein texte',
-        'CustomerID Search' => 'Recherche ID Client',
-        'CustomerUser Search' => 'Recherche Utilisateur Client',
         'You are logged in as' => 'Vous êtes connecté avec',
 
         # Template: HeaderSmall
@@ -4847,6 +4867,8 @@ sub Data {
         'Customer automatically added in Cc.' => 'Client automatiquement ajouté dans Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Le client devra avoir un historique et se connecter via le panneau utilisateur',
+        'CustomerID Search' => 'Recherche ID Client',
+        'CustomerUser Search' => 'Recherche Utilisateur Client',
         'Customers <-> Services' => 'Clients <-> Services',
         'Database-User' => 'Nom de l\'utilisateur de la base de donnée',
         'Default skin for interface.' => 'Habillage par défaut pour l\'interface.',
@@ -4856,6 +4878,7 @@ sub Data {
         'Filter for Responses' => 'Filtre pour réponses',
         'For more info see:' => 'Pour plus d\'informations, allez à',
         'From customer' => 'Du client',
+        'Fulltext search' => 'Recherche plein texte',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Si vous avez un mot de passe pour le compte root de votre base de données, il doit être saisi ici. Sinon, laissez ce champ vide. Pour des raisons de sécurité, nous vous recommandons de mettre un mot de passe pour le compte root. Pour plus d\'information, referez vous svp à la documentation de votre gestionnaire de base de données.',
         'Link attachments to responses templates.' => 'Lier pièces jointes aux modèles de réponse',

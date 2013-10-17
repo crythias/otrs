@@ -20,7 +20,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:38
+    # Last translation file sync: 2013-10-17 13:50:09
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -403,6 +403,11 @@ sub Data {
         'Redo' => 'Refazer',
         'Scheduler process is registered but might not be running.' => 'Processo do agendador está registrado mas pode não estar em execução.',
         'Scheduler is not running.' => 'Agendador não está em execução',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Ano Novo',
@@ -476,6 +481,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Estatística',
         'Sum' => 'Soma',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Por favor, preencha os campos obrigatórios!',
         'Please select a file!' => 'Por favor, selecione um arquivo!',
         'Please select an object!' => 'Por favor, selecione um objeto!',
@@ -1860,11 +1866,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1920,13 +1927,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Gerenciamento de Papéis',
@@ -2240,6 +2247,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Postado há %s atrás.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Meus Chamados Bloqueados',
         'My watched tickets' => 'Meus Chamados Monitorados',
@@ -2328,6 +2339,15 @@ sub Data {
         'Use cache' => 'Usar Cache',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'A maioria das estatísticas podem ser mantidas em cache. Isto tornará sua visualização mais rápida.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Se configurado como inválido, usuários finais não poderão gerar a estatística.',
 
         # Template: AgentStatsEditValueSeries
@@ -2370,10 +2390,13 @@ sub Data {
         'Graphsize' => 'Tamanho do Gráfico',
         'Cache' => 'Cache',
         'Exchange Axis' => 'Trocar Eixo',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Parâmetros configuráveis da estatística estática',
         'No element selected.' => 'Nenhum elemento selecionado.',
         'maximal period from' => 'máximo perído de',
         'to' => 'para',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Alterar os campos livres do chamado',
@@ -2748,9 +2771,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Busca Completa',
-        'CustomerID Search' => 'Busca por ID do Cliente',
-        'CustomerUser Search' => 'Busca por Usuário do Cliente',
         'You are logged in as' => 'Você está logado como',
 
         # Template: HeaderSmall
@@ -4852,6 +4872,8 @@ sub Data {
         'Customer automatically added in Cc.' => 'Cliente automaticamente adicionado à Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Os clientes são necessárias para o fornecimento do histórico do cliente e para a autenticação via painel do cliente.',
+        'CustomerID Search' => 'Busca por ID do Cliente',
+        'CustomerUser Search' => 'Busca por Usuário do Cliente',
         'Customers <-> Services' => 'Clientes <-> Serviços',
         'DB host' => 'Servidor do Banco',
         'Database-User' => 'Usuário do Banco',
@@ -4866,6 +4888,7 @@ sub Data {
         'Filter name' => 'Nome Do Filtro',
         'For more info see:' => 'Para mais informações acesse:',
         'From customer' => 'Do Cliente',
+        'Fulltext search' => 'Busca Completa',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Se você tiver definido uma senha de root para o seu banco de dados, ela deve ser inserida aqui. Se não, deixe este campo vazio. Por razões de segurança, é recomendável definir uma senha de root. Para obter mais informações, consulte a documentação do seu banco de dados.',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>
