@@ -16,7 +16,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:41
+    # Last translation file sync: 2013-10-17 13:50:12
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -399,6 +399,11 @@ sub Data {
         'Redo' => 'Понови',
         'Scheduler process is registered but might not be running.' => 'Планер процес је регистрован, али можда није покренут.',
         'Scheduler is not running.' => 'Планер не ради.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Нова година',
@@ -472,6 +477,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Статистика',
         'Sum' => 'Сума',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Молимо Вас, попуните обавезна поља!',
         'Please select a file!' => 'Молимо Вас да одаберете датотеку!',
         'Please select an object!' => 'Молимо Вас да одаберете објекат!',
@@ -1856,11 +1862,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1916,13 +1923,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Управљање улогама',
@@ -2236,6 +2243,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Послано пре %s.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Моји закључани тикети',
         'My watched tickets' => 'Моји праћени тикети',
@@ -2324,6 +2335,15 @@ sub Data {
         'Use cache' => 'Употреби кеш',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'Већина стат. података се може кеширати. Ово ће убрзати приказ статистике.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Ако је погрешно, крајњи корисници не могу генерисати статистику.',
 
         # Template: AgentStatsEditValueSeries
@@ -2366,10 +2386,13 @@ sub Data {
         'Graphsize' => 'Величина графикона',
         'Cache' => 'Кеш',
         'Exchange Axis' => 'Замени осе',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Подесиви параметри статичке статистике',
         'No element selected.' => 'Није изабран ни један елемент.',
         'maximal period from' => 'максимални период од',
         'to' => 'до',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Промени "слободан" текст тикета',
@@ -2744,9 +2767,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => '',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
         'You are logged in as' => 'Пријављени сте као',
 
         # Template: HeaderSmall

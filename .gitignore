@@ -39,6 +39,8 @@ var/httpd/htdocs/skins/Customer/ivory/css-cache/*
 var/sessions/Data*
 var/sessions/State*
 var/article/*
+var/cron/*
+!var/cron/*.dist
 
 # Fred
 Fred.sopm
@@ -83,3 +85,4 @@ var/stats/*.xml.installed
 bin/CodeInstall.pl
 bin/DatabaseInstall.pl
 perltidy.LOG
+.procmailrc

@@ -21,7 +21,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:22
+    # Last translation file sync: 2013-10-17 13:49:53
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -404,6 +404,11 @@ sub Data {
         'Redo' => 'Rehacer',
         'Scheduler process is registered but might not be running.' => 'El proceso del planificador está registrado, pero podría no estar ejecutándose.',
         'Scheduler is not running.' => 'El planificador no está en ejecución.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Año nuevo',
@@ -477,6 +482,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Estadísticas',
         'Sum' => 'Suma',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => '¡Por favor, proporcione los campos requeridos!',
         'Please select a file!' => '¡Por favor, seleccione un fichero!',
         'Please select an object!' => '¡Por favor, seleccione un objeto!',
@@ -1861,11 +1867,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => 'Gestión de Registro del sistema',
-        'Send update now' => 'Enviar actualización ahora',
+        'Edit details' => '',
         'Overview of registered systems' => 'Vista general de sistemas registrados',
         'Deregister system' => 'Dar de baja sistema',
         'System Registration' => 'Registro del sistema',
         'This system is registered with OTRS Group.' => 'Este sistema se encuentra registrado por OTRS Group',
+        'System type' => 'Tipo de sistema',
         'Unique ID' => 'Identificador unico',
         'Last communication with registration server' => 'Última comunicación con el servidor de registro',
         'OTRS-ID Login' => 'Inicio de sesión con OTRS-ID',
@@ -1921,13 +1928,13 @@ sub Data {
         'OTRS Version' => 'Versión de OTRS',
         'Operating System' => 'Sistema Operativo',
         'Perl Version' => 'Versión de Perl',
-        'System type' => 'Tipo de sistema',
         'Optional description of this system.' => 'Descripción opcional de este sistema.',
         'Register' => 'Registrar',
         'Deregister System' => 'Sistema dado de baja',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             'Continuando con este paso se dará de baja el sistema para el grupo OTRS.',
         'Deregister' => 'Dar de baja',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Gestión de Roles',
@@ -2241,6 +2248,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Enviado hace %s.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Mis tickets bloqueados',
         'My watched tickets' => 'Mis tickets vigilados',
@@ -2329,6 +2340,15 @@ sub Data {
         'Use cache' => 'Usar la caché',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'La mayoría de las estadisticas se pueden conservar en la caché. Esto acelera la presentación de esta estadística.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Si se establece a un valor no válido los usuarios finales no pueden generar la estadística.',
 
         # Template: AgentStatsEditValueSeries
@@ -2371,10 +2391,13 @@ sub Data {
         'Graphsize' => 'Tamaño de la gráfica',
         'Cache' => 'Caché',
         'Exchange Axis' => 'Intercambiar los ejes',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Parámetros configurables de estadística estática',
         'No element selected.' => 'No hay seleccionado ningún elemento',
         'maximal period from' => 'periodo máximo desde',
         'to' => 'hasta',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Cambiar el texto libre del ticket',
@@ -2749,9 +2772,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Búsqueda de texto completo',
-        'CustomerID Search' => 'Búsqueda de identificador de cliente',
-        'CustomerUser Search' => 'Búsqueda de usuario cliente',
         'You are logged in as' => 'Ha iniciado sesión como',
 
         # Template: HeaderSmall
@@ -4835,12 +4855,15 @@ sub Data {
         'Customer automatically added in Cc.' => 'Cliente añadido automáticamente en Cc.',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'El cliente tendrá que tener un historial e iniciar sesión por medio del panel de clientes',
+        'CustomerID Search' => 'Búsqueda de identificador de cliente',
+        'CustomerUser Search' => 'Búsqueda de usuario cliente',
         'DB host' => 'Servidor de base de datos',
         'Database-User' => 'Usuario de la base de datos',
         'Escalation in' => 'Escalado en',
         'False' => 'Falso',
         'For more info see:' => 'Para mas información consulte:',
         'From customer' => 'Del cliente',
+        'Fulltext search' => 'Búsqueda de texto completo',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Si ha establecido una contraseña de root para su base de datos, debe introducirla aquí. Si no, deje este campo en blanco. Por razones de seguridad, recomendamos establecer una contraseña para root. Para más información, consulte la documentación de su base de datos.',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>
@@ -4858,6 +4881,7 @@ sub Data {
         'Registration' => 'Registro',
         'Responses' => 'Respuestas',
         'Responses <-> Queues' => 'Respuestas <-> Colas',
+        'Send update now' => 'Enviar actualización ahora',
         'Show  article' => 'Mostrar el artículo',
         'Skipping this step will automatically skip the registration of your OTRS. Are you sure you want to continue?' =>
             'Saltarse este paso omitirá automáticamente el registro de su OTRS. ¿Seguro que desea continuar?',

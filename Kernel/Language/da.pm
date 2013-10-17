@@ -17,7 +17,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:20
+    # Last translation file sync: 2013-10-17 13:49:50
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -400,6 +400,11 @@ sub Data {
         'Redo' => 'Gendan',
         'Scheduler process is registered but might not be running.' => 'Scheduler-processen er registreret, men kører måske ikke.',
         'Scheduler is not running.' => 'Scheduleren kører ikke.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Nytårsdag',
@@ -473,6 +478,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Rapport',
         'Sum' => 'Sum',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Udfyld venligst de påkrævede felter.',
         'Please select a file!' => 'Vælg venligst en fil',
         'Please select an object!' => 'Vælg venligst et objekt',
@@ -1857,11 +1863,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1917,13 +1924,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Rollestyring',
@@ -2237,6 +2244,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Offentliggjort %s siden.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Mine sager',
         'My watched tickets' => 'Sager, jeg følger',
@@ -2325,6 +2336,15 @@ sub Data {
         'Use cache' => 'Brug cache',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'De fleste statistikker kan blive cachet, det vil gøre præsentationen hurtigere',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Hvis sat til ugyldig, kan brugere ikke køre rapporten.',
 
         # Template: AgentStatsEditValueSeries
@@ -2367,10 +2387,13 @@ sub Data {
         'Graphsize' => 'Graf-størrelse',
         'Cache' => 'Cache',
         'Exchange Axis' => 'Ombyt akser',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Konfigurerbare parametre af en statisk rapport',
         'No element selected.' => 'Intet element er valgt',
         'maximal period from' => 'maksimal periode fra',
         'to' => 'til',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Rediger sagens fritekst',
@@ -2745,9 +2768,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'Fuldtekst-søgning',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
         'You are logged in as' => 'Du er logget ind som',
 
         # Template: HeaderSmall
@@ -4853,6 +4873,7 @@ sub Data {
         'Filter name' => 'Filternavn',
         'For more info see:' => 'For mere information se:',
         'From customer' => 'Fra kunde',
+        'Fulltext search' => 'Fuldtekst-søgning',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Hvis du har sat et root kodeord til din database skal du taste det her. Hvis ikke, lad feltet være tomt. Af sikkerhedsmæssige årsager anbefaler vi at sætte et root kodeord. For mere information henviser vi til documentationen for din database.',
         'If you want to install OTRS on another database type, please refer to the file README.database.' =>

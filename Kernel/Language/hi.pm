@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:28
+    # Last translation file sync: 2013-10-17 13:49:59
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -401,6 +401,11 @@ sub Data {
         'Redo' => 'फिर से करना',
         'Scheduler process is registered but might not be running.' => '',
         'Scheduler is not running.' => '',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => '',
@@ -474,6 +479,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'आँकड़े',
         'Sum' => 'योग',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'कृपया आवश्यक क्षेत्र भरें।',
         'Please select a file!' => 'कृपया कोई संचिका चुनें।',
         'Please select an object!' => 'कृपया किसी वस्तु को चुनें।',
@@ -1858,11 +1864,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1918,13 +1925,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'भूमिका प्रबंधन',
@@ -2238,6 +2245,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => '%s पहले प्रस्तुत।',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => '',
         'My watched tickets' => '',
@@ -2326,6 +2337,15 @@ sub Data {
         'Use cache' => 'द्रुतिका उपयोग करें',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'आँकड़े अधिकांश संचित कियॆ जा सकतॆ है।यह इस आँकड़े की प्रस्तुति कॊ गति देगा।',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'यदि अवैध अंत उपयोगकर्ताओं के लिए निर्धारित तॊ आँकड़े उत्पन्न नहीं कर सकते।',
 
         # Template: AgentStatsEditValueSeries
@@ -2368,10 +2388,13 @@ sub Data {
         'Graphsize' => 'रेखा-चित्र का आकार',
         'Cache' => 'द्रुतिका',
         'Exchange Axis' => 'विनिमय अक्ष',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'स्थिर आँकड़ॊ के विन्यास मापदंड',
         'No element selected.' => 'कोई भी तत्व चयनित नहीं',
         'maximal period from' => 'अधिकतम अवधि से',
         'to' => 'के लिए',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'टिकट का मुक्त पाठ बदलें',
@@ -2746,9 +2769,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => '',
-        'CustomerID Search' => '',
-        'CustomerUser Search' => '',
         'You are logged in as' => 'आप इस रूप में प्रवॆशित हैं।',
 
         # Template: HeaderSmall

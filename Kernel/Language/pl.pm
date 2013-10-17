@@ -18,7 +18,7 @@ sub Data {
     my $Self = shift;
 
     # $$START$$
-    # Last translation file sync: 2013-10-07 14:16:36
+    # Last translation file sync: 2013-10-17 13:50:07
 
     # possible charsets
     $Self->{Charset} = ['utf-8', ];
@@ -401,6 +401,11 @@ sub Data {
         'Redo' => 'Ponów',
         'Scheduler process is registered but might not be running.' => 'Proces harmonogramu zadań jest zarejestrowany ale prawdopodobnie nie jest uruchomiony.',
         'Scheduler is not running.' => 'Harmonogram zadań nie jest uruchomiony.',
+        'Can\'t contact registration server. Please try again later.' => '',
+        'No content received from registration server. Please try again later.' =>
+            '',
+        'Problems processing server result. Please try again later.' => '',
+        'Username and password do not match. Please try again.' => '',
 
         # Template: AAACalendar
         'New Year\'s Day' => 'Nowy Rok',
@@ -474,6 +479,7 @@ sub Data {
         # Template: AAAStats
         'Stat' => 'Statystyki',
         'Sum' => 'Suma',
+        'No (not supported)' => '',
         'Please fill out the required fields!' => 'Wypełnij wymagane pola!',
         'Please select a file!' => 'Wybierz plik!',
         'Please select an object!' => 'Wybierz obiekt!',
@@ -1858,11 +1864,12 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Send update now' => '',
+        'Edit details' => '',
         'Overview of registered systems' => '',
         'Deregister system' => '',
         'System Registration' => '',
         'This system is registered with OTRS Group.' => '',
+        'System type' => '',
         'Unique ID' => '',
         'Last communication with registration server' => '',
         'OTRS-ID Login' => '',
@@ -1918,13 +1925,13 @@ sub Data {
         'OTRS Version' => '',
         'Operating System' => '',
         'Perl Version' => '',
-        'System type' => '',
         'Optional description of this system.' => '',
         'Register' => '',
         'Deregister System' => '',
         'Continuing with this step will deregister the system from OTRS Group.' =>
             '',
         'Deregister' => '',
+        'You can modify the system type and description here.' => '',
 
         # Template: AdminRole
         'Role Management' => 'Zarządzanie rolami',
@@ -2238,6 +2245,10 @@ sub Data {
         # Template: AgentDashboardRSSOverview
         'Posted %s ago.' => 'Opublikowane %s temu.',
 
+        # Template: AgentDashboardStats
+        'The content of this statistic is being prepared for you, please be patient.' =>
+            '',
+
         # Template: AgentDashboardTicketGeneric
         'My locked tickets' => 'Zablokowane',
         'My watched tickets' => 'Obserwowane',
@@ -2326,6 +2337,15 @@ sub Data {
         'Use cache' => 'Użyj pamięci podręcznej',
         'Most of the stats can be cached. This will speed up the presentation of this stat.' =>
             'Większość statystyk może być umieszczona w pamięci podręcznej. Przyspiesza to wyświetlanie tych statystyk.',
+        'Show as dashboard widget' => '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note' => '',
+        'Enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'Agents will not be able to change absolute time settings for statistics dashboard widgets.' =>
+            '',
+        'IE8 doesn\'t support statistics dashboard widgets.' => '',
         'If set to invalid end users can not generate the stat.' => 'Jeśli ustawiono wartość \'nieaktywne\' to użytkownicy nie będą mogli wygenerować tej statystyki.',
 
         # Template: AgentStatsEditValueSeries
@@ -2368,10 +2388,13 @@ sub Data {
         'Graphsize' => 'Wielkość wykresu',
         'Cache' => 'Pamięć podręczna',
         'Exchange Axis' => 'Zamień osie',
+
+        # Template: AgentStatsViewSettings
         'Configurable params of static stat' => 'Konfigurowalne parametry statystyki statycznej',
         'No element selected.' => 'Nie wybrano elementu',
         'maximal period from' => 'maksymalny przedział od',
         'to' => 'do',
+        'not changable for dashboard statistics' => '',
 
         # Template: AgentTicketActionCommon
         'Change Free Text of Ticket' => 'Zmień pola dodatkowe zgłoszenia',
@@ -2746,9 +2769,6 @@ sub Data {
         # Template: HTMLHeadBlockEvents
 
         # Template: Header
-        'Fulltext search' => 'szukaj...',
-        'CustomerID Search' => 'Szukaj ID klienta',
-        'CustomerUser Search' => 'Szukaj użytkownika klienta',
         'You are logged in as' => 'Jesteś zalogowany jako',
 
         # Template: HeaderSmall
@@ -4853,7 +4873,9 @@ sub Data {
         'Customer history' => 'Historia klienta',
         'Customer will be needed to have a customer history and to login via customer panel.' =>
             'Klient będzie wymagany by mieć historię klienta i by logować się przez panel klienta.',
+        'CustomerID Search' => 'Szukaj ID klienta',
         'CustomerID{CustomerUser}' => 'ID klienta',
+        'CustomerUser Search' => 'Szukaj użytkownika klienta',
         'Customers <-> Services' => 'Klienci <-> Usługi',
         'DB host' => 'Serwer baz danych',
         'Database Backend' => 'Baza danych',
@@ -4878,6 +4900,7 @@ sub Data {
         'Firstname{CustomerUser}' => 'Imię',
         'For more info see:' => 'Więcej informacji',
         'From customer' => 'Od klienta',
+        'Fulltext search' => 'szukaj...',
         'Historic Time Range' => 'Okres historii',
         'If you have set a root password for your database, it must be entered here. If not, leave this field empty. For security reasons we do recommend setting a root password. For more information please refer to your database documentation.' =>
             'Jeżeli masz hasło administratora bazy danych wpisz je tutaj. Jeżeli nie, zostaw pole puste. Ze względów bezpieczeństwa zalecamy ustawienie hasła administratora bazy danych. Po szczegóły sięgnij do dokumentacji bazy danych.',

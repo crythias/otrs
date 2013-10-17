@@ -119,6 +119,9 @@ sub new {
     # reset block data
     delete $Self->{BlockData};
 
+    # empty action if not defined
+    $Self->{Action} = '' if !defined $Self->{Action};
+
     # get/set some common params
     if ( !$Self->{UserTheme} ) {
         $Self->{UserTheme} = $Self->{ConfigObject}->Get('DefaultTheme');
@@ -1474,9 +1477,11 @@ sub Header {
 
     # area and title
     if ( !$Param{Area} ) {
-        $Param{Area}
-            = $Self->{ConfigObject}->Get('Frontend::Module')->{ $Self->{Action} }->{NavBarName}
-            || '';
+        $Param{Area} = (
+            defined $Self->{Action}
+            ? $Self->{ConfigObject}->Get('Frontend::Module')->{ $Self->{Action} }->{NavBarName}
+            : ''
+        );
     }
     if ( !$Param{Title} ) {
         $Param{Title} = $Self->{ConfigObject}->Get('Frontend::Module')->{ $Self->{Action} }->{Title}
@@ -2306,7 +2311,13 @@ sub NoPermission {
     my ( $Self, %Param ) = @_;
 
     my $WithHeader = $Param{WithHeader} || 'yes';
-    $Param{Message} = 'Insufficient Rights.' if ( !$Param{Message} );
+
+    my $TranslatableMessage = $Self->{LanguageObject}->Get(
+        "We are sorry, you do not have permissions anymore to access this ticket in its'current state. "
+    );
+    $TranslatableMessage .= '<br/>';
+    $TranslatableMessage .= $Self->{LanguageObject}->Get(" You can take one of the next actions:");
+    $Param{Message} = $TranslatableMessage if ( !$Param{Message} );
 
     # get config option for possible next actions
     my $PossibleNextActions = $Self->{ConfigObject}->Get('PossibleNextActions');
@@ -3736,7 +3747,7 @@ sub CustomerNavigationBar {
             if (
                 !$SelectedFlag
                 && $NavBarModule{$Item}->{Link} =~ /Action=$Self->{Action}/
-                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/     # Subaction can be empty
+                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                 )
             {
                 $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -3768,7 +3779,7 @@ sub CustomerNavigationBar {
                 if (
                     !$SelectedFlag
                     && $ItemSub->{Link} =~ /Action=$Self->{Action}/
-                    && $ItemSub->{Link} =~ /$Self->{Subaction}/       # Subaction can be empty
+                    && $ItemSub->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                     )
                 {
                     $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -4119,7 +4130,7 @@ sub RichTextDocumentServe {
 
             # replace charset in content
             $Param{Data}->{ContentType} =~ s/\Q$Charset\E/utf-8/gi;
-            $Param{Data}->{Content}     =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
+            $Param{Data}->{Content} =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
         }
     }
 
