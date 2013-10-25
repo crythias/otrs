@@ -1,3 +1,24 @@
+#3.3.0 RC1 ????-??-??
+ - 2013-10-25 Fixed bug#[9839](http://bugs.otrs.org/show_bug.cgi?id=9839) - Inline images not showing up when cookies are disabled.
+ - 2013-10-25 Fixed bug#[9870](http://bugs.otrs.org/show_bug.cgi?id=9870) - <<OTRS_CUSTOMER_FROM> not replaced in notification emails.
+ - 2013-10-25 Moved process import functionality in the backend module Kernel/System/ProcessManagement/DB/Process.pm.
+ - 2013-10-25 Fixed bug#[9880](http://bugs.otrs.org/show_bug.cgi?id=9880) - Auto response editor looses HTML formatting.
+ - 2013-10-24 Fixed bug#[9872](http://bugs.otrs.org/show_bug.cgi?id=9872) - Default service is not applied to new customerusers.
+ - 2013-10-23 Fixed bug#[9863](http://bugs.otrs.org/show_bug.cgi?id=9863) - Reset single filter in overviews leads to no results page.
+ - 2013-10-22 Fixed bug#[9864](http://bugs.otrs.org/show_bug.cgi?id=9864) - No filter icon for dynamic fields in ticket overviews.
+ - 2013-10-22 Fixed bug#[9844](http://bugs.otrs.org/show_bug.cgi?id=9844) - Column filter not saved on ticket overviews.
+ - 2013-10-22 Fixed bug#[9842](http://bugs.otrs.org/show_bug.cgi?id=9842) - Script backup.pl fails to create backup in given directory..
+ - 2013-10-22 Fixed bug#[9855](http://bugs.otrs.org/show_bug.cgi?id=9855) - OTRS can't connect to IMAP/TLS based servers from Windows.
+ - 2013-10-21 Fixed bug#[9828](http://bugs.otrs.org/show_bug.cgi?id=9828) - Dynamic field updates of unchanged dynamic fields cause event based actions to fail.
+ - 2013-10-21 Fixed bug#[9821](http://bugs.otrs.org/show_bug.cgi?id=9821) - Wrong description in Ticket::Frontend::AgentTicketLockedView###DefaultColumns.
+ - 2013-10-21 Added new toolbar shortcut for "New process ticket".
+ - 2013-10-18 Fixed bug#[9838](http://bugs.otrs.org/show_bug.cgi?id=9838) - OPM line endings changed by mail client leading to unverified package.
+ - 2013-10-18 Fixed bug#[9835](http://bugs.otrs.org/show_bug.cgi?id=9835) - Redirect on IIS 7 leads to login screen.
+ - 2013-10-18 Fixed bug#[9834](http://bugs.otrs.org/show_bug.cgi?id=9834) - Remove any double quotes in the email sender.
+ - 2013-10-18 Fixed bug#[9669](http://bugs.otrs.org/show_bug.cgi?id=9669) - Accessibility: ticket submenu not expandable with the
+ - 2013-10-18 Speed up Kernel::System::TemplateGenerator, thanks to Moritz Lenz @ noris network!
+ - 2013-10-18 Fixed bug#[9737](http://bugs.otrs.org/show_bug.cgi?id=9737) - Sort order in queue view labelled incorrectly for all columns except age.
+
 #3.3.0 beta5 2013-10-22
  - 2013-10-17 Added new feature "management dashboard". This makes it possible to display statistic charts in the dashboard. Please not that IE8 does not support this feature.
  - 2013-10-14 Fixed bug#[9804](http://bugs.otrs.org/show_bug.cgi?id=9804) - If access to a module not given permission, output the error to httpd log.

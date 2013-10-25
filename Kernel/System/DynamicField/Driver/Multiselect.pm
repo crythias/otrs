@@ -144,24 +144,60 @@ sub ValueSet {
         @Values = ( $Param{Value} );
     }
 
-    my @ValueText;
+    my $Success;
     if ( IsArrayRefWithData( \@Values ) ) {
+
+        # if there is at least one value to set, this means one or more values are selected,
+        #    set those values!
+        my @ValueText;
         for my $Item (@Values) {
             push @ValueText, { ValueText => $Item };
         }
+
+        $Success = $Self->{DynamicFieldValueObject}->ValueSet(
+            FieldID  => $Param{DynamicFieldConfig}->{ID},
+            ObjectID => $Param{ObjectID},
+            Value    => \@ValueText,
+            UserID   => $Param{UserID},
+        );
     }
     else {
-        push @ValueText, { ValueText => '' };
+
+        # otherwise no value was selected, then in fact this means that any value there should be
+        # deleted
+        $Success = $Self->{DynamicFieldValueObject}->ValueDelete(
+            FieldID  => $Param{DynamicFieldConfig}->{ID},
+            ObjectID => $Param{ObjectID},
+            UserID   => $Param{UserID},
+        );
     }
 
-    my $Success = $Self->{DynamicFieldValueObject}->ValueSet(
-        FieldID  => $Param{DynamicFieldConfig}->{ID},
-        ObjectID => $Param{ObjectID},
-        Value    => \@ValueText,
-        UserID   => $Param{UserID},
-    );
-
     return $Success;
+}
+
+sub ValueIsDifferent {
+    my ( $Self, %Param ) = @_;
+
+    # special cases where the values are different but they should be reported as equals
+    if (
+        !defined $Param{Value1}
+        && ref $Param{Value2} eq 'ARRAY'
+        && !IsArrayRefWithData( $Param{Value2} )
+        )
+    {
+        return
+    }
+    if (
+        !defined $Param{Value2}
+        && ref $Param{Value1} eq 'ARRAY'
+        && !IsArrayRefWithData( $Param{Value1} )
+        )
+    {
+        return
+    }
+
+    # compare the results
+    return DataIsDifferent( Data1 => \$Param{Value1}, Data2 => \$Param{Value2} );
 }
 
 sub ValueValidate {
@@ -288,11 +324,11 @@ sub EditFieldRender {
         # for client side validation
         $HTMLString .= <<"EOF";
 
-    <div id="$DivID" class="TooltipErrorMessage">
-        <p>
-            \$Text{"This field is required."}
-        </p>
-    </div>
+<div id="$DivID" class="TooltipErrorMessage">
+    <p>
+        \$Text{"This field is required."}
+    </p>
+</div>
 EOF
     }
 
@@ -303,11 +339,12 @@ EOF
 
         # for server side validation
         $HTMLString .= <<"EOF";
-    <div id="$DivID" class="TooltipErrorMessage">
-        <p>
-            \$Text{"$ErrorMessage"}
-        </p>
-    </div>
+
+<div id="$DivID" class="TooltipErrorMessage">
+    <p>
+        \$Text{"$ErrorMessage"}
+    </p>
+</div>
 EOF
     }
 
@@ -327,6 +364,7 @@ EOF
 
         # add js to call FormUpdate()
         $HTMLString .= <<"EOF";
+
 <!--dtl:js_on_document_complete-->
 <script type="text/javascript">//<![CDATA[
     \$('$FieldSelector').bind('change', function (Event) {

@@ -407,12 +407,11 @@ sub Sender {
                     . $Separator . ' ' . $Address{RealName};
             }
         }
-
     }
 
     # prepare realname quote
     if ( $Address{RealName} =~ /(,|@|\(|\)|:)/ && $Address{RealName} !~ /^("|')/ ) {
-        $Address{RealName} =~ s/"/\"/g;
+        $Address{RealName} =~ s/"//g;    # remove any quotes that are already present
         $Address{RealName} = '"' . $Address{RealName} . '"';
     }
     my $Sender = "$Address{RealName} <$Address{Email}>";
@@ -1118,6 +1117,21 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
+    my $HashGlobalReplace = sub {
+        my ( $Tag, %H ) = @_;
+
+        # Generate one single matching string for all keys to save performance.
+        my $Keys = join '|', map {quotemeta} grep { defined $H{$_} } keys %H;
+
+        # Add all keys also as lowercase to be able to match case insensitive,
+        #   e. g. <OTRS_CUSTOMER_From> and <OTRS_CUSTOMER_FROM>.
+        for my $Key (sort keys %H) {
+            $H{ lc $Key } = $H{$Key};
+        }
+
+        $Param{Text} =~ s/(?:$Tag)($Keys)$End/$H{ lc $1 }/ieg;
+    };
+
     # get owner data and replace it with <OTRS_RESPONSIBLE_...
     $Tag = $Start . 'OTRS_RESPONSIBLE_';
     if ( $Ticket{ResponsibleID} ) {
@@ -1137,10 +1151,7 @@ sub _Replace {
         }
 
         # replace it
-        for ( sort keys %Responsible ) {
-            next if !defined $Responsible{$_};
-            $Param{Text} =~ s/$Tag$_$End/$Responsible{$_}/gi;
-        }
+        $HashGlobalReplace->( $Tag, %Responsible );
     }
 
     # cleanup
@@ -1163,12 +1174,7 @@ sub _Replace {
         }
     }
 
-    # replace it
-    for ( sort keys %CurrentUser ) {
-        next if !defined $CurrentUser{$_};
-        $Param{Text} =~ s/$Tag$_$End/$CurrentUser{$_}/gi;
-        $Param{Text} =~ s/$Tag2$_$End/$CurrentUser{$_}/gi;
-    }
+    $HashGlobalReplace->( "$Tag|$Tag2", %CurrentUser );
 
     # replace other needed stuff
     $Param{Text} =~ s/$Start OTRS_FIRST_NAME $End/$CurrentUser{UserFirstname}/gxms;
@@ -1260,14 +1266,7 @@ sub _Replace {
     }
 
     # replace it
-    for ( sort keys %Ticket ) {
-        next if !defined $Ticket{$_};
-        $Param{Text} =~ s/$Tag$_$End/$Ticket{$_}/gi;
-    }
-    for ( sort keys %DynamicFieldDisplayValues ) {
-        next if !defined $DynamicFieldDisplayValues{$_};
-        $Param{Text} =~ s/$Tag$_$End/$DynamicFieldDisplayValues{$_}/gi;
-    }
+    $HashGlobalReplace->( $Tag, %Ticket, %DynamicFieldDisplayValues );
 
     # COMPAT
     $Param{Text} =~ s/$Start OTRS_TICKET_ID $End/$Ticket{TicketID}/gixms;
@@ -1303,10 +1302,7 @@ sub _Replace {
 
         # replace <OTRS_CUSTOMER_*> tags
         $Tag = $Start . 'OTRS_CUSTOMER_';
-        for ( sort keys %Data ) {
-            next if !defined $Data{$_};
-            $Param{Text} =~ s/$Tag$_$End/$Data{$_}/gi;
-        }
+        $HashGlobalReplace->( $Tag, %Data );
 
         # replace <OTRS_CUSTOMER_BODY> and <OTRS_COMMENT> tags
         for my $Key (qw(OTRS_CUSTOMER_BODY OTRS_COMMENT)) {
@@ -1477,16 +1473,11 @@ sub _Replace {
         }
 
         # replace it
-        for my $Key ( sort keys %CustomerUser ) {
-            next if !defined $CustomerUser{$Key};
-            $Param{Text} =~ s/$Tag$Key$End/$CustomerUser{$Key}/gi;
-            $Param{Text} =~ s/$Tag2$Key$End/$CustomerUser{$Key}/gi;
-        }
+        $HashGlobalReplace->( "$Tag|$Tag2", %CustomerUser );
     }
 
     # cleanup all not needed <OTRS_CUSTOMER_DATA_ tags
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
-    $Param{Text} =~ s/$Tag2.+?$End/-/gi;
+    $Param{Text} =~ s/(?:$Tag|$Tag2).+?$End/-/gi;
 
     return $Param{Text};
 }

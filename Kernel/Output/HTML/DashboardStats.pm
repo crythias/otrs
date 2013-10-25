@@ -75,6 +75,13 @@ sub Preferences {
     }
 
     my $OutputPresent = 0;
+    $Self->{LayoutObject}->Block(
+        Name => 'WidgetSettingsStart',
+        Data => {
+            JSONFieldName => $Self->{PrefKeyStatsConfiguration},
+            NamePref      => $Self->{Name},
+        },
+    );
 
     # get static attributes
     if ( $Stat->{StatType} eq 'static' ) {
@@ -251,8 +258,10 @@ sub Preferences {
 
                     if ( $ObjectAttribute->{Block} eq 'MultiSelectField' ) {
 
-                        if (   $StatsSettings
-                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} } )
+                        if (
+                            $StatsSettings
+                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} }
+                            )
                         {
                             $ObjectAttribute->{SelectedValues}
                                 = $StatsSettings->{ $Use . $ObjectAttribute->{Element} };
@@ -276,8 +285,10 @@ sub Preferences {
                     }
                     elsif ( $ObjectAttribute->{Block} eq 'SelectField' ) {
 
-                        if (   $StatsSettings
-                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} } )
+                        if (
+                            $StatsSettings
+                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} }
+                            )
                         {
                             $ObjectAttribute->{SelectedValues}
                                 = $StatsSettings->{ $Use . $ObjectAttribute->{Element} };
@@ -300,8 +311,10 @@ sub Preferences {
 
                     elsif ( $ObjectAttribute->{Block} eq 'InputField' ) {
 
-                        if (   $StatsSettings
-                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} } )
+                        if (
+                            $StatsSettings
+                            && $StatsSettings->{ $Use . $ObjectAttribute->{Element} }
+                            )
                         {
                             $ObjectAttribute->{SelectedValues}
                                 = [ $StatsSettings->{ $Use . $ObjectAttribute->{Element} } ];
@@ -322,21 +335,28 @@ sub Preferences {
                         my $TimeType = $Self->{ConfigObject}->Get('Stats::TimeType')
                             || 'Normal';
 
-                        my $RelativeSelectedID;
-                        if (   $StatsSettings
+                        my $RelativeSelectedID = $ObjectAttribute->{TimeRelativeCount};
+                        if (
+                            $StatsSettings
                             && $StatsSettings->{ $ObjectAttribute->{Element} . 'TimeRelativeCount' }
                             )
                         {
-                            $RelativeSelectedID = $StatsSettings->{ $ObjectAttribute->{Element}
-                                    . 'TimeRelativeCount' };
+                            $RelativeSelectedID = $StatsSettings->{
+                                $ObjectAttribute->{Element}
+                                    . 'TimeRelativeCount'
+                            };
                         }
 
-                        my $ScaleSelectedID;
-                        if (   $StatsSettings
-                            && $StatsSettings->{ $ObjectAttribute->{Element} . 'TimeScaleCount' } )
+                        my $ScaleSelectedID = $ObjectAttribute->{TimeScaleCount};
+                        if (
+                            $StatsSettings
+                            && $StatsSettings->{ $ObjectAttribute->{Element} . 'TimeScaleCount' }
+                            )
                         {
-                            $ScaleSelectedID = $StatsSettings->{ $ObjectAttribute->{Element}
-                                    . 'TimeScaleCount' };
+                            $ScaleSelectedID = $StatsSettings->{
+                                $ObjectAttribute->{Element}
+                                    . 'TimeScaleCount'
+                            };
                         }
 
                         my %TimeData = _Timeoutput(
@@ -357,34 +377,56 @@ sub Preferences {
 
                         elsif ( $ObjectAttribute->{TimeRelativeUnit} ) {
                             my $TimeScale = _TimeScale();
+
                             if ( $TimeType eq 'Extended' ) {
-                                my @TimeScaleArray = reverse( keys( %{$TimeScale} ) );
-                                my %TimeScaleOption;
-                                for (@TimeScaleArray) {
-                                    $TimeScaleOption{$_} = $TimeScale->{$_}{Value};
-                                    last if $ObjectAttribute->{TimeRelativeUnit} eq $_;
+                                my $SelectedID = $ObjectAttribute->{TimeRelativeUnit};
+                                if (
+                                    $StatsSettings
+                                    && $StatsSettings->{
+                                        $ObjectAttribute->{Element}
+                                            . 'TimeRelativeUnit'
+                                    }
+                                    )
+                                {
+                                    $SelectedID = $StatsSettings->{
+                                        $ObjectAttribute->{Element}
+                                            . 'TimeRelativeUnit'
+                                    };
                                 }
 
-                                my $SelectedID;
-                                if ( $StatsSettings
-                                    && $StatsSettings->{ $ObjectAttribute->{Element}
-                                            . 'TimeRelativeUnit' } )
+                                my %TimeScaleOption;
+                                for (
+                                    sort {
+                                        $TimeScale->{$a}->{Position}
+                                            <=> $TimeScale->{$b}->{Position}
+                                    } keys %{$TimeScale}
+                                    )
                                 {
-                                    $SelectedID = $StatsSettings->{ $ObjectAttribute->{Element}
-                                            . 'TimeRelativeUnit' };
+                                    $TimeScaleOption{$_} = $TimeScale->{$_}{Value};
+                                    last if $SelectedID eq $_;
                                 }
 
                                 $BlockData{TimeRelativeUnit}
                                     = $Self->{LayoutObject}->BuildSelection(
-                                    Data       => \%TimeScaleOption,
                                     Name       => $ObjectAttribute->{Element} . 'TimeRelativeUnit',
+                                    Data       => \%TimeScaleOption,
+                                    Class      => 'TimeRelativeUnitGeneric',
+                                    Sort       => 'IndividualKey',
                                     SelectedID => $SelectedID || '',
+                                    SortIndividual => [
+                                        'Second', 'Minute', 'Hour', 'Day',
+                                        'Week',   'Month',  'Year'
+                                    ],
                                     );
                             }
                             $BlockData{TimeRelativeCountMax}
                                 = $ObjectAttribute->{TimeRelativeCount};
                             $BlockData{TimeRelativeUnitMax}
                                 = $TimeScale->{ $ObjectAttribute->{TimeRelativeUnit} }{Value};
+                            $BlockData{TimeRelativeMaxSeconds}
+                                = $ObjectAttribute->{TimeRelativeCount}
+                                * $Self->_TimeInSeconds(
+                                TimeUnit => $ObjectAttribute->{TimeRelativeUnit} );
 
                             $Self->{LayoutObject}->Block(
                                 Name => 'TimePeriodRelative',
@@ -401,20 +443,37 @@ sub Preferences {
                             elsif ( $TimeType eq 'Extended' ) {
                                 my $TimeScale = _TimeScale();
                                 my %TimeScaleOption;
-                                for ( sort keys %{$TimeScale} ) {
+                                for (
+                                    sort {
+                                        $TimeScale->{$b}->{Position}
+                                            <=> $TimeScale->{$a}->{Position}
+                                    } keys %{$TimeScale}
+                                    )
+                                {
                                     $TimeScaleOption{$_} = $TimeScale->{$_}->{Value};
                                     last if $ObjectAttribute->{SelectedValues}[0] eq $_;
                                 }
+
                                 $BlockData{TimeScaleUnitMax}
-                                    = $TimeScale->{ $ObjectAttribute->{SelectedValues}[0] }
-                                    {Value};
-                                $BlockData{TimeScaleCountMax}
-                                    = $ObjectAttribute->{TimeScaleCount};
-                                $BlockData{TimeScaleUnit}
-                                    = $Self->{LayoutObject}->BuildSelection(
-                                    Data => \%TimeScaleOption,
-                                    Name => $ObjectAttribute->{Element},
-                                    );
+                                    = $TimeScale->{ $ObjectAttribute->{SelectedValues}[0] }{Value};
+                                $BlockData{TimeScaleCountMax} = $ObjectAttribute->{TimeScaleCount};
+
+                                $BlockData{TimeScaleUnit} = $Self->{LayoutObject}->BuildSelection(
+                                    Name           => $ObjectAttribute->{Element},
+                                    Data           => \%TimeScaleOption,
+                                    Class          => 'TimeScaleUnitGeneric',
+                                    SelectedID     => $ObjectAttribute->{SelectedValues}[0],
+                                    Sort           => 'IndividualKey',
+                                    SortIndividual => [
+                                        'Second', 'Minute', 'Hour', 'Day',
+                                        'Week',   'Month',  'Year'
+                                    ],
+                                );
+
+                                $BlockData{TimeScaleMinSeconds} = $ObjectAttribute->{TimeScaleCount}
+                                    * $Self->_TimeInSeconds(
+                                    TimeUnit => $ObjectAttribute->{SelectedValues}[0] );
+
                                 $Self->{LayoutObject}->Block(
                                     Name => 'TimeScaleInfo',
                                     Data => \%BlockData,
@@ -461,6 +520,13 @@ sub Preferences {
         return;
     }
 
+    $Self->{LayoutObject}->Block(
+        Name => 'WidgetSettingsEnd',
+        Data => {
+            NamePref      => $Self->{Name},
+        },
+    );
+
     my $SettingsHTML = $Self->{LayoutObject}->Output(
         TemplateFile => 'AgentStatsViewSettings',
         Data         => $Stat,
@@ -468,7 +534,7 @@ sub Preferences {
 
     my @Params = (
         {
-            Desc  => 'Shown Tickets',
+            Desc  => 'Stats Configuration',
             Name  => $Self->{PrefKeyStatsConfiguration},
             Block => 'RawHTML',
             HTML  => $SettingsHTML,
@@ -516,7 +582,7 @@ sub Run {
             Data => {
                 Name      => $Self->{Name},
                 StatsData => $JSON,
-                }
+            },
         );
     }
     else {
@@ -698,6 +764,31 @@ sub _TimeScale {
     );
 
     return \%TimeScale;
+}
+
+sub _TimeInSeconds {
+    my ( $Self, %Param ) = @_;
+
+    # check if need params are available
+    if ( !$Param{TimeUnit} ) {
+        $Self->{LogObject}->Log(
+            Priority => 'error',
+            Message  => '_TimeInSeconds: Need TimeUnit!'
+        );
+        return;
+    }
+
+    my %TimeInSeconds = (
+        Year   => 31536000,    # 60 * 60 * 60 * 365
+        Month  => 2592000,     # 60 * 60 * 24 * 30
+        Week   => 604800,      # 60 * 60 * 24 * 7
+        Day    => 86400,       # 60 * 60 * 24
+        Hour   => 3600,        # 60 * 60
+        Minute => 60,
+        Second => 1,
+    );
+
+    return $TimeInSeconds{ $Param{TimeUnit} };
 }
 
 1;
