@@ -417,7 +417,7 @@ sub HandleLanguage {
 
             my $Translation = $LanguageObject->{Translation}->{$Key};
             $Translation =~ s/'/\\'/g;
-            $Key =~ s/'/\\'/g;
+            $Key         =~ s/'/\\'/g;
 
             # if a string was previously in a DTL, but has not yet been translated,
             # there's no need to preserve it in the translation file.
@@ -471,6 +471,7 @@ $Separator
 package Kernel::Language::${Language}_$Module;
 
 use strict;
+use warnings;
 
 sub Data {
     my \$Self = shift;
@@ -491,16 +492,7 @@ EOF
             if ( $_ =~ /\$\$START\$\$/ && !$MetaData{DataPrinted} ) {
                 $MetaData{DataPrinted} = 1;
 
-                my ( $Sec, $Min, $Hour, $Day, $Month, $Year )
-                    = $CommonObject{TimeObject}->SystemTime2Date(
-                    SystemTime => $CommonObject{TimeObject}->SystemTime(),
-                    );
-
-                $NewOut .= <<"EOF";
-    # Last translation file sync: $Year-$Month-$Day $Hour:$Min:$Sec
-
-    # possible charsets
-EOF
+                $NewOut .= "    # possible charsets\n";
                 $NewOut .= "    \$Self->{Charset} = [";
                 for ( $LanguageCoreObject->GetPossibleCharsets() ) {
                     $NewOut .= "'$_', ";

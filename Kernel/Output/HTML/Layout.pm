@@ -980,14 +980,15 @@ sub Redirect {
         $Param{Redirect} .= $Param{OP};
     }
 
-    # check if IIS is used, add absolute url for IIS workaround
+    # check if IIS 6 is used, add absolute url for IIS workaround
     # see also:
     #  o http://bugs.otrs.org/show_bug.cgi?id=2230
+    #  o http://bugs.otrs.org/show_bug.cgi?id=9835
     #  o http://support.microsoft.com/default.aspx?scid=kb;en-us;221154
-    if ( $ENV{SERVER_SOFTWARE} =~ /^microsoft\-iis/i ) {
+    if ( $ENV{SERVER_SOFTWARE} =~ /^microsoft\-iis\/6/i ) {
         my $Host = $ENV{HTTP_HOST} || $Self->{ConfigObject}->Get('FQDN');
         my $HttpType = $Self->{ConfigObject}->Get('HttpType');
-        $Param{Redirect} = $HttpType . '://' . $Host . '/' . $Param{Redirect};
+        $Param{Redirect} = $HttpType . '://' . $Host . $Param{Redirect};
     }
     my $Output = $Cookies . $Self->Output( TemplateFile => 'Redirect', Data => \%Param );
 
@@ -4064,7 +4065,10 @@ sub _RichTextReplaceLinkOfInlineContent {
         (<img.+?src=("|'))[^>]+ContentID=(.+?)("|')([^>]+>)
     }
     {
-        $1 . 'cid:' . $3 . $4 . $5;
+        my ($Start, $CID, $Close, $End) = ($1, $3, $4, $5);
+        # Make sure we only get the CID and not extra stuff like session information
+        $CID =~ s{^([^;&]+).*}{$1}smx;
+        $Start . 'cid:' . $CID . $Close . $End;
     }esgxi;
 
     return $Param{String};

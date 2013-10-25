@@ -204,6 +204,8 @@ sub EditFieldRender {
     my %SplitedFieldValues;
     if ( defined $Param{Value} ) {
         $Value = $Param{Value};
+    }
+    if ($Value) {
         my ( $Year, $Month, $Day, $Hour, $Minute, $Second ) = $Value =~
             m{ \A ( \d{4} ) - ( \d{2} ) - ( \d{2} ) \s ( \d{2} ) : ( \d{2} ) : ( \d{2} ) \z }xms;
 
@@ -286,11 +288,11 @@ sub EditFieldRender {
         # for client side validation
         $HTMLString .= <<"EOF";
 
-    <div id="$DivID" class="TooltipErrorMessage">
-        <p>
-            \$Text{"This field is required."}
-        </p>
-    </div>
+<div id="$DivID" class="TooltipErrorMessage">
+    <p>
+        \$Text{"This field is required."}
+    </p>
+</div>
 EOF
     }
 
@@ -301,11 +303,12 @@ EOF
 
         # for server side validation
         $HTMLString .= <<"EOF";
-    <div id="$DivID" class="TooltipErrorMessage">
-        <p>
-            \$Text{"$ErrorMessage"}
-        </p>
-    </div>
+
+<div id="$DivID" class="TooltipErrorMessage">
+    <p>
+        \$Text{"$ErrorMessage"}
+    </p>
+</div>
 EOF
     }
 
@@ -359,9 +362,9 @@ sub EditFieldValueGet {
 
     # return if the field is empty (e.g. initial screen)
     return if !$DynamicFieldValues{ $Prefix . 'Used' }
-        && !$DynamicFieldValues{ $Prefix . 'Year' }
-        && !$DynamicFieldValues{ $Prefix . 'Month' }
-        && !$DynamicFieldValues{ $Prefix . 'Day' };
+            && !$DynamicFieldValues{ $Prefix . 'Year' }
+            && !$DynamicFieldValues{ $Prefix . 'Month' }
+            && !$DynamicFieldValues{ $Prefix . 'Day' };
 
     # check if return value structure is nedded
     if ( defined $Param{ReturnValueStructure} && $Param{ReturnValueStructure} eq '1' ) {
@@ -706,8 +709,8 @@ sub SearchFieldValueGet {
 
         # return if the field is empty (e.g. initial screen)
         return if !$DynamicFieldValues{ $Prefix . 'Start' }
-            && !$DynamicFieldValues{ $Prefix . 'Value' }
-            && !$DynamicFieldValues{ $Prefix . 'Format' };
+                && !$DynamicFieldValues{ $Prefix . 'Value' }
+                && !$DynamicFieldValues{ $Prefix . 'Format' };
 
         $DynamicFieldValues{$Prefix} = 1;
 
@@ -763,11 +766,11 @@ sub SearchFieldValueGet {
 
     # return if the field is empty (e.g. initial screen)
     return if !$DynamicFieldValues{ $Prefix . 'StartYear' }
-        && !$DynamicFieldValues{ $Prefix . 'StartMonth' }
-        && !$DynamicFieldValues{ $Prefix . 'StartDay' }
-        && !$DynamicFieldValues{ $Prefix . 'StopYear' }
-        && !$DynamicFieldValues{ $Prefix . 'StopMonth' }
-        && !$DynamicFieldValues{ $Prefix . 'StopDay' };
+            && !$DynamicFieldValues{ $Prefix . 'StartMonth' }
+            && !$DynamicFieldValues{ $Prefix . 'StartDay' }
+            && !$DynamicFieldValues{ $Prefix . 'StopYear' }
+            && !$DynamicFieldValues{ $Prefix . 'StopMonth' }
+            && !$DynamicFieldValues{ $Prefix . 'StopDay' };
 
     $DynamicFieldValues{ $Prefix . 'StartHour' }   = '00';
     $DynamicFieldValues{ $Prefix . 'StartMinute' } = '00';
@@ -847,6 +850,7 @@ sub SearchFieldParameterBuild {
             && $Value->{$Prefix}
             )
         {
+
             # to store the search parameters
             my %Parameter;
 
