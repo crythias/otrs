@@ -1,4 +1,13 @@
 #3.3.1 ????-??-??
+ - 2013-11-05 Updated cpan module MIME::Tools to version 5.504.
+ - 2013-11-05 Fixed bug#[9916](http://bugs.otrs.org/show_bug.cgi?id=9916) - Error when updating CustomerUser Login on ForeignDB.
+ - 2013-11-05 Fixed bug#[9841](http://bugs.otrs.org/show_bug.cgi?id=9841) - Tabbing changes radio button of owner change selection.
+ - 2013-11-05 Fixed bug#[9867](http://bugs.otrs.org/show_bug.cgi?id=9867) - Validation errors are not shown correctly when replying to a ticket in Customer Interface.
+ - 2013-11-04 Fixed bug#[9923](http://bugs.otrs.org/show_bug.cgi?id=9923) - Application type XML config files does not overwrite framework ones.
+ - 2013-11-04 Fixed bug#[9926](http://bugs.otrs.org/show_bug.cgi?id=9926) - Cookies do not set HttpOnly attribute.
+ - 2013-11-04 Fixed bug#[9914](http://bugs.otrs.org/show_bug.cgi?id=9914) - Spellchecker ignores double wrong words.
+ - 2013-11-04 Fixed bug#[9832](http://bugs.otrs.org/show_bug.cgi?id=9832) - Perl 5.18.1 problems with MIME::Entity.
+ - 2013-11-02 Fixed bug#[9924](http://bugs.otrs.org/show_bug.cgi?id=9924) - Scheduler can not stop or restart correctly if was started by another host.
  - 2013-11-01 Fixed bug#[9918](http://bugs.otrs.org/show_bug.cgi?id=9918) - Dropdown field in tree mode are not displayed in tree mode when opening CustomerTicketProcess.
  - 2013-11-01 Fixed bug#[9840](http://bugs.otrs.org/show_bug.cgi?id=9840) - Toolbar Icons not shown correctly in IE8.
  - 2013-11-01 Fixed bug#[9901](http://bugs.otrs.org/show_bug.cgi?id=9901) - CustomerFatalError expand/collapse error details is broken.
@@ -36,7 +45,7 @@
  - 2013-10-18 Fixed bug#[9838](http://bugs.otrs.org/show_bug.cgi?id=9838) - OPM line endings changed by mail client leading to unverified package.
  - 2013-10-18 Fixed bug#[9835](http://bugs.otrs.org/show_bug.cgi?id=9835) - Redirect on IIS 7 leads to login screen.
  - 2013-10-18 Fixed bug#[9834](http://bugs.otrs.org/show_bug.cgi?id=9834) - Remove any double quotes in the email sender.
- - 2013-10-18 Fixed bug#[9669](http://bugs.otrs.org/show_bug.cgi?id=9669) - Accessibility: ticket submenu not expandable with the
+ - 2013-10-18 Fixed bug#[9669](http://bugs.otrs.org/show_bug.cgi?id=9669) - Accessibility: ticket submenu not expandable with the keyboard.
  - 2013-10-18 Speed up Kernel::System::TemplateGenerator, thanks to Moritz Lenz @ noris network!
  - 2013-10-18 Fixed bug#[9737](http://bugs.otrs.org/show_bug.cgi?id=9737) - Sort order in queue view labelled incorrectly for all columns except age.
 
