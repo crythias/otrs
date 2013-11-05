@@ -1,4 +1,11 @@
+#3.2.13 201?-??-??
+ - 2013-11-05 Fixed bug#[9916](http://bugs.otrs.org/show_bug.cgi?id=9916) - Error when updating CustomerUser Login on ForeignDB.
+ - 2013-11-05 Fixed bug#[9841](http://bugs.otrs.org/show_bug.cgi?id=9841) - Tabbing changes radio button of owner change selection.
+ - 2013-11-05 Fixed bug#[9867](http://bugs.otrs.org/show_bug.cgi?id=9867) - Validation errors are not shown correctly when replying to a ticket in Customer Interface.
+ - 2013-11-04 Fixed bug#[9914](http://bugs.otrs.org/show_bug.cgi?id=9914) - Spellchecker ignores double wrong words.
+
 #3.2.12 2013-11-05
+ - 2013-11-04 Fixed bug#[9832](http://bugs.otrs.org/show_bug.cgi?id=9832) - Perl 5.18.1 problems with MIME::Entity.
  - 2013-10-31 Updated French translation, thanks to Olivier Sallou!
  - 2013-10-31 Fixed bug#[9910](http://bugs.otrs.org/show_bug.cgi?id=9910) - Startup warnings/errors with Perl 5.18.1.
  - 2013-10-29 Fixed bug#[9753](http://bugs.otrs.org/show_bug.cgi?id=9753) - META HTTP-EQUIV="Refresh" tag not stripped from HTML email.
