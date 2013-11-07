@@ -1,4 +1,8 @@
-#3.3.1 ????-??-??
+#3.3.1 2013-11-12
+ - 2013-11-07 Updated Chinese simplified translation, thanks to Michael Shi.
+ - 2013-11-07 Fixed bug#[9639](http://bugs.otrs.org/show_bug.cgi?id=9639) - TextArea validation message not translated.
+ - 2013-11-07 Fixed bug#[9938](http://bugs.otrs.org/show_bug.cgi?id=9938) - ActivityDialog doesn't show queues with move_into permissions.
+ - 2013-11-07 Fixed bug#[9942](http://bugs.otrs.org/show_bug.cgi?id=9942) - installer.pl returns "The check '' doesn't exist!" after mail configuration.
  - 2013-11-06 Fixed bug#[9862](http://bugs.otrs.org/show_bug.cgi?id=9862) - Missing Dynamic Field column headers in dashboard widgets.
  - 2013-11-06 Fixed bug#[9940](http://bugs.otrs.org/show_bug.cgi?id=9940) - Fedora misses dependency on Sys::Syslog.
  - 2013-11-06 Fixed bug#[9930](http://bugs.otrs.org/show_bug.cgi?id=9930) - CustomerInformationCenter breaks navigation bar.
