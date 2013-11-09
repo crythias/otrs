@@ -635,9 +635,10 @@ sub DestinationTime {
 
     my $LoopCounter;
 
+    LOOP:
     while ( $Param{Time} > 1 ) {
         $LoopCounter++;
-        last if $LoopCounter > 100;
+        last LOOP if $LoopCounter > 100;
 
         my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $WDay ) = localtime $CTime;  ## no critic
         $Year  = $Year + 1900;
@@ -667,6 +668,7 @@ sub DestinationTime {
 
         # Regular day with working hours
         else {
+            HOUR:
             for my $H ( $Hour .. 23 ) {
 
                 # Check if we have a working hour
@@ -694,7 +696,7 @@ sub DestinationTime {
                         }
                     }
                     else {
-                        last;
+                        last HOUR;
                     }
                 }
 

@@ -236,14 +236,15 @@ sub _ArticleIndexString {
     my %List;
     my $IndexString = '';
     my $Count       = 0;
+    WORD:
     for my $Word ( @{$ListOfWords} ) {
         $Count++;
 
         # only index the first 1000 words
-        last if $Count > $WordCountMax;
+        last WORD if $Count > $WordCountMax;
         if ( $List{$Word} ) {
             $List{$Word}++;
-            next;
+            next WORD;
         }
         else {
             $List{$Word} = 1;

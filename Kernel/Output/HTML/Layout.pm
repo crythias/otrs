@@ -2844,6 +2844,7 @@ sub NavigationBar {
 
             # check shown permission
             my $Shown = 0;
+            PERMISSION:
             for my $Permission (qw(GroupRo Group)) {
 
                 # array access restriction
@@ -2852,7 +2853,7 @@ sub NavigationBar {
                         my $Key = 'UserIs' . $Permission . '[' . $_ . ']';
                         if ( $Self->{$Key} && $Self->{$Key} eq 'Yes' ) {
                             $Shown = 1;
-                            last;
+                            last PERMISSION;
                         }
                     }
                 }
@@ -2862,22 +2863,23 @@ sub NavigationBar {
                     my $Key = 'UserIs' . $Permission . '[' . $Item->{$Permission} . ']';
                     if ( $Self->{$Key} && $Self->{$Key} eq 'Yes' ) {
                         $Shown = 1;
-                        last;
+                        last PERMISSION;
                     }
                 }
 
                 # no access restriction
                 elsif ( !$Item->{GroupRo} && !$Item->{Group} ) {
                     $Shown = 1;
-                    last;
+                    last PERMISSION;
                 }
             }
             next if !$Shown;
 
             # set prio of item
             my $Key = ( $Item->{Block} || '' ) . sprintf( "%07d", $Item->{Prio} );
+            COUNT:
             for ( 1 .. 51 ) {
-                last if !$NavBar{$Key};
+                last COUNT if !$NavBar{$Key};
 
                 $Item->{Prio}++;
                 $Key = ( $Item->{Block} || '' ) . sprintf( "%07d", $Item->{Prio} );
@@ -3646,6 +3648,7 @@ sub CustomerNavigationBar {
             }
 
             # check shown permission
+            PERMISSION:
             for my $Permission (qw(GroupRo Group)) {
 
                 # array access restriction
@@ -3654,7 +3657,7 @@ sub CustomerNavigationBar {
                         my $Key = 'UserIs' . $Permission . '[' . $Type . ']';
                         if ( $Self->{$Key} && $Self->{$Key} eq 'Yes' ) {
                             $Shown = 1;
-                            last;
+                            last PERMISSION;
                         }
                     }
                 }
@@ -3664,22 +3667,23 @@ sub CustomerNavigationBar {
                     my $Key = 'UserIs' . $Permission . '[' . $Item->{$Permission} . ']';
                     if ( $Self->{$Key} && $Self->{$Key} eq 'Yes' ) {
                         $Shown = 1;
-                        last;
+                        last PERMISSION;
                     }
                 }
 
                 # no access restriction
                 elsif ( !$Item->{GroupRo} && !$Item->{Group} ) {
                     $Shown = 1;
-                    last;
+                    last PERMISSION;
                 }
             }
             next if !$Shown;
 
             # set prio of item
             my $Key = sprintf( "%07d", $Item->{Prio} );
+            COUNT:
             for ( 1 .. 51 ) {
-                last if !$NavBarModule{$Key};
+                last COUNT if !$NavBarModule{$Key};
 
                 $Item->{Prio}++;
             }
@@ -4227,10 +4231,11 @@ sub RichTextDocumentServe {
         }
 
         # find matching attachment and replace it with runtime url to image
+        ATTACHMENT_ID:
         for my $AttachmentID (  sort keys %{ $Param{Attachments} }) {
-            next if lc $Param{Attachments}->{$AttachmentID}->{ContentID} ne lc "<$ContentID>";
+            next ATTACHMENT_ID if lc $Param{Attachments}->{$AttachmentID}->{ContentID} ne lc "<$ContentID>";
             $ContentID = $AttachmentLink . $AttachmentID . $SessionID;
-            last;
+            last ATTACHMENT_ID;
         }
 
         # return new runtime url
