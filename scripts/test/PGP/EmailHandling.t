@@ -128,11 +128,9 @@ my %Check = (
     },
 );
 
-my @Keys;
-
 # add PGP keys and perform sanity check
 for my $Count ( 1 .. 2 ) {
-    @Keys = $CryptObject->KeySearch(
+    my @Keys = $CryptObject->KeySearch(
         Search => $Search{$Count},
     );
     $Self->False(
@@ -397,6 +395,29 @@ for my $Test (@Tests) {
             MimeType => 'text/html',
         },
     },
+    {
+        Name        => 'Repy to a previously signed message',
+        ArticleData => {
+            Body => '
+Reply text
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Original signed text
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG/MacGPG2 v2.0.22 (Darwin)
+> Comment: GPGTools - http://gpgtools.org
+>
+> iEYEARECAAYFAlJzpy4ACgkQjDflB7tFqcf4pgCbBf/f5dTEVDagR7Sq2mJq+lL+
+> rpAAn3qKwT7j8PMYfSnBwGs0tM1ekbpd
+> =eLoO
+> -----END PGP SIGNATURE-----
+>
+>',
+            MimeType => 'text/plain',
+        },
+    },
 );
 
 # test each mail with sign/crypt/sign+crypt
@@ -404,16 +425,15 @@ my @TestVariations;
 
 for my $Test (@Tests) {
     push @TestVariations, {
-        %{$Test},
         Name        => $Test->{Name} . " sign only (Detached)",
         ArticleData => {
             %{ $Test->{ArticleData} },
-            From => 'unittest2@example.org',
-            To   => 'unittest2@example.org',
+            From => 'unittest@example.org',
+            To   => 'unittest@example.org',
             Sign => {
                 Type    => 'PGP',
                 SubType => 'Detached',
-                Key     => $Keys[0]->{KeyPrivate},
+                Key     => $Check{1}->{KeyPrivate},
             },
         },
         VerifySignature  => 1,
@@ -421,7 +441,6 @@ for my $Test (@Tests) {
     };
 
     push @TestVariations, {
-        %{$Test},
         Name        => $Test->{Name} . " crypt only (Detached)",
         ArticleData => {
             %{ $Test->{ArticleData} },
@@ -430,7 +449,7 @@ for my $Test (@Tests) {
             Crypt => {
                 Type    => 'PGP',
                 SubType => 'Detached',
-                Key     => $Keys[0]->{KeyPrivate},
+                Key     => $Check{2}->{Key},
             },
         },
         VerifySignature  => 0,
@@ -438,7 +457,6 @@ for my $Test (@Tests) {
     };
 
     push @TestVariations, {
-        %{$Test},
         Name        => $Test->{Name} . " sign and crypt (Detached)",
         ArticleData => {
             %{ $Test->{ArticleData} },
@@ -447,12 +465,12 @@ for my $Test (@Tests) {
             Sign => {
                 Type    => 'PGP',
                 SubType => 'Detached',
-                Key     => $Keys[0]->{KeyPrivate},
+                Key     => $Check{2}->{KeyPrivate},
             },
             Crypt => {
                 Type    => 'PGP',
                 SubType => 'Detached',
-                Key     => $Keys[0]->{KeyPrivate},
+                Key     => $Check{2}->{Key},
             },
         },
         VerifySignature  => 1,
@@ -486,24 +504,15 @@ push @AddedTickets, $TicketID;
 for my $Test (@TestVariations) {
 
     my $ArticleID = $TicketObject->ArticleSend(
+        %{ $Test->{ArticleData} },
         TicketID       => $TicketID,
-        From           => $Test->{ArticleData}->{From},
-        To             => $Test->{ArticleData}->{To},
         ArticleType    => 'email-external',
         SenderType     => 'customer',
         HistoryType    => 'AddNote',
         HistoryComment => 'note',
         Subject        => 'Unittest data',
         Charset        => 'utf-8',
-        MimeType       => $Test->{ArticleData}->{MimeType},    # "text/plain" or "text/html"
-        Body           => 'Some nice text\n.',
-        Sign           => {
-            Type    => 'PGP',
-            SubType => $Test->{ArticleData}->{Sign}->{SubType},
-            Key     => $Test->{ArticleData}->{Sign}->{Key},
-        },
-        UserID => 1,
-        %{ $Test->{ArticleData} },
+        UserID         => 1,
     );
 
     $Self->True(

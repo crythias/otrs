@@ -165,8 +165,12 @@ sub Check {
         }
     }
 
-    # check inline pgp signature
-    if ( $Param{Article}->{Body} =~ m{ \Q-----BEGIN PGP SIGNED MESSAGE-----\E }xms ) {
+    # check inline pgp signature (but ignore if is in quoted text)
+    if (
+        $Param{Article}->{Body} =~ m{ \Q-----BEGIN PGP SIGNED MESSAGE-----\E }xms
+        && $Param{Article}->{Body} !~ m{ (> \s)+ \Q-----BEGIN PGP SIGNED MESSAGE-----\E }xms
+        )
+    {
 
         # get original message
         my $Message = $Self->{TicketObject}->ArticlePlain(
@@ -263,9 +267,16 @@ sub Check {
                 $Head->combine('Content-Type');
                 $ContentType = $Head->get('Content-Type');
 
+                # use a copy of the Entity to get the body, otherwise the original mail content
+                # could be altered and a signature verify could fail. See Bug#9954
+                my $EntityCopy = $Entity->dup();
+
                 use Kernel::System::EmailParser;
 
-                my $ParserObject = Kernel::System::EmailParser->new( %{$Self}, Entity => $Entity, );
+                my $ParserObject = Kernel::System::EmailParser->new(
+                    %{$Self},
+                    Entity => $EntityCopy,
+                );
 
                 my $Body = $ParserObject->GetMessageBody();
 
