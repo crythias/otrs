@@ -3075,7 +3075,10 @@ sub TicketPermission {
             # create object
             my $ModuleObject = $Modules{$Module}->{Module}->new(
                 ConfigObject => $Self->{ConfigObject},
+                EncodeObject => $Self->{EncodeObject},
                 LogObject    => $Self->{LogObject},
+                MainObject   => $Self->{MainObject},
+                TimeObject   => $Self->{TimeObject},
                 DBObject     => $Self->{DBObject},
                 TicketObject => $Self,
                 QueueObject  => $Self->{QueueObject},
@@ -3182,7 +3185,10 @@ sub TicketCustomerPermission {
             # create object
             my $ModuleObject = $Modules{$Module}->{Module}->new(
                 ConfigObject        => $Self->{ConfigObject},
+                EncodeObject        => $Self->{EncodeObject},
                 LogObject           => $Self->{LogObject},
+                MainObject          => $Self->{MainObject},
+                TimeObject          => $Self->{TimeObject},
                 DBObject            => $Self->{DBObject},
                 TicketObject        => $Self,
                 QueueObject         => $Self->{QueueObject},
