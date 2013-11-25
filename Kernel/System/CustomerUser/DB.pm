@@ -207,6 +207,9 @@ sub CustomerSearch {
         $SQL .= " , first_name, last_name, email ";
     }
 
+    # get like escape string needed for some databases (e.g. oracle)
+    my $LikeEscapeString = $Self->{DBObject}->GetDatabaseFunction('LikeEscapeString');
+
     # build SQL string 2/2
     $SQL .= " FROM $Self->{CustomerTable} WHERE ";
     if ( $Param{Search} ) {
@@ -247,10 +250,10 @@ sub CustomerSearch {
                 push @Bind, \$PostMasterSearch;
 
                 if ( $Self->{CaseSensitive} ) {
-                    $SQLExt .= " $Field LIKE ? ";
+                    $SQLExt .= " $Field LIKE ? $LikeEscapeString ";
                 }
                 else {
-                    $SQLExt .= " LOWER($Field) LIKE LOWER(?) ";
+                    $SQLExt .= " LOWER($Field) LIKE LOWER(?) $LikeEscapeString ";
                 }
             }
             $SQL .= $SQLExt;
@@ -274,10 +277,10 @@ sub CustomerSearch {
             $UserLogin =~ s/\*/%/g;
             push @Bind, \$UserLogin;
             if ( $Self->{CaseSensitive} ) {
-                $SQL .= "$Self->{CustomerKey} LIKE ?";
+                $SQL .= "$Self->{CustomerKey} LIKE ? $LikeEscapeString";
             }
             else {
-                $SQL .= "LOWER($Self->{CustomerKey}) LIKE LOWER(?)";
+                $SQL .= "LOWER($Self->{CustomerKey}) LIKE LOWER(?) $LikeEscapeString";
             }
         }
     }
@@ -288,10 +291,10 @@ sub CustomerSearch {
         push @Bind, \$CustomerID;
 
         if ( $Self->{CaseSensitive} ) {
-            $SQL .= "$Self->{CustomerID} LIKE ?";
+            $SQL .= "$Self->{CustomerID} LIKE ? $LikeEscapeString";
         }
         else {
-            $SQL .= "LOWER($Self->{CustomerID}) LIKE LOWER(?)";
+            $SQL .= "LOWER($Self->{CustomerID}) LIKE LOWER(?) $LikeEscapeString";
         }
     }
 
