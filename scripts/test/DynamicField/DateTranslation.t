@@ -45,6 +45,12 @@ $ConfigObject->Set(
     Value => 0,
 );
 
+# Ensure that default config values are used
+$ConfigObject->Set(
+    Key   => 'TimeInputFormat',
+    Value => 'Option',
+);
+
 # create other objects
 my $DynamicFieldObject = Kernel::System::DynamicField->new(
     %{$Self},
