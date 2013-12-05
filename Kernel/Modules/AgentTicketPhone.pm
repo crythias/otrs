@@ -279,10 +279,10 @@ sub Run {
 
             # if To is present and is no a queue
             # set To as article from
-            my $FromQueueID;
             if ( IsStringWithData( $Article{To} ) ) {
-                $FromQueueID = $Self->{QueueObject}->QueueLookup( Queue => $Article{To} );
-                if ( !defined $FromQueueID ) {
+                my %Queues = $Self->{QueueObject}->QueueList();
+                my %QueueLookup = reverse %Queues;
+                if ( !defined $QueueLookup{ $Article{To} } ) {
                     $ArticleFrom = $Article{To};
                 }
             }
@@ -2303,7 +2303,7 @@ sub _MaskPhoneNew {
     $Param{PendingDateString} = $Self->{LayoutObject}->BuildDateSelection(
         %Param,
         Format           => 'DateInputFormatLong',
-        YearPeriodPast   => 1,
+        YearPeriodPast   => 0,
         YearPeriodFuture => 5,
         DiffTime         => $Self->{ConfigObject}->Get('Ticket::Frontend::PendingDiffTime') || 0,
         Class            => $Param{Errors}->{DateInvalid},
