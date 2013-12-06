@@ -1,5 +1,13 @@
 #3.3.4 201?-??-??
- -
+ - 2013-12-06 Fixed bug#[10066](http://bugs.otrs.org/show_bug.cgi?id=10066) - Required field isn't marked in AgentTicketCustomer.
+ - 2013-12-05 Fixed bug#[10059](http://bugs.otrs.org/show_bug.cgi?id=10059) - Service selection unavailable if customer selection is possible.
+ - 2013-12-05 Fixed bug#[10062](http://bugs.otrs.org/show_bug.cgi?id=10062) - Text label indent for locale RU - AgentÒicketViewCompose
+ - 2013-12-05 Fixed bug#[7820](http://bugs.otrs.org/show_bug.cgi?id=7820) - inexact german translation in ticket conversation.
+ - 2013-12-05 Fixed bug#[10044](http://bugs.otrs.org/show_bug.cgi?id=10044) - PendingDiffTime removes 2013 (current year) when reaching end of the year.
+ - 2013-12-05 Fixed bug#[10049](http://bugs.otrs.org/show_bug.cgi?id=10049) - Transition names in path edit screen ordered by ID instead of name.
+ - 2013-12-05 Fixed bug#[10055](http://bugs.otrs.org/show_bug.cgi?id=10055) - Queue-Treeview not working correctly.
+ - 2013-12-05 Fixed bug#[10061](http://bugs.otrs.org/show_bug.cgi?id=10061) - ArticleType dropdown in graphical ActivityDialog mask loads with empty value
+ - 2013-12-05 Fixed bug#[10060](http://bugs.otrs.org/show_bug.cgi?id=10060) - Field names are not translated in graphical process editor.
 
 #3.3.3 2013-12-10
  - 2013-11-07 Updated Chinese simplified translation, thanks to Michael Shi.
