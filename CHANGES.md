@@ -1,4 +1,11 @@
 #3.3.4 201?-??-??
+ - 2013-12-06 Fixed bug#[10070](http://bugs.otrs.org/show_bug.cgi?id=10070) - Wrong error message if Transition contains no transition actions.
+ - 2013-12-06 Fixed bug#[10058](http://bugs.otrs.org/show_bug.cgi?id=10058) - Owner and Responsible are mandatory if enabled.
+ - 2013-12-06 Fixed bug#[7792](http://bugs.otrs.org/show_bug.cgi?id=7792) - Ticket-Action "Change Queue" is hardcoded and should be called "Queue" only.
+ - 2013-12-06 Fixed bug#[4663](http://bugs.otrs.org/show_bug.cgi?id=4663) - browsing article tree by "next / down" and "previous / up" buttons.
+ - 2013-12-06 Fixed bug#[4512](http://bugs.otrs.org/show_bug.cgi?id=4512) - HTMLUtils ToAscii forces line breake on fixed line-length 78.
+ - 2013-12-06 Fixed bug#[9109](http://bugs.otrs.org/show_bug.cgi?id=9109) - Printing ticket does not show the full subject line.
+ - 2013-12-06 Fixed bug#[10064](http://bugs.otrs.org/show_bug.cgi?id=10064) - Translated fields loose sorting in Activity Dialog admin screen.
  - 2013-12-06 Fixed bug#[10066](http://bugs.otrs.org/show_bug.cgi?id=10066) - Required field isn't marked in AgentTicketCustomer.
  - 2013-12-05 Fixed bug#[10059](http://bugs.otrs.org/show_bug.cgi?id=10059) - Service selection unavailable if customer selection is possible.
  - 2013-12-05 Fixed bug#[10062](http://bugs.otrs.org/show_bug.cgi?id=10062) - Text label indent for locale RU - AgentÒicketViewCompose
