@@ -386,6 +386,7 @@ sub _Show {
     my @ActionItems;
     if ( ref $Self->{ConfigObject}->Get('Ticket::Frontend::PreMenuModule') eq 'HASH' ) {
         my %Menus = %{ $Self->{ConfigObject}->Get('Ticket::Frontend::PreMenuModule') };
+        MENU:
         for my $Menu ( sort keys %Menus ) {
 
             # load module
@@ -401,10 +402,12 @@ sub _Show {
                 ACL    => \%AclAction,
                 Config => $Menus{$Menu},
             );
-            next if !$Item;
-            next if ref $Item ne 'HASH';
+            next MENU if !$Item;
+            next MENU if ref $Item ne 'HASH';
+
+            KEY:
             for my $Key (qw(Name Link Description)) {
-                next if !$Item->{$Key};
+                next KEY if !$Item->{$Key};
                 $Item->{$Key} = $Self->{LayoutObject}->Output(
                     Template => $Item->{$Key},
                     Data     => \%Article,
@@ -564,18 +567,6 @@ sub _Show {
             }
         }
     }
-
-    # build header lines
-    #    for (qw(From To Cc Subject)) {
-    #        next if !$Article{$_};
-    #        $Self->{LayoutObject}->Block(
-    #            Name => 'Row',
-    #            Data => {
-    #                Key   => $_,
-    #                Value => $Article{$_},
-    #            },
-    #        );
-    #    }
 
     # create output
     $Self->{LayoutObject}->Block(
