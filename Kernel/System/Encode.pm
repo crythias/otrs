@@ -152,6 +152,28 @@ sub Convert {
         Encode::_utf8_off( $Param{Text} );
     }
 
+    # this is a workaround for following bug in Encode::HanExtra
+    # https://rt.cpan.org/Public/Bug/Display.html?id=71720
+    # see also http://bugs.otrs.org/show_bug.cgi?id=10121
+    # distributed charsets by Encode::HanExtra
+    # http://search.cpan.org/~jhi/perl-5.8.1/ext/Encode/lib/Encode/Supported.pod
+    my %AdditionalChineseCharsets = (
+        'big5ext'   => 1,
+        'big5plus'  => 1,
+        'cccii'     => 1,
+        'euc-tw'    => 1,
+        'gb18030'   => 1,
+    );
+
+    # check if one of the Encode::HanExtra charsets occurs
+    if ( $AdditionalChineseCharsets{ $Param{From} } ) {
+
+        # require module, print error if module was not found
+        if ( !eval "require Encode::HanExtra" ) {    ## no critic
+            print STDERR "Charset '$Param{From}' requires Encode::HanExtra, which is not installed!\n";
+        }
+    }
+
     # check if encoding exists
     if ( !Encode::resolve_alias( $Param{From} ) ) {
         my $Fallback = 'iso-8859-1';
