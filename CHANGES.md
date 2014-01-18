@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-01-17 Fixed bug#[10121](http://bugs.otrs.org/show_bug.cgi?id=10121) - QQMails break in OTRS.
  - 2014-01-10 Fixed bug#[10145](http://bugs.otrs.org/show_bug.cgi?id=10145) - %A is not correctly substituted in Language::Time().
  - 2014-01-10 Make it possible to pass HTTP headers to WebUserAgent, thanks to Renée Bäcker.
  - 2014-01-10 Added functionality to unlock just one single ticket in otrs.UnlockTickets.pl, thanks to Martin Gross @ rtt.ag.
@@ -13,6 +14,9 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.4 2014-01-28
+ - 2014-01-17 Fixed bug#[10153](http://bugs.otrs.org/show_bug.cgi?id=10153) - Error shown in SysConfig when Setting PendingDiffTime to 30 Days.
+ - 2014-01-17 Fixed bug#[10161](http://bugs.otrs.org/show_bug.cgi?id=10161) - Edit Stats - 500 internal Server Error.
+ - 2014-01-17 Fixed bug#[10167](http://bugs.otrs.org/show_bug.cgi?id=10167) - Non-deterministic hash key construction in Stats.pm.
  - 2014-01-14 Fixed bug#[10158](http://bugs.otrs.org/show_bug.cgi?id=10158) - Missing quoting in State::StateGetStatesByType().
  - 2014-01-14 Fixed bug#[10048](http://bugs.otrs.org/show_bug.cgi?id=10048) - RPM upgrade breaks permissions on config files.
  - 2014-01-14 Fixed bug#[8969](http://bugs.otrs.org/show_bug.cgi?id=8969) - FAQ module Language files installation fails (Kernel/Language permissions).
