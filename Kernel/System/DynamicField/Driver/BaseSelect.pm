@@ -215,8 +215,13 @@ sub EditFieldRender {
     );
 
     if ( $FieldConfig->{TreeView} ) {
-        my $TreeSelectionMessage = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
-        $HTMLString .= ' <a href="#" title="' .  $TreeSelectionMessage . '" class="ShowTreeSelection">' . $TreeSelectionMessage . '</a>';
+        my $TreeSelectionMessage
+            = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
+        $HTMLString
+            .= ' <a href="#" title="'
+            . $TreeSelectionMessage
+            . '" class="ShowTreeSelection">'
+            . $TreeSelectionMessage . '</a>';
     }
 
     if ( $Param{Mandatory} ) {
@@ -284,9 +289,8 @@ EOF
     # call EditLabelRender on the common Driver
     my $LabelString = $Self->EditLabelRender(
         %Param,
-        DynamicFieldConfig => $Param{DynamicFieldConfig},
-        Mandatory          => $Param{Mandatory} || '0',
-        FieldName          => $FieldName,
+        Mandatory => $Param{Mandatory} || '0',
+        FieldName => $FieldName,
     );
 
     my $Data = {
@@ -523,14 +527,19 @@ sub SearchFieldRender {
     );
 
     if ( $FieldConfig->{TreeView} ) {
-        my $TreeSelectionMessage = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
-        $HTMLString .= ' <a href="#" title="' .  $TreeSelectionMessage . '" class="ShowTreeSelection">' . $TreeSelectionMessage . '</a>';
+        my $TreeSelectionMessage
+            = $Param{LayoutObject}->{LanguageObject}->Get("Show Tree Selection");
+        $HTMLString
+            .= ' <a href="#" title="'
+            . $TreeSelectionMessage
+            . '" class="ShowTreeSelection">'
+            . $TreeSelectionMessage . '</a>';
     }
 
     # call EditLabelRender on the common Driver
     my $LabelString = $Self->EditLabelRender(
-        DynamicFieldConfig => $Param{DynamicFieldConfig},
-        FieldName          => $FieldName,
+        %Param,
+        FieldName => $FieldName,
     );
 
     my $Data = {
