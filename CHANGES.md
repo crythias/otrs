@@ -1,4 +1,8 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-01-31 Fixed bug#[6802](http://bugs.otrs.org/show_bug.cgi?id=6802) - Navigation broken if many modules installed.
+ - 2014-01-31 Fixed bug#[4512](http://bugs.otrs.org/show_bug.cgi?id=4512) - HTMLUtils ToAscii forces line breake on fixed line-length 78.
+ - 2014-01-31 Fixed bug#[6671](http://bugs.otrs.org/show_bug.cgi?id=6671) - GenericAgent - Ticket-Action should be renamed to Ticket-Attribute.
+ - 2014-01-31 Fixed bug#[6742](http://bugs.otrs.org/show_bug.cgi?id=6742) - Move mask in new window: Note is not required.
  - 2014-01-27 Use Template::Toolkit for template rendering instead of DTL. Upgrading instructions for Perl code will follow in the developer manual.
  - 2014-01-24 Removed json2.js, it is no longer needed because all supported browser have built-in json support now (see bug#10079).
  - 2014-01-10 Fixed bug#[10145](http://bugs.otrs.org/show_bug.cgi?id=10145) - %A is not correctly substituted in Language::Time().
@@ -9,6 +13,8 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.5 2014-??-??
+ - 2014-01-31 Fixed bug#[10212](http://bugs.otrs.org/show_bug.cgi?id=10212) - My tickets & Company tickets in 3.3.4.
+ - 2014-01-31 Fixed bug#[10211](http://bugs.otrs.org/show_bug.cgi?id=10211) - Dashbord: Widget DefaultColumns is not working.
  - 2014-01-31 Fixed bug#[10163](http://bugs.otrs.org/show_bug.cgi?id=10163) - subject shows only 30 characters.
  - 2014-01-31 Fixed bug#[10193](http://bugs.otrs.org/show_bug.cgi?id=10193) - Expired cookie bug in customer interface..
  - 2014-01-31 Fixed bug#[8729](http://bugs.otrs.org/show_bug.cgi?id=8729) - Oracle ignores NLS_DATE_FORMAT set in environment.
