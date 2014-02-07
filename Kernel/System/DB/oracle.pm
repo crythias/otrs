@@ -240,6 +240,8 @@ sub TableCreate {
                 $Sequence .= substr $MD5, 0,  1;
                 $Sequence .= substr $MD5, 31, 1;
             }
+            $Sequence = uc $Sequence;
+
             my $Shell = '';
             if ( $Self->{ConfigObject}->Get('Database::ShellOutput') ) {
                 $Shell = "/\n--";
@@ -247,9 +249,23 @@ sub TableCreate {
 
             push(
                 @Return2,
-                "IF EXISTS($Sequence) THEN\n"
+                "DECLARE\n"
+                    . "    v_seq NUMBER;\n"
+                    . "\n"
                     . "BEGIN\n"
-                    . "    DROP SEQUENCE $Sequence;\n"
+                    . "    SELECT 1\n"
+                    . "    INTO v_seq\n"
+                    . "    FROM user_sequences\n"
+                    . "    WHERE sequence_name = '$Sequence';\n"
+                    . "\n"
+                    . "    IF v_seq = 1 THEN\n"
+                    . "        EXECUTE IMMEDIATE 'DROP SEQUENCE $Sequence';\n"
+                    . "    END IF;\n"
+                    . "\n"
+                    . "    EXCEPTION\n"
+                    . "        WHEN NO_DATA_FOUND THEN\n"
+                    . "            NULL;\n"
+                    . "\n"
                     . "END;\n",
             );
 
@@ -361,9 +377,47 @@ sub TableDrop {
                     . "----------------------------------------------------------\n";
             }
         }
+
+        my $Sequence = 'SE_' . $Tag->{Name};
+        if ( length $Sequence > 28 ) {
+            my $MD5 = $Self->{MainObject}->MD5sum(
+                String => $Sequence,
+            );
+            $Sequence = substr $Sequence, 0, 26;
+            $Sequence .= substr $MD5, 0,  1;
+            $Sequence .= substr $MD5, 31, 1;
+        }
+        $Sequence = uc $Sequence;
+
         $SQL .= "DROP TABLE $Tag->{Name} CASCADE CONSTRAINTS";
-        return ($SQL);
+
+        my @Return = ($SQL);
+
+        push(
+            @Return,
+            "DECLARE\n"
+                . "    v_seq NUMBER;\n"
+                . "\n"
+                . "BEGIN\n"
+                . "    SELECT 1\n"
+                . "    INTO v_seq\n"
+                . "    FROM user_sequences\n"
+                . "    WHERE sequence_name = '$Sequence';\n"
+                . "\n"
+                . "    IF v_seq = 1 THEN\n"
+                . "        EXECUTE IMMEDIATE 'DROP SEQUENCE $Sequence';\n"
+                . "    END IF;\n"
+                . "\n"
+                . "    EXCEPTION\n"
+                . "        WHEN NO_DATA_FOUND THEN\n"
+                . "            NULL;\n"
+                . "\n"
+                . "END;\n",
+        );
+
+        return @Return;
     }
+
     return ();
 }
 
