@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-02-03 Improved DynamicFields history entries and events to also include the previous value, thanks to Dietmar Berg!
  - 2014-02-03 Follow-up for bug#[6802](http://bugs.otrs.org/show_bug.cgi?id=6802) - Consider window resize properly.
  - 2014-02-03 Fixed bug#[10177](http://bugs.otrs.org/show_bug.cgi?id=10177) - Missing sources in tarball.
  - 2014-02-03 Fixed bug#[9616](http://bugs.otrs.org/show_bug.cgi?id=9616) - Too long activities and transitions are not displayed correctly.
@@ -18,6 +19,11 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.5 2014-??-??
+ - 2014-02-07 Fixed bug#[10214](http://bugs.otrs.org/show_bug.cgi?id=10214) - Value "0" for DynamicsFields prevents TicketCreation.
+ - 2014-02-07 Fixed bug#[10201](http://bugs.otrs.org/show_bug.cgi?id=10201) - Wrong column sort order in ticketoverview widget.
+ - 2014-02-07 Fixed bug#[10195](http://bugs.otrs.org/show_bug.cgi?id=10195) - Folluw up notification shows old prio after prio change.
+ - 2014-02-07 Fixed bug#[9303](http://bugs.otrs.org/show_bug.cgi?id=9303) - Body of new e-mail/phone ticket not inserting when creating new ticket from customer creation.
+ - 2014-02-07 Fixed bug#[10194](http://bugs.otrs.org/show_bug.cgi?id=10194) - CustomerTicketMessage parsing feild Dest in URI.
  - 2014-02-06 Fixed bug#[9970](http://bugs.otrs.org/show_bug.cgi?id=9970) - Problem with DBUpgrade-to-3.3.pl on Oracle databases.
  - 2014-02-04 Follow-up fix for bug#[10110](http://bugs.otrs.org/show_bug.cgi?id=10110) - Stats list may show too few or too many stats.
  - 2014-02-04 Fixed bug#[10220](http://bugs.otrs.org/show_bug.cgi?id=10220) - Invalid Statistics not displayed in overview.
