@@ -163,7 +163,7 @@ Core.Agent = (function (TargetNS) {
         $(window).resize(function() {
             window.clearTimeout(NavigationResizeTimeout);
             NavigationResizeTimeout = window.setTimeout(function () {
-                TargetNS.ResizeNavigationBar();
+                TargetNS.ResizeNavigationBar(true);
             }, 400);
         });
     }
@@ -215,6 +215,32 @@ Core.Agent = (function (TargetNS) {
 
     }
 
+    function ToolBarIsAside() {
+
+        // the following needs to be the case if the Toolbar is next to the
+        // navigation bar instead of on top of it:
+        // (1) 'left' is > than 'right' (RTL = opposite)
+        //      Note: IE8 will show NaN instead of a number for 'auto'
+        // (2) 'top' of #NavigationContainer is smaller than the height of the #ToolBar
+        //      which would typically mean there is not enough space on top of #NavigationContainer
+        //      to display the ToolBar.
+        if ( (
+                !$('body').hasClass('RTL')
+                && ( parseInt($('#ToolBar').css('left'), 10) > parseInt($('#ToolBar').css('right'), 10) || isNaN(parseInt($('#ToolBar').css('left'), 10)) )
+                && parseInt($('#NavigationContainer').css('top'), 10) < parseInt($('#ToolBar').height(), 10)
+            )
+             ||
+            (
+                $('body').hasClass('RTL')
+                && ( parseInt($('#ToolBar').css('left'), 10) < parseInt($('#ToolBar').css('right'), 10) || isNaN(parseInt($('#ToolBar').css('right'), 10)) )
+                && parseInt($('#NavigationContainer').css('top'), 10) < parseInt($('#ToolBar').height(), 10)
+            ) )
+        {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @function
      * @return nothing
@@ -222,10 +248,26 @@ Core.Agent = (function (TargetNS) {
      *      with slider navigation buttons. This can only happen if there are too many
      *      navigation icons.
      */
-    TargetNS.ResizeNavigationBar = function () {
+    TargetNS.ResizeNavigationBar = function (RealResizeEvent) {
 
         var NavigationBarWidth = 0,
-            Difference;
+            Difference,
+            NewContainerWidth;
+
+        // when we have the toolbar being displayed next to the navigation, we need to leave some space for it
+        if ( ToolBarIsAside() && ( !$('#NavigationContainer').hasClass('IsResized') || RealResizeEvent ) ) {
+
+            // reset back to original width to avoid making it smaller and smaller
+            $('#NavigationContainer').css('width', '98%');
+
+            NewContainerWidth = $('#NavigationContainer').width() - $('#ToolBar').width() - parseInt($('#ToolBar').css('right'), 10);
+            if ($('body').hasClass('RTL')) {
+                NewContainerWidth = $('#NavigationContainer').width() - $('#ToolBar').width() - parseInt($('#ToolBar').css('left'), 10);
+            }
+            $('#NavigationContainer')
+                .css('width', NewContainerWidth)
+                .addClass('IsResized');
+        }
 
         $('#Navigation li').each(function() {
             NavigationBarWidth += parseInt($(this).outerWidth(), 10);
@@ -237,7 +279,20 @@ Core.Agent = (function (TargetNS) {
             NavigationBarShowSlideButton('Right', parseInt($('#NavigationContainer').outerWidth() - NavigationBarWidth, 10));
         }
         else if (NavigationBarWidth < $('#NavigationContainer').outerWidth()) {
-            $('.NavigationBarNavigateRight, NavigationBarNavigateLeft').remove();
+            $('.NavigationBarNavigateRight, .NavigationBarNavigateLeft').remove();
+
+            if ($('body').hasClass('RTL')) {
+                $('#Navigation').css({
+                    'left': 'auto',
+                    'right': '0px'
+                });
+            }
+            else {
+                $('#Navigation').css({
+                    'left': '0px',
+                    'right': 'auto'
+                });
+            }
         }
     };
 
