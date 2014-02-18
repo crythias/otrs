@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-02-18 Re-implemented Process Management ProcessImport().
  - 2014-02-13 Added browser check for IE10 in compatibility mode.
  - 2014-02-03 Improved DynamicFields history entries and events to also include the previous value, thanks to Dietmar Berg!
  - 2014-02-03 Follow-up for bug#[6802](http://bugs.otrs.org/show_bug.cgi?id=6802) - Consider window resize properly.
@@ -20,6 +21,7 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.5 2014-??-??
+ - 2014-02-17 Updated Japanese translation, thanks to Norihiro Tanaka!
  - 2014-02-17 Updated Brazilian Portugese translation, thanks to Murilo Moreira de Oliveira!
  - 2014-02-17 Updated Polish translation, thanks to Wojciech Myrda.
  - 2014-02-13 Added feature to download report data shown in dashboard stats as CSV and PDF.
