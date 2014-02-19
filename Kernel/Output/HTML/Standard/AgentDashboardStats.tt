@@ -22,6 +22,11 @@
 // add translations
 Core.Config.Set('Grouped', [% Translate("Grouped") | JSON %]);
 Core.Config.Set('Stacked', [% Translate("Stacked") | JSON %]);
+Core.Config.Set('Expanded', [% Translate("Expanded") | JSON %]);
+Core.Config.Set('Stream', [% Translate("Stream") | JSON %]);
+
+// get settings for widget from preferences
+Core.Config.Set('Pref-GraphWidget[% Data.Name | html %]', [% Data.Preferences %]);
 
 (function(){
 
@@ -35,8 +40,9 @@ Core.Config.Set('Stacked', [% Translate("Stacked") | JSON %]);
     }
 
     window.setTimeout(function () {
-        var RawData = [% Data.StatsData %];
-        Core.Agent.Dashboard.InitStatsChart("svg.GraphWidget[% Data.Name | html %]", RawData);
+        var RawData = [% Data.StatsData %],
+            ChartType = [% Data.ChartType | JSON %];
+        Core.UI.AdvancedChart.Init(ChartType, RawData, 'svg.GraphWidget[% Data.Name | html %]');
     }, Timeout);
 }());
 //]]></script>
