@@ -1,4 +1,7 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-02-21 Added new options to check dynamic fields of type text on patterns relating to error messages (translated), if they do not match.
+ - 2014-02-21 Added new options to restrict dynamic fields of type date/datetime on future or past dates.
+ - 2014-02-20 Fixed bug#[10093](http://bugs.otrs.org/show_bug.cgi?id=10093) - Dyn Field not used in auto-reply subject
  - 2014-02-18 Fixed bug#[10258](http://bugs.otrs.org/show_bug.cgi?id=10258) - yellow color for UnreadArticles.
  - 2014-02-18 Re-implemented Process Management ProcessImport().
  - 2014-02-13 Added browser check for IE10 in compatibility mode.
@@ -20,6 +23,11 @@
  - 2013-12-16 Improved mail address parsing speed, thanks to Moritz Lenz!
  - 2013-12-13 Fixed bug#[10090](http://bugs.otrs.org/show_bug.cgi?id=10090) - Problems with special characters in Kernel/System/WebUserAgent.pm.
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
+
+#3.3.6 2014-??-??
+ - 2014-02-21 Fixed bug#[9787](http://bugs.otrs.org/show_bug.cgi?id=9787) - Queue field doesn't appear in ProcessMgmt.
+ - 2014-02-21 Fixed bug#[10222](http://bugs.otrs.org/show_bug.cgi?id=10222) - Customer search during ticket creation - OTRS shows details also if no customer match the search.
+ - 2014-02-20 Fixed bug#[10259](http://bugs.otrs.org/show_bug.cgi?id=10259) - GenericInterface: mapping key can't map from / to 0.
 
 #3.3.5 2014-02-25
  - 2014-02-20 Improved HTML filter.
