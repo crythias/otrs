@@ -1,4 +1,23 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-02-24 Updated CPAN module parent to version 0.228.
+ - 2014-02-24 Updated CPAN module YAML to version 0.90.
+ - 2014-02-24 Updated CPAN module XML::TreePP to version 0.42.
+ - 2014-02-24 Updated CPAN module Net::SSLGlue to version 1.052.
+ - 2014-02-24 Updated CPAN module Net::IMAP::Simple to version 1.2204.
+ - 2014-02-24 Updated CPAN module Mozilla::CA to version 20130114.
+ - 2014-02-24 Updated CPAN module MailTools to version 2.13.
+ - 2014-02-24 Updated CPAN module MIME::Tools to version 5.505.
+ - 2014-02-24 Updated CPAN module Locale::Codes to version 3.29.
+ - 2014-02-24 Updated CPAN module JavaScript::Minifier to version 1.11.
+ - 2014-02-24 Updated CPAN module JSON::PP to version 2.27203.
+ - 2014-02-24 Updated CPAN module JSON to version 2.90.
+ - 2014-02-24 Updated CPAN module Email::Valid to version 1.192.
+ - 2014-02-24 Updated CPAN module Crypt::PasswdMD5 to version 1.40.
+ - 2014-02-24 Updated CPAN module CGI to version 3.65.
+ - 2014-02-24 Updated CPAN module SOAP::Lite to version 1.11.
+ - 2014-02-24 Updated CPAN module XML::Parser::Lite to version 0.719.
+ - 2014-02-24 Removed CPAN module Apache2::Reload from Kernel/cpan-lib/ because this module is included in mod_perl 2.0.5 and later.
+ - 2014-02-24 Fixed bug#[10295](http://bugs.otrs.org/show_bug.cgi?id=10295) - DateInFuture / DateNotInFuture validation.
  - 2014-02-21 Added new options to check dynamic fields of type text on patterns relating to error messages (translated), if they do not match.
  - 2014-02-21 Added new options to restrict dynamic fields of type date/datetime on future or past dates.
  - 2014-02-20 Fixed bug#[10093](http://bugs.otrs.org/show_bug.cgi?id=10093) - Dyn Field not used in auto-reply subject
