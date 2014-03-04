@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-03-04 Added a new central ObjectManager to simplify singleton object creation and usage. Thanks a lot to Moritz Lenz @ noris network.
  - 2014-02-24 Updated CPAN module parent to version 0.228.
  - 2014-02-24 Updated CPAN module YAML to version 0.90.
  - 2014-02-24 Updated CPAN module XML::TreePP to version 0.42.
@@ -44,6 +45,10 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.6 2014-??-??
+ - 2014-03-03 Fixed bug#[10240](http://bugs.otrs.org/show_bug.cgi?id=10240) - Restricting process list by ACLs is only working with UserID.
+ - 2014-03-03 Fixed bug#[10299](http://bugs.otrs.org/show_bug.cgi?id=10299) - "Ouf of Office" shows inactive agents.
+ - 2014-03-03 Fixed bug#[10321](http://bugs.otrs.org/show_bug.cgi?id=10321) - Applying Filters to tickets in Status View or Queue View will log out session..
+ - 2014-03-03 Fixed bug#[9600](http://bugs.otrs.org/show_bug.cgi?id=9600) - When a ticket is deleted by generic agent job,  No such TicketID error.
  - 2014-02-28 Fixed bug#[9675](http://bugs.otrs.org/show_bug.cgi?id=9675) - No use Ticket::Hook in AgentLinkObject.
  - 2014-02-28 Updated Japanese translation, thanks to Norihiro Tanaka!
  - 2014-02-27 Fixed bug#[10300](http://bugs.otrs.org/show_bug.cgi?id=10300) - Special character in customer id cuts off string..
