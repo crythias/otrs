@@ -1748,7 +1748,20 @@ via the Preferences button after logging in.
         },
         LayoutObject  => {
             ClassName       => 'Kernel::Output::HTML::Layout',
-            Dependencies    => [@DefaultDependencies, 'ParamObject', 'SessionObject', 'TicketObject', 'GroupObject'],
+            OMAware         => 1,
+            Dependencies    => [
+                @DefaultDependencies,
+                'ParamObject',
+                'SessionObject',
+                'TicketObject',
+                'GroupObject',
+                'HTMLUtilsObject',
+                'JSONObject'
+            ],
+        },
+        HTMLUtilsObject => {
+            ClassName => 'Kernel::System::HTMLUtils',
+            OmAware   => 1,
         },
         PackageObject => {
             ClassName       => 'Kernel::System::Package',
@@ -2139,14 +2152,14 @@ sub new {
         die;
     }
     if ( open( my $Product, '<', "$Self->{Home}/RELEASE" ) ) { ## no critic
-        while (<$Product>) {
+        while (my $Line = <$Product>) {
 
             # filtering of comment lines
-            if ( $_ !~ /^#/ ) {
-                if ( $_ =~ /^PRODUCT\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
+            if ( $Line !~ /^#/ ) {
+                if ( $Line =~ /^PRODUCT\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
                     $Self->{Product} = $1;
                 }
-                elsif ( $_ =~ /^VERSION\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
+                elsif ( $Line =~ /^VERSION\s{0,2}=\s{0,2}(.*)\s{0,2}$/i ) {
                     $Self->{Version} = $1;
                 }
             }
