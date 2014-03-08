@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-03-07 Added possibility to display tickets with thousands of articles, thanks to Moritz Lenz @ noris networks. GUI improvements pending.
  - 2014-03-04 Fixed bug#[8903](http://bugs.otrs.org/show_bug.cgi?id=8903) - Forward Email - not inline attachments with Content-ID.
  - 2014-03-04 Added a new central ObjectManager to simplify singleton object creation and usage. Thanks a lot to Moritz Lenz @ noris network.
  - 2014-03-04 Fixed bug#[10244](http://bugs.otrs.org/show_bug.cgi?id=10244) - No mouseover popup for fields in ActivityDialogs.
@@ -47,6 +48,9 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.6 2014-??-??
+ - 2014-03-07 Fixed bug#[9951](http://bugs.otrs.org/show_bug.cgi?id=9951) - Line breaks at the end of salutation templates are not saved.
+ - 2014-03-07 Fixed bug#[10275](http://bugs.otrs.org/show_bug.cgi?id=10275) - Problem with encoding in attachment.
+ - 2014-03-07 Fixed bug#[10085](http://bugs.otrs.org/show_bug.cgi?id=10085) - Postmaster incorrectly decodes headers, causes garbage in the database.
  - 2014-03-06 Fixed bug#[10336](http://bugs.otrs.org/show_bug.cgi?id=10336) - Problem with symlinked theme directories.
  - 2014-03-06 Fixed bug#[10328](http://bugs.otrs.org/show_bug.cgi?id=10328) - Error in AdminPostMasterFilter if the name of DynamicField changed.
  - 2014-03-04 Fixed bug#[10264](http://bugs.otrs.org/show_bug.cgi?id=10264) - Description (espacially article description) in processes are shown on improper place.
