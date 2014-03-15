@@ -1,5 +1,6 @@
 #3.4.0.beta1 20??-??-??
- - 2014-03-13 Fixed bug#[5114](http://bugs.otrs.org/show_bug.cgi?id=51144) - No Rich Text Editor on Notification (Event).
+ - 2014-03-13 Fixed bug#[4224](http://bugs.otrs.org/show_bug.cgi?id=4224) - Unused variable $From, thanks to Bernhard Schmalhofer.
+ - 2014-03-13 Fixed bug#[5114](http://bugs.otrs.org/show_bug.cgi?id=5114) - No Rich Text Editor on Notification (Event).
  - 2014-03-07 Added possibility to display tickets with thousands of articles, thanks to Moritz Lenz @ noris networks. GUI improvements pending.
  - 2014-03-04 Fixed bug#[8903](http://bugs.otrs.org/show_bug.cgi?id=8903) - Forward Email - not inline attachments with Content-ID.
  - 2014-03-04 Added a new central ObjectManager to simplify singleton object creation and usage. Thanks a lot to Moritz Lenz @ noris network.
@@ -49,6 +50,12 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.6 2014-??-??
+ - 2014-03-15 Fixed bug#[10364](http://bugs.otrs.org/show_bug.cgi?id=10364) - Inline images displayed as attachment in SMIME and PGP signed messages.
+ - 2014-03-14 Fixed bug#[10251](http://bugs.otrs.org/show_bug.cgi?id=10251) - SMIME signing fail on mails with attachements.
+ - 2014-03-14 Fixed bug#[10277](http://bugs.otrs.org/show_bug.cgi?id=10277) - Statistics per agent also shows invalid agents.
+ - 2014-03-14 Fixed bug#[10318](http://bugs.otrs.org/show_bug.cgi?id=10318) - Dynamic Field: Multi Select does not allow empty values.
+ - 2014-03-14 Fixed bug#[10365](http://bugs.otrs.org/show_bug.cgi?id=10365) - Custom State types not working with "otrs.PendingJobs.pl" any more.
+ - 2014-03-14 Fixed bug#[10349](http://bugs.otrs.org/show_bug.cgi?id=10349) - System Email notification external not highlighted correctly.
  - 2014-03-13 Fixed bug#[10361](http://bugs.otrs.org/show_bug.cgi?id=10361) - Incorrect handling of special characters in DynamicFields.
  - 2014-03-11 Fixed bug#[10324](http://bugs.otrs.org/show_bug.cgi?id=10324) - Customer user field still marked as empty even after providing data.
  - 2014-03-11 Fixed bug#[10019](http://bugs.otrs.org/show_bug.cgi?id=10019) - Tickets via "In line action bar" cannot be moved.
