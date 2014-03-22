@@ -1,4 +1,6 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-03-20 Fixed bug#[10141](http://bugs.otrs.org/show_bug.cgi?id=10141) - invalid agents can't be selected in search form.
+ - 2014-03-20 Fixed bug#[10208](http://bugs.otrs.org/show_bug.cgi?id=10208) - NeedSpellCheck does not work.
  - 2014-03-20 Fixed bug#[10385](http://bugs.otrs.org/show_bug.cgi?id=10385) - Wrong Queue ID for Errors and FormUpdate in AgentTicketActionCommon.
  - 2014-03-13 Fixed bug#[4224](http://bugs.otrs.org/show_bug.cgi?id=4224) - Unused variable $From, thanks to Bernhard Schmalhofer.
  - 2014-03-13 Fixed bug#[5114](http://bugs.otrs.org/show_bug.cgi?id=5114) - No Rich Text Editor on Notification (Event).
@@ -51,6 +53,11 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.6 2014-??-??
+ - 2014-03-21 Fixed bug#[10368](http://bugs.otrs.org/show_bug.cgi?id=10368) - Ticket title isn't shown.
+ - 2014-03-21 Updated Japanese translation, thanks to Toshihiro Takehara..
+ - 2014-03-21 Fixed bug#[10381](http://bugs.otrs.org/show_bug.cgi?id=10381) - AgentTicket*View has invalid SortBy options.
+ - 2014-03-21 Fixed bug#[10383](http://bugs.otrs.org/show_bug.cgi?id=10383) - Missing 'DefaultColumns' SysConfig for AgentTicketSearch view.
+ - 2014-03-21 Fixed bug#[10384](http://bugs.otrs.org/show_bug.cgi?id=10384) - out-of-office information not displayed in Ticket Zoom.
  - 2014-03-20 Fixed bug#[10379](http://bugs.otrs.org/show_bug.cgi?id=10379) - ACL Not Working.
  - 2014-03-20 Fixed bug#[10369](http://bugs.otrs.org/show_bug.cgi?id=10369) - Ticket::Frontend::Quote does not work with RichText Editor.
  - 2014-03-20 Improved handling of cachekeys in Stats.pm to prevent cacheing problems in the dashboard stats.
