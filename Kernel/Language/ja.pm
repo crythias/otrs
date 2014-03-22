@@ -108,8 +108,8 @@ sub Data {
         ' 7 minutes' => ' 7 分',
         '10 minutes' => '10 分',
         '15 minutes' => '15 分',
-        'Mr.' => '',
-        'Mrs.' => '',
+        'Mr.' => '様',
+        'Mrs.' => '様',
         'Next' => '次へ',
         'Back' => '戻る',
         'Next...' => '次へ...',
@@ -1624,7 +1624,7 @@ sub Data {
         'The name is required.' => '',
         'Filter Condition' => 'フィルタ条件',
         'AND Condition' => '',
-        'Negate' => '',
+        'Negate' => '否定条件',
         'The field needs to be a valid regular expression or a literal word.' =>
             '',
         'Set Email Headers' => 'メールヘッダを設定',
@@ -3088,6 +3088,18 @@ sub Data {
         'Column ticket filters for Ticket Overviews type "Small".' => '',
         'Columns that can be filtered in the status view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
             '',
+        'Columns that can be filtered in the queue view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
+        'Columns that can be filtered in the responsible view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
+        'Columns that can be filtered in the watch view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
+        'Columns that can be filtered in the locked view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
+        'Columns that can be filtered in the escalation view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
+        'Columns that can be filtered in the ticket search result view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: no more columns are allowed and will be discarded.' =>
+            '',
         'Comment for new history entries in the customer interface.' => '顧客インタフェースの新規履歴エントリーのためのコメントです。',
         'Company Status' => '',
         'Company Tickets' => '企業チケット',
@@ -4112,7 +4124,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'List of default Standard Templates which are assigned automatically to new Queues upon creation.' =>
             '',
         'Log file for the ticket counter.' => 'チケット・カウンターのためのログ・ファイルです。',
-        'Mail Accounts' => '',
+        'Mail Accounts' => 'メールアカウント',
         'Main menu registration.' => '',
         'Makes the application check the MX record of email addresses before sending an email or submitting a telephone or email ticket.' =>
             'Eメールの送信または電話/Eメール・チケットの提出の前に、アプリケーションにEメール・アドレスのMXレコードをチェックさせるようにします。',
@@ -4185,7 +4197,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'NameX' => '',
         'New email ticket' => '新規メールチケットの作成',
         'New phone ticket' => '新規電話チケットの作成',
-        'New process ticket' => '',
+        'New process ticket' => '新規プロセスチケット',
         'Next possible ticket states after adding a phone note in the ticket phone inbound screen of the agent interface.' =>
             '',
         'Next possible ticket states after adding a phone note in the ticket phone outbound screen of the agent interface.' =>
@@ -4206,7 +4218,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Overview of all open Tickets.' => '全対応中チケット一覧',
         'PGP Key Management' => '',
         'PGP Key Upload' => 'PGP鍵アップロード',
-        'Parameters for .' => '',
+        'Parameters for .' => 'パラメータ',
         'Parameters for the CreateNextMask object in the preference view of the agent interface.' =>
             '担当者インタフェースのプレファレンス・ビューにあるCreateNextMaskオブジェクトのパラメータです。',
         'Parameters for the CustomQueue object in the preference view of the agent interface.' =>
@@ -4330,8 +4342,8 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'S/MIME Certificate Upload' => 'S/MIME証明書アップロード',
         'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data.' =>
             '項目の添付ファイルを保存します。. "DB"は、全てのデータをデータベースに保存します（大きな添付物の保存にはお奨めしません）。"FS"は、データをファイル・システム上に保存するもので、これは速い方法ですがウェブ・サーバがOTRSユーザの配下で動作している必要があります。すでに製品となっているシステムにおいても、データを損失すること無く、モジュール間で切替を行うことができます。',
-        'Search Customer' => '顧客検索',
-        'Search User' => '',
+        'Search Customer' => '顧客を検索します。',
+        'Search User' => 'ユーザを検索します。',
         'Search backend default router.' => 'バックエンドのデフォルト・ルーターを検索します。',
         'Search backend router.' => 'バックエンド・ルーターを検索します。',
         'Select your frontend Theme.' => 'フロントエンドのテーマを選択してください。',
@@ -4820,7 +4832,7 @@ SystemAddressに関して"<Realname> <<Email>>"は受信者の名前およびE�
         'Ticket event module that triggers the escalation stop events.' =>
             '',
         'Ticket overview' => 'チケット一覧',
-        'TicketNumber' => '',
+        'TicketNumber' => 'チケット番号',
         'Tickets' => 'チケット',
         'Time in seconds that gets added to the actual time if setting a pending-state (default: 86400 = 1 day).' =>
             '保留中のステートを設定した場合、実際の時間に加えられる時間（秒）です。(default: 86400 = 1 day)',
