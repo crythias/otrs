@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-03-24 Fixed bug#[10400](http://bugs.otrs.org/show_bug.cgi?id=10400) - AgentTicketProccess will not use error messages of dynamic field drivers.
  - 2014-03-20 Fixed bug#[10141](http://bugs.otrs.org/show_bug.cgi?id=10141) - invalid agents can't be selected in search form.
  - 2014-03-20 Fixed bug#[10208](http://bugs.otrs.org/show_bug.cgi?id=10208) - NeedSpellCheck does not work.
  - 2014-03-20 Fixed bug#[10385](http://bugs.otrs.org/show_bug.cgi?id=10385) - Wrong Queue ID for Errors and FormUpdate in AgentTicketActionCommon.
@@ -53,6 +54,8 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.6 2014-??-??
+ - 2014-03-24 Fixed bug#[10340](http://bugs.otrs.org/show_bug.cgi?id=10340) - Dynamic field not visible in queue view screen (AgentTicketOverviewSmall.dtl).
+ - 2014-03-24 Fixed bug#[10397](http://bugs.otrs.org/show_bug.cgi?id=10397) - DynamicField configuration in SysConfig 'DefaultOverviewColumns' causes JS error.
  - 2014-03-21 Fixed bug#[10368](http://bugs.otrs.org/show_bug.cgi?id=10368) - Ticket title isn't shown.
  - 2014-03-21 Updated Japanese translation, thanks to Toshihiro Takehara..
  - 2014-03-21 Fixed bug#[10381](http://bugs.otrs.org/show_bug.cgi?id=10381) - AgentTicket*View has invalid SortBy options.
