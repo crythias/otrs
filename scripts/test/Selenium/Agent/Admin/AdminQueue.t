@@ -70,7 +70,7 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "return \$('#Name').hasClass('Error')"
             ),
-            'true',
+            '1',
             'Client side validation correctly detected missing input value',
         );
 
@@ -187,7 +187,7 @@ $Selenium->RunTest(
             '',
             "#Comment updated value",
         );
-    }
+        }
 );
 
 1;
