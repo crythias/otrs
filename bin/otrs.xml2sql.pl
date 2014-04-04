@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # --
-# bin/otrs.xml2sql.pl - a xml 2 sql processor
+# bin/otrs.xml2sql.pl - a xml to sql processor
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This program is free software; you can redistribute it and/or modify
@@ -30,17 +30,18 @@ use lib dirname($RealBin) . '/Custom';
 
 use Getopt::Std;
 
+use Kernel::Config;
 use Kernel::System::ObjectManager;
 
-my %Opts = ();
-getopt( 'hton', \%Opts );
+my %Opts;
+getopt( 'htonf', \%Opts );
 if ( $Opts{'h'} || !%Opts ) {
     print <<"EOF";
 $0 - tool to generate database specific SQL from the XML database definition files used by OTRS
 
 Copyright (C) 2001-2010 OTRS AG, http://otrs.org/
 
-Usage: $0 -t <DATABASE_TYPE> (or 'all') [-o <OUTPUTDIR> -n <NAME> -s <SPLIT_FILES>]
+Usage: $0 -t <DATABASE_TYPE> (or 'all') [-o <OUTPUTDIR> -n <NAME> -s <SPLIT_FILES>] [-f source file]
 EOF
     exit 1;
 }
@@ -54,18 +55,27 @@ if ( !$Opts{n} && $Opts{o} ) {
 if ( $Opts{o} && !-e $Opts{o} ) {
     die "ERROR: <OUTPUTDIR> $Opts{o} doesn' exist!";
 }
-if ( !$Opts{o} ) {
-    $Opts{o} = '';
-}
 
 # database type
 if ( !$Opts{t} ) {
     die 'ERROR: Need -t <DATABASE_TYPE>';
 }
+
+$Opts{o} ||= '';
+
 my @DatabaseType;
 if ( $Opts{t} eq 'all' ) {
+
+    # create instance of the config object
     my $ConfigObject = Kernel::Config->new();
-    my @List         = glob( $ConfigObject->Get('Home') . '/Kernel/System/DB/*.pm' );
+
+    # get otrs home
+    my $Home = $ConfigObject->Get('Home');
+
+    # get list of all database drivers
+    my @List = glob $Home . '/Kernel/System/DB/*.pm';
+
+    # extract database types
     for my $File (@List) {
         $File =~ s/^.*\/(.+?).pm$/$1/;
         push @DatabaseType, $File;
@@ -75,8 +85,16 @@ else {
     push @DatabaseType, $Opts{t};
 }
 
-# read xml data from STDIN
-my $FileString = do { local $/; <STDIN> };
+my $FileString;
+
+if ( !$Opts{f} ) {
+
+    # read xml data from STDIN
+    $FileString = do { local $/; <STDIN> };
+}
+elsif ( !-f $Opts{f} ) {
+    die "ERROR: File $Opts{f} not exists!";
+}
 
 for my $DatabaseType (@DatabaseType) {
 
@@ -103,8 +121,22 @@ for my $DatabaseType (@DatabaseType) {
 
     # now that the config is set, we can ask for all the required objects
     %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw(ConfigObject XMLObject DBObject)],
+        Objects => [qw(ConfigObject XMLObject DBObject MainObject)],
     );
+
+    if ( $Opts{f} ) {
+
+        # read the source file
+        my $FileStringRef = $CommonObject{MainObject}->FileRead(
+            Location        => $Opts{f},
+            Mode            => 'utf8',
+            Type            => 'Local',
+            Result          => 'SCALAR',
+            DisableWarnings => 1,
+        );
+
+        $FileString = ${$FileStringRef};
+    }
 
     # parse xml package
     my @XMLARRAY = $CommonObject{XMLObject}->XMLParse( String => $FileString );
@@ -134,6 +166,7 @@ for my $DatabaseType (@DatabaseType) {
 
         # write create script
         Dump(
+            $CommonObject{MainObject},
             $Opts{o} . '/' . $Opts{n} . '.' . $DatabaseType . '.sql',
             \@SQL,
             $Head,
@@ -143,6 +176,7 @@ for my $DatabaseType (@DatabaseType) {
 
         # write post script
         Dump(
+            $CommonObject{MainObject},
             $Opts{o} . '/' . $Opts{n} . '-post.' . $DatabaseType . '.sql',
             \@SQLPost,
             $Head,
@@ -152,6 +186,7 @@ for my $DatabaseType (@DatabaseType) {
     }
     else {
         Dump(
+            $CommonObject{MainObject},
             $Opts{o} . '/' . $Opts{n} . '.' . $DatabaseType . '.sql',
             [ @SQL, @SQLPost ],
             $Head,
@@ -162,19 +197,23 @@ for my $DatabaseType (@DatabaseType) {
 }
 
 sub Dump {
-    my ( $Filename, $SQL, $Head, $Commit, $StdOut ) = @_;
+    my ( $MainObject, $Filename, $SQL, $Head, $Commit, $StdOut ) = @_;
 
     if ($StdOut) {
-        ## no critic
-        open my $OutHandle, '>', $Filename or die "Can't write: $!";
-        binmode $OutHandle, ':utf8';
-        ## use critic
-        print "writing: $Filename\n";
-        print $OutHandle $Head;
+
+        my $Content = $Head;
         for my $Item ( @{$SQL} ) {
-            print $OutHandle $Item . $Commit . "\n";
+            $Content .= $Item . $Commit . "\n";
         }
-        close $OutHandle;
+
+        print STDOUT "writing: $Filename\n";
+
+        $MainObject->FileWrite(
+            Location => $Filename,
+            Content  => \$Content,
+            Mode     => 'utf8',
+            Type     => 'Local',
+        );
     }
     else {
         print $Head;
