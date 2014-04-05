@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-04-04 Fixed bug#[10371](http://bugs.otrs.org/show_bug.cgi?id=10371) - Missing Note and NoteMandatory options for AgentTicketMove.
  - 2014-04-01 Fixed bug#[10399](http://bugs.otrs.org/show_bug.cgi?id=10399) - Columns Settings lost after search.
  - 2014-04-01 Fixed bug#[10320](http://bugs.otrs.org/show_bug.cgi?id=10320) - PostMaster Filter // possibility to Set more Email Headers.
  - 2014-03-24 Fixed bug#[10400](http://bugs.otrs.org/show_bug.cgi?id=10400) - AgentTicketProccess will not use error messages of dynamic field drivers.
@@ -56,6 +57,9 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.7 2014-??-??
+ - 2014-04-04 Fixed bug#[10436](http://bugs.otrs.org/show_bug.cgi?id=10436) - Error message in syslog about ACL then there is no ACL defined.
+ - 2014-04-04 Fixed bug#[10438](http://bugs.otrs.org/show_bug.cgi?id=10438) - Strange sorting of columns in Ticket Dashboard widgets.
+ - 2014-04-04 Fixed bug#[10425](http://bugs.otrs.org/show_bug.cgi?id=10425) - Customer Information in AgentTicketZoom.
  - 2014-04-03 Followup for bug#10340 - Dynamic field not visible in queue view screen (AgentTicketOverviewSmall.dtl).
  - 2014-04-03 Fixed bug#[10406](http://bugs.otrs.org/show_bug.cgi?id=10406) - Ticket Templates Type "Create" will be not translated.
  - 2014-04-03 Fixed bug#[10378](http://bugs.otrs.org/show_bug.cgi?id=10378) - SessionID created with generic interface wont work using it as Agent.
