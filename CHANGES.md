@@ -1,4 +1,5 @@
 #3.2.17 2014-??-??
+ - 2014-04-10 Fixed bug#[10402](http://bugs.otrs.org/show_bug.cgi?id=10402) - Transition or Transition Action popup a login page.
  - 2014-04-10 Fixed bug#[9098](http://bugs.otrs.org/show_bug.cgi?id=9098) - The system still consider the customer_ids, even after field is empty on table customer_user.
  - 2014-04-10 Fixed bug#[10202](http://bugs.otrs.org/show_bug.cgi?id=10202) - Process Modules, Dynamic Fields, and ACLs with AJAX update.
  - 2014-04-08 Fixed bug#[10432](http://bugs.otrs.org/show_bug.cgi?id=10432) - ACLs not working correctly in CustomerTicketZoom (Message Followup).
@@ -6,7 +7,6 @@
  - 2014-03-29 Fixed bug#[9970](http://bugs.otrs.org/show_bug.cgi?id=9970) - Existing sequences on oracle databases produces errors.
 
 #3.2.16 2014-04-01
- - 2014-03-28 Fixed bug#[10402](http://bugs.otrs.org/show_bug.cgi?id=10402) - Transition or Transition Action popup a login page.
  - 2014-03-27 Fixed bug#[10413](http://bugs.otrs.org/show_bug.cgi?id=10413) - vertical scroll not shown in search screen.
  - 2014-03-18 Fixed bug#[10334](http://bugs.otrs.org/show_bug.cgi?id=10334) - Deleting the attachment deletes the  recepients too.
  - 2014-03-18 Fixed bug#[10374](http://bugs.otrs.org/show_bug.cgi?id=10374) - OTRS does not protect against clickjacking.
