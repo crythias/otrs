@@ -1,4 +1,5 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-04-16 Speedup TicketACLs by gather only the needed data from the DB based in the ACLs requirements, thanks to Moritz Lenz @ noris networks.
  - 2014-04-15 Added foreign db param to the customer user map.
  - 2014-04-04 Fixed bug#[10371](http://bugs.otrs.org/show_bug.cgi?id=10371) - Missing Note and NoteMandatory options for AgentTicketMove.
  - 2014-04-01 Fixed bug#[10399](http://bugs.otrs.org/show_bug.cgi?id=10399) - Columns Settings lost after search.
@@ -9,7 +10,7 @@
  - 2014-03-20 Fixed bug#[10385](http://bugs.otrs.org/show_bug.cgi?id=10385) - Wrong Queue ID for Errors and FormUpdate in AgentTicketActionCommon.
  - 2014-03-13 Fixed bug#[4224](http://bugs.otrs.org/show_bug.cgi?id=4224) - Unused variable $From, thanks to Bernhard Schmalhofer.
  - 2014-03-13 Fixed bug#[5114](http://bugs.otrs.org/show_bug.cgi?id=5114) - No Rich Text Editor on Notification (Event).
- - 2014-03-07 Added possibility to display tickets with thousands of articles, thanks to Moritz Lenz @ noris networks. GUI improvements pending.
+ - 2014-03-07 Added possibility to display tickets with thousands of articles, thanks to Moritz Lenz @ noris network. GUI improvements pending.
  - 2014-03-04 Fixed bug#[8903](http://bugs.otrs.org/show_bug.cgi?id=8903) - Forward Email - not inline attachments with Content-ID.
  - 2014-03-04 Added a new central ObjectManager to simplify singleton object creation and usage. Thanks a lot to Moritz Lenz @ noris network.
  - 2014-03-04 Fixed bug#[10244](http://bugs.otrs.org/show_bug.cgi?id=10244) - No mouseover popup for fields in ActivityDialogs.
@@ -58,6 +59,10 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.7 2014-??-??
+ - 2014-04-16 Added OTRS Scheduler Watchdog mode.
+ - 2014-04-16 Fixed bug#[10464](http://bugs.otrs.org/show_bug.cgi?id=10464) - Closing link delete screen in AgentTicketPhone reloads page for temporary links.
+ - 2014-04-16 Fixed bug#[10461](http://bugs.otrs.org/show_bug.cgi?id=10461) - Link to CustomerTicketProcess in Customer interface displayed even though no process is available..
+ - 2014-04-16 Fixed bug#[8253](http://bugs.otrs.org/show_bug.cgi?id=8253) - Missing hover texts for actions in German translation of AgentTicketZoom.
  - 2014-04-15 Fixed bug#[10442](http://bugs.otrs.org/show_bug.cgi?id=10442) - Translation of states in statistic widgets (Dashboard).
  - 2014-04-11 Fixed bug#[10395](http://bugs.otrs.org/show_bug.cgi?id=10395) - E-mail header parsing bug.
  - 2014-04-11 Fixed bug#[10394](http://bugs.otrs.org/show_bug.cgi?id=10394) - rfc822 attachments name creating bug and validation enhancement.
