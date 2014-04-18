@@ -1,5 +1,5 @@
 # --
-# cron/unlock - unlock old locked ticket of the OTRS
+# cron/scheduler_watchdog - scheduler watch dog cron of the OTRS
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,5 +7,5 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-# unlock every hour old locked tickets
-35 * * * *  $HOME/bin/otrs.UnlockTickets.pl --timeout >> /dev/null
+# check scheduler status
+*/5 * * * *    $HOME/bin/otrs.Scheduler.pl -w 1 >> /dev/null
