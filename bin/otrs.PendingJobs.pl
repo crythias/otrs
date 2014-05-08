@@ -52,6 +52,11 @@ my @PendingAutoStateIDs = $CommonObject{StateObject}->StateGetStatesByType(
     Result => 'ID',
 );
 
+if ( !@PendingAutoStateIDs ) {
+    print STDOUT " No pending auto StateIDs found - skipping script!\n";
+    exit 0;
+}
+
 # do ticket auto jobs
 my @TicketIDs = $CommonObject{TicketObject}->TicketSearch(
     Result   => 'ARRAY',
