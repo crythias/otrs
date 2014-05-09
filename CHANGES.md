@@ -59,7 +59,12 @@
  - 2013-12-13 Fixed bug#[10090](http://bugs.otrs.org/show_bug.cgi?id=10090) - Problems with special characters in Kernel/System/WebUserAgent.pm.
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
-#3.3.7 2014-??-??
+#3.3.8 2014-??-??
+ - 2014-05-09 Fixed bug#[10491](http://bugs.otrs.org/show_bug.cgi?id=10491) - CIC not always accessible via TicketZoom.
+ - 2014-05-09 Updated Swedish translation, thanks to Peter Krantz.
+
+#3.3.7 2014-05-13
+ - 2014-05-08 Fixed bug#[10475](http://bugs.otrs.org/show_bug.cgi?id=10475) - otrs.RebuildFulltextIndex.pl - multiple output lines.
  - 2014-05-07 Updated Japanese translation, thanks to Toshihiro Takehara.
  - 2014-05-07 Updated Swedish translation, thanks to Peter Krantz.
  - 2014-05-02 Fixed bug#[9350](http://bugs.otrs.org/show_bug.cgi?id=9350) - Initial notes by ticket split not visible it the ticket zoom.
