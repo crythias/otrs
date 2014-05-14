@@ -57,7 +57,7 @@ if ( $Opts{s} eq $Opts{d} ) {
         "ERROR: Need different source and destination params, e. g. -s ArticleStorageDB -d ArticleStorageFS param\n";
     exit 1;
 }
-if ( !$Opts{b} && $Opts{b} !~ m{ \d+ }xms ) {
+if ( $Opts{b} && $Opts{b} !~ m{ \A \d+ \z }xms ) {
     print STDERR "ERROR: sleeptime needs to be a numeric value! e.g. 1000\n";
     exit 1;
 }
@@ -78,7 +78,7 @@ $CommonObject{ConfigObject}->{'Ticket::EventModulePost'} = {};
 # create pid lock
 if ( !$Opts{f} && !$CommonObject{PIDObject}->PIDCreate( Name => 'ArticleStorageSwitch' ) ) {
     print
-        "NOTICE: otrs.ArticleStorageSwitch.pl is already running (use '-f 1' if you want to start it ";
+        "NOTICE: otrs.ArticleStorageSwitch.pl is already running (use '-f' if you want to start it ";
     print "forced)!\n";
     exit 1;
 }
@@ -91,6 +91,8 @@ if ( $Opts{l} ) {
     print "NOTICE: otrs.ArticleStorageSwitch.pl is running in liberal mode!\n";
 }
 
+print "B: $Opts{b}";
+exit;
 # extended input validation
 my %SearchParams;
 if ( $Opts{c} ) {
@@ -109,7 +111,7 @@ if ( $Opts{c} ) {
 elsif ( $Opts{C} ) {
 
     # check time stamp format
-    if ( $Opts{C} !~ /^\d+$/ ) {
+    if ( $Opts{C} !~ m{ \A \d+ \z }xms ) {
         print STDERR
             "ERROR: -C '$Opts{C}' is not a valid integer, please use e. g. '5' for 5 days\n";
         exit 1;
