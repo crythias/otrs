@@ -226,35 +226,10 @@ sub GetUserData {
     }
 
     # generate the full name and save it in the hash
-    my $UserFullname;
-    if ( $FirstnameLastNameOrder eq '0' ) {
-        $UserFullname = $Data{UserFirstname} . ' '
-            . $Data{UserLastname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '1' ) {
-        $UserFullname = $Data{UserLastname} . ', '
-            . $Data{UserFirstname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '2' ) {
-        $UserFullname = $Data{UserFirstname} . ' '
-            . $Data{UserLastname} . ' ('
-            . $Data{UserLogin} . ')';
-    }
-    elsif ( $FirstnameLastNameOrder eq '3' ) {
-        $UserFullname = $Data{UserLastname} . ', '
-            . $Data{UserFirstname} . ' ('
-            . $Data{UserLogin} . ')';
-    }
-    elsif ( $FirstnameLastNameOrder eq '4' ) {
-        $UserFullname = '(' . $Data{UserLogin}
-            . ') ' . $Data{UserFirstname}
-            . ' ' . $Data{UserLastname};
-    }
-    elsif ( $FirstnameLastNameOrder eq '5' ) {
-        $UserFullname = '(' . $Data{UserLogin}
-            . ') ' . $Data{UserLastname}
-            . ', ' . $Data{UserFirstname};
-    }
+    my $UserFullname = $Self->_UserFullname(
+        %Data,
+        NameOrder => $FirstnameLastNameOrder,
+    );
 
     # save the generated fullname in the hash.
     $Data{UserFullname} = $UserFullname;
@@ -549,7 +524,7 @@ sub UserSearch {
     my ( $Self, %Param ) = @_;
 
     my %Users;
-    my $Valid = defined $Param{Valid} ? $Param{Valid} : 1;
+    my $Valid = $Param{Valid} // 1;
 
     # check needed stuff
     if ( !$Param{Search} && !$Param{UserLogin} && !$Param{PostMasterSearch} ) {
@@ -883,8 +858,9 @@ sub UserName {
 return a hash with all users
 
     my %List = $UserObject->UserList(
-        Type  => 'Short', # Short|Long, default Short
-        Valid => 1,       # not required, default 0
+        Type          => 'Short', # Short|Long, default Short
+        Valid         => 1,       # not required, default 0
+        NoOutOfOffice => 1,       # optional, default 0
     );
 
 =cut
@@ -895,19 +871,14 @@ sub UserList {
     my $Type = $Param{Type} || 'Short';
 
     # set valid option
-    my $Valid = $Param{Valid};
-    if ( !defined $Valid || $Valid ) {
-        $Valid = 1;
-    }
-    else {
-        $Valid = 0;
-    }
+    my $Valid = $Param{Valid} // 1;
 
     # get configuration for the full name order
     my $FirstnameLastNameOrder = $Self->{ConfigObject}->Get('FirstnameLastnameOrder') || 0;
+    my $NoOutOfOffice = $Param{NoOutOfOffice} || 0;
 
     # check cache
-    my $CacheKey = join '::', 'UserList', $Type, $Valid, $FirstnameLastNameOrder;
+    my $CacheKey = join '::', 'UserList', $Type, $Valid, $FirstnameLastNameOrder, $NoOutOfOffice;
     my $Cache = $Self->{CacheInternalObject}->Get(
         Key => $CacheKey,
     );
@@ -924,47 +895,54 @@ sub UserList {
             . " $Self->{ConfigObject}->{DatabaseUserTableUser}";
     }
 
+    my $SQL = "SELECT $SelectStr FROM $Self->{ConfigObject}->{DatabaseUserTable}";
+
     # sql query
     if ($Valid) {
-        return if !$Self->{DBObject}->Prepare(
-            SQL =>
-                "SELECT $SelectStr FROM $Self->{ConfigObject}->{DatabaseUserTable} WHERE valid_id IN "
-                . "( ${\(join ', ', $Self->{ValidObject}->ValidIDsGet())} )",
-        );
+        $SQL .= " WHERE valid_id IN ( ${\(join ', ', $Self->{ValidObject}->ValidIDsGet())} )";
     }
-    else {
-        return if !$Self->{DBObject}->Prepare(
-            SQL => "SELECT $SelectStr FROM $Self->{ConfigObject}->{DatabaseUserTable}",
-        );
-    }
+
+    return if !$Self->{DBObject}->Prepare( SQL => $SQL );
 
     # fetch the result
     my %UsersRaw;
     my %Users;
     while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
-        $UsersRaw{ $Row[0] } = $Row[1];
+        $UsersRaw{ $Row[0] } = \@Row;
     }
 
     if ( $Type eq 'Short' ) {
-        %Users = %UsersRaw;
+        for my $CurrentUserID ( sort keys %UsersRaw ) {
+            $Users{$CurrentUserID} = $UsersRaw{$CurrentUserID}->[1];
+        }
     }
     else {
         for my $CurrentUserID ( sort keys %UsersRaw ) {
-            my $UserFullname = $Self->UserName( UserID => $CurrentUserID );
+            my @Data         = @{ $UsersRaw{$CurrentUserID} };
+            my $UserFullname = $Self->_UserFullname(
+                UserFirstname => $Data[2],
+                UserLastname  => $Data[1],
+                UserLogin     => $Data[3],
+                NameOrder     => $FirstnameLastNameOrder,
+            );
+
             $Users{$CurrentUserID} = $UserFullname;
         }
     }
 
     # check vacation option
-    USERID:
-    for my $UserID ( sort keys %Users ) {
-        next USERID if !$UserID;
+    if ( !$NoOutOfOffice ) {
 
-        my %User = $Self->GetUserData(
-            UserID => $UserID,
-        );
-        if ( $User{OutOfOfficeMessage} ) {
-            $Users{$UserID} .= ' ' . $User{OutOfOfficeMessage};
+        USERID:
+        for my $UserID ( sort keys %Users ) {
+            next USERID if !$UserID;
+
+            my %User = $Self->GetUserData(
+                UserID => $UserID,
+            );
+            if ( $User{OutOfOfficeMessage} ) {
+                $Users{$UserID} .= ' ' . $User{OutOfOfficeMessage};
+            }
         }
     }
 
@@ -1155,6 +1133,75 @@ sub TokenCheck {
     # return false if token is invalid
     return;
 }
+
+=begin Internal:
+
+=item _UserFullname()
+
+Builds the user fullname based on firstname, lastname and login. The order
+can be configured.
+
+    my $Fullname = $Object->_UserFullname(
+        UserFirstname => 'Test',
+        UserLastname  => 'Person',
+        UserLogin     => 'tp',
+        NameOrder     => 0,         # optional 0, 1, 2, 3, 4, 5
+    );
+
+=cut
+
+sub _UserFullname {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(UserFirstname UserLastname UserLogin)) {
+        if ( !$Param{$Needed} ) {
+            $Self->{LogObject}->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+
+            return;
+        }
+    }
+
+    my $FirstnameLastNameOrder = $Param{NameOrder} || 0;
+
+    my $UserFullname;
+    if ( $FirstnameLastNameOrder eq '0' ) {
+        $UserFullname = $Param{UserFirstname} . ' '
+            . $Param{UserLastname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '1' ) {
+        $UserFullname = $Param{UserLastname} . ', '
+            . $Param{UserFirstname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '2' ) {
+        $UserFullname = $Param{UserFirstname} . ' '
+            . $Param{UserLastname} . ' ('
+            . $Param{UserLogin} . ')';
+    }
+    elsif ( $FirstnameLastNameOrder eq '3' ) {
+        $UserFullname = $Param{UserLastname} . ', '
+            . $Param{UserFirstname} . ' ('
+            . $Param{UserLogin} . ')';
+    }
+    elsif ( $FirstnameLastNameOrder eq '4' ) {
+        $UserFullname = '(' . $Param{UserLogin}
+            . ') ' . $Param{UserFirstname}
+            . ' ' . $Param{UserLastname};
+    }
+    elsif ( $FirstnameLastNameOrder eq '5' ) {
+        $UserFullname = '(' . $Param{UserLogin}
+            . ') ' . $Param{UserLastname}
+            . ', ' . $Param{UserFirstname};
+    }
+
+    return $UserFullname;
+}
+
+=end Internal:
+
+=cut
 
 1;
 

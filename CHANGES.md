@@ -1,4 +1,8 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-05-16 Added merging of dynamic fields on ticket merge, thanks to Moritz Lenz.
+ - 2014-05-16 Detect cookie capability before login, thanks to Moritz Lenz.
+ - 2014-05-16 Added support for HTTP basic auth in WebUserAgent, thanks to Renée Bäcker.
+ - 2014-05-15 Added per user limit for agent and customer sessions.
  - 2014-05-06 Customer online list now links to the CIC.
  - 2014-04-16 Speedup TicketACLs by gather only the needed data from the DB based in the ACLs requirements, thanks to Moritz Lenz @ noris networks.
  - 2014-04-15 Added foreign db param to the customer user map.
@@ -60,6 +64,8 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.8 2014-??-??
+ - 2014-05-16 Fixed bug#[10427](http://bugs.otrs.org/show_bug.cgi?id=10427) - Bulk action locks tickets - cancel keeps them locked.
+ - 2014-05-15 Fixed bug#[10513](http://bugs.otrs.org/show_bug.cgi?id=10513) - Some SupportData Plugin Identifiers ends with ::.
  - 2014-05-14 Updated Latin Serbian translation, thanks to S7designcreative.
  - 2014-05-12 Fixed bug#[8494](http://bugs.otrs.org/show_bug.cgi?id=8494) - Possibility to split quotes in rich text editor.
  - 2014-05-09 Fixed bug#[10491](http://bugs.otrs.org/show_bug.cgi?id=10491) - CIC not always accessible via TicketZoom.
