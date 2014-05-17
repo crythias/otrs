@@ -101,24 +101,24 @@ sub new {
     );
 
     # create common needed module objects
-    $Self->{UserObject} = Kernel::System::User->new( %{$Self} );
+    $Self->{UserObject} = $Kernel::OM->Get('UserObject');
     if ( !$Param{GroupObject} ) {
-        $Self->{GroupObject} = Kernel::System::Group->new( %{$Self} );
+        $Self->{GroupObject} = $Kernel::OM->Get('GroupObject');
     }
     else {
         $Self->{GroupObject} = $Param{GroupObject};
     }
 
-    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new( %{$Self} );
+    $Self->{CustomerUserObject} = $Kernel::OM->Get('CustomerUserObject');
     if ( !$Param{CustomerGroupObject} ) {
-        $Self->{CustomerGroupObject} = Kernel::System::CustomerGroup->new( %{$Self} );
+        $Self->{CustomerGroupObject} = $Kernel::OM->Get('CustomerGroupObject');
     }
     else {
         $Self->{CustomerGroupObject} = $Param{CustomerGroupObject};
     }
 
     if ( !$Param{QueueObject} ) {
-        $Self->{QueueObject} = Kernel::System::Queue->new( %{$Self} );
+        $Self->{QueueObject} = $Kernel::OM->Get('QueueObject');
     }
     else {
         $Self->{QueueObject} = $Param{QueueObject};
@@ -5116,8 +5116,8 @@ sub HistoryAdd {
             . 'VALUES '
             . '(?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)',
         Bind => [
-            \$Param{Name},    \$Param{HistoryTypeID}, \$Param{TicketID},     \$Param{ArticleID},
-            \$Param{QueueID}, \$Param{OwnerID},       \$Param{PriorityID},   \$Param{StateID},
+            \$Param{Name},    \$Param{HistoryTypeID}, \$Param{TicketID},   \$Param{ArticleID},
+            \$Param{QueueID}, \$Param{OwnerID},       \$Param{PriorityID}, \$Param{StateID},
             \$Param{TypeID},  \$Param{CreateUserID},  \$Param{CreateUserID},
         ],
     );
@@ -5516,7 +5516,7 @@ configuration.
 sub TicketMergeDynamicFields {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed ( qw(MainTicketID MergeTicketID UserID) ) {
+    for my $Needed (qw(MainTicketID MergeTicketID UserID)) {
         if ( !$Param{$Needed} ) {
             $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
@@ -5526,10 +5526,10 @@ sub TicketMergeDynamicFields {
     my $DynamicFields = $Param{DynamicFields};
 
     if ( !$DynamicFields ) {
-        $DynamicFields = $Self->{ConfigObject}->Get( 'Ticket::MergeDynamicFields' );
+        $DynamicFields = $Self->{ConfigObject}->Get('Ticket::MergeDynamicFields');
     }
 
-    return 1 unless IsArrayRefWithData( $DynamicFields );
+    return 1 if !IsArrayRefWithData($DynamicFields);
 
     my %MainTicket = $Self->TicketGet(
         TicketID      => $Param{MainTicketID},
@@ -5543,18 +5543,21 @@ sub TicketMergeDynamicFields {
     );
 
     FIELDS:
-    for my $DynamicFieldName ( @{ $DynamicFields } ) {
+    for my $DynamicFieldName ( @{$DynamicFields} ) {
         my $Key = "DynamicField_$DynamicFieldName";
-        if ( defined $MergeTicket{ $Key } && length $MergeTicket{ $Key }
-            && !( defined $MainTicket{ $Key } && length $MainTicket{ $Key } )
-         ) {
-             my $DynamicFieldConfig = $Self->{DynamicFieldObject}->DynamicFieldGet(
+        if (
+            defined $MergeTicket{$Key}
+            && length $MergeTicket{$Key}
+            && !( defined $MainTicket{$Key} && length $MainTicket{$Key} )
+            )
+        {
+            my $DynamicFieldConfig = $Self->{DynamicFieldObject}->DynamicFieldGet(
                 Name => $DynamicFieldName,
             );
             if ( !$DynamicFieldConfig ) {
                 $Self->{LogObject}->Log(
-                    Priority    => 'Error',
-                    Message     => qq[No such dynamic field "$DynamicFieldName"],
+                    Priority => 'Error',
+                    Message  => qq[No such dynamic field "$DynamicFieldName"],
                 );
                 return;
             }
@@ -5562,9 +5565,9 @@ sub TicketMergeDynamicFields {
                 DynamicFieldConfig => $DynamicFieldConfig,
                 ObjectID           => $Param{MainTicketID},
                 UserID             => $Param{UserID},
-                Value              => $MergeTicket{ $Key },
+                Value              => $MergeTicket{$Key},
             );
-         }
+        }
     }
     return 1;
 }
