@@ -375,6 +375,10 @@ sub Do {
         return;
     }
 
+    if ( $Self->{Backend}->{'DB::PreProcessSQL'} ) {
+        $Self->{Backend}->PreProcessSQL( \$Param{SQL} );
+    }
+
     # check bind params
     my @Array;
     if ( $Param{Bind} ) {
@@ -390,6 +394,9 @@ sub Do {
                 );
                 return;
             }
+        }
+        if ( @Array && $Self->{Backend}->{'DB::PreProcessBindData'} ) {
+            $Self->{Backend}->PreProcessBindData( \@Array );
         }
     }
 
@@ -532,6 +539,10 @@ sub Prepare {
         $LogTime = time();
     }
 
+    if ( $Self->{Backend}->{'DB::PreProcessSQL'} ) {
+        $Self->{Backend}->PreProcessSQL( \$SQL );
+    }
+
     # check bind params
     my @Array;
     if ( $Param{Bind} ) {
@@ -547,6 +558,9 @@ sub Prepare {
                 );
                 return;
             }
+        }
+        if ( @Array && $Self->{Backend}->{'DB::PreProcessBindData'} ) {
+            $Self->{Backend}->PreProcessBindData( \@Array );
         }
     }
 

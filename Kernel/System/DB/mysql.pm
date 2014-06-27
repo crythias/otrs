@@ -12,6 +12,8 @@ package Kernel::System::DB::mysql;
 use strict;
 use warnings;
 
+use Encode ();
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -35,6 +37,10 @@ sub LoadPreferences {
     $Self->{'DB::QuoteUnderscoreEnd'}   = '';
     $Self->{'DB::CaseSensitive'}        = 0;
     $Self->{'DB::LikeEscapeString'}     = '';
+
+    # mysql needs to proprocess the data to fix UTF8 issues
+    $Self->{'DB::PreProcessSQL'}      = 1;
+    $Self->{'DB::PreProcessBindData'} = 1;
 
     # how to determine server version
     # version can have package prefix, we need to extract that
@@ -68,6 +74,37 @@ sub LoadPreferences {
     }
 
     return 1;
+}
+
+sub PreProcessSQL {
+    my ( $Self, $SQLRef ) = @_;
+    $Self->_FixMysqlUTF8($SQLRef);
+    return;
+}
+
+sub PreProcessBindData {
+    my ( $Self, $BindRef ) = @_;
+
+    my $Size = scalar @{ $BindRef // [] };
+
+    for ( my $I = 0; $I < $Size; $I++ ) {
+        $Self->_FixMysqlUTF8( \$BindRef->[$I] );
+    }
+    return;
+}
+
+# Replace any unicode characters that need more than three bytes in UTF8
+#   with the unicode replacement character. MySQL's utf8 encoding only
+#   supports three bytes. In future we might want to use utf8mb4 (supported
+#   since 5.5.3+), but that will lead to problems with key sizes on mysql.
+# See also http://mathiasbynens.be/notes/mysql-utf8mb4.
+sub _FixMysqlUTF8 {
+    my ( $Self, $StringRef ) = @_;
+
+    return if !$$StringRef;
+    return if !Encode::is_utf8($$StringRef);
+
+    $$StringRef =~ s/([\x{10000}-\x{10FFFF}])/"\x{FFFD}"/eg;
 }
 
 sub Quote {
