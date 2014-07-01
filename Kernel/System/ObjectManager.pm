@@ -329,6 +329,30 @@ dependency order.
 sub ObjectsDiscard {
     my ( $Self, %Param ) = @_;
 
+    # fire outstanding events before destroying anything
+    my $HasQueuedTransactions;
+    EVENTS:
+    for my $Counter (1..10) {
+        $HasQueuedTransactions = 0;
+        EVENTHANDLERS:
+        for my $EventHandler ( @{ $Self->{EventHandlers} } ) {
+            # since the event handlers are weak references,
+            # they might be undef by now.
+            next EVENTHANDLERS if !defined $EventHandler;
+            if ($EventHandler->EventHandlerHasQueuedTransactions) {
+                $HasQueuedTransactions = 1;
+                $EventHandler->EventHandlerTransaction();
+            }
+        }
+        if ( !$HasQueuedTransactions ) {
+            last EVENTS;
+        }
+    }
+    if ( $HasQueuedTransactions ) {
+        warn "Unable to handle all pending events in 10 iterations";
+    }
+    delete $Self->{EventHandlers};
+
     # destroy objects before their dependencies are destroyed
 
     # first step: get the dependencies into a single hash,
@@ -376,14 +400,25 @@ sub ObjectsDiscard {
 
     # third step: destruction
     if ( $Self->{Debug} ) {
+        # If there are undeclared dependencies between objects, destruction
+        # might not work in the order that we calculated, but might still work
+        # out in the end.
+        my %DestructionFailed;
         for my $Object (@OrderedObjects) {
             my $Checker = $Self->{Objects}->{$Object};
             weaken($Checker);
             delete $Self->{Objects}->{$Object};
+
             if ( defined $Checker ) {
+                $DestructionFailed{ $Object } = $Checker;
+                weaken( $DestructionFailed{ $Object } );
+            }
+        }
+        for my $Object (sort keys %DestructionFailed) {
+            if ( defined $DestructionFailed{ $Object } ) {
                 warn "DESTRUCTION OF $Object FAILED!\n";
                 if ( eval { require Devel::Cycle; 1 } ) {
-                    Devel::Cycle::find_cycle($Checker);
+                    Devel::Cycle::find_cycle($DestructionFailed{$Object});
                 }
                 else {
                     warn "To get more debugging information, please install Devel::Cycle.";
@@ -410,6 +445,30 @@ sub ObjectsDiscard {
         $Self->{DestroyAttempts}--;
     }
 
+    return 1;
+}
+
+=item ObjectRegisterEventHandler()
+
+Registers an object that can handle asynchronous events.
+
+    $Kernel::OM->ObjectRegisterEventHandler(
+        EventHandler => $EventHandlerObject,
+    );
+
+The C<EventHandler> object should inherit from L<Kernel::System::EventHandler>.
+The object manager will call that object's C<EventHandlerHasQueuedTransactions>
+method, and if that returns a true value, calls its C<EventHandlerTransaction> method.
+
+=cut
+
+sub ObjectRegisterEventHandler {
+    my ( $Self, %Param ) = @_;
+    if ( !$Param{EventHandler} ) {
+        die "Missing parameter EventHandler";
+    }
+    push @{ $Self->{EventHandlers} }, $Param{EventHandler};
+    weaken( $Self->{EventHandlers}[-1] );
     return 1;
 }
 

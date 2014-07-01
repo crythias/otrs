@@ -13,6 +13,9 @@ use strict;
 use warnings;
 
 use File::Path;
+use utf8;
+use Encode ();
+
 use Kernel::System::Ticket::Article;
 use Kernel::System::TicketSearch;
 use Kernel::System::Type;
@@ -8003,6 +8006,24 @@ sub TicketArticleStorageSwitch {
 
             # write attachments to destination
             for my $Attachment (@Attachments) {
+
+                # Check UTF8 string for validity and replace any wrongly encoded characters with _
+                if ( utf8::is_utf8($Attachment->{Filename})
+                    && !eval { Encode::is_utf8( $Attachment->{Filename}, 1 ) }
+                ) {
+
+                    Encode::_utf8_off($Attachment->{Filename});
+
+                    # replace invalid characters with � (U+FFFD, Unicode replacement character)
+                    # If it runs on good UTF-8 input, output should be identical to input
+                    $Attachment->{Filename} = eval {
+                        Encode::decode( 'UTF-8', $Attachment->{Filename} );
+                    };
+
+                    # Replace wrong characters with "_".
+                    $Attachment->{Filename} =~ s{[\x{FFFD}]}{_}xms;
+                }
+
                 $TicketObjectDestination->ArticleWriteAttachment(
                     %{$Attachment},
                     ArticleID => $ArticleID,
