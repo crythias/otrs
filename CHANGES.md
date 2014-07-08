@@ -1,4 +1,7 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-07-08 Linked tickets of a specific type (e.g. merged) can now be hidden via SysConfig option.
+ - 2014-07-08 Added: Customizable main navigation bar item sorting on a per-user basis with drag & drop.
+ - 2014-07-07 Fixed bug#[7531](http://bugs.otrs.org/show_bug.cgi?id=7531) - Queue and Service delimiter '::' should be replaced in the output by ': :' to allow browsers a line break.
  - 2014-06-30 Fixed bug#[10581](http://bugs.otrs.org/show_bug.cgi?id=10581) - wrong underline color in ivory slim menu module links..
  - 2014-06-26 Fixed bug#[10396](http://bugs.otrs.org/show_bug.cgi?id=10396) - OTRS, MySQL, utf8 charset and non-BMP characters problem(thanks to ib.pl).
  - 2014-06-23 Fixed bug#[10522](http://bugs.otrs.org/show_bug.cgi?id=10522) - HTTP 500 error when uploading attachments to ticket on Windows.
@@ -71,6 +74,7 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-??-??
+ - 2014-07-07 Fixed bug#[10534](http://bugs.otrs.org/show_bug.cgi?id=10534) - Wildcard hacking the customer information center, thanks to S7.
  - 2014-07-03 Fixed bug#[10586](http://bugs.otrs.org/show_bug.cgi?id=10586) - In Customer Portal no attachments are shown.
  - 2014-06-30 Fixed bug#[6601](http://bugs.otrs.org/show_bug.cgi?id=6601) - Changing search options changes order of fields, thanks to S7.
  - 2014-06-23 Fixed bug#[10246](http://bugs.otrs.org/show_bug.cgi?id=10246) - ProcessManagement: ConditionLinking OR in a Transition doesn't work.

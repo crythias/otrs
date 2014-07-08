@@ -2491,7 +2491,10 @@ sub NavigationBar {
             next MENUMODULE if !$Object;
 
             # run module
-            %NavBar = ( %NavBar, $Object->Run( %Param, Config => $Jobs{$Job} ) );
+            %NavBar = (
+                %NavBar,
+                $Object->Run( %Param, Config => $Jobs{$Job}, NavBar => \%NavBar || {} )
+            );
         }
     }
 
@@ -2534,6 +2537,22 @@ sub NavigationBar {
                 },
             );
         }
+    }
+
+    # get user preferences for custom nav bar item ordering
+    my %UserPreferences = $Self->{UserObject}->GetPreferences(
+        UserID => $Self->{UserID},
+    );
+
+    if ( $UserPreferences{'UserNavBarItemsOrder'} ) {
+
+        my $NavbarOrderItems = $UserPreferences{'UserNavBarItemsOrder'} || '';
+        $Self->Block(
+            Name => 'NavbarOrderItems',
+            Data => {
+                'NavbarOrderItems' => $NavbarOrderItems,
+            },
+        );
     }
 
     # show search icon if any search router is configured
@@ -3368,7 +3387,10 @@ sub CustomerNavigationBar {
             );
 
             # run module
-            %NavBarModule = ( %NavBarModule, $Object->Run( %Param, Config => $Jobs{$Job} ) );
+            %NavBarModule = (
+                %NavBarModule,
+                $Object->Run( %Param, Config => $Jobs{$Job}, NavBarModule => \%NavBarModule || {} )
+            );
         }
     }
 
