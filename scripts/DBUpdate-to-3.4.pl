@@ -72,7 +72,7 @@ Please run it as the 'otrs' user or with the help of su:
     }
 
     # enable autoflushing of STDOUT
-    $| = 1;     ## no critic
+    $| = 1;                                 ## no critic
 
     print "\nMigration started...\n\n";
 
@@ -299,6 +299,47 @@ sub _MigrateFontAwesome {
             Valid => 1,
             Key   => 'Frontend::ToolBarModule###' . $ToolbarModule,
             Value => $Setting->{$ToolbarModule},
+        );
+    }
+
+    # collect icon data for customer user items
+    my %CustomerUserAttributes = (
+        '1-GoogleMaps' => {
+            'IconName' => 'fa-globe',
+        },
+        '2-Google' => {
+            'IconName' => 'fa-google',
+        },
+        '2-LinkedIn' => {
+            'IconName' => 'fa-linkedin',
+        },
+        '3-XING' => {
+            'IconName' => 'fa-xing',
+        },
+        '15-OpenTickets' => {
+            'IconNameOpenTicket'   => 'fa-exclamation-circle',
+            'IconNameNoOpenTicket' => 'fa-check-circle',
+        },
+    );
+
+    $Setting = $CommonObject->{ConfigObject}->Get('Frontend::CustomerUser::Item');
+
+    CUSTOMERUSERMODULE:
+    for my $CustomerUserModule ( sort keys %CustomerUserAttributes ) {
+
+        next CUSTOMERUSERMODULE if !IsHashRefWithData( $Setting->{$CustomerUserModule} );
+
+        # set icon and class infos
+        for my $Attribute ( sort keys %{ $CustomerUserAttributes{$CustomerUserModule} } ) {
+            $Setting->{$CustomerUserModule}->{$Attribute}
+                = $CustomerUserAttributes{$CustomerUserModule}->{$Attribute};
+        }
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'Frontend::CustomerUser::Item###' . $CustomerUserModule,
+            Value => $Setting->{$CustomerUserModule},
         );
     }
 
