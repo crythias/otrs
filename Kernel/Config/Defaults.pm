@@ -1701,7 +1701,7 @@ via the Preferences button after logging in.
         },
         LogObject     => {
             ClassName       => 'Kernel::System::Log',
-            Dependencies    => ['ConfigObject', 'EncodeObject'],
+            Dependencies    => [qw(ConfigObject EncodeObject)],
             OmAware         => 1,
         },
         EncodeObject  => {
@@ -1711,16 +1711,16 @@ via the Preferences button after logging in.
         },
         MainObject    => {
             ClassName       => 'Kernel::System::Main',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject'],
+            Dependencies    => [qw(LogObject EncodeObject)],
             OmAware         => 1,
         },
         TimeObject    => {
             ClassName       => 'Kernel::System::Time',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject'],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject CacheObject)],
         },
         DBObject    => {
             ClassName       => 'Kernel::System::DB',
-            Dependencies    => ['ConfigObject', 'LogObject', 'EncodeObject', 'MainObject', 'TimeObject'],
+            Dependencies    => [qw(ConfigObject LogObject EncodeObject MainObject TimeObject)],
             OmAware         => 1,
         },
         UserObject    => {
@@ -1740,24 +1740,16 @@ via the Preferences button after logging in.
         },
         TicketObject  => {
             ClassName       => 'Kernel::System::Ticket',
-            Dependencies    => [@DefaultDependencies, 'GroupObject', 'QueueObject', 'CustomerUserObject' ],
+            Dependencies    => [@DefaultDependencies, qw(GroupObject QueueObject CustomerUserObject)],
         },
         QueueObject  => {
             ClassName       => 'Kernel::System::Queue',
-            Dependencies    => [@DefaultDependencies, 'DBObject', 'GroupObject', 'CustomerUserObject', 'CustomerGroupObject' ],
+            Dependencies    => [@DefaultDependencies, qw(DBObject GroupObject CustomerUserObject CustomerGroupObject)],
         },
         LayoutObject  => {
             ClassName       => 'Kernel::Output::HTML::Layout',
             OmAware         => 1,
-            Dependencies    => [
-                @DefaultDependencies,
-                'ParamObject',
-                'SessionObject',
-                'TicketObject',
-                'GroupObject',
-                'HTMLUtilsObject',
-                'JSONObject'
-            ],
+            Dependencies    => [@DefaultDependencies, qw(ParamObject SessionObject TicketObject GroupObject HTMLUtilsObject JSONObject)],
         },
         HTMLUtilsObject => {
             ClassName => 'Kernel::System::HTMLUtils',
@@ -1826,7 +1818,7 @@ via the Preferences button after logging in.
         },
         StatsObject => {
             ClassName       => 'Kernel::System::Stats',
-            Dependencies    => [@DefaultDependencies, qw(GroupObject UserObject)],
+            Dependencies    => [qw(ConfigObject LogObject GroupObject TimeObject MainObject DBObject EncodeObject XMLObject CacheObject)],
         },
         CSVObject => {
             ClassName       => 'Kernel::System::CSV',
@@ -1880,6 +1872,9 @@ via the Preferences button after logging in.
         },
         ServiceObject           => {
             ClassName       => 'Kernel::System::Service',
+        },
+        SLAObject           => {
+            ClassName       => 'Kernel::System::SLA',
         },
         TypeObject           => {
             ClassName       => 'Kernel::System::Type',

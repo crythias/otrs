@@ -13,12 +13,7 @@ use strict;
 use warnings;
 
 use Kernel::System::CacheInternal;
-use Kernel::System::CustomerGroup;
-use Kernel::System::Group;
-use Kernel::System::StandardTemplate;
 use Kernel::System::SysConfig;
-use Kernel::System::Time;
-use Kernel::System::Valid;
 
 =head1 NAME
 
@@ -48,36 +43,22 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {};
+    my $Self = {
+        $Kernel::OM->ObjectHash(
+            Objects => [
+                qw( DBObject ConfigObject LogObject MainObject ValidObject )
+            ],
+        ),
+    };
     bless( $Self, $Type );
 
     $Self->{QueueID} = $Param{QueueID} || '';
 
-    # check needed objects
-    for (qw(DBObject ConfigObject LogObject MainObject EncodeObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
-    $Self->{ValidObject}         = Kernel::System::Valid->new( %{$Self} );
     $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
         %Param,
         Type => 'Queue',
         TTL  => 60 * 60 * 24 * 20,
     );
-
-    # lib object
-    $Self->{StandardTemplateObject} = Kernel::System::StandardTemplate->new( %{$Self} );
-    if ( !$Param{GroupObject} ) {
-        $Self->{GroupObject} = Kernel::System::Group->new( %{$Self} );
-    }
-    else {
-        $Self->{GroupObject} = $Param{GroupObject};
-    }
-    if ( !$Param{CustomerGroupObject} ) {
-        $Self->{CustomerGroupObject} = Kernel::System::CustomerGroup->new( %{$Self} );
-    }
-    else {
-        $Self->{CustomerGroupObject} = $Param{CustomerGroupObject};
-    }
 
     # load generator preferences module
     my $GeneratorModule = $Self->{ConfigObject}->Get('Queue::PreferencesModule')
@@ -378,7 +359,7 @@ sub GetAllQueues {
     if ( $Param{UserID} ) {
 
         # get group ids
-        my @GroupIDs = $Self->{GroupObject}->GroupMemberList(
+        my @GroupIDs = $Kernel::OM->Get('GroupObject')->GroupMemberList(
             UserID => $Param{UserID},
             Type   => $Type,
             Result => 'ID',
@@ -404,7 +385,7 @@ sub GetAllQueues {
     elsif ( $Param{CustomerUserID} ) {
 
         # get group ids
-        my @GroupIDs = $Self->{CustomerGroupObject}->GroupMemberList(
+        my @GroupIDs = $Kernel::OM->Get('CustomerGroupObject')->GroupMemberList(
             UserID => $Param{CustomerUserID},
             Type   => $Type,
             Result => 'ID',
@@ -754,10 +735,12 @@ sub QueueAdd {
         )
     {
 
+        my $StandardTemplateObject = $Kernel::OM->Get('StandardTemplateObject');
+
         ST:
         for my $ST ( @{$StandardTemplate2QueueByCreating} ) {
 
-            my $StandardTemplateID = $Self->{StandardTemplateObject}->StandardTemplateLookup(
+            my $StandardTemplateID = $StandardTemplateObject->StandardTemplateLookup(
                 StandardTemplate => $ST,
             );
 
@@ -1078,14 +1061,8 @@ sub QueueUpdate {
     # check all sysconfig options
     return 1 if !$Param{CheckSysConfig};
 
-    # create a time object locally, needed for the local SysConfigObject
-    my $TimeObject = Kernel::System::Time->new( %{$Self} );
-
     # create a sysconfig object locally for performance reasons
-    my $SysConfigObject = Kernel::System::SysConfig->new(
-        %{$Self},
-        TimeObject => $TimeObject,
-    );
+    my $SysConfigObject = Kernel::System::SysConfig->new( %{$Self} );
 
     # check all sysconfig options and correct them automatically if neccessary
     $SysConfigObject->ConfigItemCheckAll();

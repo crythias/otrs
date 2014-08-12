@@ -1,4 +1,12 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-07-22 Fixed bug#[10644](http://bugs.otrs.org/show_bug.cgi?id=10644) - Module parameters in GenericAgent are copied to ticket parameters
+ - 2017-07-21 Changed Action based Ticket ACLs format from a hash form to an array form just like the other ACLs, including possiblilty to define Action based Ticket ACLs in the PossibleNot and PossibleAdd sections.
+ - 2017-07-21 Added new Tiket ACL debugging options.
+ - 2014-07-21 Added [Not], [NotRegExp] and [Notregexp] modifiers for all Ticket ACL sections.
+ - 2014-07-21 Added possibility to combine different Ticket ACLs with Possible, PossibleAdd and PossibleNot sections.
+ - 2014-07-21 Added PossibleAdd section to Ticket ACls.
+ - 2014-07-21 Added "My Services" feature including: "Status View", "Tickets in My Services" filter for ticket based dashboard dashlets and more notification options under agent preferences.
+ - 2014-07-21 Added DTL -> TT migration script for templates.
  - 2014-07-18 Changed customer user item to font awesome, thanks to Nils Leideck.
  - 2014-07-16 Added Generic Interface Transport HTTP REST
  - 2014-07-14 Added possibility to reply directly to internal and external notes.

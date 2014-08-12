@@ -168,6 +168,11 @@ sub new {
         delete $Self->{AvailableFilterableColumns}->{Queue};
     }
 
+    # remove service from filters on AgentTicketService
+    if ( $Self->{Action} eq 'AgentTicketService' ) {
+        delete $Self->{AvailableFilterableColumns}->{Service};
+    }
+
     # get filtrable dynamic fields
     # cycle trough the activated dynamic fields for this screen
     DYNAMICFIELD:
@@ -414,9 +419,24 @@ sub Run {
                 Space => ' ',
             );
 
-            # get acl actions
-            $Self->{TicketObject}->TicketAcl(
-                Data          => '-',
+            # get ACL restrictions
+            my %PossibleActions;
+            my $Counter = 0;
+
+            # get all registered Actions
+            if ( ref $Self->{ConfigObject}->Get('Frontend::Module') eq 'HASH' ) {
+
+                my %Actions = %{ $Self->{ConfigObject}->Get('Frontend::Module') };
+
+                # only use those Actions that stats with AgentTicket
+                %PossibleActions
+                    = map { ++$Counter => $_ }
+                    grep { substr( $_, 0, length 'AgentTicket' ) eq 'AgentTicket' }
+                    sort keys %Actions;
+            }
+
+            my $ACL = $Self->{TicketObject}->TicketAcl(
+                Data          => \%PossibleActions,
                 Action        => $Self->{Action},
                 TicketID      => $Article{TicketID},
                 ReturnType    => 'Action',
@@ -1449,10 +1469,6 @@ sub Run {
                     $DataValue = $Article{$TicketColumn} || $UserInfo{$TicketColumn};
                 }
                 elsif ( $TicketColumn eq 'Created' || $TicketColumn eq 'Changed' ) {
-                    $BlockType = 'Time';
-                    $DataValue = $Article{$TicketColumn} || $UserInfo{$TicketColumn};
-                }
-                elsif ( $TicketColumn eq 'Changed' ) {
                     $BlockType = 'Time';
                     $DataValue = $Article{$TicketColumn} || $UserInfo{$TicketColumn};
                 }

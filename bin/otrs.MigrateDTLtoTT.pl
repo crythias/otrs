@@ -29,6 +29,7 @@ use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
 use Getopt::Std;
+<<<<<<< HEAD
 use Kernel::Config;
 use Kernel::System::Encode;
 use Kernel::System::Log;
@@ -36,15 +37,25 @@ use Kernel::System::Time;
 use Kernel::System::DB;
 use Kernel::System::PID;
 use Kernel::System::Main;
+=======
+use Kernel::System::ObjectManager;
+>>>>>>> upstream/master
 use Kernel::Output::Template::Provider;
 
 # get options
 my %Options;
 getopt( 'hd', \%Options );
+<<<<<<< HEAD
 if ( $Options{h} ) {
     print <<EOF;
 $0 - migrate DTL templates to TT
 Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+=======
+if ( exists $Options{h} || !$Options{d} ) {
+    print <<EOF;
+$0 - migrate DTL templates to TT
+Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
+>>>>>>> upstream/master
 
 Usage: $0 -d /path/to/OTRS/or/module
 
@@ -52,6 +63,15 @@ EOF
     exit 1;
 }
 
+<<<<<<< HEAD
+=======
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    LogObject => {
+        LogPrefix => 'OTRS-otrs.MigrateDTLtoTT.pl',
+    },
+);
+
+>>>>>>> upstream/master
 sub Run {
 
     my %CommonObject = _CommonObjects();
@@ -59,9 +79,18 @@ sub Run {
     my $ProviderObject = Kernel::Output::Template::Provider->new();
 
     if ( !$Options{d} || !-d $Options{d} ) {
+<<<<<<< HEAD
         $CommonObject{LogObject}->Log(
             Priority => 'error',
             Message  => "Please provide a directory. $Options{d} is not a valid directory.",
+=======
+
+        my $Directory = $Options{d} || '';
+
+        $CommonObject{LogObject}->Log(
+            Priority => 'error',
+            Message  => "Please provide a directory. '$Directory' is not a valid directory.",
+>>>>>>> upstream/master
         );
         exit 1;
     }
@@ -149,6 +178,7 @@ sub Run {
 
 sub _CommonObjects {
 
+<<<<<<< HEAD
     my %CommonObject;
     $CommonObject{ConfigObject} = Kernel::Config->new();
     $CommonObject{EncodeObject} = Kernel::System::Encode->new(%CommonObject);
@@ -159,6 +189,14 @@ sub _CommonObjects {
     $CommonObject{MainObject} = Kernel::System::Main->new(%CommonObject);
     $CommonObject{TimeObject} = Kernel::System::Time->new(%CommonObject);
     $CommonObject{DBObject}   = Kernel::System::DB->new(%CommonObject);
+=======
+    # create common objects
+    my %CommonObject = $Kernel::OM->ObjectHash(
+        Objects => [
+            qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject)
+        ],
+    );
+>>>>>>> upstream/master
 
     return %CommonObject;
 }
