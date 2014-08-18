@@ -1,5 +1,5 @@
 # --
-# Kernel/Scheduler/TaskHandler/RegistrationUpdate.pm - Scheduler task handler RegistrationUpdate backend
+# Kernel/System/Scheduler/TaskHandler/RegistrationUpdate.pm - Scheduler task handler RegistrationUpdate backend
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,7 +7,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Scheduler::TaskHandler::RegistrationUpdate;
+package Kernel::System::Scheduler::TaskHandler::RegistrationUpdate;
 
 use strict;
 use warnings;
@@ -17,11 +17,10 @@ our @ObjectDependencies = (
     'Kernel::System::Registration',
     'Kernel::System::Time',
 );
-our $ObjectManagerAware = 1;
 
 =head1 NAME
 
-Kernel::Scheduler::TaskHandler::RegistrationUpdate - RegistrationUpdate backend of the TaskHandler for the Scheduler
+Kernel::System::Scheduler::TaskHandler::RegistrationUpdate - RegistrationUpdate backend of the TaskHandler for the Scheduler
 
 =head1 SYNOPSIS
 
@@ -34,7 +33,7 @@ Kernel::Scheduler::TaskHandler::RegistrationUpdate - RegistrationUpdate backend 
 =item new()
 
 usually, you want to create an instance of this
-by using Kernel::Scheduler::TaskHandler->new();
+by using Kernel::System::Scheduler::TaskHandler->new();
 
 =cut
 

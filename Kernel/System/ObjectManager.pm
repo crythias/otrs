@@ -39,15 +39,6 @@ use Kernel::System::User;
 # used to generate better error messages.
 our $CurrentObject;
 
-my @DefaultObjectDependencies = (
-    'Kernel::Config',
-    'Kernel::System::DB',
-    'Kernel::System::Encode',
-    'Kernel::System::Log',
-    'Kernel::System::Main',
-    'Kernel::System::Time',
-);
-
 =head1 NAME
 
 Kernel::System::ObjectManager - object and dependency manager
@@ -81,7 +72,7 @@ like Kernel::System::DB:
 
 =head2 Which objects can be loaded?
 
-The ObjectManager can load every object that declares its dependencies like this in the perl package:
+The ObjectManager can load every object that declares its dependencies like this in the Perl package:
 
     package Kernel::System::Valid;
 
@@ -93,16 +84,19 @@ The ObjectManager can load every object that declares its dependencies like this
         'Kernel::System::DB',
         'Kernel::System::Log',
     );
-    our $ObjectManagerAware = 1;
 
 The C<@ObjectDependencies> is the list of objects that the current object will depend on. They will
-be destroyed only after this object is destroyed. If the dependencies are not specified the
-C<@DefaultObjectDependencies> will be assumed.
+be destroyed only after this object is destroyed.
 
-The C<$ObjectManagerAware> flag signals that the object knows about the ObjectManager and will use
-it to fetch any objects it needs on demand. If this flag is not set the ObjectManager will create all
-dependencies before creating the objects and pass it to its constructor. This is useful to load old
-OTRS objects which don't know about the ObjectManager yet.
+If you want to signal that a package can NOT be loaded by the ObjectManager, you can use the
+C<$ObjectManagerDisabled> flag:
+
+    package Kernel::System::MyBaseClass;
+
+    use strict;
+    use warnings;
+
+    $ObjectManagerDisabled = 1;
 
 =head1 PUBLIC INTERFACE
 
@@ -146,7 +140,7 @@ sub new {
         'Kernel::Config' => $ConfigObject,
     };
     for my $Parameter ( sort keys %Param ) {
-        $Self->{Param}->{ $Parameter } = $Param{$Parameter};
+        $Self->{Param}->{$Parameter} = $Param{$Parameter};
     }
 
     return $Self;
@@ -166,9 +160,10 @@ For example C<< ->Get('TicketObject') >> retrieves a L<Kernel::System::Ticket> o
 =cut
 
 sub Get {
+
     # No param unpacking for increased performance
-    if ( $_[1] && $_[0]->{Objects}->{$_[1]} ) {
-        return $_[0]->{Objects}->{$_[1]};
+    if ( $_[1] && $_[0]->{Objects}->{ $_[1] } ) {
+        return $_[0]->{Objects}->{ $_[1] };
     }
 
     if ( !$_[1] ) {
@@ -211,18 +206,14 @@ sub _ObjectBuild {
 
     # Kernel::Config does not declare its dependencies (they would have to be in
     #   Kernel::Config::Defaults), so assume [] in this case.
-    my $Dependencies       = [];
-    my $ObjectManagerAware = 0;
+    my $Dependencies = [];
 
     if ( $Package ne 'Kernel::Config' ) {
         no strict 'refs';    ## no critic
-        if ( exists ${ $Package . '::' }{ObjectDependencies} ) {
-            $Dependencies = \@{ $Package . '::ObjectDependencies' };
+        if ( !exists ${ $Package . '::' }{ObjectDependencies} ) {
+            $Self->_DieWithError( Error => "$Package does not declare its object dependencies!" );
         }
-        else {
-            $Dependencies = \@DefaultObjectDependencies;
-        }
-        $ObjectManagerAware = ${ $Package . '::ObjectManagerAware' } // 0;
+        $Dependencies = \@{ $Package . '::ObjectDependencies' };
 
         if ( ${ $Package . '::ObjectManagerDisabled' } ) {
             $Self->_DieWithError( Error => "$Package cannot be loaded via ObjectManager!" );
@@ -232,20 +223,9 @@ sub _ObjectBuild {
     }
     $Self->{ObjectDependencies}->{$Package} = $Dependencies;
 
-    my %ConstructorArguments = (
-        %{ $Self->{Param}->{$Package} // {} },
+    my $NewObject = $Package->new(
+        %{ $Self->{Param}->{$Package} // {} }
     );
-
-    # For objects which are not ObjectManagerAware, provide the dependencies in
-    #   short form (e.g. ConfigObject) to the constructor.
-    if ( !$ObjectManagerAware && @{$Dependencies} ) {
-        for my $Dependency ( @{$Dependencies} ) {
-            $ConstructorArguments{ $Dependency }
-                //= $Self->Get($Dependency);
-        }
-    }
-
-    my $NewObject = $Package->new(%ConstructorArguments);
 
     if ( !defined $NewObject ) {
         if ( $CurrentObject && $CurrentObject ne $Package ) {
@@ -256,7 +236,7 @@ sub _ObjectBuild {
         }
         else {
             $Self->_DieWithError(
-                Error => "The contrustructor of $Package returned undef.",
+                Error => "The constructor of $Package returned undef.",
             );
         }
     }
@@ -391,8 +371,8 @@ sub ObjectsDiscard {
         for my $Dependency (@$Dependencies) {
 
             # undef happens to be the value that uses the least amount
-            # of memory in perl, and we are only interested in the keys
-            $ReverseDependencies{ $Dependency }->{$Object}
+            # of memory in Perl, and we are only interested in the keys
+            $ReverseDependencies{$Dependency}->{$Object}
                 = undef;
         }
         push @AllObjects, $Object;
@@ -413,7 +393,7 @@ sub ObjectsDiscard {
 
     if ( $Param{Objects} ) {
         for my $Object ( @{ $Param{Objects} } ) {
-            $Traverser->( $Object );
+            $Traverser->($Object);
         }
     }
     else {

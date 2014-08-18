@@ -75,45 +75,31 @@ CREATE TABLE personal_services (
 );
 CREATE INDEX personal_services_queue_id ON personal_services (service_id);
 CREATE INDEX personal_services_user_id ON personal_services (user_id);
+                DECLARE @defnamepackage_repositorycontent_size VARCHAR(200), @cmdpackage_repositorycontent_size VARCHAR(2000)
+                SET @defnamepackage_repositorycontent_size = (
+                    SELECT name FROM sysobjects so JOIN sysconstraints sc ON so.id = sc.constid
+                    WHERE object_name(so.parent_obj) = 'package_repository' AND so.xtype = 'D' AND sc.colid = (
+                        SELECT colid FROM syscolumns WHERE id = object_id('package_repository') AND name = 'content_size'
+                    )
+                )
+                SET @cmdpackage_repositorycontent_size = 'ALTER TABLE package_repository DROP CONSTRAINT ' + @defnamepackage_repositorycontent_size
+                EXEC(@cmdpackage_repositorycontent_size)
+;
+                    DECLARE @sqlpackage_repositorycontent_size NVARCHAR(4000)
+
+                    WHILE 1=1
+                    BEGIN
+                        SET @sqlpackage_repositorycontent_size = (SELECT TOP 1 'ALTER TABLE package_repository DROP CONSTRAINT [' + constraint_name + ']'
+                        -- SELECT *
+                        FROM information_schema.CONSTRAINT_COLUMN_USAGE where table_name='package_repository' and column_name='content_size'
+                        )
+                        IF @sqlpackage_repositorycontent_size IS NULL BREAK
+                        EXEC (@sqlpackage_repositorycontent_size)
+                    END
+;
 -- ----------------------------------------------------------
 --  alter table package_repository
 -- ----------------------------------------------------------
-ALTER TABLE package_repository ADD from_cloud SMALLINT NULL;
-GO
-UPDATE package_repository SET from_cloud = 1 WHERE from_cloud IS NULL;
-GO
-ALTER TABLE package_repository ALTER COLUMN from_cloud SMALLINT NULL;
-GO
-ALTER TABLE package_repository ADD CONSTRAINT DF_package_repository_from_cloud DEFAULT (1) FOR from_cloud;
--- ----------------------------------------------------------
---  alter table package_repository
--- ----------------------------------------------------------
-ALTER TABLE package_repository ADD visible SMALLINT NULL;
-GO
-UPDATE package_repository SET visible = 1 WHERE visible IS NULL;
-GO
-ALTER TABLE package_repository ALTER COLUMN visible SMALLINT NULL;
-GO
-ALTER TABLE package_repository ADD CONSTRAINT DF_package_repository_visible DEFAULT (1) FOR visible;
--- ----------------------------------------------------------
---  alter table package_repository
--- ----------------------------------------------------------
-ALTER TABLE package_repository ADD downloadable SMALLINT NULL;
-GO
-UPDATE package_repository SET downloadable = 1 WHERE downloadable IS NULL;
-GO
-ALTER TABLE package_repository ALTER COLUMN downloadable SMALLINT NULL;
-GO
-ALTER TABLE package_repository ADD CONSTRAINT DF_package_repository_downloadable DEFAULT (1) FOR downloadable;
--- ----------------------------------------------------------
---  alter table package_repository
--- ----------------------------------------------------------
-ALTER TABLE package_repository ADD removable SMALLINT NULL;
-GO
-UPDATE package_repository SET removable = 1 WHERE removable IS NULL;
-GO
-ALTER TABLE package_repository ALTER COLUMN removable SMALLINT NULL;
-GO
-ALTER TABLE package_repository ADD CONSTRAINT DF_package_repository_removable DEFAULT (1) FOR removable;
+ALTER TABLE package_repository DROP COLUMN content_size;
 ALTER TABLE personal_services ADD CONSTRAINT FK_personal_services_service_id_id FOREIGN KEY (service_id) REFERENCES service (id);
 ALTER TABLE personal_services ADD CONSTRAINT FK_personal_services_user_id_id FOREIGN KEY (user_id) REFERENCES users (id);

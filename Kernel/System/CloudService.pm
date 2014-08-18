@@ -23,7 +23,6 @@ our @ObjectDependencies = (
     'Kernel::System::SystemData',
     'Kernel::System::WebUserAgent',
 );
-our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -323,7 +322,7 @@ sub Request {
 
     # add params to webuseragent object
     $Kernel::OM->ObjectParamAdd(
-        WebUserAgentObject => {
+        'Kernel::System::WebUserAgent' => {
             Timeout => $RequestTimeout,
             Proxy   => $RequestProxy,
         },

@@ -36,7 +36,6 @@ use File::stat;
 use Digest::MD5;
 
 our @ObjectDependencies = ();
-our $ObjectManagerAware = 1;
 
 sub LoadDefaults {
     my $Self = shift;
@@ -958,7 +957,7 @@ sub LoadDefaults {
 
     # Package::Timeout
     # (http/ftp timeout to get packages)
-    $Self->{'Package::Timeout'} = 15;
+    $Self->{'Package::Timeout'} = 120;
 
     # Package::Proxy
     # (fetch packages via proxy)

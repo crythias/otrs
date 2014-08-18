@@ -1,5 +1,5 @@
 # --
-# Kernel/Scheduler/TaskHandler/Test.pm - Scheduler task handler test backend
+# Kernel/System/Scheduler/TaskHandler/Test.pm - Scheduler task handler test backend
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,7 +7,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Scheduler::TaskHandler::Test;
+package Kernel::System::Scheduler::TaskHandler::Test;
 
 use strict;
 use warnings;
@@ -16,11 +16,10 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Main',
 );
-our $ObjectManagerAware = 1;
 
 =head1 NAME
 
-Kernel::Scheduler::TaskHandler::Test - test backend of the TaskHandler for the Scheduler
+Kernel::System::Scheduler::TaskHandler::Test - test backend of the TaskHandler for the Scheduler
 
 =head1 SYNOPSIS
 
@@ -33,7 +32,7 @@ Kernel::Scheduler::TaskHandler::Test - test backend of the TaskHandler for the S
 =item new()
 
 usually, you want to create an instance of this
-by using Kernel::Scheduler::TaskHandler->new();
+by using Kernel::System::Scheduler::TaskHandler->new();
 
 =cut
 
