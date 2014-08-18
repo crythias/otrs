@@ -20,7 +20,14 @@ use Scalar::Util qw();
 use Template::Constants;
 
 use Kernel::Output::Template::Document;
-use Kernel::System::Cache;
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
+our $ObjectManagerAware = 1;
 
 # Force the use of our own document class.
 $Template::Provider::DOCUMENT = 'Kernel::Output::Template::Document';
@@ -49,17 +56,10 @@ references.
 sub OTRSInit {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (
-        qw(ConfigObject LogObject TimeObject MainObject EncodeObject LayoutObject ParamObject)
-        )
-    {
-        if ( $Param{$Needed} ) {
-            $Self->{$Needed} = $Param{$Needed};
-        }
-        else {
-            die "Got no $Needed!";
-        }
-    }
+    # Don't fetch LayoutObject via ObjectManager as there might be several instances involved
+    #   at this point (for example in LinkObject there is an own LayoutObject to avoid block
+    #   name collisions).
+    $Self->{LayoutObject} = $Param{LayoutObject} || die "Got no LayoutObject!";
 
     #
     # Store a weak reference to the LayoutObject to avoid ring references.
@@ -67,16 +67,16 @@ sub OTRSInit {
     #
     Scalar::Util::weaken( $Self->{LayoutObject} );
 
-    # CacheObject is needed for caching of the compiled templates.
-    $Self->{CacheObject} = $Kernel::OM->Get('CacheObject');
-    $Self->{CacheType}   = 'TemplateProvider';
+    # define cache type
+    $Self->{CacheType} = 'TemplateProvider';
 
     #
     # Pre-compute the list of not cacheable Templates. If a pre-output filter is
     #   registered for a particular or for all templates, the template cannot be
     #   cached any more.
     #
-    $Self->{FilterElementPre} = $Self->{ConfigObject}->Get('Frontend::Output::FilterElementPre');
+    $Self->{FilterElementPre}
+        = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Output::FilterElementPre');
 
     my %UncacheableTemplates;
 
@@ -96,7 +96,7 @@ sub OTRSInit {
 
         if ( !%TemplateList ) {
 
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
                     "Please add a template list to output filter $FilterConfig->{Module} "
@@ -157,14 +157,12 @@ sub _fetch {
         my $CacheKey       = $self->_compiled_filename($name) . '::' . $template_mtime;
 
         # Is there an up-to-date compiled version in the cache?
-        my $Cache = $self->{CacheObject}->Get(
+        my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
             Type => $self->{CacheType},
             Key  => $CacheKey,
         );
 
         if ( ref $Cache ) {
-
-            #print STDERR "Using cache $CacheKey\n";
 
             my $compiled_template = $Template::Provider::DOCUMENT->new($Cache);
 
@@ -298,7 +296,7 @@ sub _compile {
                 my $CacheKey = $compfile . '::' . $data->{time};
 
                 #print STDERR "Writing cache $CacheKey\n";
-                $self->{CacheObject}->Set(
+                $Kernel::OM->Get('Kernel::System::Cache')->Set(
                     Type  => $self->{CacheType},
                     TTL   => 60 * 60 * 24,
                     Key   => $CacheKey,
@@ -382,7 +380,7 @@ sub _PreProcessTemplateContent {
 
             if ( !%TemplateList ) {
 
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message =>
                         "Please add a template list to output filter $FilterConfig->{Module} "
@@ -397,11 +395,11 @@ sub _PreProcessTemplateContent {
             }
 
             next FILTER if !$Param{TemplateFile} && !$TemplateList{ALL};
-            next FILTER if !$Self->{MainObject}->Require( $FilterConfig->{Module} );
+            next FILTER
+                if !$Kernel::OM->Get('Kernel::System::Main')->Require( $FilterConfig->{Module} );
 
             # create new instance
             my $Object = $FilterConfig->{Module}->new(
-                %{$Self},
                 LayoutObject => $Self->{LayoutObject},
             );
 

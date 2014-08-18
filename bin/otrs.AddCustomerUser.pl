@@ -32,15 +32,9 @@ use Kernel::System::ObjectManager;
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.AddCustomerUser.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [
-        qw(ConfigObject EncodeObject LogObject TimeObject
-            MainObject DBObject CustomerUserObject)
-    ],
 );
 
 my %Options;
@@ -70,7 +64,7 @@ $Param{UserLogin}      = $ARGV[0];
 $Param{UserPassword}   = $Options{p};
 $Param{UserEmail}      = $Options{e};
 
-if ( $Param{UID} = $CommonObject{CustomerUserObject}->CustomerUserAdd( %Param, ChangeUserID => 1 ) )
+if ( $Param{UID} = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd( %Param, ChangeUserID => 1 ) )
 {
     print "Customer user added. Username is $Param{UID}\n";
 }

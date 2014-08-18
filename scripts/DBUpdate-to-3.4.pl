@@ -34,10 +34,16 @@ use Kernel::System::ObjectManager;
 use Kernel::System::SysConfig;
 use Kernel::System::Cache;
 use Kernel::System::Package;
+use Kernel::System::ProcessManagement::DB::Activity;
+use Kernel::System::ProcessManagement::DB::ActivityDialog;
+use Kernel::System::ProcessManagement::DB::Entity;
+use Kernel::System::ProcessManagement::DB::Process;
+use Kernel::System::ProcessManagement::DB::Transition;
+use Kernel::System::ProcessManagement::DB::TransitionAction;
 use Kernel::System::VariableCheck qw(:all);
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-DBUpdate-to-3.4.pl',
     },
 );
@@ -76,30 +82,37 @@ Please run it as the 'otrs' user or with the help of su:
 
     print "\nMigration started...\n\n";
 
-    # create common objects
-    my $CommonObject = _CommonObjectsBase();
-
     # define the number of steps
-    my $Steps = 9;
+    my $Steps = 10;
     my $Step  = 1;
 
     print "Step $Step of $Steps: Refresh configuration cache... ";
-    RebuildConfig($CommonObject) || die;
+    RebuildConfig() || die;
     print "done.\n\n";
     $Step++;
 
     # create common objects with new default config
-    $CommonObject = _CommonObjectsBase();
+    $Kernel::OM->ObjectsDiscard();
 
     # check framework version
     print "Step $Step of $Steps: Check framework version... ";
-    _CheckFrameworkVersion($CommonObject) || die;
+    _CheckFrameworkVersion() || die;
     print "done.\n\n";
     $Step++;
 
     # migrate FontAwesome
     print "Step $Step of $Steps: Migrate FontAwesome icons... ";
-    if ( _MigrateFontAwesome($CommonObject) ) {
+    if ( _MigrateFontAwesome() ) {
+        print "done.\n\n";
+    }
+    else {
+        print "error.\n\n";
+        die;
+    }
+    $Step++;
+
+    print "Step $Step of $Steps: Migrate ProcessManagement EntityIDs... ";
+    if ( _MigrateProcessManagementEntityIDs() ) {
         print "done.\n\n";
     }
     else {
@@ -110,7 +123,7 @@ Please run it as the 'otrs' user or with the help of su:
 
     # migrate DB ACLs
     print "Step $Step of $Steps: Migrate ACLs stored in the DB... ";
-    if ( _MigrateDBACLs($CommonObject) ) {
+    if ( _MigrateDBACLs() ) {
         print "done.\n\n";
     }
     else {
@@ -121,7 +134,7 @@ Please run it as the 'otrs' user or with the help of su:
 
     # set service notifications
     print "Step $Step of $Steps: Set service notifications... ";
-    if ( _SetServiceNotifications($CommonObject) ) {
+    if ( _SetServiceNotifications() ) {
         print "done.\n\n";
     }
     else {
@@ -132,7 +145,7 @@ Please run it as the 'otrs' user or with the help of su:
 
     # mgrate settings
     print "Step $Step of $Steps: Migrate Settings... ";
-    if ( _MigrateSettings($CommonObject) ) {
+    if ( _MigrateSettings() ) {
         print "done.\n\n";
     }
     else {
@@ -143,7 +156,7 @@ Please run it as the 'otrs' user or with the help of su:
 
     # uninstall Merged Feature Add-Ons
     print "Step $Step of $Steps: Uninstall Merged Feature Add-Ons... ";
-    if ( _UninstallMergedFeatureAddOns($CommonObject) ) {
+    if ( _UninstallMergedFeatureAddOns() ) {
         print "done.\n\n";
     }
     else {
@@ -154,28 +167,17 @@ Please run it as the 'otrs' user or with the help of su:
 
     # Clean up the cache completely at the end.
     print "Step $Step of $Steps: Clean up the cache... ";
-    my $CacheObject = Kernel::System::Cache->new( %{$CommonObject} ) || die;
-    $CacheObject->CleanUp();
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
     print "done.\n\n";
     $Step++;
 
     print "Step $Step of $Steps: Refresh configuration cache another time... ";
-    RebuildConfig($CommonObject) || die;
+    RebuildConfig() || die;
     print "done.\n\n";
 
     print "Migration completed!\n";
 
     exit 0;
-}
-
-sub _CommonObjectsBase {
-    my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects =>
-            [
-            qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject SysConfigObject)
-            ],
-    );
-    return \%CommonObject;
 }
 
 =item RebuildConfig($CommonObject)
@@ -188,9 +190,7 @@ after the upgrade.
 =cut
 
 sub RebuildConfig {
-    my $CommonObject = shift;
-
-    my $SysConfigObject = Kernel::System::SysConfig->new( %{$CommonObject} );
+    my $SysConfigObject = Kernel::System::SysConfig->new();
 
     # Rebuild ZZZAAuto.pm with current values
     if ( !$SysConfigObject->WriteDefault() ) {
@@ -207,7 +207,7 @@ sub RebuildConfig {
     # reload config object
     print
         "\nIf you see warnings about 'Subroutine Load redefined', that's fine, no need to worry!\n";
-    $CommonObject = _CommonObjectsBase();
+    $Kernel::OM->ObjectsDiscard();
 
     return 1;
 }
@@ -221,9 +221,7 @@ Check if framework it's the correct one for Dinamic Fields migration.
 =cut
 
 sub _CheckFrameworkVersion {
-    my $CommonObject = shift;
-
-    my $Home = $CommonObject->{ConfigObject}->Get('Home');
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     # load RELEASE file
     if ( -e !"$Home/RELEASE" ) {
@@ -247,7 +245,7 @@ sub _CheckFrameworkVersion {
         close($Product);
     }
     else {
-        die "Error: Can't read $CommonObject->{Home}/RELEASE: $!";
+        die "Error: Can't read $Home/RELEASE: $!";
     }
 
     if ( $ProductName ne 'OTRS' ) {
@@ -270,9 +268,7 @@ Migrate settings that has changed it name.
 =cut
 
 sub _MigrateFontAwesome {
-    my $CommonObject = shift;
-
-    my $SysConfigObject = Kernel::System::SysConfig->new( %{$CommonObject} );
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
     # update toolbar items settings
     # otherwise the new fontawesome icons won't be displayed
@@ -314,7 +310,7 @@ sub _MigrateFontAwesome {
         },
     );
 
-    my $Setting = $CommonObject->{ConfigObject}->Get('Frontend::ToolBarModule');
+    my $Setting = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::ToolBarModule');
 
     TOOLBARMODULE:
     for my $ToolbarModule ( sort keys %ModuleAttributes ) {
@@ -353,9 +349,21 @@ sub _MigrateFontAwesome {
             'IconNameOpenTicket'   => 'fa-exclamation-circle',
             'IconNameNoOpenTicket' => 'fa-check-circle',
         },
+        '16-OpenTicketsForCustomerUserLogin' => {
+            'IconNameOpenTicket'   => 'fa-exclamation-circle',
+            'IconNameNoOpenTicket' => 'fa-check-circle',
+        },
+        '17-ClosedTickets' => {
+            'IconNameOpenTicket'   => 'fa-power-off',
+            'IconNameNoOpenTicket' => 'fa-power-off',
+        },
+        '18-ClosedTicketsForCustomerUserLogin' => {
+            'IconNameOpenTicket'   => 'fa-power-off',
+            'IconNameNoOpenTicket' => 'fa-power-off',
+        },
     );
 
-    $Setting = $CommonObject->{ConfigObject}->Get('Frontend::CustomerUser::Item');
+    $Setting = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::CustomerUser::Item');
 
     CUSTOMERUSERMODULE:
     for my $CustomerUserModule ( sort keys %CustomerUserAttributes ) {
@@ -379,6 +387,447 @@ sub _MigrateFontAwesome {
     return 1;
 }
 
+=item _MigrateProcessManagementEntityIDs()
+
+Migrate process management EntityIDs from consecutive to GUID style.
+
+    _MigrateProcesses($CommonObject);
+
+=cut
+
+sub _MigrateProcessManagementEntityIDs {
+    my $ProcessObject  = Kernel::System::ProcessManagement::DB::Process->new();
+    my $EntityObject   = Kernel::System::ProcessManagement::DB::Entity->new();
+    my $ActivityObject = Kernel::System::ProcessManagement::DB::Activity->new();
+    my $ActivityDialogObject
+        = Kernel::System::ProcessManagement::DB::ActivityDialog->new();
+    my $TransitionObject
+        = Kernel::System::ProcessManagement::DB::Transition->new();
+    my $TransitionActionObject
+        = Kernel::System::ProcessManagement::DB::TransitionAction->new();
+
+    # get current process management data from the DB
+    my %ProcessManagementList;
+    $ProcessManagementList{Process} = $ProcessObject->ProcessListGet(
+        UserID => 1,
+    );
+    $ProcessManagementList{Activity} = $ActivityObject->ActivityListGet(
+        UserID => 1,
+    );
+    $ProcessManagementList{ActivityDialog} = $ActivityDialogObject->ActivityDialogListGet(
+        UserID => 1,
+    );
+    $ProcessManagementList{Transition} = $TransitionObject->TransitionListGet(
+        UserID => 1,
+    );
+    $ProcessManagementList{TransitionAction} = $TransitionActionObject->TransitionActionListGet(
+        UserID => 1,
+    );
+
+    # generate new EntityIDs and create a lookup table
+    my %EntityLookup;
+    for my $Part (qw(Process Activity ActivityDialog Transition TransitionAction)) {
+        my %PartList = map { $_->{EntityID} => $_ } @{ $ProcessManagementList{$Part} };
+
+        ENTITYID:
+        for my $EntityID ( sort keys %PartList ) {
+            next ENTITYID if !$EntityID;
+            next ENTITYID if $EntityID =~ m{\A $Part - [0-9a-f]{32}? \z}msx;
+
+            my $NewEntityID = $EntityObject->EntityIDGenerate(
+                EntityType => $Part,
+                UserID     => 1,
+            );
+            $EntityLookup{$Part}->{$EntityID} = $NewEntityID;
+        }
+    }
+
+    # migrate processes
+    PROCESS:
+    for my $Process ( @{ $ProcessManagementList{Process} } ) {
+
+        next PROCESS if $Process->{EntityID} =~ m{\A Process - [0-9a-f]{32}? \z}msx;
+
+        if ( !$EntityLookup{Process}->{ $Process->{EntityID} } ) {
+            die "Error: No new EntityID was created for Process: $Process->{EntityID}";
+        }
+
+        # set new process EntityID:
+        $Process->{EntityID} = $EntityLookup{Process}->{ $Process->{EntityID} };
+
+        # remove not needed information
+        # those are defined inside the configuration
+        for my $ProcessPart (qw(Activities Transitions TransitionActions)) {
+            delete $Process->{$ProcessPart};
+        }
+
+        # update layout:
+        my %NewLayout;
+        for my $ActivityEntityID ( sort keys %{ $Process->{Layout} } ) {
+
+            my $NewActivityEntityID = $EntityLookup{Activity}->{$ActivityEntityID};
+
+            if ( !$NewActivityEntityID ) {
+                die "Error: No new EntityID was created for Activity: $ActivityEntityID}";
+            }
+            $NewLayout{$NewActivityEntityID} = $Process->{Layout}->{$ActivityEntityID};
+        }
+        $Process->{Layout} = \%NewLayout;
+
+        # update config
+        ATTRIBUTE:
+        for my $Attribute (qw(Activity ActivityDialog)) {
+            next ATTRIBUTE if !$Process->{Config}->{"Start$Attribute"};
+
+            my $AttributeEntityID = $Process->{Config}->{"Start$Attribute"};
+            my $NewAttributeEntityID
+                = $EntityLookup{$Attribute}->{$AttributeEntityID};
+            if ( !$NewAttributeEntityID ) {
+                die "Error: No new EntityID was created for $Attribute: $AttributeEntityID";
+            }
+            $Process->{Config}->{"Start$Attribute"} = $NewAttributeEntityID;
+        }
+
+        # set process path
+        my %NewPath;
+        for my $ActivityEntityID ( sort keys %{ $Process->{Config}->{Path} } ) {
+
+            # set new activity EntityID in process path
+            my $NewActivityEntityID = $EntityLookup{Activity}->{$ActivityEntityID};
+            if ( !$NewActivityEntityID ) {
+                die "Error: No new EntityID was created for Activity: $ActivityEntityID";
+            }
+
+            $NewPath{$NewActivityEntityID} = {};
+
+            # check if original action has configuration (e.g. last activity might be empty)
+            my $Activity = $Process->{Config}->{Path}->{$ActivityEntityID};
+
+            if ( IsHashRefWithData($Activity) ) {
+                for my $TransitionEntityID ( sort keys %{$Activity} ) {
+                    my $Transition = $Activity->{$TransitionEntityID};
+                    my $NewTransition;
+                    for my $TransitionActionEntityID ( @{ $Transition->{TransitionAction} } ) {
+
+                        # set new transition action EntityID from process path aticivity transition
+                        my $NewTransitionActionEntityID
+                            = $EntityLookup{TransitionAction}->{$TransitionActionEntityID};
+                        if ( !$NewTransitionActionEntityID ) {
+                            die
+                                "Error: No new EntityID was created for TransitionAction: $TransitionActionEntityID";
+                        }
+                        push @{ $NewTransition->{TransitionAction} }, $NewTransitionActionEntityID;
+                    }
+
+                    # set new activity EntityID stored in the transition
+                    my $NewDestinationActivityEntityID
+                        = $EntityLookup{Activity}->{ $Transition->{ActivityEntityID} };
+                    if ( !$NewDestinationActivityEntityID ) {
+                        die
+                            "Error: No new EntityID was created for Activity: $Transition->{ActivityEntityID}";
+                    }
+                    $NewTransition->{ActivityEntityID} = $NewDestinationActivityEntityID;
+
+                    # set new transition EntityID
+                    my $NewTransitionEntityID = $EntityLookup{Transition}->{$TransitionEntityID};
+                    if ( !$NewTransitionEntityID ) {
+                        die
+                            "Error: No new EntityID was created for Transition: $TransitionEntityID";
+                    }
+
+                    # set new transition to its entity hash key
+                    $NewPath{$NewActivityEntityID}->{$NewTransitionEntityID}
+                        = $NewTransition;
+                }
+            }
+        }
+        $Process->{Config}->{Path} = \%NewPath;
+    }
+
+    # migrate activities
+    ACTIVITY:
+    for my $Activity ( @{ $ProcessManagementList{Activity} } ) {
+
+        next ACTIVITY if $Activity->{EntityID} =~ m{\A Activity - [0-9a-f]{32}? \z}msx;
+
+        if ( !$EntityLookup{Activity}->{ $Activity->{EntityID} } ) {
+            die "Error: No new EntityID was created for Activity: $Activity->{EntityID}";
+        }
+
+        # set new Activity EntityID:
+        $Activity->{EntityID} = $EntityLookup{Activity}->{ $Activity->{EntityID} };
+
+        # remove not needed information
+        # activity dialogs are defined inside the configuration
+        delete $Activity->{ActivityDialogs};
+
+        # set new entities for the configured activity dialogs
+        my $CurrentActivityDialogs = $Activity->{Config}->{ActivityDialog};
+        for my $OrderKey ( sort keys %{$CurrentActivityDialogs} ) {
+
+            # get old activity dialog EntityID
+            my $ActivityDialogEntityID = $CurrentActivityDialogs->{$OrderKey};
+
+            # set new actvity dialog EntityID
+            my $NewActivityDialogEntityID
+                = $EntityLookup{ActivityDialog}->{$ActivityDialogEntityID};
+            if ( !$NewActivityDialogEntityID ) {
+                die
+                    "Error: No new EntityID was created for ActivityDialog: $ActivityDialogEntityID";
+            }
+            $Activity->{Config}->{ActivityDialog}->{$OrderKey}
+                = $NewActivityDialogEntityID;
+        }
+    }
+
+    # migrate all other process parts
+    for my $PartName (qw(ActivityDialog Transition TransitionAction)) {
+
+        CURRENTPART:
+        for my $CurrentPart ( @{ $ProcessManagementList{$PartName} } ) {
+
+            next CURRENTPART if $CurrentPart->{EntityID} =~ m{\A $PartName - [0-9a-f]{32}? \z}msx;
+
+            if ( !$EntityLookup{$PartName}->{ $CurrentPart->{EntityID} } ) {
+                die "Error: No new EntityID was created for $PartName: $CurrentPart->{EntityID}";
+            }
+
+            # set new Activity EntityID:
+            $CurrentPart->{EntityID} = $EntityLookup{$PartName}->{ $CurrentPart->{EntityID} };
+        }
+    }
+
+    # migrate ACLs
+    my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
+
+    # get a list of all ACLs stored in the DB
+    my $ACLList = $ACLObject->ACLListGet(
+        UserID => 1,
+    );
+
+    my @AffectedDBACLs;
+
+    # check if update is needed
+    ACL:
+    for my $ACL ( @{$ACLList} ) {
+
+        # skip ACLs that does not include ActivityDialogs
+        next ACL if ( !IsHashRefWithData( $ACL->{ConfigChange} ) );
+        if (
+            !$ACL->{ConfigChange}->{Possible}->{ActivityDialog}
+            && !$ACL->{ConfigChange}->{PossibleNot}->{ActivityDialog}
+            )
+        {
+            next ACL;
+        }
+        push @AffectedDBACLs, $ACL->{Name};
+
+        for my $ACLPart (qw(Possible PossibleNot)) {
+            my @NewActivityDialogs;
+            if ( IsArrayRefWithData( $ACL->{ConfigChange}->{$ACLPart}->{ActivityDialog} ) ) {
+
+                ENTITY:
+                for my $EntityID ( @{ $ACL->{ConfigChange}->{$ACLPart}->{ActivityDialog} } ) {
+
+                    next ENTITY if $EntityID =~ m{\A ActivityDialog - [0-9a-f]{32}? \z}msx;
+
+                    my $NewEntityID = $EntityLookup{ActivityDialog}->{$EntityID};
+                    if ( !$NewEntityID ) {
+                        die "Error: No new EntityID was created for ActivityDialog: $EntityID";
+                    }
+                    push @NewActivityDialogs, $NewEntityID;
+                }
+                $ACL->{ConfigChange}->{$ACLPart}->{ActivityDialog} = \@NewActivityDialogs;
+            }
+        }
+    }
+
+    my $Error;
+
+    my %ProcessManagementObjects = (
+        Process          => $ProcessObject,
+        Activity         => $ActivityObject,
+        ActivityDialog   => $ActivityDialogObject,
+        Transition       => $TransitionObject,
+        TransitionAction => $TransitionActionObject
+    );
+
+    # get the list of updated or deleted entities
+    my $EntitySyncStateList = $EntityObject->EntitySyncStateList(
+        UserID => 1,
+    );
+
+    my $DeployProcesses = 1;
+    if ( IsArrayRefWithData($EntitySyncStateList) ) {
+        print "\nThere are process parts that are not yet deployed, automatic deployment is not"
+            . " possbible, please review all processes and deploy then manually\n";
+        $DeployProcesses = 0;
+    }
+
+    # update process db records
+    for my $PartName (qw(Process Activity ActivityDialog Transition TransitionAction)) {
+        for my $Part ( @{ $ProcessManagementList{$PartName} } ) {
+
+            my $Object         = $ProcessManagementObjects{$PartName};
+            my $UpdateFunction = $PartName . 'Update';
+            my $Success        = $Object->$UpdateFunction(
+                %{$Part},
+                UserID => 1,
+            );
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->(
+                    Priority => 'error',
+                    Message  => "\n$PartName $Part->{Name} was not updated!!",
+                );
+            }
+            $Error = 1;
+        }
+    }
+
+    my %AffectedDBACLsLookup = map { $_ => 1 } @AffectedDBACLs;
+
+    my $DeployACLs = 1;
+    if ( $ACLObject->ACLsNeedSync() ) {
+        print "\nThere are ACLs that are not yet deployed, automatic deployment is not"
+            . " possible, please review all ACLs and deploy them manually!\n";
+        $DeployACLs = 0;
+    }
+
+    # update ACL db records
+    ACL:
+    for my $ACL ( @{$ACLList} ) {
+
+        next ACL if !$AffectedDBACLsLookup{ $ACL->{Name} };
+
+        # update DB records with new structure
+        my $Success = $ACLObject->ACLUpdate(
+            %{$ACL},
+            UserID => 1,
+        );
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->(
+                Priority => 'error',
+                Message  => "Was not possible to migrate ACL $ACL->{Name}!",
+            );
+            $Error = 1;
+        }
+    }
+
+    # deploy processes
+
+    if ($DeployProcesses) {
+
+        my $Location
+            = $Kernel::OM->Get('Kernel::Config')->Get('Home')
+            . '/Kernel/Config/Files/ZZZProcessManagement.pm';
+
+        my $ProcessDump = ${ProcessObject}->ProcessDump(
+            ResultType => 'FILE',
+            Location   => $Location,
+            UserID     => 1,
+        );
+
+        if ($ProcessDump) {
+            my $Success = $EntityObject->EntitySyncStatePurge(
+                UserID => 1,
+            );
+            if ( !$Success ) {
+
+                # show error if can't set state
+                $Kernel::OM->Get('Kernel::System::Log')->(
+                    Priority => 'error',
+                    Message  => "There was an error setting the entity sync status.",
+                );
+                $Error = 1;
+            }
+        }
+        else {
+
+            # show error if can't synch
+            $Kernel::OM->Get('Kernel::System::Log')->(
+                Priority => 'error',
+                Message  => "There was an error synchronizing the processes.",
+            );
+            $Error = 1;
+        }
+    }
+
+    # deploy acls
+    if ($DeployACLs) {
+        my $Location
+            = $Kernel::OM->Get('Kernel::Config')->Get('Home') . '/Kernel/Config/Files/ZZZACL.pm';
+
+        my $ACLDump = $ACLObject->ACLDump(
+            ResultType => 'FILE',
+            Location   => $Location,
+            UserID     => 1,
+        );
+
+        if ($ACLDump) {
+
+            my $Success = $ACLObject->ACLsNeedSyncReset();
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->(
+                    Priority => 'error',
+                    Message  => "There was an error setting the ACL sync status.",
+                );
+                $Error = 1;
+            }
+        }
+        else {
+
+            # show error if can't sync
+            $Kernel::OM->Get('Kernel::System::Log')->(
+                Priority => 'error',
+                Message  => "There was an error synchronizing the ACLs.",
+            );
+            $Error = 1;
+        }
+    }
+
+    # check for in memory ACLs
+    my $FileACLs = $Kernel::OM->Get('Kernel::Config')->Get('TicketAcl');
+
+    # remove all DB affected ACLs from in memory ACLs
+    for my $ACLName (@AffectedDBACLs) {
+        delete $FileACLs->{$ACLName}
+    }
+
+    # if there are no ACLs return successfully
+    return 1 if !IsHashRefWithData($FileACLs);
+
+    my %AffectedACLs;
+
+    ACL:
+    for my $ACLName ( sort keys %{$FileACLs} ) {
+        my $ACL = $FileACLs->{$ACLName};
+
+        # skip ACLs that does not include ActivityDialogs
+        if (
+            !$ACL->{ConfigChange}->{Possible}->{ActivityDialog}
+            && !$ACL->{ConfigChange}->{PossibleNot}->{ActivityDialog}
+            )
+        {
+            next ACL;
+        }
+
+        $AffectedACLs{$ACLName} = $ACL;
+    }
+
+    # if there are no affected ACLs return successfully
+    return 1 if !%AffectedACLs;
+
+    print "\nThe following ACLs are not in the DataBase and have to be updated manually:\n";
+    for my $ACLName ( sort keys %AffectedACLs ) {
+        print "\t$ACLName\n";
+        $Error = 1;
+    }
+
+    return if $Error;
+    return 1;
+}
+
 =item _SetServiceNotifications()
 
 Set new notifications for service update.
@@ -388,7 +837,6 @@ Set new notifications for service update.
 =cut
 
 sub _SetServiceNotifications {
-    my $CommonObject = shift;
 
     # define agent notifications
     my %AgentNotificationsLookup = (
@@ -431,7 +879,7 @@ sub _SetServiceNotifications {
     LANGUAGE:
     for my $Language (qw(en de)) {
 
-        return if !$CommonObject->{DBObject}->Prepare(
+        return if !$Kernel::OM->Get('Kernel::System::DB')->Prepare(
             SQL => "
                 SELECT id
                 FROM notifications
@@ -440,7 +888,7 @@ sub _SetServiceNotifications {
             Bind => [ \$Language ],
         );
 
-        my @Data = $CommonObject->{DBObject}->FetchrowArray();
+        my @Data = $Kernel::OM->Get('Kernel::System::DB')->FetchrowArray();
 
         next LANGUAGE if $Data[0];
 
@@ -458,7 +906,7 @@ sub _SetServiceNotifications {
         }
 
         # do the insertion
-        return if !$CommonObject->{DBObject}->Do(
+        return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
             SQL => "
                 INSERT INTO notifications (notification_type, notification_language,
                     subject, text, notification_charset, content_type, create_time, create_by,
@@ -481,15 +929,13 @@ Migrate different settings
 =cut
 
 sub _MigrateSettings {
-    my $CommonObject = shift;
-
     my $NewValue          = 'MyQueues';
     my $OldValue          = 1;
     my $NewTicketKey      = 'UserSendNewTicketNotification';
     my $FollowUpTicketKey = 'UserSendFollowUpNotification';
 
     # do the update
-    return if !$CommonObject->{DBObject}->Do(
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => "
             UPDATE user_preferences
             SET preferences_value = ?
@@ -510,9 +956,7 @@ Migrate ACLs stored in the DB.
 =cut
 
 sub _MigrateDBACLs {
-    my $CommonObject = shift;
-
-    my $ACLObject = $Kernel::OM->Get('ACLDBACLObject');
+    my $ACLObject = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
 
     # get a list of all ACLs stored in the DB
     my $ACLList = $ACLObject->ACLListGet(
@@ -550,7 +994,7 @@ sub _MigrateDBACLs {
             UserID => 1,
         );
         if ( !$Success ) {
-            $CommonObject->{LogObject}(
+            $Kernel::OM->Get('Kernel::System::Log')->(
                 Priority => 'error',
                 Message  => "Was not possible to migrate ACL $ACL->{Name}!",
             );
@@ -566,7 +1010,8 @@ sub _MigrateDBACLs {
         }
         else {
             my $Location
-                = $CommonObject->{ConfigObject}->Get('Home') . '/Kernel/Config/Files/ZZZACL.pm';
+                = $Kernel::OM->Get('Kernel::Config')->Get('Home')
+                . '/Kernel/Config/Files/ZZZACL.pm';
 
             my $ACLDump = $ACLObject->ACLDump(
                 ResultType => 'FILE',
@@ -579,7 +1024,7 @@ sub _MigrateDBACLs {
                 my $Success = $ACLObject->ACLsNeedSyncReset();
 
                 if ( !$Success ) {
-                    $CommonObject->{LogObject}(
+                    $Kernel::OM->Get('Kernel::System::Log')->(
                         Priority => 'error',
                         Message  => "There was an error setting the entity sync status.",
                     );
@@ -589,7 +1034,7 @@ sub _MigrateDBACLs {
             else {
 
                 # show error if can't sync
-                $CommonObject->{LogObject}(
+                $Kernel::OM->Get('Kernel::System::Log')->(
                     Priority => 'error',
                     Message  => "There was an error synchronizing the ACLs.",
                 );
@@ -599,7 +1044,7 @@ sub _MigrateDBACLs {
     }
 
     # check for in memory ACLs
-    my $FileACLs = $CommonObject->{ConfigObject}->Get('TicketAcl');
+    my $FileACLs = $Kernel::OM->Get('Kernel::Config')->Get('TicketAcl');
 
     # remove all DB affected ACLs from in memory ACLs
     for my $ACLName (@AffectedDBACLs) {
@@ -629,7 +1074,7 @@ sub _MigrateDBACLs {
     for my $ACLName ( sort keys %AffectedACLs ) {
         print "\t$ACLName\n";
     }
-    return;
+    return 1;
 }
 
 =item _UninstallMergedFeatureAddOns()
@@ -641,15 +1086,17 @@ safe uninstall packages from the database.
 =cut
 
 sub _UninstallMergedFeatureAddOns {
-    my $CommonObject = shift;
-
-    my $PackageObject = Kernel::System::Package->new( %{$CommonObject} );
+    my $PackageObject = Kernel::System::Package->new();
 
     # qw( ) contains a list of the feature add-ons to uninstall
+    # Also uninstalls the support assessment package which was replaced by the SupportData
+    #   and SupportBundle features.
     for my $PackageName (
         qw(
         OTRSGenericInterfaceREST
         OTRSMyServices
+        Support
+        OTRSStatsRestrictionByDateTimeDF
         )
         )
     {

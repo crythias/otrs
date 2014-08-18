@@ -12,7 +12,11 @@ package Kernel::Scheduler::TaskHandler::Test;
 use strict;
 use warnings;
 
-use Kernel::System::VariableCheck qw(IsHashRefWithData IsStringWithData);
+our @ObjectDependencies = (
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -38,11 +42,6 @@ sub new {
 
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Needed (qw(MainObject ConfigObject LogObject DBObject TimeObject)) {
-        $Self->{$Needed} = $Param{$Needed} || die "Got no $Needed!";
-    }
 
     return $Self;
 }
@@ -77,7 +76,7 @@ sub Run {
 
     # check data - we need a hash ref
     if ( $Param{Data} && ref $Param{Data} ne 'HASH' ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Got no valid Data!',
         );
@@ -90,7 +89,7 @@ sub Run {
     # create tmp file
     if ( $Param{Data}->{File} ) {
         my $Content = 123;
-        return if !$Self->{MainObject}->FileWrite(
+        return if !$Kernel::OM->Get('Kernel::System::Main')->FileWrite(
             Location => $Param{Data}->{File},
             Content  => \$Content,
         );

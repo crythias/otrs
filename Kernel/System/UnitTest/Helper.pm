@@ -13,11 +13,17 @@ package Kernel::System::UnitTest::Helper;
 use strict;
 use warnings;
 
-use Kernel::Config;
-use Kernel::System::User;
-use Kernel::System::Group;
-use Kernel::System::CustomerUser;
 use Kernel::System::SysConfig;
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::CustomerUser',
+    'Kernel::System::Group',
+    'Kernel::System::Main',
+    'Kernel::System::UnitTest',
+    'Kernel::System::User',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -33,12 +39,12 @@ construct a helper object.
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        UnitTestHelperObject => {
+        'Kernel::System::UnitTest::Helper' => {
             RestoreSystemConfiguration => 1,        # optional, save ZZZAuto.pm
                                                     # and restore it in the destructor
         },
     );
-    my $Helper = $Kernel::OM->Get('UnitTestHelperObject');
+    my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 =cut
 
@@ -51,55 +57,20 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
-    # check needed objects
-    for my $Needed (qw(UnitTestObject DBObject LogObject TimeObject MainObject EncodeObject)) {
-        if ( $Param{$Needed} ) {
-            $Self->{$Needed} = $Param{$Needed};
-        }
-        else {
-            die "Got no $Needed!";
-        }
-    }
+    # get needed objects
+    $Self->{ConfigObject}   = $Kernel::OM->Get('Kernel::Config');
+    $Self->{UnitTestObject} = $Kernel::OM->Get('Kernel::System::UnitTest');
 
-    # use local Config object because it will be modified
-    $Self->{ConfigObject} = Kernel::Config->new();
-
-    # disable email checks to create new user
-    $Self->{ConfigObject}->Set(
-        Key   => 'CheckEmailAddresses',
-        Value => 0,
-    );
-
-    $Self->{UserObject} = Kernel::System::User->new(
-        %{ $Self->{UnitTestObject} },
-        ConfigObject => $Self->{ConfigObject},
-    );
-
-    $Self->{GroupObject} = Kernel::System::Group->new(
-        %{ $Self->{UnitTestObject} },
-        ConfigObject => $Self->{ConfigObject},
-        UserObject   => $Self->{UserObject},
-    );
-
-    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new(
-        %{ $Self->{UnitTestObject} },
-        ConfigObject => $Self->{ConfigObject},
-    );
-
-    #
-    # Make backup of system configuration if needed
-    #
+    # make backup of system configuration if needed
     if ( $Param{RestoreSystemConfiguration} ) {
-        $Self->{SysConfigObject} = Kernel::System::SysConfig->new( %{$Self} );
+        $Self->{SysConfigObject} = Kernel::System::SysConfig->new();
 
         $Self->{SysConfigBackup} = $Self->{SysConfigObject}->Download();
 
         $Self->{UnitTestObject}->True( 1, 'Creating backup of the system configuration' );
     }
 
-    #
-    # Set environment variable to skip SSL certificate verification if needed
-    #
+    # set environment variable to skip SSL certificate verification if needed
     if ( $Param{SkipSSLVerify} ) {
 
         # remember original value
@@ -146,7 +117,10 @@ sub TestUserCreate {
     # create test user
     my $TestUserLogin = $Self->GetRandomID();
 
-    my $TestUserID = $Self->{UserObject}->UserAdd(
+    # disable email checks to create new user
+    local $Self->{ConfigObject}->{CheckEmailAddresses} = 0;
+
+    my $TestUserID = $Kernel::OM->Get('Kernel::System::User')->UserAdd(
         UserFirstname => $TestUserLogin,
         UserLastname  => $TestUserLogin,
         UserLogin     => $TestUserLogin,
@@ -166,10 +140,14 @@ sub TestUserCreate {
     # Add user to groups
     GROUP_NAME:
     for my $GroupName ( @{ $Param{Groups} || [] } ) {
-        my $GroupID = $Self->{GroupObject}->GroupLookup( Group => $GroupName );
+
+        # get group object
+        my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
+        my $GroupID = $GroupObject->GroupLookup( Group => $GroupName );
         die "Cannot find group $GroupName" if ( !$GroupID );
 
-        $Self->{GroupObject}->GroupMemberAdd(
+        $GroupObject->GroupMemberAdd(
             GID        => $GroupID,
             UID        => $TestUserID,
             Permission => {
@@ -188,8 +166,11 @@ sub TestUserCreate {
 
     # set user language
     my $UserLanguage = $Param{Language} || 'en';
-    $Self->{UserObject}
-        ->SetPreferences( UserID => $TestUserID, Key => 'UserLanguage', Value => $UserLanguage );
+    $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+        UserID => $TestUserID,
+        Key    => 'UserLanguage',
+        Value  => $UserLanguage,
+    );
     $Self->{UnitTestObject}->True( 1, "Set user UserLanguage to $UserLanguage" );
 
     return $TestUserLogin;
@@ -210,10 +191,13 @@ the login name of the new customer user, the password is the same.
 sub TestCustomerUserCreate {
     my ( $Self, %Param ) = @_;
 
+    # disable email checks to create new user
+    local $Self->{ConfigObject}->{CheckEmailAddresses} = 0;
+
     # create test user
     my $TestUserLogin = $Self->GetRandomID();
 
-    my $TestUser = $Self->{CustomerUserObject}->CustomerUserAdd(
+    my $TestUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserAdd(
         Source         => 'CustomerUser',
         UserFirstname  => $TestUserLogin,
         UserLastname   => $TestUserLogin,
@@ -234,8 +218,11 @@ sub TestCustomerUserCreate {
 
     # set customer user language
     my $UserLanguage = $Param{Language} || 'en';
-    $Self->{CustomerUserObject}
-        ->SetPreferences( UserID => $TestUser, Key => 'UserLanguage', Value => $UserLanguage );
+    $Kernel::OM->Get('Kernel::System::CustomerUser')->SetPreferences(
+        UserID => $TestUser,
+        Key    => 'UserLanguage',
+        Value  => $UserLanguage,
+    );
     $Self->{UnitTestObject}->True( 1, "Set customer user UserLanguage to $UserLanguage" );
 
     return $TestUser;
@@ -275,7 +262,7 @@ sub FixedTimeSet {
         if ( $INC{$FilePath} ) {
             no warnings 'redefine';
             delete $INC{$FilePath};
-            $Self->{MainObject}->Require($Object);
+            $Kernel::OM->Get('Kernel::System::Main')->Require($Object);
         }
     }
 
@@ -307,8 +294,8 @@ sub FixedTimeAddSeconds {
     my ( $Self, $SecondsToAdd ) = @_;
 
     return if ( !defined $FixedTime );
-
     $FixedTime += $SecondsToAdd;
+    return;
 }
 
 # See http://perldoc.perl.org/5.10.0/perlsub.html#Overriding-Built-in-Functions
@@ -360,12 +347,15 @@ sub DESTROY {
         $Self->{UnitTestObject}->True( 1, 'Restored SSL certificates verification' );
     }
 
+    # disable email checks to create new user
+    local $Self->{ConfigObject}->{CheckEmailAddresses} = 0;
+
     # invalidate test users
     if ( ref $Self->{TestUsers} eq 'ARRAY' && @{ $Self->{TestUsers} } ) {
         for my $TestUser ( @{ $Self->{TestUsers} } ) {
 
             # make test user invalid
-            my $Success = $Self->{UserObject}->UserUpdate(
+            my $Success = $Kernel::OM->Get('Kernel::System::User')->UserUpdate(
                 UserID        => $TestUser,
                 UserFirstname => 'Firstname Test1',
                 UserLastname  => 'Lastname Test1',
@@ -383,7 +373,7 @@ sub DESTROY {
     if ( ref $Self->{TestCustomerUsers} eq 'ARRAY' && @{ $Self->{TestCustomerUsers} } ) {
         for my $TestCustomerUser ( @{ $Self->{TestCustomerUsers} } ) {
 
-            my $Success = $Self->{CustomerUserObject}->CustomerUserUpdate(
+            my $Success = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserUpdate(
                 Source         => 'CustomerUser',
                 ID             => $TestCustomerUser,
                 UserCustomerID => $TestCustomerUser,

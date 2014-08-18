@@ -14,9 +14,23 @@ use warnings;
 
 use if $^O eq 'MSWin32', "Win32::Console::ANSI";
 use Term::ANSIColor;
+use SOAP::Lite;
 
-use Kernel::System::Environment;
 use Kernel::System::ObjectManager;
+
+# UnitTest helper must be loaded to override the builtin time functions!
+use Kernel::System::UnitTest::Helper;
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::DB',
+    'Kernel::System::Encode',
+    'Kernel::System::Environment',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -39,7 +53,7 @@ create unit test object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $UnitTestObject = $Kernel::OM->Get('UnitTestObject');
+    my $UnitTestObject = $Kernel::OM->Get('Kernel::System::UnitTest');
 
 =cut
 
@@ -52,13 +66,13 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
-    # check needed objects
-    for my $Needed (
-        qw(ConfigObject DBObject LogObject TimeObject MainObject EncodeObject EnvironmentObject)
-        )
-    {
-        $Self->{$Needed} = $Kernel::OM->Get($Needed);
-    }
+    $Self->{ConfigObject}      = $Kernel::OM->Get('Kernel::Config');
+    $Self->{DBObject}          = $Kernel::OM->Get('Kernel::System::DB');
+    $Self->{EncodeObject}      = $Kernel::OM->Get('Kernel::System::Encode');
+    $Self->{EnvironmentObject} = $Kernel::OM->Get('Kernel::System::Environment');
+    $Self->{LogObject}         = $Kernel::OM->Get('Kernel::System::Log');
+    $Self->{MainObject}        = $Kernel::OM->Get('Kernel::System::Main');
+    $Self->{TimeObject}        = $Kernel::OM->Get('Kernel::System::Time');
 
     $Self->{Output} = $Param{Output} || 'ASCII';
 
@@ -90,6 +104,8 @@ Run all tests located in scripts/test/*.t and print result to stdout.
     $UnitTestObject->Run(
         Name      => 'JSON:User:Auth',  # optional, control which tests to select
         Directory => 'Selenium',        # optional, control which tests to select
+
+        SubmitURL => $URL,              # optional, send results to unit test result server
     );
 
 =cut
@@ -148,9 +164,16 @@ sub Run {
             {
                 # Make sure every UT uses its own clean environment.
                 local $Kernel::OM = Kernel::System::ObjectManager->new(
-                    LogObject => {
+                    'Kernel::System::Log' => {
                         LogPrefix => 'OTRS-otrs.UnitTest',
                     },
+                );
+
+                # Provide $Self as 'Kernel::System::UnitTest' for convenience.
+                $Kernel::OM->ObjectInstanceRegister(
+                    Package      => 'Kernel::System::UnitTest',
+                    Object       => $Self,
+                    Dependencies => [],
                 );
 
                 push @{ $Self->{NotOkInfo} }, [$File];
@@ -183,7 +206,7 @@ sub Run {
     my %OSInfo = $Self->{EnvironmentObject}->OSInfoGet();
     $ResultSummary{OS}        = $OSInfo{OS};
     $ResultSummary{Vendor}    = $OSInfo{OSName};
-    $ResultSummary{Database}  = $Self->{DBObject}->Version();
+    $ResultSummary{Database}  = lc $Self->{DBObject}->Version();
     $ResultSummary{TestOk}    = $Self->{TestCountOk};
     $ResultSummary{TestNotOk} = $Self->{TestCountNotOk};
 
@@ -192,40 +215,53 @@ sub Run {
         print $Self->{Content};
     }
 
+    my $XML = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n";
+    $XML .= "<otrs_test>\n";
+    $XML .= "<Summary>\n";
+    for my $Key ( sort keys %ResultSummary ) {
+        $ResultSummary{$Key} =~ s/&/&amp;/g;
+        $ResultSummary{$Key} =~ s/</&lt;/g;
+        $ResultSummary{$Key} =~ s/>/&gt;/g;
+        $ResultSummary{$Key} =~ s/"/&quot;/g;
+        $XML .= "  <Item Name=\"$Key\">$ResultSummary{$Key}</Item>\n";
+    }
+    $XML .= "</Summary>\n";
+    for my $Key ( sort keys %{ $Self->{XML}->{Test} } ) {
+
+        # extract duration time
+        my $Duration = $Self->{Duration}->{$Key};
+
+        $XML .= "<Unit Name=\"$Key\" Duration=\"$Duration\">\n";
+
+        for my $TestCount ( sort { $a <=> $b } keys %{ $Self->{XML}->{Test}->{$Key} } ) {
+            my $Result  = $Self->{XML}->{Test}->{$Key}->{$TestCount}->{Result};
+            my $Content = $Self->{XML}->{Test}->{$Key}->{$TestCount}->{Name};
+            $Content =~ s/&/&amp;/g;
+            $Content =~ s/</&lt;/g;
+            $Content =~ s/>/&gt;/g;
+            $XML .= qq|  <Test Result="$Result" Count="$TestCount">$Content</Test>\n|;
+        }
+
+        $XML .= "</Unit>\n";
+    }
+    $XML .= "</otrs_test>\n";
+
     if ( $Self->{Output} eq 'XML' ) {
-        my $XML = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n";
-        $XML .= "<otrs_test>\n";
-        $XML .= "<Summary>\n";
-        for my $Key ( sort keys %ResultSummary ) {
-            $ResultSummary{$Key} =~ s/&/&amp;/g;
-            $ResultSummary{$Key} =~ s/</&lt;/g;
-            $ResultSummary{$Key} =~ s/>/&gt;/g;
-            $ResultSummary{$Key} =~ s/"/&quot;/g;
-            $XML .= "  <Item Name=\"$Key\">$ResultSummary{$Key}</Item>\n";
-        }
-        $XML .= "</Summary>\n";
-        for my $Key ( sort keys %{ $Self->{XML}->{Test} } ) {
-
-            # extract duration time
-            my $Duration = $Self->{Duration}->{$Key};
-
-            $XML .= "<Unit Name=\"$Key\" Duration=\"$Duration\">\n";
-
-            for my $TestCount ( sort { $a <=> $b } keys %{ $Self->{XML}->{Test}->{$Key} } ) {
-                my $Result  = $Self->{XML}->{Test}->{$Key}->{$TestCount}->{Result};
-                my $Content = $Self->{XML}->{Test}->{$Key}->{$TestCount}->{Name};
-                $Content =~ s/&/&amp;/g;
-                $Content =~ s/</&lt;/g;
-                $Content =~ s/>/&gt;/g;
-                $XML .= qq|  <Test Result="$Result" Count="$TestCount">$Content</Test>\n|;
-            }
-
-            $XML .= "</Unit>\n";
-        }
-        $XML .= "</otrs_test>\n";
-
         print $XML;
     }
+
+    if ( $Param{SubmitURL} ) {
+        $Self->{EncodeObject}->EncodeOutput( \$XML );
+
+        my $RPC = SOAP::Lite->new(
+            proxy => $Param{SubmitURL},
+            uri   => 'http://localhost/Core',
+        );
+
+        my $Key = $RPC->Submit( '', '', $XML )->result();
+        print STDERR "NOTICE: Sent to $Param{SubmitURL} with SubmitID: '$Key'.\n";
+    }
+
     return 1;
 }
 
@@ -787,9 +823,18 @@ sub _Print {
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Result} = 'not ok';
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Name}   = $Name;
 
-        my $ShortName = $Name;
-        $ShortName =~ s{\(.+\)$}{};
-        push @{ $Self->{NotOkInfo}->[-1] }, sprintf "%s - %s", $Self->{TestCount}, $ShortName;
+        my $TestFailureDetails = $Name;
+        $TestFailureDetails =~ s{\(.+\)$}{};
+        if ( length $TestFailureDetails > 200 ) {
+            $TestFailureDetails = substr( $TestFailureDetails, 0, 200 ) . "...";
+        }
+
+# Store information about failed tests, but only if we are running in a toplevel unit test object
+#   that is actually processing filed, and not in an embedded object that just runs individual tests.
+        if ( ref $Self->{NotOkInfo} eq 'ARRAY' ) {
+            push @{ $Self->{NotOkInfo}->[-1] }, sprintf "%s - %s", $Self->{TestCount},
+                $TestFailureDetails;
+        }
 
         return;
     }

@@ -12,8 +12,11 @@ package Kernel::System::SysConfig::StateValidate;
 use strict;
 use warnings;
 
-use Kernel::Config;
-use Kernel::System::State;
+our @ObjectDependencies = (
+    'Kernel::System::Log',
+    'Kernel::System::State',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -31,47 +34,11 @@ All functions for the StateValidate checks.
 
 =item new()
 
-create an object
+create an object. Do not use it directly, instead use:
 
-    use Kernel::Config;
-    use Kernel::System::Encode;
-    use Kernel::System::Log;
-    use Kernel::System::DB;
-    use Kernel::System::Main;
-    use Kernel::System::Time;
-    use Kernel::System::SysConfig::StateValidate;
-
-    my $ConfigObject = Kernel::Config->new();
-    my $EncodeObject = Kernel::System::Encode->new(
-        ConfigObject => $ConfigObject,
-    );
-    my $LogObject = Kernel::System::Log->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-    );
-    my $MainObject = Kernel::System::Main->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-    );
-    my $TimeObject = Kernel::System::Time->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
-    );
-    my $DBObject = Kernel::System::DB->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-        MainObject   => $MainObject,
-    );
-    my $StateValidateObject = Kernel::System::SysConfig::StateValidate->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-        DBObject     => $DBObject,
-        TimeObject   => $TimeObject,
-        MainObject   => $MainObject,
-    );
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new();
+    my $StateValidateObject = $Kernel::OM->Get('Kernel::System::SysConfig::StateValidate');
 
 =cut
 
@@ -81,14 +48,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Object (qw(DBObject ConfigObject EncodeObject LogObject MainObject TimeObject)) {
-        $Self->{$Object} = $Param{$Object} || die "Got no $Object!";
-    }
-
-    # create additional objects
-    $Self->{StateObject} = Kernel::System::State->new( %{$Self} );
 
     # set the debug flag
     $Self->{Debug} = $Param{Debug} || 0;
@@ -111,7 +70,7 @@ sub Validate {
 
     # check needed stuff
     if ( !$Param{Data} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Need Data!",
         );
@@ -119,7 +78,7 @@ sub Validate {
     }
 
     # get list of all valid states
-    my %States = $Self->{StateObject}->StateList(
+    my %States = $Kernel::OM->Get('Kernel::System::State')->StateList(
         UserID => 1,
         Valid  => 1,
     );
@@ -169,7 +128,7 @@ sub Validate {
             # get the reference type
             my $RefType = ref $Param{Data};
 
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Data must be a scalar or a hash, but it is a $RefType!",
             );
@@ -210,7 +169,7 @@ sub GetAutoCorrectValue {
     }
 
     # get list of all valid states
-    my %States = $Self->{StateObject}->StateList(
+    my %States = $Kernel::OM->Get('Kernel::System::State')->StateList(
         UserID => 1,
         Valid  => 1,
     );
@@ -277,7 +236,7 @@ sub GetAutoCorrectValue {
         # get the reference type
         my $RefType = ref $Param{Data};
 
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Data must be a scalar or a hash, but it is a $RefType!",
         );
@@ -301,7 +260,7 @@ sub _GetAutoCorrectValue {
     my ( $Self, %Param ) = @_;
 
     # get list of all valid states
-    my %States = $Self->{StateObject}->StateList(
+    my %States = $Kernel::OM->Get('Kernel::System::State')->StateList(
         UserID => 1,
         Valid  => 1,
     );

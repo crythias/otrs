@@ -10,36 +10,18 @@
 use strict;
 use warnings;
 use utf8;
-use vars qw($Self);
 
-use Kernel::Config;
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::Ticket;
-use Kernel::System::User;
-use Kernel::System::ProcessManagement::TransitionAction::TicketOwnerSet;
+use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# create local objects
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
-my $ConfigObject = Kernel::Config->new();
-my $UserObject   = Kernel::System::User->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $TicketObject = Kernel::System::Ticket->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $ModuleObject = Kernel::System::ProcessManagement::TransitionAction::TicketOwnerSet->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-    TicketObject => $TicketObject,
-);
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
+my $ModuleObject
+    = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::TicketOwnerSet');
 
 # define variables
 my $UserID     = 1;
@@ -226,9 +208,47 @@ my @Tests = (
         },
         Success => 1,
     },
+    {
+        Name   => 'Correct Ticket->QueueID',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                OwnerID => '<OTRS_Ticket_QueueID>',
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Wrong Ticket->NotExisting',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                OwnerID => '<OTRS_Ticket_NotExisting>',
+            },
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'Correct Using Different UserID',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                Owner  => $TestUserLogin,
+                UserID => $TestUserID,
+            },
+        },
+        Success => 1,
+    },
 );
 
 for my $Test (@Tests) {
+
+    # make a deep copy to avoid changing the definition
+    my $OrigTest = Storable::dclone($Test);
+
     my $Success = $ModuleObject->Run(
         %{ $Test->{Config} },
         ProcessEntityID          => 'P1',
@@ -259,18 +279,41 @@ for my $Test (@Tests) {
                     . " $TicketID exists with True",
             );
 
+            my $ExpectedValue = $Test->{Config}->{Config}->{$Attribute};
+            if (
+                $OrigTest->{Config}->{Config}->{$Attribute}
+                =~ m{\A<OTRS_Ticket_([A-Za-z0-9_]+)>\z}msx
+                )
+            {
+                $ExpectedValue = $Ticket{$1} // '';
+                $Self->IsNot(
+                    $Test->{Config}->{Config}->{$Attribute},
+                    $OrigTest->{Config}->{Config}->{$Attribute},
+                    "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+                );
+            }
+
             $Self->Is(
                 $Ticket{$Attribute},
-                $Test->{Config}->{Config}->{$Attribute},
+                $ExpectedValue,
                 "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for TicketID:"
                     . " $TicketID match expected value",
+            );
+        }
+
+        if ( $OrigTest->{Config}->{Config}->{UserID} ) {
+            $Self->Is(
+                $Test->{Config}->{Config}->{UserID},
+                undef,
+                "$ModuleName - Test:'$Test->{Name}' | Attribute: UserID for TicketID:"
+                    . " $TicketID should be removed (as it was used)",
             );
         }
     }
     else {
         $Self->False(
             $Success,
-            "$ModuleName Run() - Test:'$Test->{Name}' | excecuted with False"
+            "$ModuleName Run() - Test:'$Test->{Name}' | executed with False"
         );
     }
 }

@@ -12,10 +12,16 @@ package Kernel::System::CustomerUser;
 use strict;
 use warnings;
 
-use Kernel::System::CustomerCompany;
-use Kernel::System::EventHandler;
-
 use base qw(Kernel::System::EventHandler);
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::CustomerCompany',
+    'Kernel::System::DB',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -37,7 +43,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $CustomerUserObject = $Kernel::OM->Get('CustomerUserObject');
+    my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
 =cut
 
@@ -45,52 +51,43 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {
-        $Kernel::OM->ObjectHash(
-            Objects => [
-                qw( DBObject LogObject MainObject EncodeObject )
-            ],
-        ),
-    };
+    my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects (needed for the current way the unittest is working)
-    $Self->{ConfigObject} = $Param{ConfigObject} || die "Got no ConfigObject!";
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # load generator customer preferences module
-    my $GeneratorModule = $Self->{ConfigObject}->Get('CustomerPreferences')->{Module}
+    my $GeneratorModule = $ConfigObject->Get('CustomerPreferences')->{Module}
         || 'Kernel::System::CustomerUser::Preferences::DB';
-    if ( $Self->{MainObject}->Require($GeneratorModule) ) {
-        $Self->{PreferencesObject} = $GeneratorModule->new( %{$Self} );
+
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    if ( $MainObject->Require($GeneratorModule) ) {
+        $Self->{PreferencesObject} = $GeneratorModule->new();
     }
 
     # load customer user backend module
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
 
-        next SOURCE if !$Self->{ConfigObject}->Get("CustomerUser$Count");
+        next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
 
-        my $GenericModule = $Self->{ConfigObject}->Get("CustomerUser$Count")->{Module};
-        if ( !$Self->{MainObject}->Require($GenericModule) ) {
-            $Self->{MainObject}->Die("Can't load backend module $GenericModule! $@");
+        my $GenericModule = $ConfigObject->Get("CustomerUser$Count")->{Module};
+        if ( !$MainObject->Require($GenericModule) ) {
+            $MainObject->Die("Can't load backend module $GenericModule! $@");
         }
         $Self->{"CustomerUser$Count"} = $GenericModule->new(
-            Count => $Count,
-            %{$Self},
+            Count             => $Count,
             PreferencesObject => $Self->{PreferencesObject},
-            CustomerUserMap   => $Self->{ConfigObject}->Get("CustomerUser$Count"),
+            CustomerUserMap   => $ConfigObject->Get("CustomerUser$Count"),
         );
     }
 
-    $Self->{CustomerCompanyObject} = Kernel::System::CustomerCompany->new( %{$Self} );
-
     # init of event handler
     $Self->EventHandlerInit(
-        Config     => 'CustomerUser::EventModulePost',
-        BaseObject => 'CustomerUserObject',
-        Objects    => {
-            %{$Self},
-        },
+        Config => 'CustomerUser::EventModulePost',
     );
 
     return $Self;
@@ -109,13 +106,16 @@ return customer source list
 sub CustomerSourceList {
     my ( $Self, %Param ) = @_;
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     my %Data;
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
 
-        next SOURCE if !$Self->{ConfigObject}->Get("CustomerUser$Count");
+        next SOURCE if !$ConfigObject->Get("CustomerUser$Count");
         if ( defined $Param{ReadOnly} ) {
-            my $CustomerBackendConfig = $Self->{ConfigObject}->Get("CustomerUser$Count");
+            my $CustomerBackendConfig = $ConfigObject->Get("CustomerUser$Count");
             if ( $Param{ReadOnly} ) {
                 next SOURCE if !$CustomerBackendConfig->{ReadOnly};
             }
@@ -123,7 +123,7 @@ sub CustomerSourceList {
                 next SOURCE if $CustomerBackendConfig->{ReadOnly};
             }
         }
-        $Data{"CustomerUser$Count"} = $Self->{ConfigObject}->Get("CustomerUser$Count")->{Name}
+        $Data{"CustomerUser$Count"} = $ConfigObject->Get("CustomerUser$Count")->{Name}
             || "No Name $Count";
     }
     return %Data;
@@ -309,6 +309,10 @@ sub CustomerUserDataGet {
 
     return if !$Param{User};
 
+    # get needed objects
+    my $ConfigObject          = $Kernel::OM->Get('Kernel::Config');
+    my $CustomerCompanyObject = $Kernel::OM->Get('Kernel::System::CustomerCompany');
+
     SOURCE:
     for my $Count ( '', 1 .. 10 ) {
 
@@ -318,7 +322,7 @@ sub CustomerUserDataGet {
         next SOURCE if !%Customer;
 
         # add preferences defaults
-        my $Config = $Self->{ConfigObject}->Get('CustomerPreferencesGroups');
+        my $Config = $ConfigObject->Get('CustomerPreferencesGroups');
         if ($Config) {
             KEY:
             for my $Key ( sort keys %{$Config} ) {
@@ -334,11 +338,11 @@ sub CustomerUserDataGet {
         # check if customer company support is enabled and get company data
         my %Company;
         if (
-            $Self->{ConfigObject}->Get("CustomerCompany")
-            && $Self->{ConfigObject}->Get("CustomerUser$Count")->{CustomerCompanySupport}
+            $ConfigObject->Get("CustomerCompany")
+            && $ConfigObject->Get("CustomerUser$Count")->{CustomerCompanySupport}
             )
         {
-            %Company = $Self->{CustomerCompanyObject}->CustomerCompanyGet(
+            %Company = $CustomerCompanyObject->CustomerCompanyGet(
                 CustomerID => $Customer{UserCustomerID},
             );
 
@@ -350,10 +354,11 @@ sub CustomerUserDataGet {
             %Company,
             %Customer,
             Source        => "CustomerUser$Count",
-            Config        => $Self->{ConfigObject}->Get("CustomerUser$Count"),
-            CompanyConfig => $Self->{ConfigObject}->Get("CustomerCompany"),
+            Config        => $ConfigObject->Get("CustomerUser$Count"),
+            CompanyConfig => $ConfigObject->Get( $Company{Source} // 'CustomerCompany' ),
         );
     }
+
     return;
 }
 
@@ -387,7 +392,7 @@ sub CustomerUserAdd {
     if ( $Param{UserLogin} ) {
         my %User = $Self->CustomerUserDataGet( User => $Param{UserLogin} );
         if (%User) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "User already exists '$Param{UserLogin}'!",
             );
@@ -435,7 +440,8 @@ sub CustomerUserUpdate {
 
     # check needed stuff
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need UserLogin!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need UserLogin!" );
         return;
     }
 
@@ -443,7 +449,7 @@ sub CustomerUserUpdate {
     if ( $Param{ID} && ( lc $Param{UserLogin} ne lc $Param{ID} ) ) {
         my %User = $Self->CustomerUserDataGet( User => $Param{UserLogin} );
         if (%User) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "User already exists '$Param{UserLogin}'!",
             );
@@ -454,7 +460,7 @@ sub CustomerUserUpdate {
     # check if user exists
     my %User = $Self->CustomerUserDataGet( User => $Param{ID} || $Param{UserLogin} );
     if ( !%User ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such user '$Param{UserLogin}'!",
         );
@@ -494,14 +500,15 @@ sub SetPassword {
 
     # check needed stuff
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'User UserLogin!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'User UserLogin!' );
         return;
     }
 
     # check if user exists
     my %User = $Self->CustomerUserDataGet( User => $Param{UserLogin} );
     if ( !%User ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such user '$Param{UserLogin}'!",
         );
@@ -547,14 +554,15 @@ sub SetPreferences {
 
     # check needed stuff
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
     # check if user exists
     my %User = $Self->CustomerUserDataGet( User => $Param{UserID} );
     if ( !%User ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such user '$Param{UserID}'!",
         );
@@ -585,14 +593,15 @@ sub GetPreferences {
 
     # check needed stuff
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
     # check if user exists
     my %User = $Self->CustomerUserDataGet( User => $Param{UserID} );
     if ( !%User ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such user '$Param{UserID}'!",
         );
@@ -660,11 +669,12 @@ sub TokenGenerate {
 
     # check needed stuff
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need UserID!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need UserID!" );
         return;
     }
 
-    my $Token = $Self->{MainObject}->GenerateRandomString(
+    my $Token = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
         Length => 14,
     );
 
@@ -694,7 +704,8 @@ sub TokenCheck {
 
     # check needed stuff
     if ( !$Param{Token} || !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need Token and UserID!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need Token and UserID!" );
         return;
     }
 

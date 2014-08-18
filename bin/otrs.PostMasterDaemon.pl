@@ -31,6 +31,7 @@ use lib dirname($RealBin) . '/Custom';
 my $Debug = 1;
 
 use Kernel::System::ObjectManager;
+use Kernel::System::PostMaster;
 
 use IO::Socket;
 
@@ -121,35 +122,34 @@ sub PipeEmail {
 
     # create common objects
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        LogObject => {
+        'Kernel::System::Log' => {
             LogPrefix => 'OTRS-otrs.PostMasterDaemon.pl',
         },
-    );
-    my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw(ConfigObject EncodeObject TimeObject LogObject MainObject DBObject)],
     );
 
     # debug info
     if ($Debug) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Email handle (PostMasterDaemon.pl) started...',
         );
     }
 
-    # ... common objects ...
-    my @Return = $CommonObject{PostMaster}->Run();
+    my $PostMasterObject = Kernel::System::PostMaster->new(
+        Email => \@Email
+    );
+    my @Return = $PostMasterObject->Run();
     if ( !$Return[0] ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't process mail, see log sub system!",
         );
     }
-    undef $CommonObject{PostMaster};
+    undef $PostMasterObject;
 
     # debug info
     if ($Debug) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Email handle (PostMasterDaemon.pl) stopped.',
         );

@@ -18,19 +18,25 @@ use Digest::MD5 qw();
 use File::Path qw();
 use File::Find qw();
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Encode',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
+our $ObjectManagerAware = 1;
+
 sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {
-        $Kernel::OM->ObjectHash(
-            Objects =>
-                [ qw( ConfigObject LogObject MainObject EncodeObject ) ],
-            )
-    };
+    my $Self = {};
     bless( $Self, $Type );
 
-    my $TempDir = $Self->{ConfigObject}->Get('TempDir');
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $TempDir = $ConfigObject->Get('TempDir');
     $Self->{CacheDirectory} = $TempDir . '/CacheFileStorable';
 
     # check if cache directory exists and in case create one
@@ -39,7 +45,7 @@ sub new {
             ## no critic
             if ( !mkdir( $Directory, 0770 ) ) {
                 ## use critic
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Can't create directory '$Directory': $!",
                 );
@@ -48,7 +54,7 @@ sub new {
     }
 
     # Specify how many levels of subdirectories to use, can be 0, 1 or more.
-    $Self->{'Cache::SubdirLevels'} = $Self->{ConfigObject}->Get('Cache::SubdirLevels');
+    $Self->{'Cache::SubdirLevels'} = $ConfigObject->Get('Cache::SubdirLevels');
     $Self->{'Cache::SubdirLevels'} //= 2;
 
     return $Self;
@@ -59,7 +65,8 @@ sub Set {
 
     for my $Needed (qw(Type Key Value TTL)) {
         if ( !defined $Param{$Needed} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
         }
     }
@@ -80,14 +87,14 @@ sub Set {
         File::Path::mkpath( $CacheDirectory, 0, 0770 );    ## no critic
 
         if ( !-e $CacheDirectory ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't create directory '$CacheDirectory': $!",
             );
             return;
         }
     }
-    my $FileLocation = $Self->{MainObject}->FileWrite(
+    my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
         Directory  => $CacheDirectory,
         Filename   => $Filename,
         Content    => \$Dump,
@@ -97,7 +104,6 @@ sub Set {
     );
 
     return if !$FileLocation;
-
     return 1;
 }
 
@@ -107,14 +113,15 @@ sub Get {
     # check needed stuff
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
         }
     }
 
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
-    my $Content = $Self->{MainObject}->FileRead(
+    my $Content = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
         Directory       => $CacheDirectory,
         Filename        => $Filename,
         Type            => 'Local',
@@ -131,6 +138,7 @@ sub Get {
         $Self->Delete(%Param);
         return;
     }
+
     return $Storage->{Value};
 }
 
@@ -140,14 +148,15 @@ sub Delete {
     # check needed stuff
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
         }
     }
 
     my ( $Filename, $CacheDirectory ) = $Self->_GetFilenameAndCacheDirectory(%Param);
 
-    return $Self->{MainObject}->FileDelete(
+    return $Kernel::OM->Get('Kernel::System::Main')->FileDelete(
         Directory       => $CacheDirectory,
         Filename        => $Filename,
         Type            => 'Local',
@@ -158,10 +167,18 @@ sub Delete {
 sub CleanUp {
     my ( $Self, %Param ) = @_;
 
-    my @TypeList = $Self->{MainObject}->DirectoryRead(
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    my @TypeList = $MainObject->DirectoryRead(
         Directory => $Self->{CacheDirectory},
         Filter => $Param{Type} || '*',
     );
+
+    if ( $Param{KeepTypes} ) {
+        my $KeepTypesRegex = join( '|', map {"\Q$_\E"} @{ $Param{KeepTypes} } );
+        @TypeList = grep { $_ !~ m{/$KeepTypesRegex/?$}smx } @TypeList;
+    }
 
     return 1 if !@TypeList;
 
@@ -177,7 +194,7 @@ sub CleanUp {
 
         # For expired filed, check the content and TTL
         if ( $Param{Expired} ) {
-            my $Content = $Self->{MainObject}->FileRead(
+            my $Content = $MainObject->FileRead(
                 Location        => $CacheFile,
                 Mode            => 'binmode',
                 DisableWarnings => 1,
@@ -193,7 +210,7 @@ sub CleanUp {
         # exist anymore, it was probably just another process deleting it.
         my $Success = unlink $CacheFile;
         if ( !$Success && $! != POSIX::ENOENT ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't remove file $CacheFile: $!",
             );
@@ -212,13 +229,14 @@ sub _GetFilenameAndCacheDirectory {
 
     for my $Needed (qw(Type Key)) {
         if ( !defined $Param{$Needed} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Needed!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Needed!" );
             return;
         }
     }
 
     my $Filename = $Param{Key};
-    $Self->{EncodeObject}->EncodeOutput( \$Filename );
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Filename );
     $Filename = Digest::MD5::md5_hex($Filename);
 
     my $CacheDirectory = $Self->{CacheDirectory} . '/' . $Param{Type};

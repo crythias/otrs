@@ -13,32 +13,15 @@ use strict;
 use warnings;
 
 use MIME::Base64();
-use Kernel::System::Queue;
-use Kernel::System::Lock;
-use Kernel::System::Type;
-use Kernel::System::CustomerUser;
-use Kernel::System::Service;
-use Kernel::System::SLA;
-use Kernel::System::State;
-use Kernel::System::Priority;
-use Kernel::System::User;
-use Kernel::System::Ticket;
-use Kernel::System::Valid;
-use Kernel::System::Auth;
-use Kernel::System::AuthSession;
-use Kernel::System::Group;
-use Kernel::System::CustomerAuth;
-use Kernel::System::CustomerGroup;
-use Kernel::System::AutoResponse;
-use Kernel::System::CheckItem;
-use Kernel::System::DynamicField;
-use Kernel::System::DynamicField::Backend;
-use Kernel::System::GenericInterface::Webservice;
+use Mail::Address;
+
 use Kernel::System::VariableCheck qw(:all);
+
+our $ObjectManagerDisabled = 1;
 
 =head1 NAME
 
-Kernel::GenericInterface::Operation::Ticket::Common - common operation functions
+Kernel::GenericInterface::Operation::Ticket::Common - cBase class for all Ticket Operations
 
 =head1 SYNOPSIS
 
@@ -48,177 +31,60 @@ Kernel::GenericInterface::Operation::Ticket::Common - common operation functions
 
 =cut
 
-=item new()
+=item Init()
 
-create an object
+initialize the operation by checking the webservice configuration and gather of the dynamic fields
 
-    use Kernel::Config;
-    use Kernel::System::Encode;
-    use Kernel::System::Log;
-    use Kernel::System::Time;
-    use Kernel::System::Main;
-    use Kernel::System::DB;
-    use Kernel::GenericInterface::Debugger;
-    use Kernel::GenericInterface::Operation::Ticket::Common;
-
-    my $ConfigObject = Kernel::Config->new();
-    my $EncodeObject = Kernel::System::Encode->new(
-        ConfigObject => $ConfigObject,
-    );
-    my $LogObject = Kernel::System::Log->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-    );
-    my $TimeObject = Kernel::System::Time->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
-    );
-    my $MainObject = Kernel::System::Main->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-    );
-    my $DBObject = Kernel::System::DB->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-        MainObject   => $MainObject,
-    );
-    my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
-        ConfigObject       => $ConfigObject,
-        LogObject          => $LogObject,
-        DBObject           => $DBObject,
-        MainObject         => $MainObject,
-        TimeObject         => $TimeObject,
-        EncodeObject       => $EncodeObject,
-
-        DebuggerConfig   => {
-            DebugThreshold  => 'debug',
-            TestMode        => 0,           # optional, in testing mode the data will not be
-                                            #   written to the DB
-            ...
-        },
-    my $TicketCommonObject = Kernel::GenericInterface::Operation::Ticket::Common->new(
-        ConfigObject       => $ConfigObject,
-        LogObject          => $LogObject,
-        DBObject           => $DBObject,
-        MainObject         => $MainObject,
-        TimeObject         => $TimeObject,
-        EncodeObject       => $EncodeObject,
-        DebuggerObject     => $DebuggerObject,
-        WebserviceID       => $WebserviceID,             # ID of the currently used web service
+    my $Return = $CommonObject->Init(
+        Success => 1,                       # or 0 in case of failure,
+        ErrorMessage => 'Error Message',
     );
 
 =cut
 
-sub new {
-    my ( $Type, %Param ) = @_;
+sub Init {
+    my ( $Self, %Param ) = @_;
 
-    my $Self = {};
-    bless( $Self, $Type );
-
-    # check needed objects
-    for my $Needed (
-        qw( DebuggerObject MainObject TimeObject ConfigObject LogObject DBObject EncodeObject WebserviceID)
-        )
-    {
-
-        if ( !$Param{$Needed} ) {
-            return {
-                Success      => 0,
-                ErrorMessage => "Got no $Needed!"
-            };
-        }
-
-        $Self->{$Needed} = $Param{$Needed};
+    # check needed
+    if ( !$Param{WebserviceID} ) {
+        return {
+            Success      => 0,
+            ErrorMessage => "Got no WebserviceID!",
+        };
     }
 
-    # create additional objects
-    $Self->{QueueObject}        = Kernel::System::Queue->new( %{$Self} );
-    $Self->{LockObject}         = Kernel::System::Lock->new( %{$Self} );
-    $Self->{TypeObject}         = Kernel::System::Type->new( %{$Self} );
-    $Self->{CustomerUserObject} = Kernel::System::CustomerUser->new( %{$Self} );
-    $Self->{ServiceObject}      = Kernel::System::Service->new( %{$Self} );
-    $Self->{SLAObject}          = Kernel::System::SLA->new( %{$Self} );
-    $Self->{StateObject}        = Kernel::System::State->new( %{$Self} );
-    $Self->{PriorityObject}     = Kernel::System::Priority->new( %{$Self} );
-    $Self->{UserObject}         = Kernel::System::User->new( %{$Self} );
-    $Self->{TicketObject}       = Kernel::System::Ticket->new( %{$Self} );
-    $Self->{AutoResponseObject} = Kernel::System::AutoResponse->new( %{$Self} );
-    $Self->{ValidObject}        = Kernel::System::Valid->new( %{$Self} );
-    $Self->{SessionObject}      = Kernel::System::AuthSession->new( %{$Self} );
-    $Self->{GroupObject}        = Kernel::System::Group->new( %{$Self} );
-    $Self->{AuthObject}         = Kernel::System::Auth->new( %{$Self} );
-    $Self->{CheckItemObject}    = Kernel::System::CheckItem->new( %{$Self} );
-
-    $Self->{CustomerAuthObject}  = Kernel::System::CustomerAuth->new( %{$Self} );
-    $Self->{CustomerGroupObject} = Kernel::System::CustomerGroup->new( %{$Self} );
-
-    $Self->{WebserviceObject}   = Kernel::System::GenericInterface::Webservice->new( %{$Self} );
-    $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new(%Param);
-    $Self->{DFBackendObject}    = Kernel::System::DynamicField::Backend->new(%Param);
-
     # get webservice configuration
-    $Self->{Webservice} = $Self->{WebserviceObject}->WebserviceGet(
+    my $Webservice
+        = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceGet(
         ID => $Param{WebserviceID},
-    );
+        );
 
-    if ( !IsHashRefWithData( $Self->{Webservice} ) ) {
-        return $Self->_ReturnError(
-            ErrorCode => 'Webservice.InvalidConfiguration',
+    if ( !IsHashRefWithData($Webservice) ) {
+        return {
+            Success => 0,
             ErrorMessage =>
                 'Could not determine Web service configuration'
                 . ' in Kernel::GenericInterface::Operation::Ticket::Common::new()',
-        );
+        };
     }
 
     # get the dynamic fields
-    $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+    my $DynamicField = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
         Valid => 1,
         ObjectType => [ 'Ticket', 'Article' ],
     );
 
     # create a Dynamic Fields lookup table (by name)
     DYNAMICFIELD:
-    for my $DynamicField ( @{ $Self->{DynamicField} } ) {
+    for my $DynamicField ( @{$DynamicField} ) {
         next DYNAMICFIELD if !$DynamicField;
         next DYNAMICFIELD if !IsHashRefWithData($DynamicField);
         next DYNAMICFIELD if !$DynamicField->{Name};
         $Self->{DynamicFieldLookup}->{ $DynamicField->{Name} } = $DynamicField;
     }
 
-    return $Self;
-}
-
-=item ReturnError()
-
-helper function to return an error message.
-
-    my $Return = $CommonObject->ReturnError(
-        ErrorCode    => Ticket.AccessDenied,
-        ErrorMessage => 'You do not have rights to access this ticket',
-    );
-
-=cut
-
-sub ReturnError {
-    my ( $Self, %Param ) = @_;
-
-    $Self->{DebuggerObject}->Error(
-        Summary => $Param{ErrorCode},
-        Data    => $Param{ErrorMessage},
-    );
-
-    # return structure
     return {
-        Success      => 1,
-        ErrorMessage => "$Param{ErrorCode}: $Param{ErrorMessage}",
-        Data         => {
-            Error => {
-                ErrorCode    => $Param{ErrorCode},
-                ErrorMessage => $Param{ErrorMessage},
-            },
-        },
+        Success => 1
     };
 }
 
@@ -254,7 +120,7 @@ sub ValidateQueue {
         && !$Param{QueueID}
         )
     {
-        %QueueData = $Self->{QueueObject}->QueueGet(
+        %QueueData = $Kernel::OM->Get('Kernel::System::Queue')->QueueGet(
             Name => $Param{Queue},
         );
 
@@ -262,7 +128,7 @@ sub ValidateQueue {
 
     # otherwise use QueueID
     elsif ( $Param{QueueID} ) {
-        %QueueData = $Self->{QueueObject}->QueueGet(
+        %QueueData = $Kernel::OM->Get('Kernel::System::Queue')->QueueGet(
             ID => $Param{QueueID},
         );
     }
@@ -274,7 +140,14 @@ sub ValidateQueue {
     return if !IsHashRefWithData( \%QueueData );
 
     # return false if queue is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $QueueData{ValidID} ) ne 'valid';
+
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $QueueData{ValidID} ) ne
+        'valid'
+        )
+    {
+        return;
+    }
 
     return 1;
 }
@@ -309,7 +182,7 @@ sub ValidateLock {
         && !$Param{LockID}
         )
     {
-        my $LockID = $Self->{LockObject}->LockLookup(
+        my $LockID = $Kernel::OM->Get('Kernel::System::Lock')->LockLookup(
             Lock => $Param{Lock},
         );
         return if !$LockID;
@@ -317,7 +190,7 @@ sub ValidateLock {
 
     # otherwise use LockID
     elsif ( $Param{LockID} ) {
-        my $Lock = $Self->{LockObject}->LockLookup(
+        my $Lock = $Kernel::OM->Get('Kernel::System::Lock')->LockLookup(
             LockID => $Param{LockID},
         );
         return if !$Lock;
@@ -361,14 +234,14 @@ sub ValidateType {
         && !$Param{TypeID}
         )
     {
-        %TypeData = $Self->{TypeObject}->TypeGet(
+        %TypeData = $Kernel::OM->Get('Kernel::System::Type')->TypeGet(
             Name => $Param{Type},
         );
     }
 
     # otherwise use TypeID
     elsif ( $Param{TypeID} ) {
-        %TypeData = $Self->{TypeObject}->TypeGet(
+        %TypeData = $Kernel::OM->Get('Kernel::System::Type')->TypeGet(
             ID => $Param{TypeID},
         );
     }
@@ -380,7 +253,13 @@ sub ValidateType {
     return if !IsHashRefWithData( \%TypeData );
 
     # return false if type is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $TypeData{ValidID} ) ne 'valid';
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $TypeData{ValidID} ) ne
+        'valid'
+        )
+    {
+        return;
+    }
 
     return 1;
 }
@@ -416,7 +295,7 @@ sub ValidateCustomer {
         && $Param{CustomerUser} ne ''
         )
     {
-        %CustomerData = $Self->{CustomerUserObject}->CustomerUserDataGet(
+        %CustomerData = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
             User => $Param{CustomerUser},
         );
     }
@@ -433,7 +312,13 @@ sub ValidateCustomer {
     if ( defined $CustomerData{ValidID} ) {
 
         # return false if customer is not valid
-        return if $Self->{ValidObject}->ValidLookup( ValidID => $CustomerData{ValidID} ) ne 'valid';
+        if (
+            $Kernel::OM->Get('Kernel::System::Valid')
+            ->ValidLookup( ValidID => $CustomerData{ValidID} ) ne 'valid'
+            )
+        {
+            return;
+        }
     }
 
     return 1;
@@ -467,6 +352,9 @@ sub ValidateService {
 
     my %ServiceData;
 
+    # get service object
+    my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
+
     # check for Service name sent
     if (
         $Param{Service}
@@ -474,7 +362,7 @@ sub ValidateService {
         && !$Param{ServiceID}
         )
     {
-        %ServiceData = $Self->{ServiceObject}->ServiceGet(
+        %ServiceData = $ServiceObject->ServiceGet(
             Name   => $Param{Service},
             UserID => 1,
         );
@@ -482,7 +370,7 @@ sub ValidateService {
 
     # otherwise use ServiceID
     elsif ( $Param{ServiceID} ) {
-        %ServiceData = $Self->{ServiceObject}->ServiceGet(
+        %ServiceData = $ServiceObject->ServiceGet(
             ServiceID => $Param{ServiceID},
             UserID    => 1,
         );
@@ -495,10 +383,16 @@ sub ValidateService {
     return if !IsHashRefWithData( \%ServiceData );
 
     # return false if service is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $ServiceData{ValidID} ) ne 'valid';
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $ServiceData{ValidID} )
+        ne 'valid'
+        )
+    {
+        return;
+    }
 
     # get customer services
-    my %CustomerServices = $Self->{ServiceObject}->CustomerUserServiceMemberList(
+    my %CustomerServices = $ServiceObject->CustomerUserServiceMemberList(
         CustomerUserLogin => $Param{CustomerUser},
         Result            => 'HASH',
         DefaultServices   => 1,
@@ -538,6 +432,9 @@ sub ValidateSLA {
 
     my %SLAData;
 
+    # get SLA object
+    my $SLAObject = $Kernel::OM->Get('Kernel::System::SLA');
+
     # check for SLA name sent
     if (
         $Param{SLA}
@@ -545,10 +442,10 @@ sub ValidateSLA {
         && !$Param{SLAID}
         )
     {
-        my $SLAID = $Self->{SLAObject}->SLALookup(
+        my $SLAID = $SLAObject->SLALookup(
             Name => $Param{SLA},
         );
-        %SLAData = $Self->{SLAObject}->SLAGet(
+        %SLAData = $SLAObject->SLAGet(
             SLAID  => $SLAID,
             UserID => 1,
         );
@@ -556,7 +453,7 @@ sub ValidateSLA {
 
     # otherwise use SLAID
     elsif ( $Param{SLAID} ) {
-        %SLAData = $Self->{SLAObject}->SLAGet(
+        %SLAData = $SLAObject->SLAGet(
             SLAID  => $Param{SLAID},
             UserID => 1,
         );
@@ -569,7 +466,13 @@ sub ValidateSLA {
     return if !IsHashRefWithData( \%SLAData );
 
     # return false if SLA is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $SLAData{ValidID} ) ne 'valid';
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $SLAData{ValidID} )
+        ne 'valid'
+        )
+    {
+        return;
+    }
 
     # get service ID
     my $ServiceID;
@@ -579,7 +482,9 @@ sub ValidateSLA {
         && !$Param{ServiceID}
         )
     {
-        $ServiceID = $Self->{ServiceObject}->ServiceLookup( Name => $Param{Service} ) || 0;
+        $ServiceID
+            = $Kernel::OM->Get('Kernel::System::Service')->ServiceLookup( Name => $Param{Service} )
+            || 0;
     }
     else {
         $ServiceID = $Param{ServiceID} || 0;
@@ -637,7 +542,7 @@ sub ValidateState {
         && !$Param{StateID}
         )
     {
-        %StateData = $Self->{StateObject}->StateGet(
+        %StateData = $Kernel::OM->Get('Kernel::System::State')->StateGet(
             Name => $Param{State},
         );
 
@@ -645,7 +550,7 @@ sub ValidateState {
 
     # otherwise use StateID
     elsif ( $Param{StateID} ) {
-        %StateData = $Self->{StateObject}->StateGet(
+        %StateData = $Kernel::OM->Get('Kernel::System::State')->StateGet(
             ID => $Param{StateID},
         );
     }
@@ -657,7 +562,13 @@ sub ValidateState {
     return if !IsHashRefWithData( \%StateData );
 
     # return false if queue is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $StateData{ValidID} ) ne 'valid';
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $StateData{ValidID} )
+        ne 'valid'
+        )
+    {
+        return;
+    }
 
     return 1;
 }
@@ -687,6 +598,9 @@ sub ValidatePriority {
 
     my %PriorityData;
 
+    # get priority object
+    my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
+
     # check for Priority name sent
     if (
         $Param{Priority}
@@ -694,10 +608,10 @@ sub ValidatePriority {
         && !$Param{PriorityID}
         )
     {
-        my $PriorityID = $Self->{PriorityObject}->PriorityLookup(
+        my $PriorityID = $PriorityObject->PriorityLookup(
             Priority => $Param{Priority},
         );
-        %PriorityData = $Self->{PriorityObject}->PriorityGet(
+        %PriorityData = $PriorityObject->PriorityGet(
             PriorityID => $PriorityID,
             UserID     => 1,
         );
@@ -705,7 +619,7 @@ sub ValidatePriority {
 
     # otherwise use PriorityID
     elsif ( $Param{PriorityID} ) {
-        %PriorityData = $Self->{PriorityObject}->PriorityGet(
+        %PriorityData = $PriorityObject->PriorityGet(
             PriorityID => $Param{PriorityID},
             UserID     => 1,
         );
@@ -718,7 +632,13 @@ sub ValidatePriority {
     return if !IsHashRefWithData( \%PriorityData );
 
     # return false if priority is not valid
-    return if $Self->{ValidObject}->ValidLookup( ValidID => $PriorityData{ValidID} ) ne 'valid';
+    if (
+        $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup( ValidID => $PriorityData{ValidID} )
+        ne 'valid'
+        )
+    {
+        return;
+    }
 
     return 1;
 }
@@ -814,7 +734,7 @@ sub ValidatePendingTime {
     }
 
     # try to convert pending time to a SystemTime
-    my $SystemTime = $Self->{TimeObject}->Date2SystemTime(
+    my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->Date2SystemTime(
         %{ $Param{PendingTime} },
         Second => 0,
     );
@@ -843,13 +763,14 @@ sub ValidateAutoResponseType {
     return if !$Param{AutoResponseType};
 
     # get all AutoResponse Types
-    my %AutoResponseType = $Self->{AutoResponseObject}->AutoResponseTypeList();
+    my %AutoResponseType = $Kernel::OM->Get('Kernel::System::AutoResponse')->AutoResponseTypeList();
 
     return if !%AutoResponseType;
 
     for my $AutoResponseType ( values %AutoResponseType ) {
         return 1 if $AutoResponseType eq $Param{AutoResponseType}
     }
+    return;
 }
 
 =item ValidateArticleType()
@@ -875,7 +796,10 @@ sub ValidateArticleType {
     # check needed stuff
     return if !$Param{ArticleTypeID} && !$Param{ArticleType};
 
-    my %ArticleTypeList = $Self->{TicketObject}->ArticleTypeList(
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    my %ArticleTypeList = $TicketObject->ArticleTypeList(
         Result => 'HASH',
 
         # add type parameter for customer as requester with UserType parameter, if is not set
@@ -890,7 +814,7 @@ sub ValidateArticleType {
         && !$Param{ArticleTypeID}
         )
     {
-        my $ArticleTypeID = $Self->{TicketObject}->ArticleTypeLookup(
+        my $ArticleTypeID = $TicketObject->ArticleTypeLookup(
             ArticleType => $Param{ArticleType},
         );
 
@@ -902,7 +826,7 @@ sub ValidateArticleType {
 
     # otherwise use ArticleTypeID
     elsif ( $Param{ArticleTypeID} ) {
-        my $ArticleType = $Self->{TicketObject}->ArticleTypeLookup(
+        my $ArticleType = $TicketObject->ArticleTypeLookup(
             ArticleTypeID => $Param{ArticleTypeID},
         );
 
@@ -939,7 +863,11 @@ sub ValidateFrom {
 
     # check email address
     for my $Email ( Mail::Address->parse( $Param{From} ) ) {
-        if ( !$Self->{CheckItemObject}->CheckEmail( Address => $Email->address() ) ) {
+        if (
+            !$Kernel::OM->Get('Kernel::System::CheckItem')
+            ->CheckEmail( Address => $Email->address() )
+            )
+        {
             return;
         }
     }
@@ -970,7 +898,10 @@ sub ValidateSenderType {
     # check needed stuff
     return if !$Param{SenderTypeID} && !$Param{SenderType};
 
-    my %SenderTypeList = $Self->{TicketObject}->ArticleSenderTypeList(
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    my %SenderTypeList = $TicketObject->ArticleSenderTypeList(
         Result => 'HASH',
     );
 
@@ -981,7 +912,7 @@ sub ValidateSenderType {
         && !$Param{SenderTypeID}
         )
     {
-        my $SenderTypeID = $Self->{TicketObject}->ArticleSenderTypeLookup(
+        my $SenderTypeID = $TicketObject->ArticleSenderTypeLookup(
             SenderType => $Param{SenderType},
         );
 
@@ -993,7 +924,7 @@ sub ValidateSenderType {
 
     # otherwise use SenderTypeID
     elsif ( $Param{SenderTypeID} ) {
-        my $SenderType = $Self->{TicketObject}->ArticleSenderTypeLookup(
+        my $SenderType = $TicketObject->ArticleSenderTypeLookup(
             SenderTypeID => $Param{SenderTypeID},
         );
 
@@ -1084,7 +1015,7 @@ sub ValidateHistoryType {
         && $Param{HistoryType} ne ''
         )
     {
-        my $HistoryTypeID = $Self->{TicketObject}->HistoryTypeLookup(
+        my $HistoryTypeID = $Kernel::OM->Get('Kernel::System::Ticket')->HistoryTypeLookup(
             Type => $Param{HistoryType},
         );
 
@@ -1202,11 +1133,13 @@ sub ValidateDynamicFieldValue {
     # get dynamic field config
     my $DynamicFieldConfig = $Self->{DynamicFieldLookup}->{ $Param{Name} };
 
-    my $ValueType = $Self->{DFBackendObject}->ValueValidate(
+    my $ValueType = $Kernel::OM->Get('Kernel::System::DynamicField::Backend')->ValueValidate(
         DynamicFieldConfig => $DynamicFieldConfig,
         Value              => $Param{Value},
         UserID             => 1,
     );
+
+    return $ValueType;
 }
 
 =item ValidateDynamicFieldObjectType()
@@ -1305,7 +1238,7 @@ sub SetDynamicFieldValue {
         };
     }
 
-    my $Success = $Self->{DFBackendObject}->ValueSet(
+    my $Success = $Kernel::OM->Get('Kernel::System::DynamicField::Backend')->ValueSet(
         DynamicFieldConfig => $DynamicFieldConfig,
         ObjectID           => $ObjectID,
         Value              => $Param{Value},
@@ -1355,7 +1288,7 @@ sub CreateAttachment {
     }
 
     # write attachment
-    my $Success = $Self->{TicketObject}->ArticleWriteAttachment(
+    my $Success = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleWriteAttachment(
         %{ $Param{Attachment} },
         Content   => MIME::Base64::decode_base64( $Param{Attachment}->{Content} ),
         ArticleID => $Param{ArticleID},
@@ -1385,14 +1318,14 @@ sub CheckCreatePermissions {
     my %UserGroups;
 
     if ( $Param{UserType} ne 'Customer' ) {
-        %UserGroups = $Self->{GroupObject}->GroupMemberList(
+        %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberList(
             UserID => $Param{UserID},
             Type   => 'create',
             Result => 'HASH',
         );
     }
     else {
-        %UserGroups = $Self->{CustomerGroupObject}->GroupMemberList(
+        %UserGroups = $Kernel::OM->Get('Kernel::System::CustomerGroup')->GroupMemberList(
             UserID => $Param{UserID},
             Type   => 'create',
             Result => 'HASH',
@@ -1401,10 +1334,12 @@ sub CheckCreatePermissions {
 
     my %QueueData;
     if ( defined $Param{Ticket}->{Queue} && $Param{Ticket}->{Queue} ne '' ) {
-        %QueueData = $Self->{QueueObject}->QueueGet( Name => $Param{Ticket}->{Queue} );
+        %QueueData = $Kernel::OM->Get('Kernel::System::Queue')
+            ->QueueGet( Name => $Param{Ticket}->{Queue} );
     }
     else {
-        %QueueData = $Self->{QueueObject}->QueueGet( ID => $Param{Ticket}->{QueueID} );
+        %QueueData = $Kernel::OM->Get('Kernel::System::Queue')
+            ->QueueGet( ID => $Param{Ticket}->{QueueID} );
     }
 
     # permission check, can we create new tickets in queue
@@ -1447,7 +1382,7 @@ sub _ValidateUser {
         && !$Param{UserID}
         )
     {
-        %UserData = $Self->{UserObject}->GetUserData(
+        %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
             User  => $Param{User},
             Valid => 1,
         );
@@ -1455,7 +1390,7 @@ sub _ValidateUser {
 
     # otherwise use UserID
     elsif ( $Param{UserID} ) {
-        %UserData = $Self->{UserObject}->GetUserData(
+        %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
             UserID => $Param{UserID},
             Valid  => 1,
         );

@@ -12,42 +12,37 @@ package Kernel::System::Stats::Dynamic::TicketAccountedTime;
 use strict;
 use warnings;
 
-use Kernel::System::DynamicField::Backend;
-
 use Kernel::System::VariableCheck qw(:all);
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::DB',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Lock',
+    'Kernel::System::Log',
+    'Kernel::System::Priority',
+    'Kernel::System::Queue',
+    'Kernel::System::Service',
+    'Kernel::System::SLA',
+    'Kernel::System::State',
+    'Kernel::System::Ticket',
+    'Kernel::System::Type',
+    'Kernel::System::User',
+);
+our $ObjectManagerAware = 1;
 
 sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {
-        $Kernel::OM->ObjectHash(
-            Objects => [
-                qw(
-                    DBObject
-                    ConfigObject
-                    LogObject
-                    UserObject
-                    TimeObject
-                    QueueObject
-                    TicketObject
-                    StateObject
-                    PriorityObject
-                    LockObject
-                    ServiceObject
-                    SLAObject
-                    TypeObject
-                    DynamicFieldObject
-                )
-            ],
-        ),
-    };
+    my $Self = {};
     bless( $Self, $Type );
 
-    $Self->{BackendObject} = Kernel::System::DynamicField::Backend->new( %{$Self} );
+    $Self->{DBSlaveObject} = $Param{DBSlaveObject} || $Kernel::OM->Get('Kernel::System::DB');
 
     # get the dynamic fields for ticket object
-    $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+    $Self->{DynamicField} = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
         Valid      => 1,
         ObjectType => ['Ticket'],
     );
@@ -74,41 +69,50 @@ sub GetObjectBehaviours {
 sub GetObjectAttributes {
     my ( $Self, %Param ) = @_;
 
+    # get needed objects
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
+    my $QueueObject    = $Kernel::OM->Get('Kernel::System::Queue');
+    my $TicketObject   = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $StateObject    = $Kernel::OM->Get('Kernel::System::State');
+    my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
+    my $LockObject     = $Kernel::OM->Get('Kernel::System::Lock');
+
     my $ValidAgent = 0;
     if (
-        defined $Self->{ConfigObject}->Get('Stats::UseInvalidAgentInStats')
-        && ( $Self->{ConfigObject}->Get('Stats::UseInvalidAgentInStats') == 0 )
+        defined $ConfigObject->Get('Stats::UseInvalidAgentInStats')
+        && ( $ConfigObject->Get('Stats::UseInvalidAgentInStats') == 0 )
         )
     {
         $ValidAgent = 1;
     }
 
     # get user list
-    my %UserList = $Self->{UserObject}->UserList(
+    my %UserList = $UserObject->UserList(
         Type  => 'Long',
         Valid => $ValidAgent,
     );
 
     # get state list
-    my %StateList = $Self->{StateObject}->StateList(
+    my %StateList = $StateObject->StateList(
         UserID => 1,
     );
 
     # get state type list
-    my %StateTypeList = $Self->{StateObject}->StateTypeList(
+    my %StateTypeList = $StateObject->StateTypeList(
         UserID => 1,
     );
 
     # get queue list
-    my %QueueList = $Self->{QueueObject}->GetAllQueues();
+    my %QueueList = $QueueObject->GetAllQueues();
 
     # get priority list
-    my %PriorityList = $Self->{PriorityObject}->PriorityList(
+    my %PriorityList = $PriorityObject->PriorityList(
         UserID => 1,
     );
 
     # get lock list
-    my %LockList = $Self->{LockObject}->LockList(
+    my %LockList = $LockObject->LockList(
         UserID => 1,
     );
 
@@ -350,15 +354,15 @@ sub GetObjectAttributes {
         },
     );
 
-    if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
+    if ( $ConfigObject->Get('Ticket::Service') ) {
 
         # get service list
-        my %Service = $Self->{ServiceObject}->ServiceList(
+        my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
             UserID => 1,
         );
 
         # get sla list
-        my %SLA = $Self->{SLAObject}->SLAList(
+        my %SLA = $Kernel::OM->Get('Kernel::System::SLA')->SLAList(
             UserID => 1,
         );
 
@@ -389,10 +393,10 @@ sub GetObjectAttributes {
         unshift @ObjectAttributes, @ObjectAttributeAdd;
     }
 
-    if ( $Self->{ConfigObject}->Get('Ticket::Type') ) {
+    if ( $ConfigObject->Get('Ticket::Type') ) {
 
         # get ticket type list
-        my %Type = $Self->{TypeObject}->TypeList(
+        my %Type = $Kernel::OM->Get('Kernel::System::Type')->TypeList(
             UserID => 1,
         );
 
@@ -410,7 +414,7 @@ sub GetObjectAttributes {
         unshift @ObjectAttributes, \%ObjectAttribute1;
     }
 
-    if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+    if ( $ConfigObject->Get('Ticket::ArchiveSystem') ) {
 
         my %ObjectAttribute = (
             Name             => 'Archive Search',
@@ -430,7 +434,7 @@ sub GetObjectAttributes {
         push @ObjectAttributes, \%ObjectAttribute;
     }
 
-    if ( $Self->{ConfigObject}->Get('Stats::UseAgentElementInStats') ) {
+    if ( $ConfigObject->Get('Stats::UseAgentElementInStats') ) {
 
         my @ObjectAttributeAdd = (
             {
@@ -478,17 +482,17 @@ sub GetObjectAttributes {
         push @ObjectAttributes, @ObjectAttributeAdd;
     }
 
-    if ( $Self->{ConfigObject}->Get('Stats::CustomerIDAsMultiSelect') ) {
+    if ( $ConfigObject->Get('Stats::CustomerIDAsMultiSelect') ) {
 
         # Get CustomerID
         # (This way also can be the solution for the CustomerUserID)
-        $Self->{DBObject}->Prepare(
+        $Self->{DBSlaveObject}->Prepare(
             SQL => "SELECT DISTINCT customer_id FROM ticket",
         );
 
         # fetch the result
         my %CustomerID;
-        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
             if ( $Row[0] ) {
                 $CustomerID{ $Row[0] } = $Row[0];
             }
@@ -520,13 +524,16 @@ sub GetObjectAttributes {
         push @ObjectAttributes, \%ObjectAttribute;
     }
 
+    # get dynamic field backend object
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     # cycle trough the activated Dynamic Fields for this screen
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
         # skip all fields not designed to be supported by statistics
-        my $IsStatsCondition = $Self->{BackendObject}->HasBehavior(
+        my $IsStatsCondition = $DynamicFieldBackendObject->HasBehavior(
             DynamicFieldConfig => $DynamicFieldConfig,
             Behavior           => 'IsStatsCondition',
         );
@@ -535,7 +542,7 @@ sub GetObjectAttributes {
 
         my $PossibleValuesFilter;
 
-        my $IsACLReducible = $Self->{BackendObject}->HasBehavior(
+        my $IsACLReducible = $DynamicFieldBackendObject->HasBehavior(
             DynamicFieldConfig => $DynamicFieldConfig,
             Behavior           => 'IsACLReducible',
         );
@@ -543,7 +550,7 @@ sub GetObjectAttributes {
         if ($IsACLReducible) {
 
             # get PossibleValues
-            my $PossibleValues = $Self->{BackendObject}->PossibleValuesGet(
+            my $PossibleValues = $DynamicFieldBackendObject->PossibleValuesGet(
                 DynamicFieldConfig => $DynamicFieldConfig,
             );
 
@@ -552,7 +559,7 @@ sub GetObjectAttributes {
             @AclData{ keys %AclData } = keys %AclData;
 
             # set possible values filter from ACLs
-            my $ACL = $Self->{TicketObject}->TicketAcl(
+            my $ACL = $TicketObject->TicketAcl(
                 Action        => 'AgentStats',
                 Type          => 'DynamicField_' . $DynamicFieldConfig->{Name},
                 ReturnType    => 'Ticket',
@@ -561,7 +568,7 @@ sub GetObjectAttributes {
                 UserID        => 1,
             );
             if ($ACL) {
-                my %Filter = $Self->{TicketObject}->TicketAclData();
+                my %Filter = $TicketObject->TicketAclData();
 
                 # convert Filer key => key back to key => value using map
                 %{$PossibleValuesFilter}
@@ -570,13 +577,26 @@ sub GetObjectAttributes {
         }
 
         # get field html
-        my $DynamicFieldStatsParameter = $Self->{BackendObject}->StatsFieldParameterBuild(
+        my $DynamicFieldStatsParameter
+            = $DynamicFieldBackendObject->StatsFieldParameterBuild(
             DynamicFieldConfig   => $DynamicFieldConfig,
             PossibleValuesFilter => $PossibleValuesFilter,
-        );
+            );
 
         if ( IsHashRefWithData($DynamicFieldStatsParameter) ) {
-            if ( IsHashRefWithData( $DynamicFieldStatsParameter->{Values} ) ) {
+
+            # backward compatibility
+            if ( !$DynamicFieldStatsParameter->{Block} ) {
+                $DynamicFieldStatsParameter->{Block} = 'InputField';
+                if ( IsHashRefWithData( $DynamicFieldStatsParameter->{Values} ) ) {
+                    $DynamicFieldStatsParameter->{Block} = 'MultiSelectField';
+                }
+            }
+            if ( $DynamicFieldStatsParameter->{Block} eq 'Time' ) {
+
+                # create object attributes (date/time fields)
+                my $TimePeriodFormat
+                    = $DynamicFieldStatsParameter->{TimePeriodFormat} || 'DateInputFormatLong';
 
                 my %ObjectAttribute = (
                     Name             => $DynamicFieldStatsParameter->{Name},
@@ -584,7 +604,30 @@ sub GetObjectAttributes {
                     UseAsValueSeries => 1,
                     UseAsRestriction => 1,
                     Element          => $DynamicFieldStatsParameter->{Element},
-                    Block            => 'MultiSelectField',
+                    TimePeriodFormat => $TimePeriodFormat,
+                    Block            => $DynamicFieldStatsParameter->{Block},
+                    TimePeriodFormat => $TimePeriodFormat,
+                    Values           => {
+                        TimeStart =>
+                            $DynamicFieldStatsParameter->{Element}
+                            . '_GreaterThanEquals',
+                        TimeStop  =>
+                            $DynamicFieldStatsParameter->{Element}
+                            . '_SmallerThanEquals',
+                    },
+                );
+                push @ObjectAttributes, \%ObjectAttribute;
+            }
+            elsif ( $DynamicFieldStatsParameter->{Block} eq 'MultiSelectField' ) {
+
+                # create object attributes (multiple values)
+                my %ObjectAttribute = (
+                    Name             => $DynamicFieldStatsParameter->{Name},
+                    UseAsXvalue      => 1,
+                    UseAsValueSeries => 1,
+                    UseAsRestriction => 1,
+                    Element          => $DynamicFieldStatsParameter->{Element},
+                    Block            => $DynamicFieldStatsParameter->{Block},
                     Values           => $DynamicFieldStatsParameter->{Values},
                     Translation      => 0,
                     IsDynamicField   => 1,
@@ -593,13 +636,15 @@ sub GetObjectAttributes {
                 push @ObjectAttributes, \%ObjectAttribute;
             }
             else {
+
+                # create object attributes (text fields)
                 my %ObjectAttribute = (
                     Name             => $DynamicFieldStatsParameter->{Name},
                     UseAsXvalue      => 0,
                     UseAsValueSeries => 0,
                     UseAsRestriction => 1,
                     Element          => $DynamicFieldStatsParameter->{Element},
-                    Block            => 'InputField',
+                    Block            => $DynamicFieldStatsParameter->{Block},
                 );
                 push @ObjectAttributes, \%ObjectAttribute;
             }
@@ -699,6 +744,12 @@ sub GetHeaderLine {
 sub ExportWrapper {
     my ( $Self, %Param ) = @_;
 
+    # get needed objects
+    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
+    my $QueueObject    = $Kernel::OM->Get('Kernel::System::Queue');
+    my $StateObject    = $Kernel::OM->Get('Kernel::System::State');
+    my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
+
     # wrap ids to used spelling
     for my $Use (qw(UseAsValueSeries UseAsRestriction UseAsXvalue)) {
         ELEMENT:
@@ -711,11 +762,11 @@ sub ExportWrapper {
                 ID:
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
-                    $ID->{Content} = $Self->{QueueObject}->QueueLookup( QueueID => $ID->{Content} );
+                    $ID->{Content} = $QueueObject->QueueLookup( QueueID => $ID->{Content} );
                 }
             }
             elsif ( $ElementName eq 'StateIDs' || $ElementName eq 'CreatedStateIDs' ) {
-                my %StateList = $Self->{StateObject}->StateList( UserID => 1 );
+                my %StateList = $StateObject->StateList( UserID => 1 );
                 ID:
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
@@ -723,7 +774,7 @@ sub ExportWrapper {
                 }
             }
             elsif ( $ElementName eq 'PriorityIDs' || $ElementName eq 'CreatedPriorityIDs' ) {
-                my %PriorityList = $Self->{PriorityObject}->PriorityList( UserID => 1 );
+                my %PriorityList = $PriorityObject->PriorityList( UserID => 1 );
                 ID:
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
@@ -739,7 +790,7 @@ sub ExportWrapper {
                 ID:
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
-                    $ID->{Content} = $Self->{UserObject}->UserLookup( UserID => $ID->{Content} );
+                    $ID->{Content} = $UserObject->UserLookup( UserID => $ID->{Content} );
                 }
             }
 
@@ -751,6 +802,12 @@ sub ExportWrapper {
 
 sub ImportWrapper {
     my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
+    my $QueueObject    = $Kernel::OM->Get('Kernel::System::Queue');
+    my $StateObject    = $Kernel::OM->Get('Kernel::System::State');
+    my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
 
     # wrap used spelling to ids
     for my $Use (qw(UseAsValueSeries UseAsRestriction UseAsXvalue)) {
@@ -764,12 +821,12 @@ sub ImportWrapper {
                 ID:
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
-                    if ( $Self->{QueueObject}->QueueLookup( Queue => $ID->{Content} ) ) {
+                    if ( $QueueObject->QueueLookup( Queue => $ID->{Content} ) ) {
                         $ID->{Content}
-                            = $Self->{QueueObject}->QueueLookup( Queue => $ID->{Content} );
+                            = $QueueObject->QueueLookup( Queue => $ID->{Content} );
                     }
                     else {
-                        $Self->{LogObject}->Log(
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message  => "Import: Can' find the queue $ID->{Content}!"
                         );
@@ -782,7 +839,7 @@ sub ImportWrapper {
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
 
-                    my %State = $Self->{StateObject}->StateGet(
+                    my %State = $StateObject->StateGet(
                         Name  => $ID->{Content},
                         Cache => 1,
                     );
@@ -790,7 +847,7 @@ sub ImportWrapper {
                         $ID->{Content} = $State{ID};
                     }
                     else {
-                        $Self->{LogObject}->Log(
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message  => "Import: Can' find state $ID->{Content}!"
                         );
@@ -799,7 +856,7 @@ sub ImportWrapper {
                 }
             }
             elsif ( $ElementName eq 'PriorityIDs' || $ElementName eq 'CreatedPriorityIDs' ) {
-                my %PriorityList = $Self->{PriorityObject}->PriorityList( UserID => 1 );
+                my %PriorityList = $PriorityObject->PriorityList( UserID => 1 );
                 my %PriorityIDs;
                 for my $Key ( sort keys %PriorityList ) {
                     $PriorityIDs{ $PriorityList{$Key} } = $Key;
@@ -812,7 +869,7 @@ sub ImportWrapper {
                         $ID->{Content} = $PriorityIDs{ $ID->{Content} };
                     }
                     else {
-                        $Self->{LogObject}->Log(
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message  => "Import: Can' find priority $ID->{Content}!"
                         );
@@ -830,13 +887,13 @@ sub ImportWrapper {
                 for my $ID ( @{$Values} ) {
                     next ID if !$ID;
 
-                    if ( $Self->{UserObject}->UserLookup( UserLogin => $ID->{Content} ) ) {
-                        $ID->{Content} = $Self->{UserObject}->UserLookup(
+                    if ( $UserObject->UserLookup( UserLogin => $ID->{Content} ) ) {
+                        $ID->{Content} = $UserObject->UserLookup(
                             UserLogin => $ID->{Content}
                         );
                     }
                     else {
-                        $Self->{LogObject}->Log(
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message  => "Import: Can' find user $ID->{Content}!"
                         );
@@ -868,8 +925,22 @@ sub _ReportingValues {
     my %TicketSearch;
     ATTRIBUTE:
     for my $Attribute ( @{ $Self->_AllowedTicketSearchAttributes() } ) {
-        next ATTRIBUTE if !$SearchAttributes->{$Attribute};
-        $TicketSearch{$Attribute} = $SearchAttributes->{$Attribute};
+
+        # special handling for dynamic field date/time fields
+        if ( $Attribute =~ m{ \A DynamicField_ }xms ) {
+            SEARCHATTRIBUTE:
+            for my $SearchAttribute ( sort keys %{$SearchAttributes} ) {
+                next SEARCHATTRIBUTE if $SearchAttribute !~ m{ \A \Q$Attribute\E _ }xms;
+                $TicketSearch{$SearchAttribute} = $SearchAttributes->{$SearchAttribute};
+
+                # don't exist loop
+                # there can be more than one attribute param per allowed attribute
+            }
+        }
+        else {
+            next ATTRIBUTE if !$SearchAttributes->{$Attribute};
+            $TicketSearch{$Attribute} = $SearchAttributes->{$Attribute};
+        }
 
         next ATTRIBUTE if !$AttributesToEscape{$Attribute};
 
@@ -877,20 +948,27 @@ sub _ReportingValues {
         if ( ref $TicketSearch{$Attribute} ) {
             if ( ref $TicketSearch{$Attribute} eq 'ARRAY' ) {
                 $TicketSearch{$Attribute} = [
-                    map { $Self->{DBObject}->QueryStringEscape( QueryString => $_ ) }
+                    map { $Self->{DBSlaveObject}->QueryStringEscape( QueryString => $_ ) }
                         @{ $TicketSearch{$Attribute} }
                 ];
             }
         }
         else {
-            $TicketSearch{$Attribute} = $Self->{DBObject}->QueryStringEscape(
+            $TicketSearch{$Attribute} = $Self->{DBSlaveObject}->QueryStringEscape(
                 QueryString => $TicketSearch{$Attribute}
             );
         }
     }
 
+    # get dynamic field backend object
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     for my $ParameterName ( sort keys %TicketSearch ) {
-        if ( $ParameterName =~ m{\A DynamicField_ ( [a-zA-Z\d]+ ) \z}xms ) {
+        if (
+            $ParameterName =~ m{ \A DynamicField_ ( [a-zA-Z\d]+ ) (?: _ ( [a-zA-Z\d]+ ) )? \z }xms
+        ) {
+            my $FieldName = $1;
+            my $Operator  = $2;
 
             # loop over the dynamic fields configured
             DYNAMICFIELD:
@@ -898,12 +976,12 @@ sub _ReportingValues {
                 next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
                 next DYNAMICFIELD if !$DynamicFieldConfig->{Name};
 
-                # skip all fields that does not match with current field name ($1)
+                # skip all fields that do not match with current field name
                 # without the 'DynamicField_' prefix
-                next DYNAMICFIELD if $DynamicFieldConfig->{Name} ne $1;
+                next DYNAMICFIELD if $DynamicFieldConfig->{Name} ne $FieldName;
 
                 # skip all fields not designed to be supported by statistics
-                my $IsStatsCondition = $Self->{BackendObject}->HasBehavior(
+                my $IsStatsCondition = $DynamicFieldBackendObject->HasBehavior(
                     DynamicFieldConfig => $DynamicFieldConfig,
                     Behavior           => 'IsStatsCondition',
                 );
@@ -912,18 +990,30 @@ sub _ReportingValues {
 
                 # get new search parameter
                 my $DynamicFieldStatsSearchParameter
-                    = $Self->{BackendObject}->StatsSearchFieldParameterBuild(
+                    = $DynamicFieldBackendObject->StatsSearchFieldParameterBuild(
                     DynamicFieldConfig => $DynamicFieldConfig,
                     Value              => $TicketSearch{$ParameterName},
+                    Operator           => $Operator,
                     );
 
                 # add new search parameter
-                $TicketSearch{$ParameterName} = $DynamicFieldStatsSearchParameter;
+                if ( !IsHashRefWithData($TicketSearch{"DynamicField_$FieldName"}) ) {
+                    $TicketSearch{"DynamicField_$FieldName"} =
+                        $DynamicFieldStatsSearchParameter;
+                }
+
+                # extend search parameter
+                elsif ( IsHashRefWithData($DynamicFieldStatsSearchParameter) ) {
+                    $TicketSearch{"DynamicField_$FieldName"} = {
+                        %{ $TicketSearch{"DynamicField_$FieldName"} },
+                        %{ $DynamicFieldStatsSearchParameter },
+                    };
+                }
             }
         }
     }
 
-    if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem') ) {
         $SearchAttributes->{SearchInArchive} ||= '';
         if ( $SearchAttributes->{SearchInArchive} eq 'AllTickets' ) {
             $TicketSearch{ArchiveFlags} = [ 'y', 'n' ];
@@ -939,7 +1029,7 @@ sub _ReportingValues {
     if (%TicketSearch) {
 
         # get the involved tickets
-        my @TicketIDs = $Self->{TicketObject}->TicketSearch(
+        my @TicketIDs = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSearch(
             UserID     => 1,
             Result     => 'ARRAY',
             Permission => 'ro',
@@ -957,7 +1047,7 @@ sub _ReportingValues {
         }
 
         # get db type
-        my $DBType = $Self->{DBObject}->{'DB::Type'};
+        my $DBType = $Self->{DBSlaveObject}->{'DB::Type'};
 
         # here comes a workaround for ORA-01795: maximum number of expressions in a list is 1000
         # for oracle we make sure, that we don 't get more than 1000 ticket ids in a list
@@ -1035,7 +1125,7 @@ sub _ReportingValues {
     }
 
     if ( $SearchAttributes->{AccountedByAgent} ) {
-        my @AccountedByAgent = map { $Self->{DBObject}->Quote( $_, 'Integer' ) }
+        my @AccountedByAgent = map { $Self->{DBSlaveObject}->Quote( $_, 'Integer' ) }
             @{ $SearchAttributes->{AccountedByAgent} };
         my $String = join ', ', @AccountedByAgent;
         push @Where, "create_by IN ( $String )";
@@ -1046,8 +1136,10 @@ sub _ReportingValues {
         && $SearchAttributes->{ArticleAccountedTimeNewerDate}
         )
     {
-        my $Start = $Self->{DBObject}->Quote( $SearchAttributes->{ArticleAccountedTimeNewerDate} );
-        my $Stop  = $Self->{DBObject}->Quote( $SearchAttributes->{ArticleAccountedTimeOlderDate} );
+        my $Start
+            = $Self->{DBSlaveObject}->Quote( $SearchAttributes->{ArticleAccountedTimeNewerDate} );
+        my $Stop
+            = $Self->{DBSlaveObject}->Quote( $SearchAttributes->{ArticleAccountedTimeOlderDate} );
         push @Where, "create_time >= '$Start' AND create_time <= '$Stop'";
     }
     my $WhereString = '';
@@ -1062,11 +1154,11 @@ sub _ReportingValues {
     if ( $SelectedKindsOfReporting{TotalTime} ) {
 
         # db query
-        $Self->{DBObject}->Prepare(
+        $Self->{DBSlaveObject}->Prepare(
             SQL => "SELECT SUM(time_unit) FROM time_accounting $WhereString"
         );
 
-        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
             $Reporting{TotalTime} = $Row[0] ? int( $Row[0] * 100 ) / 100 : 0;
         }
     }
@@ -1085,14 +1177,14 @@ sub _ReportingValues {
     }
 
     # db query
-    $Self->{DBObject}->Prepare(
+    $Self->{DBSlaveObject}->Prepare(
         SQL => "SELECT ticket_id, article_id, time_unit FROM time_accounting $WhereString"
     );
 
     my %TicketID;
     my %ArticleID;
     my $Time = 0;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $Self->{DBSlaveObject}->FetchrowArray() ) {
         $TicketID{ $Row[0] }  += $Row[2];
         $ArticleID{ $Row[1] } += $Row[2];
         $Time                 += $Row[2];

@@ -7,30 +7,22 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
-use vars (qw($Self));
-
 use utf8;
 
-use Kernel::Config;
-use Kernel::System::ProcessManagement::DB::ActivityDialog;
-use Kernel::System::UnitTest::Helper;
+use vars (qw($Self));
+
 use Kernel::System::VariableCheck qw(:all);
 
-# Create Helper instance which will restore system configuration in destructor
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
-
-my $ConfigObject = Kernel::Config->new();
-
-my $ActivityDialogObject = Kernel::System::ProcessManagement::DB::ActivityDialog->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $CacheObject  = $Kernel::OM->Get('Kernel::System::Cache');
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ActivityDialogObject
+    = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::ActivityDialog');
+my $EntityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity');
 
 # set fixed time
 $HelperObject->FixedTimeSet();
@@ -38,6 +30,11 @@ $HelperObject->FixedTimeSet();
 # define needed variables
 my $RandomID = $HelperObject->GetRandomID();
 my $UserID   = 1;
+
+my $EntityID = $EntityObject->EntityIDGenerate(
+    EntityType => 'ActivityDialog',
+    UserID     => 1,
+);
 
 # get original ActivityDialog list
 my $OriginalActivityDialogList = $ActivityDialogObject->ActivityDialogList( UserID => $UserID )
@@ -300,6 +297,40 @@ my @Tests = (
         },
         Success => 1,
     },
+    {
+        Name   => 'ActivityDialogAdd Test 15: EntityID Full Lenght',
+        Config => {
+            EntityID => $EntityID,
+            Name     => $EntityID,
+            Config   => {
+                DescriptionShort =>
+                    'a Description -äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ',
+                Fields => {
+                    PriorityID => {
+                        DescriptionShort => 'Short description',
+                        DescriptionLong  => 'Longer description',
+                        Display          => 0,
+                        DefaultValue     => 1,
+                    },
+                    StateID => {
+                        DescriptionShort => 'Short description',
+                        DescriptionLong  => 'Longer description',
+                        Display          => 0,
+                        DefaultValue     => 1,
+                    },
+                    QueueID => {
+                        DescriptionShort => 'Short description',
+                        DescriptionLong  => 'Longer description',
+                        Display          => 0,
+                        DefaultValue     => 1,
+                    },
+                },
+                FieldOrder => [ 'PriotityID', 'StateID', 'QueueID' ],
+            },
+            UserID => $UserID,
+        },
+        Success => 1,
+    },
 );
 
 my %AddedActivityDialogs;
@@ -449,7 +480,7 @@ for my $Test (@Tests) {
             $CacheKey = 'ActivityDialogGet::EntityID::' . $Test->{Config}->{EntityID};
         }
 
-        my $Cache = $ActivityDialogObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_ActivityDialog',
             Key  => $CacheKey,
         );
@@ -464,17 +495,20 @@ for my $Test (@Tests) {
         my %ExpectedActivityDialog = %{ $AddedActivityDialogs{ $ActivityDialog->{ID} } };
         delete $ExpectedActivityDialog{UserID};
 
+        # create a variable copy otherwise the cache will be altered
+        my %ActivityDialogCopy = %{$ActivityDialog};
+
         for my $Attribute (qw(ID CreateTime ChangeTime)) {
             $Self->IsNot(
-                $ActivityDialog->{$Attribute},
+                $ActivityDialogCopy{$Attribute},
                 undef,
-                "$Test->{Name} | ActivityDialog->{$Attribute} should not be undef",
+                "$Test->{Name} | ActivityDialog{$Attribute} should not be undef",
             );
-            delete $ActivityDialog->{$Attribute};
+            delete $ActivityDialogCopy{$Attribute};
         }
 
         $Self->IsDeeply(
-            $ActivityDialog,
+            \%ActivityDialogCopy,
             \%ExpectedActivityDialog,
             "$Test->{Name} | ActivityDialog"
         );
@@ -695,7 +729,7 @@ for my $Test (@Tests) {
         # check cache
         my $CacheKey = 'ActivityDialogGet::ID::' . $Test->{Config}->{ID};
 
-        my $Cache = $ActivityDialogObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_ActivityDialog',
             Key  => $CacheKey,
         );
@@ -722,7 +756,7 @@ for my $Test (@Tests) {
         );
 
         # check cache
-        $Cache = $ActivityDialogObject->{CacheObject}->Get(
+        $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_ActivityDialog',
             Key  => $CacheKey,
         );
@@ -756,12 +790,15 @@ for my $Test (@Tests) {
             my %ExpectedActivityDialog = %{ $Test->{Config} };
             delete $ExpectedActivityDialog{UserID};
 
+            # create a variable copy otherwise the cache will be altered
+            my %NewActivityDialogCopy = %{$NewActivityDialog};
+
             for my $Attribute (qw( Activities CreateTime ChangeTime State)) {
-                delete $NewActivityDialog->{$Attribute};
+                delete $NewActivityDialogCopy{$Attribute};
             }
 
             $Self->IsDeeply(
-                $NewActivityDialog,
+                \%NewActivityDialogCopy,
                 \%ExpectedActivityDialog,
                 "$Test->{Name} | ActivityDialog"
             );
@@ -817,25 +854,28 @@ $Self->IsNotDeeply(
     "ActivityDialogList Test 2: All | Should be different than the original",
 );
 
+# create a variable copy otherwise the cache will be altered
+my %TestActivityDialogListCopy = %{$TestActivityDialogList};
+
 # delete original ActivityDialogs
 for my $ActivityDialogID ( sort keys %{$OriginalActivityDialogList} ) {
-    delete $TestActivityDialogList->{$ActivityDialogID};
+    delete $TestActivityDialogListCopy{$ActivityDialogID};
 }
 
 $Self->Is(
-    scalar keys %{$TestActivityDialogList},
+    scalar keys %TestActivityDialogListCopy,
     scalar @AddedActivityDialogsList,
     "ActivityDialogList Test 2: All ActivityDialog | Number of ActivityDialogs match added ActivityDialogs",
 );
 
 my $Counter = 0;
-for my $ActivityDialogID ( sort { $a <=> $b } keys %{$TestActivityDialogList} ) {
+for my $ActivityDialogID ( sort { $a <=> $b } keys %TestActivityDialogListCopy ) {
     $Self->Is(
         $ActivityDialogID,
         $AddedActivityDialogsList[$Counter],
         "ActivityDialogList Test 2: All | ActivityDialogID match AddedActivityDialogID",
-        ),
-        $Counter++;
+    );
+    $Counter++;
 }
 
 #
@@ -946,7 +986,7 @@ $Self->IsDeeply(
 # check cache
 my $CacheKey = 'ActivityDialogListGet';
 
-my $Cache = $ActivityDialogObject->{CacheObject}->Get(
+my $Cache = $CacheObject->Get(
     Type => 'ProcessManagement_ActivityDialog',
     Key  => $CacheKey,
 );

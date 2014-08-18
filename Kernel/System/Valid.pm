@@ -12,7 +12,12 @@ package Kernel::System::Valid;
 use strict;
 use warnings;
 
-use Kernel::System::CacheInternal;
+our @ObjectDependencies = (
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
+    'Kernel::System::Log',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -34,7 +39,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $ValidObject = $Kernel::OM->Get('ValidObject');
+    my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
 
 =cut
 
@@ -45,10 +50,8 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
-        Type => 'Valid',
-        TTL  => 60 * 60 * 24 * 20,
-    );
+    $Self->{CacheType} = 'Valid';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
     return $Self;
 }
@@ -66,11 +69,16 @@ sub ValidList {
 
     # read cache
     my $CacheKey = 'ValidList';
-    my $Cache = $Self->{CacheInternalObject}->Get( Key => $CacheKey );
+    my $Cache    = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
     return %{$Cache} if $Cache;
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # get list from database
-    my $DBObject = $Kernel::OM->Get('DBObject');
     return if !$DBObject->Prepare( SQL => 'SELECT id, name FROM valid' );
 
     # fetch the result
@@ -80,7 +88,12 @@ sub ValidList {
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set( Key => $CacheKey, Value => \%Data );
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => $CacheKey,
+        Value => \%Data
+    );
 
     return %Data;
 }
@@ -104,7 +117,7 @@ sub ValidLookup {
 
     # check needed stuff
     if ( !$Param{Valid} && !$Param{ValidID} ) {
-        $Kernel::OM->Get('LogObject')->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Valid or ValidID!',
         );
@@ -131,7 +144,7 @@ sub ValidLookup {
 
     # check if data exists
     if ( !defined $ReturnData ) {
-        $Kernel::OM->Get('LogObject')->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No $Key for $Value found!",
         );

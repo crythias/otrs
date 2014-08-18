@@ -12,24 +12,15 @@ package scripts::test::Layout::Template::OutputFilter;    ## no critic
 use strict;
 use warnings;
 
-use Cwd;
+our @ObjectDependencies = ();
+our $ObjectManagerAware = 1;
 
 sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {%Param};
+    my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Needed (qw(MainObject ConfigObject ParamObject)) {
-        if ( !$Self->{$Needed} ) {
-            $Self->{LogObject}->Log(
-                Priority => 'error',
-                Message  => "Got no $Needed!",
-            );
-        }
-    }
 
     return $Self;
 }

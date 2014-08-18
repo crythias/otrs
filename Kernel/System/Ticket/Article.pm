@@ -12,14 +12,38 @@ package Kernel::System::Ticket::Article;
 use strict;
 use warnings;
 
-use Kernel::System::HTMLUtils;
-use Kernel::System::PostMaster::LoopProtection;
-use Kernel::System::TemplateGenerator;
-use Kernel::System::Notification;
+use POSIX qw(ceil);
+
 use Kernel::System::EmailParser;
 
 use Kernel::System::VariableCheck qw(:all);
-use POSIX qw(ceil);
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::CustomerUser',
+    'Kernel::System::DB',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::HTMLUtils',
+    'Kernel::System::Lock',
+    'Kernel::System::Log',
+    'Kernel::System::Email',
+    'Kernel::System::Main',
+    'Kernel::System::Notification',
+    'Kernel::System::PostMaster::LoopProtection',
+    'Kernel::System::Priority',
+    'Kernel::System::Queue',
+    'Kernel::System::SLA',
+    'Kernel::System::Service',
+    'Kernel::System::State',
+    'Kernel::System::TemplateGenerator',
+    'Kernel::System::Time',
+    'Kernel::System::Type',
+    'Kernel::System::User',
+    'Kernel::System::Valid',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -106,12 +130,16 @@ Events:
 sub ArticleCreate {
     my ( $Self, %Param ) = @_;
 
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
     my $ValidID = $Param{ValidID} || 1;
-    my $IncomingTime = $Self->{TimeObject}->SystemTime();
+    my $IncomingTime = $TimeObject->SystemTime();
 
     # create ArticleContentPath
     if ( !$Self->{ArticleContentPath} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need ArticleContentPath!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need ArticleContentPath!' );
         return;
     }
 
@@ -126,7 +154,8 @@ sub ArticleCreate {
     # check needed stuff
     for (qw(TicketID UserID ArticleTypeID SenderTypeID HistoryType HistoryComment)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -135,7 +164,8 @@ sub ArticleCreate {
     if ( !$Param{ContentType} ) {
         for (qw(Charset MimeType)) {
             if ( !$Param{$_} ) {
-                $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+                $Kernel::OM->Get('Kernel::System::Log')
+                    ->Log( Priority => 'error', Message => "Need $_!" );
                 return;
             }
         }
@@ -144,7 +174,8 @@ sub ArticleCreate {
     else {
         for (qw(ContentType)) {
             if ( !$Param{$_} ) {
-                $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+                $Kernel::OM->Get('Kernel::System::Log')
+                    ->Log( Priority => 'error', Message => "Need $_!" );
                 return;
             }
         }
@@ -169,12 +200,8 @@ sub ArticleCreate {
         DynamicFields => 1,
     );
 
-    my $HTMLUtilsObject = Kernel::System::HTMLUtils->new(
-        LogObject    => $Self->{LogObject},
-        ConfigObject => $Self->{ConfigObject},
-        MainObject   => $Self->{MainObject},
-        EncodeObject => $Self->{EncodeObject},
-    );
+    # get html utils object
+    my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
     # add 'no body' if there is no body there!
     my @AttachmentConvert;
@@ -248,14 +275,18 @@ sub ArticleCreate {
 
     # calculate MD5 of Message ID
     if ( $Param{MessageID} ) {
-        $Param{MD5} = $Self->{MainObject}->MD5sum( String => $Param{MessageID} );
+        $Param{MD5}
+            = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
     }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # if the original article body contains just one pasted picture and no text, at this point of
     # the code the body is an empty string, Oracle databases will transform the empty string value
     # to NULL and will try to insert a NULL value in a field that should not be NULL. see bug 7533.
     if (
-        $Self->{DBObject}->GetDatabaseFunction('Type') eq 'oracle'
+        $DBObject->GetDatabaseFunction('Type') eq 'oracle'
         && defined $Param{Body}
         && !$Param{Body}
         )
@@ -264,7 +295,7 @@ sub ArticleCreate {
     }
 
     # do db insert
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => 'INSERT INTO article '
             . '(ticket_id, article_type_id, article_sender_type_id, a_from, a_reply_to, a_to, '
             . 'a_cc, a_subject, a_message_id, a_message_id_md5, a_in_reply_to, a_references, a_body, a_content_type, '
@@ -293,7 +324,7 @@ sub ArticleCreate {
 
     # return if there is not article created
     if ( !$ArticleID ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Can\'t get ArticleID from INSERT!',
         );
@@ -346,14 +377,18 @@ sub ArticleCreate {
         Name         => $Param{HistoryComment},
     );
 
+    # get needed objects
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
+
     # unlock ticket if the owner is away (and the feature is enabled)
     if (
         $Param{UnlockOnAway}
         && $OldTicketData{Lock} eq 'lock'
-        && $Self->{ConfigObject}->Get('Ticket::UnlockOnAway')
+        && $ConfigObject->Get('Ticket::UnlockOnAway')
         )
     {
-        my %OwnerInfo = $Self->{UserObject}->GetUserData(
+        my %OwnerInfo = $UserObject->GetUserData(
             UserID => $OldTicketData{OwnerID},
         );
 
@@ -363,7 +398,7 @@ sub ArticleCreate {
                 Lock     => 'unlock',
                 UserID   => $Param{UserID},
             );
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
                 Message =>
                     "Ticket [$OldTicketData{TicketNumber}] unlocked, current owner is out of office!",
@@ -395,20 +430,20 @@ sub ArticleCreate {
 
         # check if latest article comes from customer
         my $LastSender = '';
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL => 'SELECT ast.name FROM article art, article_sender_type ast WHERE '
                 . ' art.ticket_id = ? AND art.id NOT IN (?) AND '
                 . ' art.article_sender_type_id = ast.id ORDER BY art.create_time ASC',
             Bind => [ \$Param{TicketID}, \$ArticleID ],
         );
-        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             if ( $Row[0] ne 'system' ) {
                 $LastSender = $Row[0];
             }
         }
         if ( $LastSender eq 'agent' ) {
             $Self->TicketUnlockTimeoutUpdate(
-                UnlockTimeout => $Self->{TimeObject}->SystemTime(),
+                UnlockTimeout => $TimeObject->SystemTime(),
                 TicketID      => $Param{TicketID},
                 UserID        => $Param{UserID},
             );
@@ -422,7 +457,7 @@ sub ArticleCreate {
         )
     {
         $Self->TicketUnlockTimeoutUpdate(
-            UnlockTimeout => $Self->{TimeObject}->SystemTime(),
+            UnlockTimeout => $TimeObject->SystemTime(),
             TicketID      => $Param{TicketID},
             UserID        => $Param{UserID},
         );
@@ -482,9 +517,12 @@ sub ArticleCreate {
             = map { $_ => 1 } $Self->GetSubscribedUserIDsByQueueID( QueueID => $Ticket{QueueID} );
 
         # get subscribed users from My Services in form of a hash
-        my %MyServicesUserIDs = map { $_ => 1 } $Self->GetSubscribedUserIDsByServiceID(
-            ServiceID => $Ticket{ServiceID}
-        );
+        my %MyServicesUserIDs;
+        if ( $Ticket{ServiceID} ) {
+            %MyServicesUserIDs = map { $_ => 1 } $Self->GetSubscribedUserIDsByServiceID(
+                ServiceID => $Ticket{ServiceID},
+            );
+        }
 
         # combine both subscribed users list (this will also remove duplicates)
         my %SubscribedUserIDs = ( %MyQueuesUserIDs, %MyServicesUserIDs );
@@ -499,7 +537,7 @@ sub ArticleCreate {
             next USER if $AlreadySent{$UserID};
 
             # check personal settings
-            my %UserData = $Self->{UserObject}->GetUserData(
+            my %UserData = $UserObject->GetUserData(
                 UserID => $UserID,
                 Valid  => 1,
             );
@@ -518,7 +556,7 @@ sub ArticleCreate {
                 next USER if !$MyQueuesUserIDs{$UserID} || !$MyServicesUserIDs{$UserID};
             }
             else {
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Invalid UserSendNewTicketNotification option"
                         . " '$UserData{UserSendNewTicketNotification}'"
@@ -550,7 +588,7 @@ sub ArticleCreate {
 
         # send notification to owner/responsible/watcher
         my @UserIDs = $Ticket{OwnerID};
-        if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
+        if ( $ConfigObject->Get('Ticket::Responsible') ) {
             push @UserIDs, $Ticket{ResponsibleID};
         }
         push @UserIDs, $Self->TicketWatchGet(
@@ -598,7 +636,7 @@ sub ArticleCreate {
             my %WatcherUserIDs;
             my %MyQueuesUserIDs;
             my %MyServicesUserIDs;
-            if ( $Self->{ConfigObject}->Get('PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner') ) {
+            if ( $ConfigObject->Get('PostmasterFollowUpOnUnlockAgentNotifyOnlyToOwner') ) {
                 $SubscribedUserIDs{ $Ticket{OwnerID} } = 1;
             }
             else {
@@ -642,7 +680,7 @@ sub ArticleCreate {
                 next USER if $AlreadySent{$UserID};
 
                 # check personal settings
-                my %UserData = $Self->{UserObject}->GetUserData(
+                my %UserData = $UserObject->GetUserData(
                     UserID => $UserID,
                     Valid  => 1,
                 );
@@ -663,7 +701,7 @@ sub ArticleCreate {
                         next USER if !$MyQueuesUserIDs{$UserID} || !$MyServicesUserIDs{$UserID};
                     }
                     else {
-                        $Self->{LogObject}->Log(
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message  => "Invalid UserSendNewTicketNotification option"
                                 . " '$UserData{UserSendNewTicketNotification}'"
@@ -694,7 +732,7 @@ sub ArticleCreate {
         # send owner/responsible/watcher notification the agents who locked the ticket
         else {
             my @UserIDs = $Ticket{OwnerID};
-            if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
+            if ( $ConfigObject->Get('Ticket::Responsible') ) {
                 push @UserIDs, $Ticket{ResponsibleID};
             }
             push @UserIDs, $Self->TicketWatchGet(
@@ -715,7 +753,7 @@ sub ArticleCreate {
                 next USER if $AlreadySent{$UserID};
 
                 # check personal settings
-                my %UserData = $Self->{UserObject}->GetUserData(
+                my %UserData = $UserObject->GetUserData(
                     UserID => $UserID,
                     Valid  => 1,
                 );
@@ -765,7 +803,7 @@ sub ArticleCreate {
                 next USER if $AlreadySent{$UserID};
 
                 # check personal settings
-                my %UserData = $Self->{UserObject}->GetUserData(
+                my %UserData = $UserObject->GetUserData(
                     UserID => $UserID,
                     Valid  => 1,
                 );
@@ -839,7 +877,7 @@ sub ArticleCreate {
         if ( $Param{ArticleType} =~ /^note\-/ && $Param{UserID} ne 1 ) {
             my $NewTo = $Param{To} || '';
             for my $UserID ( sort keys %AlreadySent ) {
-                my %UserData = $Self->{UserObject}->GetUserData(
+                my %UserData = $UserObject->GetUserData(
                     UserID => $UserID,
                     Valid  => 1,
                 );
@@ -849,7 +887,7 @@ sub ArticleCreate {
                 $NewTo .= "$UserData{UserFirstname} $UserData{UserLastname} <$UserData{UserEmail}>";
             }
             if ($NewTo) {
-                $Self->{DBObject}->Do(
+                $DBObject->Do(
                     SQL => 'UPDATE article SET a_to = ? WHERE id = ?',
                     Bind => [ \$NewTo, \$ArticleID ],
                 );
@@ -876,20 +914,25 @@ sub ArticleGetTicketIDOfMessageID {
 
     # check needed stuff
     if ( !$Param{MessageID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need MessageID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need MessageID!' );
         return;
     }
-    my $MD5 = $Self->{MainObject}->MD5sum( String => $Param{MessageID} );
+    my $MD5 = $Kernel::OM->Get('Kernel::System::Main')->MD5sum( String => $Param{MessageID} );
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # sql query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL   => 'SELECT ticket_id FROM article WHERE a_message_id_md5 = ?',
         Bind  => [ \$MD5 ],
         Limit => 10,
     );
+
     my $TicketID;
     my $Count = 0;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Count++;
         $TicketID = $Row[0];
     }
@@ -901,7 +944,7 @@ sub ArticleGetTicketIDOfMessageID {
     return $TicketID if $Count == 1;
 
     # more than one found! that should not be, a message_id should be unique!
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "The MessageID '$Param{MessageID}' is in your database "
             . "more than one time! That should not be, a message_id should be unique!",
@@ -924,7 +967,8 @@ sub ArticleGetContentPath {
 
     # check needed stuff
     if ( !$Param{ArticleID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need ArticleID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need ArticleID!' );
         return;
     }
 
@@ -932,21 +976,33 @@ sub ArticleGetContentPath {
     my $CacheKey = 'ArticleGetContentPath::' . $Param{ArticleID};
 
     # check cache
-    my $Cache = $Self->{CacheInternalObject}->Get( Key => $CacheKey );
+    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
     return $Cache if $Cache;
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # sql query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL  => 'SELECT content_path FROM article WHERE id = ?',
         Bind => [ \$Param{ArticleID} ],
     );
+
     my $Result;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result = $Row[0];
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set( Key => $CacheKey, Value => $Result );
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => $CacheKey,
+        Value => $Result,
+    );
 
     # return
     return $Result;
@@ -965,20 +1021,26 @@ get a article sender type list
 sub ArticleSenderTypeList {
     my ( $Self, %Param ) = @_;
 
-    return if !$Self->{DBObject}->Prepare(
+    # get needed objects
+    my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
+    my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
+
+    return if !$DBObject->Prepare(
         SQL => "SELECT id, name FROM article_sender_type WHERE "
-            . "valid_id IN (${\(join ', ', $Self->{ValidObject}->ValidIDsGet())})",
+            . "valid_id IN (${\(join ', ', $ValidObject->ValidIDsGet())})",
     );
 
     my @Array;
     my %Hash;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         push @Array, $Row[1];
         $Hash{ $Row[0] } = $Row[1];
     }
+
     if ( $Param{Result} && $Param{Result} eq 'HASH' ) {
         return %Hash;
     }
+
     return @Array;
 
 }
@@ -1002,7 +1064,7 @@ sub ArticleSenderTypeLookup {
 
     # check needed stuff
     if ( !$Param{SenderType} && !$Param{SenderTypeID} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need SenderType or SenderTypeID!',
         );
@@ -1022,18 +1084,24 @@ sub ArticleSenderTypeLookup {
     }
 
     # check cache
-    my $Cache = $Self->{CacheInternalObject}->Get( Key => $CacheKey );
+    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
     return $Cache if $Cache;
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # get data
     if ( $Param{SenderType} ) {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL  => 'SELECT id FROM article_sender_type WHERE name = ?',
             Bind => [ \$Param{SenderType} ],
         );
     }
     else {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL  => 'SELECT name FROM article_sender_type WHERE id = ?',
             Bind => [ \$Param{SenderTypeID} ],
         );
@@ -1041,13 +1109,13 @@ sub ArticleSenderTypeLookup {
 
     # store result
     my $Result;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result = $Row[0];
     }
 
     # check if data exists
     if ( !$Result ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Found no SenderType(ID) for $Key!",
         );
@@ -1055,9 +1123,13 @@ sub ArticleSenderTypeLookup {
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set( Key => $CacheKey, Value => $Result );
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => $CacheKey,
+        Value => $Result,
+    );
 
-    # return
     return $Result;
 }
 
@@ -1080,7 +1152,7 @@ sub ArticleTypeLookup {
 
     # check needed stuff
     if ( !$Param{ArticleType} && !$Param{ArticleTypeID} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need ArticleType or ArticleTypeID!',
         );
@@ -1100,18 +1172,24 @@ sub ArticleTypeLookup {
     }
 
     # check cache
-    my $Cache = $Self->{CacheInternalObject}->Get( Key => $CacheKey );
+    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
+    );
     return $Cache if $Cache;
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # get data
     if ( $Param{ArticleType} ) {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL  => 'SELECT id FROM article_type WHERE name = ?',
             Bind => [ \$Param{ArticleType} ],
         );
     }
     else {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL  => 'SELECT name FROM article_type WHERE id = ?',
             Bind => [ \$Param{ArticleTypeID} ],
         );
@@ -1119,13 +1197,13 @@ sub ArticleTypeLookup {
 
     # store result
     my $Result;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result = $Row[0];
     }
 
     # check if data exists
     if ( !$Result ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Found no ArticleType(ID) for $Key!",
         );
@@ -1133,7 +1211,12 @@ sub ArticleTypeLookup {
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set( Key => $CacheKey, Value => $Result );
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+        Key   => $CacheKey,
+        Value => $Result,
+    );
 
     # return
     return $Result;
@@ -1158,13 +1241,18 @@ get a article type list
 sub ArticleTypeList {
     my ( $Self, %Param ) = @_;
 
-    return if !$Self->{DBObject}->Prepare(
+    # get needed objects
+    my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
+    my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
+
+    return if !$DBObject->Prepare(
         SQL => "SELECT id, name FROM article_type WHERE "
-            . "valid_id IN (${\(join ', ', $Self->{ValidObject}->ValidIDsGet())})",
+            . "valid_id IN (${\(join ', ', $ValidObject->ValidIDsGet())})",
     );
+
     my @Array;
     my %Hash;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         if ( $Param{Type} && $Param{Type} eq 'Customer' ) {
             if ( $Row[1] !~ /int/i ) {
                 push @Array, $Row[1];
@@ -1176,9 +1264,11 @@ sub ArticleTypeList {
             $Hash{ $Row[0] } = $Row[1];
         }
     }
+
     if ( $Param{Result} && $Param{Result} eq 'HASH' ) {
         return %Hash;
     }
+
     return @Array;
 }
 
@@ -1199,7 +1289,8 @@ sub ArticleLastCustomerArticle {
 
     # check needed stuff
     if ( !$Param{TicketID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need TicketID!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need TicketID!" );
         return;
     }
 
@@ -1255,7 +1346,8 @@ sub ArticleFirstArticle {
 
     # check needed stuff
     if ( !$Param{TicketID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need TicketID!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need TicketID!" );
         return;
     }
 
@@ -1292,7 +1384,8 @@ sub ArticleIndex {
 
     # check needed stuff
     if ( !$Param{TicketID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need TicketID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need TicketID!' );
         return;
     }
 
@@ -1310,8 +1403,9 @@ sub ArticleIndex {
     my $CacheKey = 'ArticleIndex::' . $Param{TicketID} . '::' . ( $Param{SenderType} || 'ALL' );
 
     if ($UseCache) {
-        my $Cached = $Self->{CacheInternalObject}->Get(
-            Key => $CacheKey,
+        my $Cached = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+            Type => $Self->{CacheType},
+            Key  => $CacheKey,
         );
 
         if ( ref $Cached eq 'ARRAY' ) {
@@ -1320,9 +1414,12 @@ sub ArticleIndex {
 
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # db query
     if ( $Param{SenderType} ) {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL => '
                 SELECT art.id FROM article art, article_sender_type ast
                 WHERE art.ticket_id = ?
@@ -1333,7 +1430,7 @@ sub ArticleIndex {
         );
     }
     else {
-        return if !$Self->{DBObject}->Prepare(
+        return if !$DBObject->Prepare(
             SQL => '
                 SELECT id
                 FROM article
@@ -1344,12 +1441,14 @@ sub ArticleIndex {
     }
 
     my @Index;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         push @Index, $Row[0];
     }
 
     if ($UseCache) {
-        $Self->{CacheInternalObject}->Set(
+        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+            Type  => $Self->{CacheType},
+            TTL   => $Self->{CacheTTL},
             Key   => $CacheKey,
             Value => \@Index,
         );
@@ -1428,7 +1527,8 @@ sub ArticleContentIndex {
     # check needed stuff
     for (qw(TicketID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1564,11 +1664,15 @@ sub ArticleGet {
 
     # check needed stuff
     if ( !$Param{ArticleID} && !$Param{TicketID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need ArticleID or TicketID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need ArticleID or TicketID!' );
         return;
     }
 
     my $FetchDynamicFields = $Param{DynamicFields} ? 1 : 0;
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # article type lookup
     my $ArticleTypeSQL = '';
@@ -1578,7 +1682,7 @@ sub ArticleGet {
                 if ($ArticleTypeSQL) {
                     $ArticleTypeSQL .= ',';
                 }
-                $ArticleTypeSQL .= $Self->{DBObject}->Quote(
+                $ArticleTypeSQL .= $DBObject->Quote(
                     $Self->ArticleTypeLookup( ArticleType => $_ ),
                     'Integer',
                 );
@@ -1591,7 +1695,7 @@ sub ArticleGet {
     my $ArticleTypeIDSQL = '';
     if ( IsArrayRefWithData( $Param{ArticleTypeID} ) ) {
         my $QuotedIDs = join ', ',
-            map { $Self->{DBObject}->Quote( $_, 'Integer' ) }
+            map { $DBObject->Quote( $_, 'Integer' ) }
             @{ $Param{ArticleTypeID} };
         $ArticleTypeIDSQL = " AND sa.article_type_id IN ($QuotedIDs)";
     }
@@ -1604,7 +1708,7 @@ sub ArticleGet {
                 if ($SenderTypeSQL) {
                     $SenderTypeSQL .= ',';
                 }
-                $SenderTypeSQL .= $Self->{DBObject}->Quote(
+                $SenderTypeSQL .= $DBObject->Quote(
                     $Self->ArticleSenderTypeLookup( SenderType => $_ ),
                     'Integer',
                 );
@@ -1618,7 +1722,7 @@ sub ArticleGet {
     my $SenderTypeIDSQL;
     if ( IsArrayRefWithData( $Param{ArticleSenderTypeID} ) ) {
         my $QuotedIDs = join ', ',
-            map { $Self->{DBObject}->Quote( $_, 'Integer' ) }
+            map { $DBObject->Quote( $_, 'Integer' ) }
             @{ $Param{ArticleSenderTypeID} };
         $SenderTypeIDSQL = " AND sa.article_sender_type_id IN ($QuotedIDs)";
     }
@@ -1680,11 +1784,18 @@ sub ArticleGet {
         $Start = $Param{Limit} * ( $Param{Page} - 1 );
     }
 
-    return
-        if !$Self->{DBObject}
-        ->Prepare( SQL => $SQL, Bind => \@Bind, Limit => $Param{Limit}, Start => $Start );
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    return if !$DBObject->Prepare(
+        SQL   => $SQL,
+        Bind  => \@Bind,
+        Limit => $Param{Limit},
+        Start => $Start,
+    );
+
     my %Ticket;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         my %Data;
         $Data{TicketID}   = $Row[0];
         $Ticket{TicketID} = $Data{TicketID};
@@ -1704,10 +1815,10 @@ sub ArticleGet {
         $Ticket{StateID}        = $Row[11];
         $Data{QueueID}          = $Row[12];
         $Ticket{QueueID}        = $Row[12];
-        $Ticket{AgeTimeUnix}    = $Self->{TimeObject}->SystemTime()
-            - $Self->{TimeObject}->TimeStamp2SystemTime( String => $Row[13] );
+        $Ticket{AgeTimeUnix}    = $TimeObject->SystemTime()
+            - $TimeObject->TimeStamp2SystemTime( String => $Row[13] );
         $Ticket{Created}
-            = $Self->{TimeObject}->SystemTime2TimeStamp( SystemTime => $Ticket{CreateTimeUnix} );
+            = $TimeObject->SystemTime2TimeStamp( SystemTime => $Ticket{CreateTimeUnix} );
         $Data{ContentType} = $Row[14];
 
         $Data{CreatedBy}           = $Row[15];
@@ -1728,7 +1839,7 @@ sub ArticleGet {
         $Data{ArticleTypeID}    = $Row[24];
 
         $Data{IncomingTime} = $Row[25];
-        $Data{Created}      = $Self->{TimeObject}->SystemTime2TimeStamp(
+        $Data{Created}      = $TimeObject->SystemTime2TimeStamp(
             SystemTime => $Row[25],
         );
         $Data{ArticleID}              = $Row[26];
@@ -1775,7 +1886,7 @@ sub ArticleGet {
         }
 
         # fill up dynamic varaibles
-        $Data{Age} = $Self->{TimeObject}->SystemTime() - $Ticket{CreateTimeUnix};
+        $Data{Age} = $TimeObject->SystemTime() - $Ticket{CreateTimeUnix};
 
         # strip not wanted stuff
         RECIPIENT:
@@ -1790,11 +1901,15 @@ sub ArticleGet {
     # checl if need to return dynamic fields
     if ($FetchDynamicFields) {
 
-        my $DynamicFieldArticleList = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+        # get dynamic field objects
+        my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
+        my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
+        my $DynamicFieldArticleList = $DynamicFieldObject->DynamicFieldListGet(
             ObjectType => 'Article'
         );
 
-        my $DynamicFieldTicketList = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+        my $DynamicFieldTicketList = $DynamicFieldObject->DynamicFieldListGet(
             ObjectType => 'Ticket'
         );
 
@@ -1809,7 +1924,7 @@ sub ArticleGet {
                 next DYNAMICFIELD if !IsHashRefWithData( $DynamicFieldConfig->{Config} );
 
                 # get the current value for each dynamic field
-                my $Value = $Self->{DynamicFieldBackendObject}->ValueGet(
+                my $Value = $DynamicFieldBackendObject->ValueGet(
                     DynamicFieldConfig => $DynamicFieldConfig,
                     ObjectID           => $Article->{ArticleID},
                 );
@@ -1828,7 +1943,7 @@ sub ArticleGet {
                 next DYNAMICFIELD if !IsHashRefWithData( $DynamicFieldConfig->{Config} );
 
                 # get the current value for each dynamic field
-                my $Value = $Self->{DynamicFieldBackendObject}->ValueGet(
+                my $Value = $DynamicFieldBackendObject->ValueGet(
                     DynamicFieldConfig => $DynamicFieldConfig,
                     ObjectID           => $Article->{TicketID},
                 );
@@ -1867,7 +1982,7 @@ sub ArticleGet {
 
         # Log an error only if a specific article was requested and there is no filter active.
         if ( $Param{ArticleID} && !$ArticleTypeSQL && !$SenderTypeSQL ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "No such article for ArticleID ($Param{ArticleID})!",
             );
@@ -1877,37 +1992,57 @@ sub ArticleGet {
     }
 
     # get type
-    $Ticket{Type} = $Self->{TypeObject}->TypeLookup( TypeID => $Ticket{TypeID} || 1 );
+    $Ticket{Type} = $Kernel::OM->Get('Kernel::System::Type')->TypeLookup(
+        TypeID => $Ticket{TypeID} || 1,
+    );
+
+    # get user object
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
     # get owner
-    $Ticket{Owner} = $Self->{UserObject}->UserLookup( UserID => $Ticket{OwnerID} );
+    $Ticket{Owner} = $UserObject->UserLookup(
+        UserID => $Ticket{OwnerID},
+    );
 
     # get responsible
-    $Ticket{Responsible} = $Self->{UserObject}->UserLookup( UserID => $Ticket{ResponsibleID} );
+    $Ticket{Responsible} = $UserObject->UserLookup(
+        UserID => $Ticket{ResponsibleID},
+    );
 
     # get priority
-    $Ticket{Priority} = $Self->{PriorityObject}->PriorityLookup(
+    $Ticket{Priority} = $Kernel::OM->Get('Kernel::System::Priority')->PriorityLookup(
         PriorityID => $Ticket{PriorityID},
     );
 
     # get lock
-    $Ticket{Lock} = $Self->{LockObject}->LockLookup( LockID => $Ticket{LockID} );
+    $Ticket{Lock} = $Kernel::OM->Get('Kernel::System::Lock')->LockLookup(
+        LockID => $Ticket{LockID},
+    );
 
     # get service
     if ( $Ticket{ServiceID} ) {
-        $Ticket{Service} = $Self->{ServiceObject}->ServiceLookup( ServiceID => $Ticket{ServiceID} );
+        $Ticket{Service} = $Kernel::OM->Get('Kernel::System::Service')->ServiceLookup(
+            ServiceID => $Ticket{ServiceID},
+        );
     }
 
     # get sla
     if ( $Ticket{SLAID} ) {
-        $Ticket{SLA} = $Self->{SLAObject}->SLALookup( SLAID => $Ticket{SLAID} );
+        $Ticket{SLA} = $Kernel::OM->Get('Kernel::System::SLA')->SLALookup(
+            SLAID => $Ticket{SLAID},
+        );
     }
 
     # get queue name and other stuff
-    my %Queue = $Self->{QueueObject}->QueueGet( ID => $Ticket{QueueID} );
+    my %Queue = $Kernel::OM->Get('Kernel::System::Queue')->QueueGet(
+        ID => $Ticket{QueueID},
+    );
 
     # get state info
-    my %StateData = $Self->{StateObject}->StateGet( ID => $Ticket{StateID} );
+    my %StateData = $Kernel::OM->Get('Kernel::System::State')->StateGet(
+        ID => $Ticket{StateID},
+    );
+
     $Ticket{StateType} = $StateData{TypeName};
     $Ticket{State}     = $StateData{Name};
 
@@ -1938,7 +2073,10 @@ sub ArticleGet {
         }
     }
 
-    my $EmailParser = Kernel::System::EmailParser->new( %{$Self}, Mode => 'Standalone' );
+    # create email parser object
+    my $EmailParser = Kernel::System::EmailParser->new(
+        Mode => 'Standalone',
+    );
 
     # article stuff
     for my $Part (@Content) {
@@ -1973,7 +2111,7 @@ sub ArticleGet {
             $Part->{UntilTime} = 0;
         }
         else {
-            $Part->{UntilTime} = $Part->{RealTillTimeNotUsed} - $Self->{TimeObject}->SystemTime();
+            $Part->{UntilTime} = $Part->{RealTillTimeNotUsed} - $TimeObject->SystemTime();
         }
         $Part->{StateType} = $StateData{TypeName};
         $Part->{State}     = $StateData{Name};
@@ -2036,7 +2174,8 @@ sub ArticleCount {
 
     # check needed stuff
     if ( !$Param{TicketID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need TicketID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need TicketID!' );
         return;
     }
 
@@ -2053,15 +2192,19 @@ sub ArticleCount {
         push @Bind, map { \$_ } @{ $Param{ArticleSenderTypeID} };
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     if ( defined $Param{UpToArticleID} ) {
-        $Self->{DBObject}->Prepare(
+
+        $DBObject->Prepare(
             SQL  => 'SELECT create_time FROM article WHERE id = ?',
             Bind => [ \$Param{UpToArticleID} ],
         );
 
         my $CreateTime;
 
-        while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+        while ( my @Row = $DBObject->FetchrowArray() ) {
             $CreateTime = $Row[0];
         }
 
@@ -2075,10 +2218,10 @@ sub ArticleCount {
         push @Bind, \$CreateTime, \$CreateTime, \$Param{UpToArticleID};
     }
 
-    return if !$Self->{DBObject}->Prepare( SQL => $SQL, Bind => \@Bind );
+    return if !$DBObject->Prepare( SQL => $SQL, Bind => \@Bind );
 
     my $Count;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Count = $Row[0];
     }
 
@@ -2105,7 +2248,7 @@ sub ArticlePage {
 
     for my $Needed (qw(ArticleID TicketID RowsPerPage)) {
         if ( !$Param{$Needed} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Need $Needed!"
             );
@@ -2134,7 +2277,8 @@ sub _ArticleGetId {
     # check needed stuff
     for (qw(TicketID MessageID From Subject IncomingTime)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -2157,16 +2301,21 @@ sub _ArticleGetId {
     $SQL .= ' incoming_time = ? ORDER BY id DESC';
     push @Bind, \$Param{IncomingTime};
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # start query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL   => $SQL,
         Bind  => \@Bind,
         Limit => 1,
     );
+
     my $ID;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $ID = $Row[0];
     }
+
     return $ID;
 }
 
@@ -2205,14 +2354,16 @@ sub ArticleUpdate {
     # check needed stuff
     for (qw(ArticleID UserID Key TicketID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     # check needed stuff
     if ( !defined $Param{Value} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need Value!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need Value!' );
         return;
     }
 
@@ -2245,7 +2396,7 @@ sub ArticleUpdate {
     );
 
     # db update
-    return if !$Self->{DBObject}->Do(
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => "UPDATE article SET $Map{$Param{Key}} = ?, "
             . "change_time = current_timestamp, change_by = ? WHERE id = ?",
         Bind => [ \$Param{Value}, \$Param{UserID}, \$Param{ArticleID} ],
@@ -2262,6 +2413,7 @@ sub ArticleUpdate {
         },
         UserID => $Param{UserID},
     );
+
     return 1;
 }
 
@@ -2331,20 +2483,21 @@ sub ArticleSend {
     # check needed stuff
     for (qw(TicketID UserID From Body Charset MimeType)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     if ( !$Param{ArticleType} && !$Param{ArticleTypeID} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need ArticleType or ArticleTypeID!',
         );
         return;
     }
     if ( !$Param{SenderType} && !$Param{SenderTypeID} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need SenderType or SenderTypeID!',
         );
@@ -2361,21 +2514,15 @@ sub ArticleSend {
     $Param{Body} =~ s/\r/\n/g;
 
     # check for base64 images in body and process them
-    my $HTMLUtilsObject = Kernel::System::HTMLUtils->new(
-        LogObject    => $Self->{LogObject},
-        ConfigObject => $Self->{ConfigObject},
-        MainObject   => $Self->{MainObject},
-        EncodeObject => $Self->{EncodeObject},
-    );
-    $HTMLUtilsObject->EmbeddedImagesExtract(
+    $Kernel::OM->Get('Kernel::System::HTMLUtils')->EmbeddedImagesExtract(
         DocumentRef => \$Param{Body},
         AttachmentsRef => $Param{Attachment} || [],
     );
 
     # create article
-    my $Time      = $Self->{TimeObject}->SystemTime();
+    my $Time      = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
     my $Random    = rand 999999;
-    my $FQDN      = $Self->{ConfigObject}->Get('FQDN');
+    my $FQDN      = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
     my $MessageID = "<$Time.$Random.$Param{TicketID}.$Param{UserID}\@$FQDN>";
     my $ArticleID = $Self->ArticleCreate(
         %Param,
@@ -2384,14 +2531,14 @@ sub ArticleSend {
     return if !$ArticleID;
 
     # send mail
-    my ( $HeadRef, $BodyRef ) = $Self->{SendmailObject}->Send(
+    my ( $HeadRef, $BodyRef ) = $Kernel::OM->Get('Kernel::System::Email')->Send(
         'Message-ID' => $MessageID,
         %Param,
     );
 
     # return if no mail was able to send
     if ( !$HeadRef || !$BodyRef ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Message  => "Impossible to send message to: $Param{'To'} .",
             Priority => 'error',
         );
@@ -2407,7 +2554,7 @@ sub ArticleSend {
     return if !$Plain;
 
     # log
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "Sent email to '$ToOrig' from '$Param{From}'. "
             . "HistoryType => $HistoryType, Subject => $Param{Subject};",
@@ -2422,6 +2569,7 @@ sub ArticleSend {
         },
         UserID => $Param{UserID},
     );
+
     return $ArticleID;
 }
 
@@ -2448,21 +2596,22 @@ sub ArticleBounce {
     # check needed stuff
     for (qw(TicketID ArticleID From To UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     # create message id
-    my $Time         = $Self->{TimeObject}->SystemTime();
+    my $Time         = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
     my $Random       = rand 999999;
-    my $FQDN         = $Self->{ConfigObject}->Get('FQDN');
+    my $FQDN         = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
     my $NewMessageID = "<$Time.$Random.$Param{TicketID}.0.$Param{UserID}\@$FQDN>";
     my $Email        = $Self->ArticlePlain( ArticleID => $Param{ArticleID} );
 
     # check if plain email exists
     if ( !$Email ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such plain article for ArticleID ($Param{ArticleID})!",
         );
@@ -2470,7 +2619,7 @@ sub ArticleBounce {
     }
 
     # pipe all into sendmail
-    return if !$Self->{SendmailObject}->Bounce(
+    return if !$Kernel::OM->Get('Kernel::System::Email')->Bounce(
         MessageID => $NewMessageID,
         From      => $Param{From},
         To        => $Param{To},
@@ -2496,6 +2645,7 @@ sub ArticleBounce {
         },
         UserID => $Param{UserID},
     );
+
     return 1;
 }
 
@@ -2524,7 +2674,8 @@ sub SendAgentNotification {
     # check needed stuff
     for (qw(CustomerMessageParams TicketID Type RecipientID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -2532,9 +2683,12 @@ sub SendAgentNotification {
     # return if no notification is active
     return 1 if $Self->{SendNoNotification};
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # Check if agent receives notifications for actions done by himself.
     if (
-        !$Self->{ConfigObject}->Get('AgentSelfNotifyOnAction')
+        !$ConfigObject->Get('AgentSelfNotifyOnAction')
         && ( $Param{RecipientID} eq $Param{UserID} )
         )
     {
@@ -2551,7 +2705,7 @@ sub SendAgentNotification {
     }
 
     # get recipient
-    my %User = $Self->{UserObject}->GetUserData(
+    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
         UserID => $Param{RecipientID},
         Valid  => 1,
     );
@@ -2574,19 +2728,7 @@ sub SendAgentNotification {
         return;
     }
 
-    my $TemplateGeneratorObject = Kernel::System::TemplateGenerator->new(
-        MainObject         => $Self->{MainObject},
-        DBObject           => $Self->{DBObject},
-        ConfigObject       => $Self->{ConfigObject},
-        EncodeObject       => $Self->{EncodeObject},
-        LogObject          => $Self->{LogObject},
-        CustomerUserObject => $Self->{CustomerUserObject},
-        QueueObject        => $Self->{QueueObject},
-        UserObject         => $Self->{UserObject},
-        TicketObject       => $Self,
-    );
-
-    my %Notification = $TemplateGeneratorObject->NotificationAgent(
+    my %Notification = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->NotificationAgent(
         Type                  => $Param{Type},
         TicketID              => $Param{TicketID},
         CustomerMessageParams => $Param{CustomerMessageParams},
@@ -2595,9 +2737,9 @@ sub SendAgentNotification {
     );
 
     # send notify
-    $Self->{SendmailObject}->Send(
-        From => $Self->{ConfigObject}->Get('NotificationSenderName') . ' <'
-            . $Self->{ConfigObject}->Get('NotificationSenderEmail') . '>',
+    $Kernel::OM->Get('Kernel::System::Email')->Send(
+        From => $ConfigObject->Get('NotificationSenderName') . ' <'
+            . $ConfigObject->Get('NotificationSenderEmail') . '>',
         To       => $User{UserEmail},
         Subject  => $Notification{Subject},
         MimeType => $Notification{ContentType} || 'text/plain',
@@ -2615,7 +2757,7 @@ sub SendAgentNotification {
     );
 
     # log event
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "Sent agent '$Param{Type}' notification to '$User{UserEmail}'.",
     );
@@ -2658,7 +2800,8 @@ sub SendCustomerNotification {
     # check needed stuff
     for (qw(CustomerMessageParams TicketID UserID Type)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -2672,8 +2815,11 @@ sub SendCustomerNotification {
         DynamicFields => 1,
     );
 
+    # get queue object
+    my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
     # check if notification should be send
-    my %Queue = $Self->{QueueObject}->QueueGet( ID => $Article{QueueID} );
+    my %Queue = $QueueObject->QueueGet( ID => $Article{QueueID} );
     if ( $Param{Type} =~ /^StateUpdate$/ && !$Queue{StateNotify} ) {
 
         # need no notification
@@ -2695,13 +2841,17 @@ sub SendCustomerNotification {
         return;
     }
 
+    # get needed objects
+    my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
+    my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
+
     # check if customer notifications should be send
     if (
-        $Self->{ConfigObject}->Get('CustomerNotifyJustToRealCustomer')
+        $ConfigObject->Get('CustomerNotifyJustToRealCustomer')
         && !$Article{CustomerUserID}
         )
     {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'info',
             Message  => 'Send no customer notification because no customer is set!',
         );
@@ -2709,12 +2859,14 @@ sub SendCustomerNotification {
     }
 
     # check customer email
-    elsif ( $Self->{ConfigObject}->Get('CustomerNotifyJustToRealCustomer') ) {
-        my %CustomerUser = $Self->{CustomerUserObject}->CustomerUserDataGet(
+    elsif ( $ConfigObject->Get('CustomerNotifyJustToRealCustomer') ) {
+
+        my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
             User => $Article{CustomerUserID},
         );
+
         if ( !$CustomerUser{UserEmail} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'info',
                 Message  => "Send no customer notification because of missing "
                     . "customer email (CustomerUserID=$CustomerUser{CustomerUserID})!",
@@ -2724,11 +2876,13 @@ sub SendCustomerNotification {
     }
 
     # get language and send recipient
-    my $Language = $Self->{ConfigObject}->Get('DefaultLanguage') || 'en';
+    my $Language = $ConfigObject->Get('DefaultLanguage') || 'en';
     if ( $Article{CustomerUserID} ) {
-        my %CustomerUser = $Self->{CustomerUserObject}->CustomerUserDataGet(
+
+        my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
             User => $Article{CustomerUserID},
         );
+
         if ( $CustomerUser{UserEmail} ) {
             $Article{From} = $CustomerUser{UserEmail};
         }
@@ -2744,16 +2898,7 @@ sub SendCustomerNotification {
         return;
     }
 
-    # get notification data
-    my $NotificationObject = Kernel::System::Notification->new(
-        MainObject   => $Self->{MainObject},
-        DBObject     => $Self->{DBObject},
-        EncodeObject => $Self->{EncodeObject},
-        ConfigObject => $Self->{ConfigObject},
-        LogObject    => $Self->{LogObject},
-        UserObject   => $Self->{UserObject},
-    );
-    my %Notification = $NotificationObject->NotificationGet(
+    my %Notification = $Kernel::OM->Get('Kernel::System::Notification')->NotificationGet(
         Name => $Language . '::Customer::' . $Param{Type},
     );
 
@@ -2770,7 +2915,7 @@ sub SendCustomerNotification {
         # get realname
         my $From = '';
         if ( $Article{CustomerUserID} ) {
-            $From = $Self->{CustomerUserObject}->CustomerName(
+            $From = $CustomerUserObject->CustomerName(
                 UserLogin => $Article{CustomerUserID},
             );
         }
@@ -2783,8 +2928,8 @@ sub SendCustomerNotification {
     }
 
     # replace config options
-    $Notification{Body} =~ s{<OTRS_CONFIG_(.+?)>}{$Self->{ConfigObject}->Get($1)}egx;
-    $Notification{Subject} =~ s{<OTRS_CONFIG_(.+?)>}{$Self->{ConfigObject}->Get($1)}egx;
+    $Notification{Body} =~ s{<OTRS_CONFIG_(.+?)>}{$ConfigObject->Get($1)}egx;
+    $Notification{Subject} =~ s{<OTRS_CONFIG_(.+?)>}{$ConfigObject->Get($1)}egx;
 
     # cleanup
     $Notification{Subject} =~ s/<OTRS_CONFIG_.+?>/-/gi;
@@ -2809,12 +2954,15 @@ sub SendCustomerNotification {
         }
     }
 
+    # get user object
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
     # cleanup
     $Notification{Subject} =~ s/<OTRS_TICKET_.+?>/-/gi;
     $Notification{Body} =~ s/<OTRS_TICKET_.+?>/-/gi;
 
     # get current user data
-    my %CurrentPreferences = $Self->{UserObject}->GetUserData( UserID => $Param{UserID} );
+    my %CurrentPreferences = $UserObject->GetUserData( UserID => $Param{UserID} );
     for ( sort keys %CurrentPreferences ) {
         if ( $CurrentPreferences{$_} ) {
             $Notification{Body} =~ s/<OTRS_CURRENT_$_>/$CurrentPreferences{$_}/gi;
@@ -2827,7 +2975,7 @@ sub SendCustomerNotification {
     $Notification{Body} =~ s/<OTRS_CURRENT_.+?>/-/gi;
 
     # get owner data
-    my %OwnerPreferences = $Self->{UserObject}->GetUserData( UserID => $Article{OwnerID}, );
+    my %OwnerPreferences = $UserObject->GetUserData( UserID => $Article{OwnerID}, );
     for ( sort keys %OwnerPreferences ) {
         if ( $OwnerPreferences{$_} ) {
             $Notification{Body} =~ s/<OTRS_OWNER_$_>/$OwnerPreferences{$_}/gi;
@@ -2840,7 +2988,7 @@ sub SendCustomerNotification {
     $Notification{Body} =~ s/<OTRS_OWNER_.+?>/-/gi;
 
     # get responsible data
-    my %ResponsiblePreferences = $Self->{UserObject}->GetUserData(
+    my %ResponsiblePreferences = $UserObject->GetUserData(
         UserID => $Article{ResponsibleID},
     );
     for ( sort keys %ResponsiblePreferences ) {
@@ -2865,7 +3013,7 @@ sub SendCustomerNotification {
 
     # get customer data and replace it with <OTRS_CUSTOMER_DATA_...
     if ( $Article{CustomerUserID} ) {
-        my %CustomerUser = $Self->{CustomerUserObject}->CustomerUserDataGet(
+        my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
             User => $Article{CustomerUserID},
         );
 
@@ -2930,7 +3078,7 @@ sub SendCustomerNotification {
     $Notification{Subject} =~ s/<OTRS_CUSTOMER_.+?>/-/gi;
 
     # send notify
-    my %Address = $Self->{QueueObject}->GetSystemAddress( QueueID => $Article{QueueID} );
+    my %Address = $QueueObject->GetSystemAddress( QueueID => $Article{QueueID} );
     $Self->ArticleSend(
         ArticleType    => 'email-notification-ext',
         SenderType     => 'system',
@@ -2948,7 +3096,7 @@ sub SendCustomerNotification {
     );
 
     # log event
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "Sent customer '$Param{Type}' notification to '$Article{From}'.",
     );
@@ -2990,7 +3138,8 @@ sub SendAutoResponse {
     # check needed stuff
     for (qw(TicketID UserID OrigHeader AutoResponseType)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -3008,18 +3157,7 @@ sub SendAutoResponse {
     );
 
     # get auto default responses
-    my $TemplateGeneratorObject = Kernel::System::TemplateGenerator->new(
-        MainObject         => $Self->{MainObject},
-        DBObject           => $Self->{DBObject},
-        EncodeObject       => $Self->{EncodeObject},
-        ConfigObject       => $Self->{ConfigObject},
-        LogObject          => $Self->{LogObject},
-        CustomerUserObject => $Self->{CustomerUserObject},
-        QueueObject        => $Self->{QueueObject},
-        UserObject         => $Self->{UserObject},
-        TicketObject       => $Self,
-    );
-    my %AutoResponse = $TemplateGeneratorObject->AutoResponse(
+    my %AutoResponse = $Kernel::OM->Get('Kernel::System::TemplateGenerator')->AutoResponse(
         TicketID         => $Param{TicketID},
         AutoResponseType => $Param{AutoResponseType},
         OrigHeader       => $Param{OrigHeader},
@@ -3032,7 +3170,7 @@ sub SendAutoResponse {
     return if !$AutoResponse{SenderAddress};
 
     # send if notification should be sent (not for closed tickets)!?
-    my %State = $Self->{StateObject}->StateGet( ID => $Ticket{StateID} );
+    my %State = $Kernel::OM->Get('Kernel::System::State')->StateGet( ID => $Ticket{StateID} );
     if (
         $Param{AutoResponseType} eq 'auto reply'
         && ( $State{TypeName} eq 'closed' || $State{TypeName} eq 'removed' )
@@ -3063,7 +3201,7 @@ sub SendAutoResponse {
                 . "an auto-response (e. g. loop or precedence header)",
             CreateUserID => $Param{UserID},
         );
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'info',
             Message  => "Sent no '$Param{AutoResponseType}' for Ticket ["
                 . "$Ticket{TicketNumber}] ($OrigHeader{From}) because the "
@@ -3077,16 +3215,11 @@ sub SendAutoResponse {
         $OrigHeader{From} = $OrigHeader{ReplyTo};
     }
 
-    # check / loop protection!
-    my $LoopProtectionObject = Kernel::System::PostMaster::LoopProtection->new(
-        LogObject    => $Self->{LogObject},
-        ConfigObject => $Self->{ConfigObject},
-        MainObject   => $Self->{MainObject},
-        DBObject     => $Self->{DBObject},
-    );
+    # get loop protection object
+    my $LoopProtectionObject = $Kernel::OM->Get('Kernel::System::PostMaster::LoopProtection');
 
+    # create email parser object
     my $EmailParser = Kernel::System::EmailParser->new(
-        %{$Self},
         Mode => 'Standalone',
     );
 
@@ -3106,7 +3239,7 @@ sub SendAutoResponse {
             );
 
             # log
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
                 Message  => "Sent no auto response to '$Address' because of invalid address.",
             );
@@ -3124,7 +3257,7 @@ sub SendAutoResponse {
             );
 
             # log
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
                 Message  => "Sent no '$Param{AutoResponseType}' for Ticket ["
                     . "$Ticket{TicketNumber}] ($Email) because of loop protection."
@@ -3138,7 +3271,7 @@ sub SendAutoResponse {
         }
 
         # check if sender is e. g. MAILER-DAEMON or Postmaster
-        my $NoAutoRegExp = $Self->{ConfigObject}->Get('SendNoAutoResponseRegExp');
+        my $NoAutoRegExp = $Kernel::OM->Get('Kernel::Config')->Get('SendNoAutoResponseRegExp');
         if ( $Email =~ /$NoAutoRegExp/i ) {
 
             # add it to ticket history
@@ -3150,7 +3283,7 @@ sub SendAutoResponse {
             );
 
             # log
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'info',
                 Message  => "Sent no auto response to '$Email' because config"
                     . " option SendNoAutoResponseRegExp (/$NoAutoRegExp/i) matched.",
@@ -3166,9 +3299,11 @@ sub SendAutoResponse {
 
     # also send CC to customer user if customer user id is used and addresses do not match
     if ( $Ticket{CustomerUserID} ) {
-        my %CustomerUser = $Self->{CustomerUserObject}->CustomerUserDataGet(
+
+        my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
             User => $Ticket{CustomerUserID},
         );
+
         if ( $CustomerUser{UserEmail} && $OrigHeader{From} !~ /\Q$CustomerUser{UserEmail}\E/i ) {
             $Cc = $CustomerUser{UserEmail};
         }
@@ -3193,7 +3328,7 @@ sub SendAutoResponse {
     }
 
     if ( !@AutoReplyAddresses && !$Cc ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'info',
             Message  => "No auto response addresses for Ticket [$Ticket{TicketNumber}]"
                 . " (TicketID=$Param{TicketID})."
@@ -3221,7 +3356,7 @@ sub SendAutoResponse {
     );
 
     # log
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "Sent auto response ($HistoryType) for Ticket [$Ticket{TicketNumber}]"
             . " (TicketID=$Param{TicketID}, ArticleID=$ArticleID) to '$AutoReplyAddresses'."
@@ -3261,7 +3396,8 @@ sub ArticleFlagSet {
     # check needed stuff
     for (qw(ArticleID Key Value UserID)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -3271,8 +3407,11 @@ sub ArticleFlagSet {
     # check if set is needed
     return 1 if defined $Flag{ $Param{Key} } && $Flag{ $Param{Key} } eq $Param{Value};
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # set flag
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => '
             DELETE FROM article_flag
             WHERE article_id = ?
@@ -3280,7 +3419,7 @@ sub ArticleFlagSet {
                 AND create_by = ?',
         Bind => [ \$Param{ArticleID}, \$Param{Key}, \$Param{UserID} ],
     );
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => 'INSERT INTO article_flag
             (article_id, article_key, article_value, create_time, create_by)
             VALUES (?, ?, ?, current_timestamp, ?)',
@@ -3335,20 +3474,25 @@ sub ArticleFlagDelete {
     # check needed stuff
     for (qw(ArticleID Key)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     if ( !$Param{AllUsers} && !$Param{UserID} ) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need AllUsers or UserID!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need AllUsers or UserID!" );
             return;
         }
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     if ( $Param{AllUsers} ) {
-        return if !$Self->{DBObject}->Do(
+        return if !$DBObject->Do(
             SQL => '
                 DELETE FROM article_flag
                 WHERE article_id = ?
@@ -3357,7 +3501,7 @@ sub ArticleFlagDelete {
         );
     }
     else {
-        return if !$Self->{DBObject}->Do(
+        return if !$DBObject->Do(
             SQL => '
                 DELETE FROM article_flag
                 WHERE article_id = ?
@@ -3405,13 +3549,17 @@ sub ArticleFlagGet {
     # check needed stuff
     for (qw(ArticleID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # sql query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL => '
             SELECT article_key, article_value
             FROM article_flag
@@ -3420,10 +3568,12 @@ sub ArticleFlagGet {
         Bind => [ \$Param{ArticleID}, \$Param{UserID} ],
         Limit => 1500,
     );
+
     my %Flag;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Flag{ $Row[0] } = $Row[1];
     }
+
     return %Flag;
 }
 
@@ -3451,13 +3601,17 @@ sub ArticleFlagsOfTicketGet {
     # check needed stuff
     for (qw(TicketID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # sql query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL => '
             SELECT article.id, article_flag.article_key, article_flag.article_value
             FROM article_flag, article
@@ -3467,10 +3621,12 @@ sub ArticleFlagsOfTicketGet {
         Bind => [ \$Param{TicketID}, \$Param{UserID} ],
         Limit => 1500,
     );
+
     my %Flag;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Flag{ $Row[0] }->{ $Row[1] } = $Row[2];
     }
+
     return %Flag;
 }
 
@@ -3489,20 +3645,26 @@ sub ArticleAccountedTimeGet {
 
     # check needed stuff
     if ( !$Param{ArticleID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need ArticleID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need ArticleID!' );
         return;
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # db query
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL  => 'SELECT time_unit FROM time_accounting WHERE article_id = ?',
         Bind => [ \$Param{ArticleID} ],
     );
+
     my $AccountedTime = 0;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Row[0] =~ s/,/./g;
         $AccountedTime = $AccountedTime + $Row[0];
     }
+
     return $AccountedTime;
 }
 
@@ -3521,15 +3683,17 @@ sub ArticleAccountedTimeDelete {
 
     # check needed stuff
     if ( !$Param{ArticleID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need ArticleID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need ArticleID!' );
         return;
     }
 
     # db query
-    return if !$Self->{DBObject}->Do(
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => 'DELETE FROM time_accounting WHERE article_id = ?',
         Bind => [ \$Param{ArticleID} ],
     );
+
     return 1;
 }
 
@@ -3695,7 +3859,8 @@ sub ArticleAttachmentIndex {
     # check needed stuff
     for (qw(ArticleID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }

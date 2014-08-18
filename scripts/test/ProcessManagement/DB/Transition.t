@@ -7,30 +7,22 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
-use vars (qw($Self));
-
 use utf8;
 
-use Kernel::Config;
-use Kernel::System::ProcessManagement::DB::Transition;
-use Kernel::System::UnitTest::Helper;
+use vars (qw($Self));
+
 use Kernel::System::VariableCheck qw(:all);
 
-# Create Helper instance which will restore system configuration in destructor
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
-
-my $ConfigObject = Kernel::Config->new();
-
-my $TransitionObject = Kernel::System::ProcessManagement::DB::Transition->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+# get needed objects
+my $ConfigObject     = $Kernel::OM->Get('Kernel::Config');
+my $CacheObject      = $Kernel::OM->Get('Kernel::System::Cache');
+my $HelperObject     = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ActivityObject   = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity');
+my $TransitionObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Transition');
+my $EntityObject     = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity');
 
 # set fixed time
 $HelperObject->FixedTimeSet();
@@ -38,6 +30,11 @@ $HelperObject->FixedTimeSet();
 # define needed variables
 my $RandomID = $HelperObject->GetRandomID();
 my $UserID   = 1;
+
+my $EntityID = $EntityObject->EntityIDGenerate(
+    EntityType => 'Transition',
+    UserID     => 1,
+);
 
 # get original Transition list
 my $OriginalTransitionList = $TransitionObject->TransitionList( UserID => $UserID ) || {};
@@ -260,6 +257,34 @@ my @Tests = (
         },
         Success => 1,
     },
+    {
+        Name   => 'TransitionAdd Test 13: EntityID Full Lenght',
+        Config => {
+            EntityID => $EntityID,
+            Name     => $EntityID,
+            Config   => {
+                Condition => {
+                    Type  => 'and',
+                    Cond1 => {
+                        Type   => 'and',
+                        Fields => {
+                            DynamicField_Test1 => {
+                                Type  => 'String',
+                                Match => '!Â§$%&/()=?Ã*ÃÃL:L@,.-',
+                            },
+                            DynamicField_Test2 => ['1'],
+                        },
+                    },
+                    Cond2 => {
+                        DynamicField_Test1 => ['2'],
+                        DynamicField_Test2 => ['1'],
+                    },
+                },
+            },
+            UserID => $UserID,
+        },
+        Success => 1,
+    },
 );
 
 my %AddedTransitions;
@@ -409,7 +434,7 @@ for my $Test (@Tests) {
             $CacheKey = 'TransitionGet::EntityID::' . $Test->{Config}->{EntityID};
         }
 
-        my $Cache = $TransitionObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Transition',
             Key  => $CacheKey,
         );
@@ -424,17 +449,20 @@ for my $Test (@Tests) {
         my %ExpectedTransition = %{ $AddedTransitions{ $Transition->{ID} } };
         delete $ExpectedTransition{UserID};
 
+        # create a variable copy otherwise the cache will be altered
+        my %TransitionCopy = %{$Transition};
+
         for my $Attribute (qw(ID CreateTime ChangeTime)) {
             $Self->IsNot(
-                $Transition->{$Attribute},
+                $TransitionCopy{$Attribute},
                 undef,
-                "$Test->{Name} | Transition->{$Attribute} should not be undef",
+                "$Test->{Name} | TransitionCopy{$Attribute} should not be undef",
             );
-            delete $Transition->{$Attribute};
+            delete $TransitionCopy{$Attribute};
         }
 
         $Self->IsDeeply(
-            $Transition,
+            \%TransitionCopy,
             \%ExpectedTransition,
             "$Test->{Name} | Transition"
         );
@@ -673,7 +701,7 @@ for my $Test (@Tests) {
         # check cache
         my $CacheKey = 'TransitionGet::ID::' . $Test->{Config}->{ID};
 
-        my $Cache = $TransitionObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Transition',
             Key  => $CacheKey,
         );
@@ -700,7 +728,7 @@ for my $Test (@Tests) {
         );
 
         # check cache
-        $Cache = $TransitionObject->{CacheObject}->Get(
+        $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Transition',
             Key  => $CacheKey,
         );
@@ -734,12 +762,15 @@ for my $Test (@Tests) {
             my %ExpectedTransition = %{ $Test->{Config} };
             delete $ExpectedTransition{UserID};
 
+            # create a variable copy otherwise the cache will be altered
+            my %NewTransitionCopy = %{$NewTransition};
+
             for my $Attribute (qw(CreateTime ChangeTime)) {
-                delete $NewTransition->{$Attribute};
+                delete $NewTransitionCopy{$Attribute};
             }
 
             $Self->IsDeeply(
-                $NewTransition,
+                \%NewTransitionCopy,
                 \%ExpectedTransition,
                 "$Test->{Name} | Transition"
             );
@@ -795,25 +826,28 @@ $Self->IsNotDeeply(
     "TransitionList Test 2: All | Should be different than the original",
 );
 
+# create a variable copy otherwise the cache will be altered
+my %TestTransitionListCopy = %{$TestTransitionList};
+
 # delete original Transitions
 for my $TransitionID ( sort keys %{$OriginalTransitionList} ) {
-    delete $TestTransitionList->{$TransitionID};
+    delete $TestTransitionListCopy{$TransitionID};
 }
 
 $Self->Is(
-    scalar keys %{$TestTransitionList},
+    scalar keys %TestTransitionListCopy,
     scalar @AddedTransitionsList,
     "TransitionList Test 2: All Transition | Number of Transitions match added Transitions",
 );
 
 my $Counter = 0;
-for my $TransitionID ( sort { $a <=> $b } keys %{$TestTransitionList} ) {
+for my $TransitionID ( sort { $a <=> $b } keys %TestTransitionListCopy ) {
     $Self->Is(
         $TransitionID,
         $AddedTransitionsList[$Counter],
         "TransitionList Test 2: All | TransitionID match AddedTransitionID",
-        ),
-        $Counter++;
+    );
+    $Counter++;
 }
 
 #
@@ -924,7 +958,7 @@ $Self->IsDeeply(
 # check cache
 my $CacheKey = 'TransitionListGet';
 
-my $Cache = $TransitionObject->{CacheObject}->Get(
+my $Cache = $CacheObject->Get(
     Type => 'ProcessManagement_Transition',
     Key  => $CacheKey,
 );

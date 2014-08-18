@@ -1,5 +1,5 @@
 # --
-# Kernel/Output/HTML/NavBarOutputModuleCustomerTicketProcess.pm - to show or hide AgentTicketProcess menu item
+# Kernel/Output/HTML/NavBarCustomerTicketProcess.pm - to show or hide AgentTicketProcess menu item
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -7,12 +7,11 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Output::HTML::NavBarOutputModuleCustomerTicketProcess;
+package Kernel::Output::HTML::NavBarCustomerTicketProcess;
 
 use strict;
 use warnings;
 
-use Kernel::System::Cache;
 use Kernel::System::ProcessManagement::Activity;
 use Kernel::System::ProcessManagement::ActivityDialog;
 use Kernel::System::ProcessManagement::Process;
@@ -20,6 +19,17 @@ use Kernel::System::ProcessManagement::Transition;
 use Kernel::System::ProcessManagement::TransitionAction;
 
 use Kernel::System::VariableCheck qw(:all);
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
+    'Kernel::System::Encode',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Ticket',
+    'Kernel::System::Time',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -29,18 +39,19 @@ sub new {
     bless( $Self, $Type );
 
     # get needed objects
-    for (
-        qw(
-        ConfigObject LogObject DBObject TicketObject LayoutObject MainObject EncodeObject
-        TimeObject UserID
-        )
-        )
-    {
+    for (qw( LayoutObject UserID )) {
         $Self->{$_} = $Param{$_} || die "Got no $_!";
     }
 
-    # create additional objects
-    $Self->{CacheObject} = $Kernel::OM->Get('CacheObject');
+    # get needed objects
+    $Self->{ConfigObject} //= $Kernel::OM->Get('Kernel::Config');
+    $Self->{CacheObject}  //= $Kernel::OM->Get('Kernel::System::Cache');
+    $Self->{DBObject}     //= $Kernel::OM->Get('Kernel::System::DB');
+    $Self->{LogObject}    //= $Kernel::OM->Get('Kernel::System::Log');
+    $Self->{TimeObject}   //= $Kernel::OM->Get('Kernel::System::Time');
+    $Self->{MainObject}   //= $Kernel::OM->Get('Kernel::System::Main');
+    $Self->{EncodeObject} //= $Kernel::OM->Get('Kernel::System::Encode');
+    $Self->{TicketObject} //= $Kernel::OM->Get('Kernel::System::Ticket');
 
     # get the cache TTL (in seconds)
     $Self->{CacheTTL}
@@ -143,18 +154,16 @@ sub Run {
     # return nothing to display the menu item
     return if $DisplayMenuItem;
 
-    # translate the menu item text
-    $NameForHidden = $Self->{LayoutObject}->{LanguageObject}->Translate($NameForHidden);
+    # frontend module is enabled but there is no selectable process, then remove the menu entry
+    my $NavBarName = $FrontendModuleConfig->{NavBarName};
+    my $Priority = sprintf( "%07d", $FrontendModuleConfig->{NavBar}->[0]->{Prio} );
 
-    # add JS snippet to hide the menu item
-    my $Output = $Self->{LayoutObject}->Output(
-        TemplateFile => 'CustomerTicketProcessNavigationBar',
-        Data         => {
-            NameForHidden => $NameForHidden,
-        },
-    );
+    my %Return = %{ $Param{NavBarModule}->{Sub} };
 
-    return;
+    # remove CustomerTicketProcess from the TicketMenu
+    delete $Return{$NavBarName}->{$Priority};
+
+    return ( Sub => \%Return );
 }
 
 1;

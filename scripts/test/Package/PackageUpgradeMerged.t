@@ -16,7 +16,7 @@ use Kernel::Config;
 use Kernel::System::Package;
 
 # create local objects
-my $ConfigObject  = Kernel::Config->new( %{$Self} );
+my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
 my $PackageObject = Kernel::System::Package->new( %{$Self} );
 my $DBObject      = Kernel::System::DB->new( %{$Self} );
 
@@ -322,8 +322,10 @@ while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
     $Result = $Row[0];
 }
 
+$Result //= '';
+
 $Self->Is(
-    $Result || '',
+    $Result,
     'Lalala1',
     'SQL check - merge_package table was created and have one record for select',
 );
@@ -577,9 +579,11 @@ for my $Test (@Tests) {
         $SQLResult = $Row[0];
     }
 
+    $SQLResult //= '';
+
     my $SQLTest = $Test->{SQLTest};
     $Self->$SQLTest(
-        $SQLResult || '',
+        $SQLResult,
         '1234',
         'SQL check - test_package table creation select one record',
     );

@@ -13,24 +13,16 @@ use vars (qw($Self));
 
 use utf8;
 
-use Kernel::Config;
-use Kernel::System::ACL::DB::ACL;
-use Kernel::System::UnitTest::Helper;
 use Kernel::System::VariableCheck qw(:all);
 
-# Create Helper instance which will restore system configuration in destructor
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $ACLObject    = $Kernel::OM->Get('Kernel::System::ACL::DB::ACL');
+my $CacheObject  = $Kernel::OM->Get('Kernel::System::Cache');
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $ConfigObject = Kernel::Config->new();
-
-my $ACLObject = Kernel::System::ACL::DB::ACL->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+# set fixed time
+$HelperObject->FixedTimeSet();
 
 # define needed variables
 my $RandomID = $HelperObject->GetRandomID();
@@ -253,7 +245,7 @@ for my $Test (@Tests) {
             $CacheKey = 'ACLGet::Name::' . $Test->{Config}->{Name};
         }
 
-        my $Cache = $ACLObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ACLEditor_ACL',
             Key  => $CacheKey,
         );
@@ -391,7 +383,7 @@ for my $Test (@Tests) {
 
 # try to update the ACL
 print "Force a gap between create and update ACL, Sleeping 2s\n";
-sleep 2;
+$HelperObject->FixedTimeAddSeconds(2);
 
 TEST:
 for my $Test (@Tests) {
@@ -417,7 +409,7 @@ for my $Test (@Tests) {
             = 'ACLGet::ID::'
             . $Test->{Config}->{ID};
 
-        my $Cache = $ACLObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ACLEditor_ACL',
             Key  => $CacheKey,
         );
@@ -444,7 +436,7 @@ for my $Test (@Tests) {
         );
 
         # check cache
-        $Cache = $ACLObject->{CacheObject}->Get(
+        $Cache = $CacheObject->Get(
             Type => 'ACLEditor_ACL',
             Key  => $CacheKey,
         );
@@ -609,10 +601,12 @@ for my $Index ( 1, 2 ) {
         UserID  => 1,
     );
 
+    my $AddedACLListIndex = $AddedACLList[$Index] //= '';
+
     $Self->IsNot(
         $Success,
         0,
-        "ACLList | Updated ACL for ACLID:'$AddedACLList[$Index]' result should be 1",
+        "ACLList | Updated ACL for ACLID:'$AddedACLListIndex' result should be 1",
     );
 }
 
@@ -715,7 +709,7 @@ $Self->IsDeeply(
 # check cache
 my $CacheKey = 'ACLListGet::ValidIDs::ALL';
 
-my $Cache = $ACLObject->{CacheObject}->Get(
+my $Cache = $CacheObject->Get(
     Type => 'ACLEditor_ACL',
     Key  => $CacheKey,
 );

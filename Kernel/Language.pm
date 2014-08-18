@@ -14,6 +14,17 @@ use warnings;
 
 use vars qw(@ISA);
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+);
+our $ObjectManagerAware = 1;
+
+my @DAYS = qw/Sun Mon Tue Wed Thu Fri Sat/;
+my @MONS = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
+
 =head1 NAME
 
 Kernel::Language - global language interface
@@ -34,11 +45,11 @@ create a language object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        LanguageObject => {
+        'Kernel::Language' => {
             UserLanguage => 'de',
         },
     );
-    my $LanguageObject = $Kernel::OM->Get('LanguageObject');
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
 
 =cut
 
@@ -49,26 +60,25 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (qw(ConfigObject LogObject MainObject EncodeObject)) {
-        die "Got no $_!" if ( !$Self->{$_} );
-    }
-
     # 0=off; 1=on; 2=get all not translated words; 3=get all requests
     $Self->{Debug} = 0;
 
+    # get needed object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+
     # check if LanguageDebug is configured
-    if ( $Self->{ConfigObject}->Get('LanguageDebug') ) {
+    if ( $ConfigObject->Get('LanguageDebug') ) {
         $Self->{LanguageDebug} = 1;
     }
 
     # user language
     $Self->{UserLanguage} = $Param{UserLanguage}
-        || $Self->{ConfigObject}->Get('DefaultLanguage')
+        || $ConfigObject->Get('DefaultLanguage')
         || 'en';
 
     # check if language is configured
-    my %Languages = %{ $Self->{ConfigObject}->Get('DefaultUsedLanguages') };
+    my %Languages = %{ $ConfigObject->Get('DefaultUsedLanguages') };
     if ( !$Languages{ $Self->{UserLanguage} } ) {
         $Self->{UserLanguage} = 'en';
     }
@@ -78,15 +88,15 @@ sub new {
 
     # Debug
     if ( $Self->{Debug} > 0 ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'Debug',
             Message  => "UserLanguage = $Self->{UserLanguage}",
         );
     }
 
     # load text catalog ...
-    if ( !$Self->{MainObject}->Require("Kernel::Language::$Self->{UserLanguage}") ) {
-        $Self->{LogObject}->Log(
+    if ( !$MainObject->Require("Kernel::Language::$Self->{UserLanguage}") ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'Error',
             Message  => "Sorry, can't locate or load Kernel::Language::$Self->{UserLanguage} "
                 . "translation! Check the Kernel/Language/$Self->{UserLanguage}.pm (perl -cw)!",
@@ -101,9 +111,9 @@ sub new {
 
         # debug info
         if ( $Self->{Debug} > 0 ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'Debug',
-                Message  => "Kernel::Language::$Self->{UserLanguage} load ... done."
+                Message  => "Kernel::Language::$Self->{UserLanguage} load ... done.",
             );
         }
     }
@@ -115,8 +125,8 @@ sub new {
     if ( !$Param{TranslationFile} ) {
 
         # looking to addition translation files
-        my $Home  = $Self->{ConfigObject}->Get('Home') . '/';
-        my @Files = $Self->{MainObject}->DirectoryRead(
+        my $Home  = $ConfigObject->Get('Home') . '/';
+        my @Files = $MainObject->DirectoryRead(
             Directory => $Home . "Kernel/Language/",
             Filter    => "$Self->{UserLanguage}_*.pm",
         );
@@ -138,8 +148,8 @@ sub new {
             }
 
             # load translation module
-            if ( !$Self->{MainObject}->Require($File) ) {
-                $Self->{LogObject}->Log(
+            if ( !$MainObject->Require($File) ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'Error',
                     Message  => "Sorry, can't load $File! " . "Check the $File (perl -cw)!",
                 );
@@ -154,16 +164,16 @@ sub new {
 
                 # debug info
                 if ( $Self->{Debug} > 0 ) {
-                    $Self->{LogObject}->Log(
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'Debug',
-                        Message  => "$File load ... done."
+                        Message  => "$File load ... done.",
                     );
                 }
             }
         }
 
         # load custom text catalog ...
-        if ( $CustomTranslationModule && $Self->{MainObject}->Require($CustomTranslationModule) ) {
+        if ( $CustomTranslationModule && $MainObject->Require($CustomTranslationModule) ) {
 
             # add module to ISA
             @ISA = ($CustomTranslationModule);
@@ -173,9 +183,9 @@ sub new {
 
                 # debug info
                 if ( $Self->{Debug} > 0 ) {
-                    $Self->{LogObject}->Log(
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'Debug',
-                        Message  => "Kernel::Language::$Self->{UserLanguage}_Custom load ... done."
+                        Message  => "Kernel::Language::$Self->{UserLanguage}_Custom load ... done.",
                     );
                 }
             }
@@ -255,7 +265,7 @@ sub Get {
 
         # Debug
         if ( $Self->{Debug} > 3 ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'Debug',
                 Message  => "->Get('$What') = ('$Self->{Translation}->{$What}').",
             );
@@ -281,12 +291,13 @@ sub Get {
                 }
             }
         }
+
         return $Text;
     }
 
     # warn if the value is not def
     if ( $Self->{Debug} > 1 ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => "->Get('$What') Is not translated!!!",
         );
@@ -321,9 +332,20 @@ sub Get {
 
 =item FormatTimeString()
 
-Get date format in used language format (based on translation file).
+formats a timestamp according to the specified date format for the current
+language (locale).
 
-    my $Date = $LanguageObject->FormatTimeString('2009-12-12 12:12:12', 'DateFormat');
+    my $Date = $LanguageObject->FormatTimeString(
+        '2009-12-12 12:12:12',  # timestamp
+        'DateFormat',           # which date format to use, e. g. DateFormatLong
+        0,                      # optional, hides the seconds from the time output
+    );
+
+Please note that the TimeZone will not be applied in the case of DateFormatShort (date only)
+to avoid switching to another date.
+
+If you only pass an ISO date ('2009-12-12'), it will be returned unchanged.
+Invalid strings will also be returned with an error logged.
 
 =cut
 
@@ -332,53 +354,58 @@ sub FormatTimeString {
 
     return '' if !$String;
 
-    if ( !$Config ) {
-        $Config = 'DateFormat';
-    }
-    if ( !$Short ) {
-        $Short = 0;
-    }
+    $Config ||= 'DateFormat';
+    $Short  ||= 0;
 
-    my $ReturnString = $Self->{$Config} || "$Config needs to be translated!";
-    if ( $String =~ /(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d:\d\d:\d\d)/ ) {
-        my ( $Y, $M, $D, $T ) = ( $1, $2, $3, $4 );
+    # Valid timestamp
+    if ( $String =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/ ) {
+        my ( $Y, $M, $D, $h, $m, $s ) = ( $1, $2, $3, $4, $5, $6 );
+        my $WD;    # day of week
+
+        my $ReturnString = $Self->{$Config} || "$Config needs to be translated!";
+
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+        my $TimeStamp = $TimeObject->TimeStamp2SystemTime( String => "$Y-$M-$D $h:$m:$s", );
 
         # Add user time zone diff, but only if we actually display the time!
         # Otherwise the date might be off by one day because of the TimeZone diff.
         if ( $Self->{TimeZone} && $Config ne 'DateFormatShort' ) {
-
-            my $TimeObject = $Kernel::OM->Get('TimeObject');
-
-            my $TimeStamp = $TimeObject->TimeStamp2SystemTime( String => "$Y-$M-$D $T", );
             $TimeStamp = $TimeStamp + ( $Self->{TimeZone} * 60 * 60 );
-
-            my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeStamp,
-            );
-
-            ( $Y, $M, $D, $T ) = ( $Year, $Month, $Day, "$Hour:$Min:$Sec" );
         }
+
+        ( $s, $m, $h, $D, $M, $Y, $WD ) = $TimeObject->SystemTime2Date(
+            SystemTime => $TimeStamp,
+        );
 
         if ($Short) {
-            $T =~ s/(\d\d:\d\d):\d\d/$1/g;
+            $ReturnString =~ s/\%T/$h:$m/g;
         }
-        $ReturnString =~ s/\%T/$T/g;
+        else {
+            $ReturnString =~ s/\%T/$h:$m:$s/g;
+        }
         $ReturnString =~ s/\%D/$D/g;
         $ReturnString =~ s/\%M/$M/g;
         $ReturnString =~ s/\%Y/$Y/g;
+
+        $ReturnString =~ s{(\%A)}{defined $WD ? $Self->Get($DAYS[$WD]) : '';}egx;
+        $ReturnString
+            =~ s{(\%B)}{(defined $M && $M =~ m/^\d+$/) ? $Self->Get($MONS[$M-1]) : '';}egx;
+
         if ( $Self->{TimeZone} && $Config ne 'DateFormatShort' ) {
             return $ReturnString . " ($Self->{TimeZone})";
         }
         return $ReturnString;
     }
-    elsif ( $String =~ /^(\d\d:\d\d:\d\d)$/ ) {
-        return $String;
-    }
 
-    $Self->{LogObject}->Log(
-        Priority => 'notice',
-        Message  => "No FormatTimeString() translation found for '$String' string!",
-    );
+    # Invalid string passed? (don't log for ISO dates)
+    if ( $String !~ /^(\d{2}:\d{2}:\d{2})$/ ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'notice',
+            Message  => "No FormatTimeString() translation found for '$String' string!",
+        );
+    }
 
     return $String;
 
@@ -469,7 +496,10 @@ sub Time {
     # check needed stuff
     for (qw(Action Format)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!",
+            );
             return;
         }
     }
@@ -479,10 +509,8 @@ sub Time {
     # set or get time
     if ( lc $Param{Action} eq 'get' ) {
 
-        my @DAYS = qw/Sun Mon Tue Wed Thu Fri Sat/;
-        my @MONS = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
-
-        my $TimeObject = $Kernel::OM->Get('TimeObject');
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
         ( $s, $m, $h, $D, $M, $Y, $WD, $YD, $DST ) = $TimeObject->SystemTime2Date(
             SystemTime => $TimeObject->SystemTime(),
@@ -499,8 +527,6 @@ sub Time {
 
     # do replace
     if ( ( lc $Param{Action} eq 'get' ) || ( lc $Param{Action} eq 'return' ) ) {
-        my @DAYS = qw/Sun Mon Tue Wed Thu Fri Sat/;
-        my @MONS = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
         my $Time = '';
         if ( $Param{Mode} && $Param{Mode} =~ /^NotNumeric$/i ) {
             if ( !$s ) {

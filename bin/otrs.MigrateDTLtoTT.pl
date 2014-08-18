@@ -29,33 +29,16 @@ use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
 use Getopt::Std;
-<<<<<<< HEAD
-use Kernel::Config;
-use Kernel::System::Encode;
-use Kernel::System::Log;
-use Kernel::System::Time;
-use Kernel::System::DB;
-use Kernel::System::PID;
-use Kernel::System::Main;
-=======
 use Kernel::System::ObjectManager;
->>>>>>> upstream/master
 use Kernel::Output::Template::Provider;
 
 # get options
 my %Options;
 getopt( 'hd', \%Options );
-<<<<<<< HEAD
-if ( $Options{h} ) {
-    print <<EOF;
-$0 - migrate DTL templates to TT
-Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
-=======
 if ( exists $Options{h} || !$Options{d} ) {
     print <<EOF;
 $0 - migrate DTL templates to TT
 Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
->>>>>>> upstream/master
 
 Usage: $0 -d /path/to/OTRS/or/module
 
@@ -63,34 +46,23 @@ EOF
     exit 1;
 }
 
-<<<<<<< HEAD
-=======
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.MigrateDTLtoTT.pl',
     },
 );
 
->>>>>>> upstream/master
 sub Run {
-
-    my %CommonObject = _CommonObjects();
 
     my $ProviderObject = Kernel::Output::Template::Provider->new();
 
     if ( !$Options{d} || !-d $Options{d} ) {
-<<<<<<< HEAD
-        $CommonObject{LogObject}->Log(
-            Priority => 'error',
-            Message  => "Please provide a directory. $Options{d} is not a valid directory.",
-=======
 
         my $Directory = $Options{d} || '';
 
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Please provide a directory. '$Directory' is not a valid directory.",
->>>>>>> upstream/master
         );
         exit 1;
     }
@@ -99,7 +71,7 @@ sub Run {
 
     # Regular DTLs
     if ( -d "$Options{d}/Kernel/Output/HTML/" ) {
-        push @FileList, $CommonObject{MainObject}->DirectoryRead(
+        push @FileList, $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => "$Options{d}/Kernel/Output/HTML/",
             Filter    => "*.dtl",
             Recursive => 1,
@@ -108,7 +80,7 @@ sub Run {
 
     # Customized DTLs
     if ( -d "$Options{d}/Custom/Kernel/Output/HTML/" ) {
-        push @FileList, $CommonObject{MainObject}->DirectoryRead(
+        push @FileList, $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => "$Options{d}/Custom/Kernel/Output/HTML/",
             Filter    => "*.dtl",
             Recursive => 1,
@@ -117,7 +89,7 @@ sub Run {
 
     # XML configuration files, may also contain DTL tags
     if ( -d "$Options{d}/Kernel/Config/Files/" ) {
-        push @FileList, $CommonObject{MainObject}->DirectoryRead(
+        push @FileList, $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => "$Options{d}/Kernel/Config/Files/",
             Filter    => "*.xml",
             Recursive => 1,
@@ -125,7 +97,7 @@ sub Run {
     }
 
     if ( !@FileList ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No affected files found in $Options{d}.",
         );
@@ -135,7 +107,7 @@ sub Run {
     my $Success = 1;
 
     for my $File (@FileList) {
-        my $ContentRef = $CommonObject{MainObject}->FileRead(
+        my $ContentRef = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
             Location => $File,
             Mode     => 'utf8',
         );
@@ -158,13 +130,12 @@ sub Run {
         }
 
         if ( $TTContent ne ${$ContentRef} ) {
-            $CommonObject{MainObject}->FileWrite(
+            $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
                 Location => $TTFile,
                 Content  => \$TTContent,
                 Mode     => 'utf8',
             );
         }
-
     }
 
     if ( !$Success ) {
@@ -174,31 +145,6 @@ sub Run {
 
     print STDERR "\nAll files ok.\n";
     exit 0;
-}
-
-sub _CommonObjects {
-
-<<<<<<< HEAD
-    my %CommonObject;
-    $CommonObject{ConfigObject} = Kernel::Config->new();
-    $CommonObject{EncodeObject} = Kernel::System::Encode->new(%CommonObject);
-    $CommonObject{LogObject}    = Kernel::System::Log->new(
-        LogPrefix => 'OTRS-otrs.GenerateDashboardStats.pl',
-        %CommonObject,
-    );
-    $CommonObject{MainObject} = Kernel::System::Main->new(%CommonObject);
-    $CommonObject{TimeObject} = Kernel::System::Time->new(%CommonObject);
-    $CommonObject{DBObject}   = Kernel::System::DB->new(%CommonObject);
-=======
-    # create common objects
-    my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [
-            qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject)
-        ],
-    );
->>>>>>> upstream/master
-
-    return %CommonObject;
 }
 
 Run();

@@ -1,7 +1,18 @@
 #3.4.0.beta1 20??-??-??
+ - 2014-08-07 Removed possibility to start scheduler from GUI.
+ - 2014-08-07 Added possibility to use Date and Date/Time dynamic fields as restrictions in statistics.
+ - 2014-08-07 Removed AgentZoom.pm.
+ - 2014-08-04 Removed CacheInternal.pm. Caching is now done with the global Cache object stored in the ObjectManager, which also does in-memory caching.
+ - 2014-07-25 Added possibility to use process ticket information as dynamic values for transition actions.
+ - 2014-07-25 Added new Process Management transition action to create a new ticket.
+ - 2014-07-25 Added possibility to enroll existing tickets into a process.
+ - 2014-07-25 Added new Process Management transition debugging options.
+ - 2014-07-25 Re-enabled update feature during process import.
+ - 2014-07-25 Changed ProcessManagement EntityIDs to random strings.
+ - 2014-07-24 Fixed bug#[8244](http://bugs.otrs.org/show_bug.cgi?id=8244) - QueueView hides queues that do not have at least one unlocked ticket.
  - 2014-07-22 Fixed bug#[10644](http://bugs.otrs.org/show_bug.cgi?id=10644) - Module parameters in GenericAgent are copied to ticket parameters
- - 2017-07-21 Changed Action based Ticket ACLs format from a hash form to an array form just like the other ACLs, including possiblilty to define Action based Ticket ACLs in the PossibleNot and PossibleAdd sections.
- - 2017-07-21 Added new Tiket ACL debugging options.
+ - 2017-07-21 Changed Action based Ticket ACLs format from a hash form to an array form just like the other ACLs, including possibility to define Action based Ticket ACLs in the PossibleNot and PossibleAdd sections.
+ - 2017-07-21 Added new Ticket ACL debugging options.
  - 2014-07-21 Added [Not], [NotRegExp] and [Notregexp] modifiers for all Ticket ACL sections.
  - 2014-07-21 Added possibility to combine different Ticket ACLs with Possible, PossibleAdd and PossibleNot sections.
  - 2014-07-21 Added PossibleAdd section to Ticket ACls.
@@ -88,6 +99,16 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-??-??
+ - 2014-08-08 Fixed bug#[9756](http://bugs.otrs.org/show_bug.cgi?id=9756) - Owner will be set after QueueMove screen AND undo.
+ - 2014-08-08 Fixed bug#[10606](http://bugs.otrs.org/show_bug.cgi?id=10606) - Dynamic fields in dashboard overview are empty.
+ - 2014-08-07 Fixed bug#[6284](http://bugs.otrs.org/show_bug.cgi?id=6284) - Problem with unicode characters when using FastCGI.
+ - 2014-08-07 Updated Danish translation, thanks to Lars Jørgensen.
+ - 2014-08-01 Fixed bug#[10670](http://bugs.otrs.org/show_bug.cgi?id=10670) - It is possible to start the scheduler more than once.
+ - 2014-07-29 Fixed bug#[10598](http://bugs.otrs.org/show_bug.cgi?id=10598) - Field tags not parsed properly in auto response subject.
+ - 2014-07-29 Fixed bug#[10658](http://bugs.otrs.org/show_bug.cgi?id=10658) - Issue with multiple customer company backends.
+ - 2014-07-29 Fixed bug#[10622](http://bugs.otrs.org/show_bug.cgi?id=10622) - eMail address only with uppercases - wrong display.
+ - 2014-07-29 Fixed bug#[10596](http://bugs.otrs.org/show_bug.cgi?id=10596) - Manual Generic Agent Run doesn't show archived tickets as affected.
+ - 2014-07-29 Fixed bug#[10601](http://bugs.otrs.org/show_bug.cgi?id=10601) - ExternalTicketNumberRecognition produces errors in log file.
  - 2014-07-17 Fixed bug#[10612](http://bugs.otrs.org/show_bug.cgi?id=10612) - Wrong Time in DashboardField "Changed", thanks to S7.
  - 2014-07-10 Fixed bug#[10595](http://bugs.otrs.org/show_bug.cgi?id=10595) - Standard Replies are false sorted in Ticket Zoom select box.
  - 2014-07-07 Fixed bug#[10534](http://bugs.otrs.org/show_bug.cgi?id=10534) - Wildcard hacking the customer information center, thanks to S7.

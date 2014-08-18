@@ -15,7 +15,16 @@ use warnings;
 use Storable qw();
 
 use Kernel::Config;
-use Kernel::Language;
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::Language',
+    'Kernel::System::Cache',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::XML',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -37,7 +46,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $SysConfigObject = $Kernel::OM->Get('SysConfigObject');
+    my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
 =cut
 
@@ -47,14 +56,11 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {
-        $Kernel::OM->ObjectHash(
-            Objects => [
-                qw( DBObject ConfigObject LogObject MainObject EncodeObject CacheObject )
-            ],
-        ),
-    };
+    my $Self = {};
     bless( $Self, $Type );
+
+    # get database object
+    $Self->{ConfigObject} = $Kernel::OM->Get('Kernel::Config');
 
     # get home directory
     $Self->{Home} = $Self->{ConfigObject}->Get('Home');
@@ -63,11 +69,10 @@ sub new {
     $Self->{utf8}     = 1;
     $Self->{FileMode} = ':utf8';
 
-    $Self->{ConfigDefaultObject} = Kernel::Config->new( %{$Self}, Level => 'Default' );
-    $Self->{ConfigObject}        = Kernel::Config->new( %{$Self}, Level => 'First' );
-    $Self->{ConfigClearObject}   = Kernel::Config->new( %{$Self}, Level => 'Clear' );
+    $Self->{ConfigDefaultObject} = Kernel::Config->new( Level => 'Default' );
+    $Self->{ConfigObject}        = Kernel::Config->new( Level => 'First' );
+    $Self->{ConfigClearObject}   = Kernel::Config->new( Level => 'Clear' );
     $Self->{ConfigCounter}       = $Self->_Init();
-    $Self->{LanguageObject}      = $Param{LanguageObject} || Kernel::Language->new( %{$Self} );
 
     return $Self;
 }
@@ -164,7 +169,7 @@ sub Download {
         ## use critic
         return if $Param{Type};
 
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't open $Home/Kernel/Config/Files/ZZZAuto.pm: $!"
         );
@@ -187,7 +192,6 @@ sub Download {
         return;
     }
 
-    # return file
     return $File;
 }
 
@@ -214,12 +218,13 @@ sub Upload {
     # check needed stuff
     for (qw(Content)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
-    my $FileLocation = $Self->{MainObject}->FileWrite(
+    my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
         Location => "$Home/Kernel/Config/Files/ZZZAuto.pm",
         Content  => \$Param{Content},
         Mode     => 'binmode',
@@ -362,14 +367,15 @@ sub ConfigItemUpdate {
     # check needed stuff
     for (qw(Valid Key Value)) {
         if ( !defined( $Param{$_} ) ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     # check if we need to create config file
     if ( !-e "$Home/Kernel/Config/Files/ZZZAuto.pm" && !$Self->CreateConfig( EmptyFile => 1 ) ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't create empty $Home/Kernel/Config/Files/ZZZAuto.pm!",
         );
@@ -381,7 +387,7 @@ sub ConfigItemUpdate {
     ## no critic
     if ( !open( $Out, ">>$Self->{FileMode}", "$Home/Kernel/Config/Files/ZZZAuto.pm" ) ) {
         ## use critic
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't write $Home/Kernel/Config/Files/ZZZAuto.pm: $!",
         );
@@ -424,7 +430,7 @@ sub ConfigItemUpdate {
         $Option = "delete \$Self->{'$Param{Key}'};\n";
     }
     else {
-        $Option = $Self->{MainObject}->Dump( $Param{Value}, 'ascii' );
+        $Option = $Kernel::OM->Get('Kernel::System::Main')->Dump( $Param{Value}, 'ascii' );
         $Option =~ s/\$VAR1/\$Self->{'$Param{Key}'}/;
     }
 
@@ -439,7 +445,7 @@ sub ConfigItemUpdate {
     if ( !open( $In, "<$Self->{FileMode}", "$Home/Kernel/Config/Files/ZZZAuto.pm" ) ) {
         ## use critic
 
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't read $Home/Kernel/Config/Files/ZZZAuto.pm: $!",
         );
@@ -495,7 +501,8 @@ sub ConfigItemGet {
     # check needed stuff
     for (qw(Name)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -507,8 +514,11 @@ sub ConfigItemGet {
     # return on invalid config item
     return if !$Self->{Config}->{ $Param{Name} };
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # copy config and store it as default
-    my $Dump = $Self->{MainObject}->Dump( $Self->{Config}->{ $Param{Name} }, 'ascii' );
+    my $Dump = $MainObject->Dump( $Self->{Config}->{ $Param{Name} }, 'ascii' );
     $Dump =~ s/\$VAR1 =/\$ConfigItem =/;
 
     # rh as 8 bug fix
@@ -891,7 +901,7 @@ sub ConfigItemGet {
         )
     {
         my $Home = $Self->{Home};
-        my @List = $Self->{MainObject}->DirectoryRead(
+        my @List = $MainObject->DirectoryRead(
             Directory => $Home,
             Filter    => "$ConfigItem->{Setting}->[1]->{Option}->[1]->{Location}",
         );
@@ -940,7 +950,8 @@ sub ConfigItemReset {
     # check needed stuff
     for (qw(Name)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -998,7 +1009,8 @@ sub ConfigSubGroupList {
     # check needed stuff
     for (qw(Name)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1046,7 +1058,8 @@ sub ConfigSubGroupConfigItemList {
     # check needed stuff
     for (qw(Group SubGroup)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1114,10 +1127,15 @@ sub ConfigItemSearch {
     # check needed stuff
     for (qw(Search)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
+
+    # get language object
+    my $LanguageObject = $Kernel::OM->Get('Kernel::Language');
+
     $Param{Search} =~ s/\*//;
     my %Groups = $Self->ConfigGroupList();
     for my $Group ( sort keys(%Groups) ) {
@@ -1201,7 +1219,7 @@ sub ConfigItemSearch {
                             if (
                                 ( $Description =~ /\Q$Param{Search}\E/i )
                                 || (
-                                    $Self->{LanguageObject}->Translate($Description)
+                                    $LanguageObject->Translate($Description)
                                     =~ /\Q$Param{Search}\E/i
                                 )
                                 )
@@ -1222,6 +1240,7 @@ sub ConfigItemSearch {
             }
         }
     }
+
     return @List;
 }
 
@@ -1297,7 +1316,7 @@ sub ConfigItemValidate {
 
     # check needed stuff
     if ( !$Param{Key} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Need Key!",
         );
@@ -1488,8 +1507,11 @@ sub _Init {
 
     return if !-e $Directory;
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # load xml config files
-    my @Files = $Self->{MainObject}->DirectoryRead(
+    my @Files = $MainObject->DirectoryRead(
         Directory => $Directory,
         Filter    => "*.xml",
     );
@@ -1497,12 +1519,15 @@ sub _Init {
     # get the md5 representing the current configuration state
     my $ConfigChecksum = $Self->{ConfigObject}->ConfigChecksum();
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     my %Data;
     FILE:
     for my $File (@Files) {
 
         my $CacheKey  = "_Init::${File}::${ConfigChecksum}";
-        my $CacheData = $Self->{CacheObject}->Get(
+        my $CacheData = $CacheObject->Get(
             Type => 'SysConfig',
             Key  => $CacheKey,
         );
@@ -1515,14 +1540,14 @@ sub _Init {
             }
         }
 
-        my $ConfigFile = $Self->{MainObject}->FileRead(
+        my $ConfigFile = $MainObject->FileRead(
             Location => $File,
             Mode     => 'binmode',
             Result   => 'SCALAR',
         );
 
         if ( !ref $ConfigFile || !${$ConfigFile} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't open file $File: $!",
             );
@@ -1530,14 +1555,14 @@ sub _Init {
         }
 
         # Ok, cache was not used, parse the config files
-        my @XMLHash = $Kernel::OM->Get('XMLObject')->XMLParse2XMLHash(
+        my @XMLHash = $Kernel::OM->Get('Kernel::System::XML')->XMLParse2XMLHash(
             String     => $ConfigFile,
             Sourcename => $File,
         );
 
         $Data{$File} = \@XMLHash;
 
-        my $Dump = $Self->{MainObject}->Dump( \@XMLHash, 'ascii' );
+        my $Dump = $MainObject->Dump( \@XMLHash, 'ascii' );
         $Dump =~ s/\$VAR1/\$XMLHashRef/;
 
         my $Out;
@@ -1547,7 +1572,7 @@ sub _Init {
         $Out .= "use warnings;\n";
         $Out .= $Dump . "\n1;";
 
-        $Self->{CacheObject}->Set(
+        $CacheObject->Set(
             Type  => 'SysConfig',
             Key   => $CacheKey,
             Value => \$Out,
@@ -1643,7 +1668,8 @@ sub _DataDiff {
     # check needed stuff
     for (qw(Data1 Data2)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1793,7 +1819,8 @@ sub _FileWriteAtomic {
 
     for (qw(Filename Content)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1805,7 +1832,7 @@ sub _FileWriteAtomic {
     if ( !open( $FH, ">$Self->{FileMode}", $TempFilename ) ) {
         ## use critic
 
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't open file $TempFilename: $!",
         );
@@ -1816,7 +1843,7 @@ sub _FileWriteAtomic {
     close $FH;
 
     if ( !rename $TempFilename, $Param{Filename} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Could not rename $TempFilename to $Param{Filename}: $!"
         );
@@ -1832,7 +1859,8 @@ sub _ConfigItemTranslatableStrings {
     # check needed stuff
     for (qw(Data)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -1919,10 +1947,15 @@ sub _XML2Perl {
     # check needed stuff
     for (qw(Data)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
+
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     my $ConfigItem = $Param{Data}->{Setting}->[1];
     my $Data;
     if ( $ConfigItem->{String} ) {
@@ -1931,7 +1964,7 @@ sub _XML2Perl {
         $Data = $D;
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( $Data, 'ascii' );
+        my $Dump = $MainObject->Dump( $Data, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -1941,7 +1974,7 @@ sub _XML2Perl {
         $Data = $D;
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( $Data, 'ascii' );
+        my $Dump = $MainObject->Dump( $Data, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -1952,7 +1985,7 @@ sub _XML2Perl {
         $Data = $D;
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( $Data, 'ascii' );
+        my $Dump = $MainObject->Dump( $Data, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -1998,7 +2031,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Hash, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Hash, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2013,7 +2046,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \@ArrayNew, 'ascii' );
+        my $Dump = $MainObject->Dump( \@ArrayNew, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2111,7 +2144,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Hash, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Hash, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2130,7 +2163,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Days, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Days, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2142,7 +2175,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Hash, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Hash, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2155,7 +2188,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Hash, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Hash, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2168,7 +2201,7 @@ sub _XML2Perl {
         }
 
         # store in config
-        my $Dump = $Self->{MainObject}->Dump( \%Hash, 'ascii' );
+        my $Dump = $MainObject->Dump( \%Hash, 'ascii' );
         $Dump =~ s/\$VAR1 =//;
         $Data = $Dump;
     }
@@ -2190,7 +2223,7 @@ sub _LoadBackend {
     my ( $Self, %Param ) = @_;
 
     if ( !$Param{Module} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Module!',
         );
@@ -2202,30 +2235,20 @@ sub _LoadBackend {
         if $Self->{Cache}->{LoadSysConfigBackend}->{ $Param{Module} };
 
     # load the backend module
-    if ( !$Self->{MainObject}->Require( $Param{Module} ) ) {
-        $Self->{LogObject}->Log(
+    if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( $Param{Module} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't load sysconfig backend module $Param{Module}!",
         );
         return;
     }
 
-    # IMPORTANT
-    # we need to create our own config object here,
-    # otherwise the <OTRS_CONFIG_> variables would not be replaced,
-    # e.g. as for <OTRS_CONFIG_TempDir>
-    my $ConfigObject = Kernel::Config->new( %{$Self} );
-
     # create new instance
-    my $BackendObject = $Param{Module}->new(
-        %{$Self},
-        %Param,
-        ConfigObject => $ConfigObject,
-    );
+    my $BackendObject = $Param{Module}->new();
 
     # check for backend object
     if ( !$BackendObject ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't create a new instance of sysconfig backend module $Param{Module}!",
         );

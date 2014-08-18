@@ -4157,6 +4157,17 @@
             </Option>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Ticket::Frontend::AgentTicketMove###RequiredLock" Required="0" Valid="1">
+        <Description Translatable="1">Automatically lock and set owner to current Agent after opening the move ticket screen of the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Ticket::ViewMove</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0">No</Item>
+                <Item Key="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Ticket::Frontend::AgentTicketMove###State" Required="0" Valid="1">
         <Description Translatable="1">Allows to set a new ticket state in the move ticket screen of the agent interface.</Description>
         <Group>Ticket</Group>
@@ -4918,6 +4929,8 @@
                     <Item Key="Text" Translatable="1">Open tickets (customer user)</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconNameOpenTicket">fa-exclamation-circle</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-check-circle</Item>
                 </Hash>
             </Setting>
     </ConfigItem>
@@ -4937,6 +4950,8 @@
                     <Item Key="Text" Translatable="1">Closed tickets (customer)</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconNameOpenTicket">fa-power-off</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-power-off</Item>
                 </Hash>
             </Setting>
     </ConfigItem>
@@ -4956,6 +4971,8 @@
                     <Item Key="Text" Translatable="1">Closed tickets (customer user)</Item>
                     <Item Key="Action">AgentTicketSearch</Item>
                     <Item Key="Subaction">Search</Item>
+                    <Item Key="IconNameOpenTicket">fa-power-off</Item>
+                    <Item Key="IconNameNoOpenTicket">fa-power-off</Item>
                 </Hash>
             </Setting>
     </ConfigItem>
@@ -5619,7 +5636,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0100-TicketPendingReminder" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5665,7 +5682,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0110-TicketEscalation" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5711,7 +5728,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0120-TicketNew" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5757,7 +5774,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="DashboardBackend###0130-TicketOpen" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -5975,7 +5992,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0100-CIC-TicketPendingReminder" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6021,7 +6038,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0110-CIC-TicketEscalation" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket escalation overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6067,7 +6084,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0120-CIC-TicketNew" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -6113,7 +6130,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AgentCustomerInformationCenter::Backend###0130-CIC-TicketOpen" Required="0" Valid="1">
-        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.</Description>
+        <Description Translatable="1">Parameters for the dashboard backend of the ticket pending reminder overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Agent::Dashboard</SubGroup>
         <Setting>
@@ -7413,18 +7430,6 @@
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
                 </Loader>
-            </FrontendModuleReg>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentZoom" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
-        <Setting>
-            <FrontendModuleReg>
-                <Description>compat module for AgentZoom to AgentTicketZoom</Description>
-                <NavBarName>Ticket</NavBarName>
-                <Title></Title>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>

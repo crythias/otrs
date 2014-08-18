@@ -35,7 +35,7 @@ my $HelperObject = Kernel::System::UnitTest::Helper->new(
 
 my $RandomID = $HelperObject->GetRandomID();
 
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 my $UserObject = Kernel::System::User->new(
     %{$Self},

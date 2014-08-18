@@ -12,8 +12,12 @@ package Kernel::Scheduler::TaskHandler::RegistrationUpdate;
 use strict;
 use warnings;
 
-use Kernel::System::Encode;
-use Kernel::System::Registration;
+our @ObjectDependencies = (
+    'Kernel::System::Log',
+    'Kernel::System::Registration',
+    'Kernel::System::Time',
+);
+our $ObjectManagerAware = 1;
 
 =head1 NAME
 
@@ -39,13 +43,6 @@ sub new {
 
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for my $Needed (qw(MainObject ConfigObject LogObject DBObject TimeObject)) {
-        $Self->{$Needed} = $Param{$Needed} || die "Got no $Needed!";
-    }
-    $Self->{EncodeObject}       = Kernel::System::Encode->new( %{$Self} );
-    $Self->{RegistrationObject} = Kernel::System::Registration->new( %{$Self} );
 
     return $Self;
 }
@@ -79,7 +76,7 @@ sub Run {
 
     # check data - we need a hash ref
     if ( $Param{Data} && ref $Param{Data} ne 'HASH' ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Got no valid Data!',
         );
@@ -89,19 +86,22 @@ sub Run {
         };
     }
 
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "Registration - RegistrationUpdate running.",
     );
-    my %Result = $Self->{RegistrationObject}->RegistrationUpdateSend();
+    my %Result = $Kernel::OM->Get('Kernel::System::Registration')->RegistrationUpdateSend();
 
     # if we sent a successful Update, reschedule in whatever the OTRS
     # portal tells us. Otherwise, retry in two hours
     my $ReSchedule = $Result{ReScheduleIn} // ( 3600 * 2 );
 
-    my $SystemTime = $Self->{TimeObject}->SystemTime();
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    my $ReScheduleTime = $Self->{TimeObject}->SystemTime2TimeStamp(
+    my $SystemTime = $TimeObject->SystemTime();
+
+    my $ReScheduleTime = $TimeObject->SystemTime2TimeStamp(
         SystemTime => ( $SystemTime + $ReSchedule ),
     );
 

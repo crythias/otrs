@@ -12,6 +12,16 @@ package Kernel::System::Auth;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+    'Kernel::System::User',
+    'Kernel::System::Valid',
+);
+our $ObjectManagerAware = 1;
+
 =head1 NAME
 
 Kernel::System::Auth - agent authentication module.
@@ -32,7 +42,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $AuthObject = $Kernel::OM->Get('AuthObject');
+    my $AuthObject = $Kernel::OM->Get('Kernel::System::Auth');
 
 =cut
 
@@ -40,41 +50,38 @@ sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {
-        $Kernel::OM->ObjectHash(
-            Objects => [
-                qw(LogObject ConfigObject DBObject UserObject GroupObject
-                    MainObject EncodeObject TimeObject ValidObject)
-            ],
-        ),
-    };
+    my $Self = {};
     bless( $Self, $Type );
+
+    # get needed objects
+    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # load auth modules
     COUNT:
     for my $Count ( '', 1 .. 10 ) {
 
-        my $GenericModule = $Self->{ConfigObject}->Get("AuthModule$Count");
+        my $GenericModule = $ConfigObject->Get("AuthModule$Count");
 
         next COUNT if !$GenericModule;
 
-        if ( !$Self->{MainObject}->Require($GenericModule) ) {
-            $Self->{MainObject}->Die("Can't load backend module $GenericModule! $@");
+        if ( !$MainObject->Require($GenericModule) ) {
+            $MainObject->Die("Can't load backend module $GenericModule! $@");
         }
 
-        $Self->{"AuthBackend$Count"} = $GenericModule->new( %{$Self}, Count => $Count );
+        $Self->{"AuthBackend$Count"} = $GenericModule->new( Count => $Count );
     }
 
     # load sync modules
     COUNT:
     for my $Count ( '', 1 .. 10 ) {
 
-        my $GenericModule = $Self->{ConfigObject}->Get("AuthSyncModule$Count");
+        my $GenericModule = $ConfigObject->Get("AuthSyncModule$Count");
 
         next COUNT if !$GenericModule;
 
-        if ( !$Self->{MainObject}->Require($GenericModule) ) {
-            $Self->{MainObject}->Die("Can't load backend module $GenericModule! $@");
+        if ( !$MainObject->Require($GenericModule) ) {
+            $MainObject->Die("Can't load backend module $GenericModule! $@");
         }
 
         $Self->{"AuthSyncBackend$Count"} = $GenericModule->new( %{$Self}, Count => $Count );
@@ -115,6 +122,10 @@ The authentication function.
 sub Auth {
     my ( $Self, %Param ) = @_;
 
+    # get needed objects
+    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # use all 11 auth backends and return on first true
     my $User;
     COUNT:
@@ -130,9 +141,9 @@ sub Auth {
         next COUNT if !$User;
 
         # configured auth sync backend
-        my $AuthSyncBackend = $Self->{ConfigObject}->Get("AuthModule::UseSyncBackend$Count");
+        my $AuthSyncBackend = $ConfigObject->Get("AuthModule::UseSyncBackend$Count");
         if ( !defined $AuthSyncBackend ) {
-            $AuthSyncBackend = $Self->{ConfigObject}->Get("AuthModule{$Count}::UseSyncBackend");
+            $AuthSyncBackend = $ConfigObject->Get("AuthModule{$Count}::UseSyncBackend");
         }
 
     # for backwards compatibility, OTRS 3.1.1, 3.1.2 and 3.1.3 used this wrong format (see bug#8387)
@@ -162,12 +173,12 @@ sub Auth {
         }
 
         # remember auth backend
-        my $UserID = $Self->{UserObject}->UserLookup(
+        my $UserID = $UserObject->UserLookup(
             UserLogin => $User,
         );
 
         if ($UserID) {
-            $Self->{UserObject}->SetPreferences(
+            $UserObject->SetPreferences(
                 Key    => 'UserAuthBackend',
                 Value  => $Count,
                 UserID => $UserID,
@@ -181,13 +192,13 @@ sub Auth {
     if ( !$User ) {
 
         # remember failed logins
-        my $UserID = $Self->{UserObject}->UserLookup(
+        my $UserID = $UserObject->UserLookup(
             UserLogin => $Param{User},
         );
 
         return if !$UserID;
 
-        my %User = $Self->{UserObject}->GetUserData(
+        my %User = $UserObject->GetUserData(
             UserID => $UserID,
             Valid  => 1,
         );
@@ -195,14 +206,14 @@ sub Auth {
         my $Count = $User{UserLoginFailed} || 0;
         $Count++;
 
-        $Self->{UserObject}->SetPreferences(
+        $UserObject->SetPreferences(
             Key    => 'UserLoginFailed',
             Value  => $Count,
             UserID => $UserID,
         );
 
         # set agent to invalid-temporarily if max failed logins reached
-        my $Config = $Self->{ConfigObject}->Get('PreferencesGroups');
+        my $Config = $ConfigObject->Get('PreferencesGroups');
         my $PasswordMaxLoginFailed;
 
         if ( $Config && $Config->{Password} && $Config->{Password}->{PasswordMaxLoginFailed} ) {
@@ -213,9 +224,11 @@ sub Auth {
         return if !$PasswordMaxLoginFailed;
         return if $Count < $PasswordMaxLoginFailed;
 
-        my $ValidID = $Self->{ValidObject}->ValidLookup( Valid => 'invalid-temporarily' );
+        my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
+            Valid => 'invalid-temporarily',
+        );
 
-        my $Update = $Self->{UserObject}->UserUpdate(
+        my $Update = $UserObject->UserUpdate(
             %User,
             ValidID      => $ValidID,
             ChangeUserID => 1,
@@ -223,7 +236,7 @@ sub Auth {
 
         return if !$Update;
 
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Login failed $Count times. Set $User{UserLogin} to "
                 . "'invalid-temporarily'.",
@@ -233,23 +246,23 @@ sub Auth {
     }
 
     # remember login attributes
-    my $UserID = $Self->{UserObject}->UserLookup(
+    my $UserID = $UserObject->UserLookup(
         UserLogin => $User,
     );
 
     return $User if !$UserID;
 
     # reset failed logins
-    $Self->{UserObject}->SetPreferences(
+    $UserObject->SetPreferences(
         Key    => 'UserLoginFailed',
         Value  => 0,
         UserID => $UserID,
     );
 
     # last login preferences update
-    $Self->{UserObject}->SetPreferences(
+    $UserObject->SetPreferences(
         Key    => 'UserLastLogin',
-        Value  => $Self->{TimeObject}->SystemTime(),
+        Value  => $Kernel::OM->Get('Kernel::System::Time')->SystemTime(),
         UserID => $UserID,
     );
 

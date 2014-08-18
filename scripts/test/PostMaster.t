@@ -14,35 +14,9 @@ use vars (qw($Self));
 use Kernel::System::PostMaster;
 use Kernel::System::PostMaster::Filter;
 use Kernel::System::Ticket;
-use Kernel::Config;
 
-use Kernel::System::Log;
-use Kernel::System::Time;
-use Kernel::System::Encode;
-use Kernel::System::DB;
-use Kernel::System::Main;
-use Kernel::System::DynamicField;
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::User;
-
-# helper object
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 1,
-);
-
-# create local config object
-my $ConfigObject = Kernel::Config->new();
-
-# user object
-my $UserObject = Kernel::System::User->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-
-# add or update dynamic fields if needed
-my $DynamicFieldObject = Kernel::System::DynamicField->new( %{$Self} );
+# get needed objects
+my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
 
 my @DynamicfieldIDs;
 my @DynamicFieldUpdate;
@@ -68,7 +42,7 @@ my %NeededDynamicfields = (
 );
 
 # list available dynamic fields
-my $DynamicFields = $DynamicFieldObject->DynamicFieldList(
+my $DynamicFields = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldList(
     Valid      => 0,
     ResultType => 'HASH',
 );
@@ -79,7 +53,7 @@ for my $FieldName ( sort keys %NeededDynamicfields ) {
     if ( !$DynamicFields->{$FieldName} ) {
 
         # create a dynamic field
-        my $FieldID = $DynamicFieldObject->DynamicFieldAdd(
+        my $FieldID = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldAdd(
             Name       => $FieldName,
             Label      => $FieldName . "_test",
             FieldOrder => 9991,
@@ -102,12 +76,12 @@ for my $FieldName ( sort keys %NeededDynamicfields ) {
     }
     else {
         my $DynamicField
-            = $DynamicFieldObject->DynamicFieldGet( ID => $DynamicFields->{$FieldName} );
+            = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldGet( ID => $DynamicFields->{$FieldName} );
 
         if ( $DynamicField->{ValidID} > 1 ) {
             push @DynamicFieldUpdate, $DynamicField;
             $DynamicField->{ValidID} = 1;
-            my $SuccessUpdate = $DynamicFieldObject->DynamicFieldUpdate(
+            my $SuccessUpdate = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldUpdate(
                 %{$DynamicField},
                 Reorder => 0,
                 UserID  => 1,
@@ -195,6 +169,10 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 Key   => 'Ticket::StorageModule',
                 Value => "Kernel::System::Ticket::$StorageModule",
             );
+
+            # Recreate Ticket object for every loop.
+            $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket']);
+            $Kernel::OM->Get('Kernel::System::Ticket');
 
             # add rand postmaster filter
             my $FilterRand1 = 'filter' . int rand 1000000;
@@ -326,10 +304,8 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 }
 
                 # new/clear ticket object
-                my $TicketObject = Kernel::System::Ticket->new(
-                    %{$Self},
-                    ConfigObject => $ConfigObject,
-                );
+                $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+                my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
                 my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $Return[1],
                     DynamicFields => 1,
@@ -551,10 +527,9 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 );
 
                 # new/clear ticket object
-                $TicketObject = Kernel::System::Ticket->new(
-                    %{$Self},
-                    ConfigObject => $ConfigObject,
-                );
+                $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+                $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
                 %Ticket = $TicketObject->TicketGet(
                     TicketID      => $Return[1],
                     DynamicFields => 1,
@@ -691,10 +666,9 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 );
 
                 # new/clear ticket object
-                $TicketObject = Kernel::System::Ticket->new(
-                    %{$Self},
-                    ConfigObject => $ConfigObject,
-                );
+                $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+                $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
                 %Ticket = $TicketObject->TicketGet(
                     TicketID      => $Return[1],
                     DynamicFields => 1,
@@ -750,10 +724,9 @@ for my $TicketSubjectConfig ( 'Right', 'Left' ) {
                 );
 
                 # new/clear ticket object
-                $TicketObject = Kernel::System::Ticket->new(
-                    %{$Self},
-                    ConfigObject => $ConfigObject,
-                );
+                $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+                $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
                 %Ticket = $TicketObject->TicketGet(
                     TicketID      => $Return[1],
                     DynamicFields => 1,
@@ -912,10 +885,9 @@ Some Content in Body
     );
 
     # new/clear ticket object
-    my $TicketObject = Kernel::System::Ticket->new(
-        %{$Self},
-        ConfigObject => $ConfigObject,
-    );
+    $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Return[1],
         DynamicFields => 1,
@@ -959,7 +931,7 @@ Some Content in Body
 
 # revert changes to dynamic fields
 for my $DynamicField (@DynamicFieldUpdate) {
-    my $SuccessUpdate = $DynamicFieldObject->DynamicFieldUpdate(
+    my $SuccessUpdate = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldUpdate(
         Reorder => 0,
         UserID  => 1,
         %{$DynamicField},
@@ -973,7 +945,7 @@ for my $DynamicField (@DynamicFieldUpdate) {
 for my $DynamicFieldID (@DynamicfieldIDs) {
 
     # delete the dynamic field
-    my $FieldDelete = $DynamicFieldObject->DynamicFieldDelete(
+    my $FieldDelete = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldDelete(
         ID     => $DynamicFieldID,
         UserID => 1,
     );
@@ -984,8 +956,8 @@ for my $DynamicFieldID (@DynamicfieldIDs) {
 }
 
 # test X-OTRS-(Owner|Responsible)
-my $Login = $HelperObject->TestUserCreate();
-my $UserID = $UserObject->UserLookup( UserLogin => $Login );
+my $Login = $Kernel::OM->Get('Kernel::System::UnitTest::Helper')->TestUserCreate();
+my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup( UserLogin => $Login );
 
 my %OwnerResponsibleTests = (
     Owner => {
@@ -1048,10 +1020,9 @@ for my $Test ( sort keys %OwnerResponsibleTests ) {
         $Test . ' Run() - NewTicket/TicketID',
     );
 
-    my $TicketObject = Kernel::System::Ticket->new(
-        %{$Self},
-        ConfigObject => $ConfigObject,
-    );
+    $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::Ticket'] );
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Return[1],
         DynamicFields => 0,

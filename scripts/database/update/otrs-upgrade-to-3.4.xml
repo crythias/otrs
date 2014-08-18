@@ -34,6 +34,9 @@
     <ColumnDrop Name="valid_id"/>
 </TableAlter>
 
+<!-- remove pm_entity table as it is not longer needed with use of GUIDs -->
+ <TableDrop Name="pm_entity"/>
+
 <!-- personal_services - stores all "my services" -->
 <TableCreate Name="personal_services">
     <Column Name="user_id" Required="true" Type="INTEGER"/>
@@ -52,5 +55,12 @@
     </ForeignKey>
 </TableCreate>
 
+<!-- Package Installation from cloud -->
+<TableAlter Name="package_repository">
+    <ColumnAdd Name="from_cloud" Required="false" Type="SMALLINT" Default="1"/>
+    <ColumnAdd Name="visible" Required="false" Type="SMALLINT" Default="1"/>
+    <ColumnAdd Name="downloadable" Required="false" Type="SMALLINT" Default="1"/>
+    <ColumnAdd Name="removable" Required="false" Type="SMALLINT" Default="1"/>
+</TableAlter>
 
 </database>

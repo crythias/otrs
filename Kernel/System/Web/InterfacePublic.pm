@@ -12,6 +12,19 @@ package Kernel::System::Web::InterfacePublic;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
+    'Kernel::System::CustomerUser',
+    'Kernel::System::DB',
+    'Kernel::System::Encode',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+    'Kernel::System::Web::Request',
+);
+our $ObjectManagerAware = 1;
+
 =head1 NAME
 
 Kernel::System::Web::InterfacePublic - the public web interface
@@ -54,20 +67,22 @@ sub new {
     $Self->{PerformanceLogStart} = time();
 
     # create common framework objects 1/3
-    $Self->{ConfigObject} = $Kernel::OM->Get('ConfigObject');
+    $Self->{ConfigObject} = $Kernel::OM->Get('Kernel::Config');
 
     $Kernel::OM->ObjectParamAdd(
-        LogObject => {
+        'Kernel::System::Log' => {
             LogPrefix => $Self->{ConfigObject}->Get('CGILogPrefix'),
         },
-        ParamObject => {
+        'Kernel::System::Web::Request' => {
             WebRequest => $Param{WebRequest} || 0,
         },
     );
 
-    for my $Needed (qw(LogObject EncodeObject MainObject TimeObject ParamObject)) {
-        $Self->{$Needed} = $Kernel::OM->Get($Needed);
-    }
+    $Self->{EncodeObject} = $Kernel::OM->Get('Kernel::System::Encode');
+    $Self->{LogObject}    = $Kernel::OM->Get('Kernel::System::Log');
+    $Self->{MainObject}   = $Kernel::OM->Get('Kernel::System::Main');
+    $Self->{ParamObject}  = $Kernel::OM->Get('Kernel::System::Web::Request');
+    $Self->{TimeObject}   = $Kernel::OM->Get('Kernel::System::Time');
 
     # debug info
     if ( $Self->{Debug} ) {
@@ -138,7 +153,7 @@ sub Run {
     $Param{Action} =~ s/\W//g;
 
     $Kernel::OM->ObjectParamAdd(
-        LayoutObject => {
+        'Kernel::Output::HTML::Layout' => {
             %Param,
             SessionIDCookie => 1,
             Debug           => $Self->{Debug},
@@ -146,10 +161,10 @@ sub Run {
     );
 
     # create common framework objects 2/3
-    $Self->{LayoutObject} = $Kernel::OM->Get('LayoutObject');
+    $Self->{LayoutObject} = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # check common objects
-    $Self->{DBObject} = $Kernel::OM->Get('DBObject');
+    $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
     if ( !$Self->{DBObject} ) {
         $Self->{LayoutObject}->CustomerFatalError( Comment => 'Please contact your administrator' );
     }
@@ -161,7 +176,7 @@ sub Run {
     }
 
     # create common framework objects 3/3
-    $Self->{UserObject} = $Kernel::OM->Get('CustomerUserObject');
+    $Self->{UserObject} = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
     # application and add-on application common objects
     my %CommonObject = %{ $Self->{ConfigObject}->Get('PublicFrontend::CommonObject') };

@@ -14,24 +14,26 @@ use vars (qw($Self));
 
 use Socket;
 use MIME::Base64;
-use Kernel::System::Ticket;
+
 use Kernel::GenericInterface::Debugger;
-use Kernel::GenericInterface::Requester;
-use Kernel::System::GenericInterface::Webservice;
-use Kernel::System::UnitTest::Helper;
 use Kernel::GenericInterface::Operation::Ticket::TicketCreate;
 use Kernel::GenericInterface::Operation::Session::SessionCreate;
-use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
-
-use Kernel::System::SysConfig;
+use Kernel::GenericInterface::Requester;
+use Kernel::System::DynamicField;
+use Kernel::System::GenericInterface::Webservice;
+use Kernel::System::Priority;
 use Kernel::System::Queue;
-use Kernel::System::Type;
 use Kernel::System::Service;
 use Kernel::System::SLA;
 use Kernel::System::State;
-use Kernel::System::DynamicField;
+use Kernel::System::SysConfig;
+use Kernel::System::Ticket;
+use Kernel::System::Type;
+use Kernel::System::UnitTest::Helper;
 use Kernel::System::User;
 use Kernel::System::Valid;
+
+use Kernel::System::VariableCheck qw(IsArrayRefWithData IsHashRefWithData IsStringWithData);
 
 # set UserID to root because in public interface there is no user
 $Self->{UserID} = 1;
@@ -47,7 +49,7 @@ my $HelperObject = Kernel::System::UnitTest::Helper->new(
 
 my $RandomID = $HelperObject->GetRandomID();
 
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 my $SysConfigObject = Kernel::System::SysConfig->new(
     %{$Self},

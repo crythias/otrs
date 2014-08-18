@@ -12,13 +12,20 @@ package Kernel::System::Ticket::ArticleSearchIndex::RuntimeDB;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::System::DB',
+    'Kernel::System::Log',
+);
+our $ObjectManagerAware = 1;
+
 sub ArticleIndexBuild {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
     for (qw(ArticleID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -32,7 +39,8 @@ sub ArticleIndexDelete {
     # check needed stuff
     for (qw(ArticleID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -46,7 +54,8 @@ sub ArticleIndexDeleteTicket {
     # check needed stuff
     for (qw(TicketID UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -60,7 +69,8 @@ sub _ArticleIndexQuerySQL {
     # check needed stuff
     for (qw(Data)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -89,7 +99,8 @@ sub _ArticleIndexQuerySQLExt {
     # check needed stuff
     for (qw(Data)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -101,10 +112,15 @@ sub _ArticleIndexQuerySQLExt {
         Subject => 'art.a_subject',
         Body    => 'art.a_body',
     );
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     my $SQLExt      = '';
     my $FullTextSQL = '';
     KEY:
     for my $Key ( sort keys %FieldSQLMapFullText ) {
+
         next KEY if !$Param{Data}->{$Key};
 
         # replace * by % for SQL like
@@ -119,7 +135,7 @@ sub _ArticleIndexQuerySQLExt {
 
         # check if search condition extension is used
         if ( $Param{Data}->{ConditionInline} ) {
-            $FullTextSQL .= $Self->{DBObject}->QueryCondition(
+            $FullTextSQL .= $DBObject->QueryCondition(
                 Key          => $FieldSQLMapFullText{$Key},
                 Value        => $Param{Data}->{$Key},
                 SearchPrefix => $Param{Data}->{ContentSearchPrefix},
@@ -146,13 +162,13 @@ sub _ArticleIndexQuerySQLExt {
             $Value =~ s/\*/%/g;
 
             # db quote
-            $Value = $Self->{DBObject}->Quote( $Value, 'Like' );
+            $Value = $DBObject->Quote( $Value, 'Like' );
 
             # check if database supports LIKE in large text types (in this case for body)
-            if ( !$Self->{DBObject}->GetDatabaseFunction('CaseSensitive') ) {
+            if ( !$DBObject->GetDatabaseFunction('CaseSensitive') ) {
                 $FullTextSQL .= " $Field LIKE '$Value'";
             }
-            elsif ( $Self->{DBObject}->GetDatabaseFunction('LcaseLikeInLargeText') ) {
+            elsif ( $DBObject->GetDatabaseFunction('LcaseLikeInLargeText') ) {
                 $FullTextSQL .= " LCASE($Field) LIKE LCASE('$Value')";
             }
             else {
