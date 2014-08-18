@@ -15,21 +15,19 @@ use vars (qw($Self));
 use CGI;
 use HTTP::Request::Common;
 
-use Kernel::System::UnitTest::Helper;
 use Kernel::GenericInterface::Debugger;
 use Kernel::GenericInterface::Transport;
-use Kernel::System::UnitTest::Helper;
 
 # helper object
-# skip SSL certiciate verification
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject => $Self,
-    SkipSSLVerify  => 1,
+# skip SSL certificate verification
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        SkipSSLVerify => 1,
+    },
 );
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
-    %$Self,
     DebuggerConfig => {
         DebugThreshold => 'debug',
         TestMode       => 1,
@@ -44,7 +42,6 @@ my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
 
 {
     my $TransportObject = Kernel::GenericInterface::Transport->new(
-        %$Self,
         DebuggerObject  => $DebuggerObject,
         TransportConfig => {
             Type => 'HTTP::Nonexisting',
@@ -74,7 +71,6 @@ my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
 
 for my $Fail ( 0 .. 1 ) {
     my $TransportObject = Kernel::GenericInterface::Transport->new(
-        %$Self,
         DebuggerObject  => $DebuggerObject,
         TransportConfig => {
             Type   => 'HTTP::Test',
@@ -145,6 +141,10 @@ for my $Fail ( 0 .. 1 ) {
     );
 
     for my $TestEntry (@RPRTestData) {
+
+        # discard Web::Request from OM to prevent errors
+        $Kernel::OM->ObjectsDiscard('Kernel::System::Web::Request');
+
         my $Result = $TransportObject->RequesterPerformRequest(
             Operation => $TestEntry->{Operation},
             Data      => $TestEntry->{Data},
@@ -238,6 +238,9 @@ for my $Fail ( 0 .. 1 ) {
             # reset CGI object from previous runs
             CGI::initialize_globals();
 
+            # discard Web::Request from OM to prevent errors
+            $Kernel::OM->ObjectsDiscard('Kernel::System::Web::Request');
+
             $Result = $TransportObject->ProviderProcessRequest();
         }
 
@@ -324,6 +327,9 @@ for my $Fail ( 0 .. 1 ) {
                 local *STDOUT;
                 open STDOUT, '>:utf8', \$ResultData;    ## no critic
 
+                # discard Web::Request from OM to prevent errors
+                $Kernel::OM->ObjectsDiscard('Kernel::System::Web::Request');
+
                 $Result = $TransportObject->ProviderGenerateResponse(
                     Success      => $OptionSuccess,
                     ErrorMessage => 'Custom Test Error',
@@ -367,9 +373,7 @@ for my $Fail ( 0 .. 1 ) {
                     $Result->{ErrorMessage},
                     "$TestEntry->{Name} error message found",
                 );
-
             }
-
         }
     }
 }

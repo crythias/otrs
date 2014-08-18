@@ -11,32 +11,23 @@ use strict;
 use warnings;
 use vars (qw($Self));
 
-use Kernel::System::User;
-use Kernel::GenericInterface::Operation::Session::Common;
-
-use Kernel::System::UnitTest::Helper;
-
 use Kernel::GenericInterface::Debugger;
-use Kernel::System::GenericInterface::Webservice;
+use Kernel::GenericInterface::Operation::Session::SessionCreate;
 
 # helper object
-# skip SSL certiciate verification
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject => $Self,
-    SkipSSLVerify  => 1,
+# skip SSL certificate verification
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        SkipSSLVerify => 1,
+    },
 );
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $RandomID = $HelperObject->GetRandomID();
 
-# create local config object
-my $ConfigObject = Kernel::Config->new();
-
 # create webservice object
-my $WebserviceObject = Kernel::System::GenericInterface::Webservice->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
+
 $Self->Is(
     'Kernel::System::GenericInterface::Webservice',
     ref $WebserviceObject,
@@ -68,8 +59,6 @@ $Self->True(
 
 # debugger object
 my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
-    %{$Self},
-    ConfigObject   => $ConfigObject,
     DebuggerConfig => {
         DebugThreshold => 'debug',
         TestMode       => 1,
@@ -80,33 +69,13 @@ my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
 $Self->Is(
     ref $DebuggerObject,
     'Kernel::GenericInterface::Debugger',
-    'DebuggerObject instanciate correctly',
-);
-
-# create needed objects
-my $UserObject = Kernel::System::User->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $GroupObject = Kernel::System::Group->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $SessionCommonObject = Kernel::GenericInterface::Operation::Session::Common->new(
-    %{$Self},
-    DebuggerObject => $DebuggerObject,
-    ConfigObject   => $ConfigObject,
-);
-$Self->Is(
-    ref $SessionCommonObject,
-    'Kernel::GenericInterface::Operation::Session::Common',
-    'CommonObject instanciate correctly',
+    'DebuggerObject instantiate correctly',
 );
 
 # set user details
 my $UserLogin    = $HelperObject->TestUserCreate();
 my $UserPassword = $UserLogin;
-my $UserID       = $UserObject->UserLookup(
+my $UserID       = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
     UserLogin => $UserLogin,
 );
 
@@ -193,8 +162,19 @@ my @Tests = (
     },
 );
 
+# use a session operation instance to get access to the common functions
+my $OperationObject = Kernel::GenericInterface::Operation::Session::SessionCreate->new(
+    DebuggerObject => $DebuggerObject,
+    WebserviceID   => $WebserviceID,
+);
+$Self->Is(
+    ref $OperationObject,
+    'Kernel::GenericInterface::Operation::Session::SessionCreate',
+    'CommonObject instantiate correctly',
+);
+
 for my $Test (@Tests) {
-    my $SessionID = $SessionCommonObject->CreateSessionID(
+    my $SessionID = $OperationObject->CreateSessionID(
         Data => $Test->{Data},
     );
 

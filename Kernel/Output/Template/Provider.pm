@@ -20,7 +20,14 @@ use Scalar::Util qw();
 use Template::Constants;
 
 use Kernel::Output::Template::Document;
-use Kernel::System::Cache;
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::Encode',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
 
 # Force the use of our own document class.
 $Template::Provider::DOCUMENT = 'Kernel::Output::Template::Document';
@@ -49,17 +56,10 @@ references.
 sub OTRSInit {
     my ( $Self, %Param ) = @_;
 
-    for my $Needed (
-        qw(ConfigObject LogObject TimeObject MainObject EncodeObject LayoutObject ParamObject)
-        )
-    {
-        if ( $Param{$Needed} ) {
-            $Self->{$Needed} = $Param{$Needed};
-        }
-        else {
-            die "Got no $Needed!";
-        }
-    }
+    # Don't fetch LayoutObject via ObjectManager as there might be several instances involved
+    #   at this point (for example in LinkObject there is an own LayoutObject to avoid block
+    #   name collisions).
+    $Self->{LayoutObject} = $Param{LayoutObject} || die "Got no LayoutObject!";
 
     #
     # Store a weak reference to the LayoutObject to avoid ring references.
@@ -67,16 +67,16 @@ sub OTRSInit {
     #
     Scalar::Util::weaken( $Self->{LayoutObject} );
 
-    # CacheObject is needed for caching of the compiled templates.
-    $Self->{CacheObject} = $Kernel::OM->Get('CacheObject');
-    $Self->{CacheType}   = 'TemplateProvider';
+    # define cache type
+    $Self->{CacheType} = 'TemplateProvider';
 
     #
     # Pre-compute the list of not cacheable Templates. If a pre-output filter is
     #   registered for a particular or for all templates, the template cannot be
     #   cached any more.
     #
-    $Self->{FilterElementPre} = $Self->{ConfigObject}->Get('Frontend::Output::FilterElementPre');
+    $Self->{FilterElementPre}
+        = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Output::FilterElementPre');
 
     my %UncacheableTemplates;
 
@@ -96,7 +96,7 @@ sub OTRSInit {
 
         if ( !%TemplateList ) {
 
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
                     "Please add a template list to output filter $FilterConfig->{Module} "
@@ -157,14 +157,12 @@ sub _fetch {
         my $CacheKey       = $self->_compiled_filename($name) . '::' . $template_mtime;
 
         # Is there an up-to-date compiled version in the cache?
-        my $Cache = $self->{CacheObject}->Get(
+        my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
             Type => $self->{CacheType},
             Key  => $CacheKey,
         );
 
         if ( ref $Cache ) {
-
-            #print STDERR "Using cache $CacheKey\n";
 
             my $compiled_template = $Template::Provider::DOCUMENT->new($Cache);
 
@@ -298,7 +296,7 @@ sub _compile {
                 my $CacheKey = $compfile . '::' . $data->{time};
 
                 #print STDERR "Writing cache $CacheKey\n";
-                $self->{CacheObject}->Set(
+                $Kernel::OM->Get('Kernel::System::Cache')->Set(
                     Type  => $self->{CacheType},
                     TTL   => 60 * 60 * 24,
                     Key   => $CacheKey,
@@ -350,6 +348,8 @@ this is our template pre processor.
 It handles pre output filters, some OTRS specific tags like [% InsertTemplate("TemplateName.tt") %]
 and also performs compile-time code injection (ChallengeToken element into forms).
 
+Besides that, it also makes sure the template is treated as UTF8.
+
 This is run at compile time. If a template is cached, this method does not have to be executed on it
 any more.
 
@@ -359,6 +359,9 @@ sub _PreProcessTemplateContent {
     my ( $Self, %Param ) = @_;
 
     my $Content = $Param{Content};
+
+    # Make sure the template is treated as utf8.
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Content );
 
     #
     # pre putput filter handling
@@ -382,7 +385,7 @@ sub _PreProcessTemplateContent {
 
             if ( !%TemplateList ) {
 
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message =>
                         "Please add a template list to output filter $FilterConfig->{Module} "
@@ -397,11 +400,11 @@ sub _PreProcessTemplateContent {
             }
 
             next FILTER if !$Param{TemplateFile} && !$TemplateList{ALL};
-            next FILTER if !$Self->{MainObject}->Require( $FilterConfig->{Module} );
+            next FILTER
+                if !$Kernel::OM->Get('Kernel::System::Main')->Require( $FilterConfig->{Module} );
 
             # create new instance
             my $Object = $FilterConfig->{Module}->new(
-                %{$Self},
                 LayoutObject => $Self->{LayoutObject},
             );
 
@@ -473,6 +476,317 @@ sub _PreProcessTemplateContent {
 
     return $Content;
 
+}
+
+=item MigrateDTLtoTT()
+
+translates old DTL template content to Template::Toolkit syntax.
+
+    my $TTCode = $ProviderObject->MigrateDTLtoTT( Content => $DTLCode );
+
+If an error was found, this method will die(), so please use eval around it.
+
+=cut
+
+sub MigrateDTLtoTT {
+    my ( $Self, %Param ) = @_;
+
+    my $Content = $Param{Content};
+
+    my $ID = "[a-zA-Z0-9:_\-]+";
+
+    my $SafeArrrayAccess = sub {
+        my $ID = shift;
+        if ( $ID !~ m{^[a-zA-Z0-9_]+$}xms ) {
+            return "item(\"$ID\")";
+        }
+        return $ID;
+    };
+
+    # $Quote $Config
+    $Content =~ s{\$Quote{"\$Config{"($ID)"}"}}{[% Config("$1") | html %]}smxg;
+
+    # $Quote $Env
+    $Content =~ s{\$Quote{"\$Env{"($ID)"}"}}{[% Env("$1") | html %]}smxg;
+
+    # $Quote $Data
+    $Content =~ s{
+            \$Quote{"\$Data{"($ID)"}"}
+        }
+        {
+            '[% Data.' . $SafeArrrayAccess->($1) . ' | html %]'
+        }esmxg;
+
+    # $Quote with length
+    $Content =~ s{
+            \$Quote{"\$Data{"($ID)"}",\s*"(\d+)"}
+        }
+        {
+            '[% Data.' . $SafeArrrayAccess->($1) . " | truncate($2) | html %]"
+        }esmxg;
+
+    # $Quote with dynamic length
+    $Content =~ s{
+            \$Quote{"\$Data{"($ID)"}",\s*"\$Q?Data{"($ID)"}"}
+        }
+        {
+            '[% Data.' . $SafeArrrayAccess->($1) . ' | truncate(Data.' . $SafeArrrayAccess->($2) . ') | html %]'
+        }esmxg;
+
+    # $Quote with translated text and fixed length
+    $Content =~ s{
+            \$Quote{"\$Text{"\$Data{"($ID)"}"}",\s*"(\d+)"}
+        }
+        {
+            '[% Data.' . $SafeArrrayAccess->($1) . " | Translate | truncate($2) | html %]"
+        }esmxg;
+
+    # $Quote with translated text and dynamic length
+    $Content =~ s{
+            \$Quote{"\$Text{"\$Data{"($ID)"}"}",\s*"\$Q?Data{"($ID)"}"}
+        }
+        {
+            '[% Data.' . $SafeArrrayAccess->($1) . ' | Translate | truncate(Data.' . $SafeArrrayAccess->($2) . ') | html %]'
+        }esmxg;
+
+    my $MigrateTextTag = sub {
+        my %Param       = @_;
+        my $Mode        = $Param{Mode};          # HTML or JSON
+        my $Text        = $Param{Text};          # The translated text
+        my $Dot         = $Param{Dot};           # Closing dot, sometimes outside of the Tag
+        my $ParamString = $Param{Parameters};    # Parameters to interpolate
+
+        my $Result = '[% ';
+
+        # Text contains a tag
+        if ( $Text =~ m{\$TimeLong{"\$Q?Data{"($ID)"}"}}smx ) {
+            $Result .= "Translate(Localize(Data." . $SafeArrrayAccess->($1) . ", \"TimeLong\")";
+        }
+        elsif ( $Text =~ m{\$TimeShort{"\$Q?Data{"($ID)"}"}}smx ) {
+            $Result .= "Translate(Localize(Data." . $SafeArrrayAccess->($1) . ", \"TimeShort\")";
+        }
+        elsif ( $Text =~ m{\$Date{"\$Q?Data{"($ID)"}"}}smx ) {
+            $Result .= "Translate(Localize(Data." . $SafeArrrayAccess->($1) . ", \"Date\")";
+        }
+        elsif ( $Text =~ m{\$Q?Data{"($ID)"}}smx ) {
+            $Result .= "Translate(Data." . $SafeArrrayAccess->($1) . "";
+        }
+        elsif ( $Text =~ m{\$Config{"($ID)"}}smx ) {
+            $Result .= "Translate(Config(\"$1\")";
+        }
+        elsif ( $Text =~ m{\$Q?Env{"($ID)"}}smx ) {
+            $Result .= "Translate(Env(\"$1\")";
+        }
+
+        # Plain text
+        else {
+            $Text =~ s{"}{\\"}smxg;    # Escape " signs
+            if ( $Param{Dot} ) {
+                $Text .= $Param{Dot};
+            }
+            $Result .= "Translate(\"$Text\"";
+        }
+
+        my @Parameters = split m{,\s*}, $ParamString;
+
+        PARAMETER:
+        for my $Parameter (@Parameters) {
+            next PARAMETER if ( !$Parameter );
+            if ( $Parameter =~ m{\$TimeLong{"\$Q?Data{"($ID)"}"}}smx ) {
+                $Result .= ", Localize(Data.$1, \"TimeLong\")";
+            }
+            elsif ( $Parameter =~ m{\$TimeShort{"\$Q?Data{"($ID)"}"}}smx ) {
+                $Result .= ", Localize(Data.$1, \"TimeShort\")";
+            }
+            elsif ( $Parameter =~ m{\$Date{"\$Q?Data{"($ID)"}"}}smx ) {
+                $Result .= ", Localize(Data.$1, \"Date\")";
+            }
+            elsif ( $Parameter =~ m{\$Q?Data{"($ID)"}}smx ) {
+                $Result .= ", Data.$1";
+            }
+            elsif ( $Parameter =~ m{\$Config{"($ID)"}}smx ) {
+                $Result .= ", Config(\"$1\")";
+            }
+            elsif ( $Parameter =~ m{\$Q?Env{"($ID)"}}smx ) {
+                $Result .= ", Env(\"$1\")";
+            }
+            else {
+                $Parameter =~ s{^"|"$}{}smxg;    # Remove enclosing ""
+                $Parameter =~ s{"}{\\"}smxg;     # Escape " signs in the string
+                $Result .= ", \"$Parameter\"";
+            }
+        }
+
+        if ( $Mode eq 'JSON' ) {
+            $Result .= ') | JSON %]';
+        }
+        else {
+            $Result .= ') | html %]';
+        }
+
+        return $Result;
+    };
+
+    my $TextOrData = "";
+
+    # $Text
+    $Content =~ s{
+            \$Text{
+                ["']
+                (
+                    [^\$]+?
+                    |\$Q?Data{\"$ID\"}
+                    |\$Config{\"$ID\"}
+                    |\$Q?Env{\"$ID\"}
+                    |\$TimeLong{\"\$Q?Data{\"$ID\"}\"}
+                    |\$TimeShort{\"\$Q?Data{\"$ID\"}\"}
+                    |\$Date{\"\$Q?Data{\"$ID\"}\"}
+                )
+                ["']
+                ((?:
+                    ,\s*["']
+                    (?:
+                        [^\$]+?
+                        |\$Q?Data{\"$ID\"}
+                        |\$Config{\"$ID\"}
+                        |\$Q?Env{\"$ID\"}
+                        |\$TimeLong{\"\$Q?Data{\"$ID\"}\"}
+                        |\$TimeShort{\"\$Q?Data{\"$ID\"}\"}
+                        |\$Date{\"\$Q?Data{\"$ID\"}\"}
+                    )
+                ["'])*)
+            }
+        }
+        {
+            $MigrateTextTag->( Mode => 'HTML', Text => $1, Parameters => $2);
+        }esmxg;
+
+    # drop empty $Text
+    $Content =~ s{\$Text{""}}{}xmsg;
+
+    # $JSText
+    $Content =~ s{
+            ["']\$JSText{
+                ["']
+                (
+                    [^\$]+?
+                    |\$Q?Data{\"$ID\"}
+                    |\$Config{\"$ID\"}
+                    |\$Q?Env{\"$ID\"}
+                    |\$TimeLong{\"\$Q?Data{\"$ID\"}\"}
+                    |\$TimeShort{\"\$Q?Data{\"$ID\"}\"}
+                    |\$Date{\"\$Q?Data{\"$ID\"}\"}
+                )
+                ["']
+                ((?:
+                    ,\s*["']
+                    (?:
+                        [^\$]+?
+                        |\$Q?Data{\"$ID\"}
+                        |\$Config{\"$ID\"}
+                        |\$Q?Env{\"$ID\"}
+                        |\$TimeLong{\"\$Q?Data{\"$ID\"}\"}
+                        |\$TimeShort{\"\$Q?Data{\"$ID\"}\"}
+                        |\$Date{\"\$Q?Data{\"$ID\"}\"}
+                    )
+                ["'])*)
+            }
+            (.?)["']
+        }
+        {
+            $MigrateTextTag->( Mode => 'JSON', Text => $1, Parameters => $2, Dot => $3);
+        }esmxg;
+
+    # $TimeLong
+    $Content =~ s{\$TimeLong{"\$Q?Data{"($ID)"}"}}{[% Data.$1 | Localize("TimeLong") %]}smxg;
+
+    # $TimeShort
+    $Content =~ s{\$TimeShort{"\$Q?Data{"($ID)"}"}}{[% Data.$1 | Localize("TimeShort") %]}smxg;
+
+    # $Date
+    $Content =~ s{\$Date{"\$Q?Data{"($ID)"}"}}{[% Data.$1 | Localize("Date") %]}smxg;
+
+    # $QData with length
+    $Content =~ s{
+            \$QData{"($ID)",\s*"(\d+)"}
+        }
+        {
+            "[% Data." . $SafeArrrayAccess->($1) . " | truncate($2) | html %]"
+        }esmxg;
+
+    # simple $QData
+    $Content =~ s{
+            \$QData{"($ID)"}
+        }
+        {
+            "[% Data." . $SafeArrrayAccess->($1) . " | html %]"
+        }esmxg;
+
+    # $LQData
+    $Content =~ s{
+            \$LQData{"($ID)"}
+        }
+        {
+            "[% Data." . $SafeArrrayAccess->($1) . " | uri %]"
+        }esmxg;
+
+    # simple $Data
+    $Content =~ s{
+            \$Data{"($ID)"}
+        }
+        {
+            "[% Data." . $SafeArrrayAccess->($1) . " %]"
+        }esmxg;
+
+    # $Config
+    $Content =~ s{\$Config{"($ID)"}}{[% Config("$1") %]}smxg;
+
+    # $Env
+    $Content =~ s{\$Env{"($ID)"}}{[% Env("$1") %]}smxg;
+
+    # $QEnv
+    $Content =~ s{\$QEnv{"($ID)"}}{[% Env("$1") | html %]}smxg;
+
+    # dtl:block
+    my %BlockSeen;
+    $Content =~ s{<!--\s*dtl:block:($ID)\s*-->}{
+        if ($BlockSeen{$1}++) {
+            "[% RenderBlockEnd(\"$1\") %]";
+        }
+        else {
+            "[% RenderBlockStart(\"$1\") %]";
+        }
+    }esmxg;
+
+    # dtl:js_on_document_complete
+    $Content =~ s{
+            <!--\s*dtl:js_on_document_complete\s*-->(.*?)<!--\s*dtl:js_on_document_complete\s*-->
+        }
+        {
+            "[% WRAPPER JSOnDocumentComplete %]${1}[% END %]";
+        }esmxg;
+
+    # dtl:js_on_document_complete_insert
+    $Content
+        =~ s{<!--\s*dtl:js_on_document_complete_placeholder\s*-->}{[% PROCESS JSOnDocumentCompleteInsert %]}smxg;
+
+    # $Include
+    $Content =~ s{\$Include{"($ID)"}}{[% InsertTemplate("$1.tt") %]}smxg;
+
+    my ( $Counter, $ErrorMessage );
+    LINE:
+    for my $Line ( split /\n/, $Content ) {
+        $Counter++;
+
+        # Make sure there are no more DTL tags present in the code.
+        if ( $Line =~ m{\$(?:L?Q?Data|Quote|Config|Q?Env|Time|Date|Text|JSText|Include)\{}xms ) {
+            $ErrorMessage .= "Line $Counter: $Line\n";
+        }
+    }
+
+    die $ErrorMessage if $ErrorMessage;
+
+    return $Content;
 }
 
 1;

@@ -28,12 +28,7 @@ use lib dirname($RealBin);
 use lib dirname($RealBin) . '/Kernel/cpan-lib';
 use lib dirname($RealBin) . '/Custom';
 
-use Kernel::Config;
-use Kernel::System::Encode;
-use Kernel::System::Time;
-use Kernel::System::Log;
-use Kernel::System::Main;
-use Kernel::System::DB;
+use Kernel::System::ObjectManager;
 use Kernel::System::Registration;
 
 print "otrs.RegistrationUpdate.pl - send system registration update\n";
@@ -42,26 +37,20 @@ print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
 # ---
 # common objects
 # ---
-my %CommonObject = ();
-$CommonObject{ConfigObject} = Kernel::Config->new();
-$CommonObject{EncodeObject} = Kernel::System::Encode->new(%CommonObject);
-$CommonObject{LogObject}    = Kernel::System::Log->new(
-    LogPrefix => 'OTRS-otrs.RegistrationUpdate.pl',
-    %CommonObject,
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    'Kernel::System::Log' => {
+        LogPrefix => 'OTRS-otrs.RegistrationUpdate.pl',
+    },
 );
-$CommonObject{TimeObject}         = Kernel::System::Time->new(%CommonObject);
-$CommonObject{MainObject}         = Kernel::System::Main->new(%CommonObject);
-$CommonObject{DBObject}           = Kernel::System::DB->new(%CommonObject);
-$CommonObject{RegistrationObject} = Kernel::System::Registration->new(%CommonObject);
 
-my %RegistrationData = $CommonObject{RegistrationObject}->RegistrationDataGet();
+my %RegistrationData = $Kernel::OM->Get('Kernel::System::Registration')->RegistrationDataGet();
 
 if ( $RegistrationData{State} ne 'registered' ) {
     print STDERR "Error: this is not a registered system. Please register your system first.\n";
     exit 1;
 }
 
-my %Result = $CommonObject{RegistrationObject}->RegistrationUpdateSend();
+my %Result = $Kernel::OM->Get('Kernel::System::Registration')->RegistrationUpdateSend();
 
 if ( !$Result{Success} ) {
     print STDERR "Error: $Result{Reason}\n";

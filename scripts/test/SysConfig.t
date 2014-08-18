@@ -80,6 +80,7 @@ for my $Test (@Tests) {
         }
     }
 
+    # create a new config object to check the new settings
     my $ConfigObject = Kernel::Config->new();
 
     $Self->IsDeeply(

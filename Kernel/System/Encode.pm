@@ -16,6 +16,8 @@ use Encode;
 use Encode::Locale;
 use IO::Interactive qw(is_interactive);
 
+our @ObjectDependencies = ();
+
 =head1 NAME
 
 Kernel::System::Encode - character encodings
@@ -32,11 +34,11 @@ This module will use Perl's Encode module (Perl 5.8.0 or higher is required).
 
 =item new()
 
-create an encode object
+create an object. Do not use it directly, instead use:
 
-    use Kernel::System::Encode;
-
-    my $EncodeObject = Kernel::System::Encode->new();
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new();
+    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
 =cut
 

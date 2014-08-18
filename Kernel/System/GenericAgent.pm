@@ -12,11 +12,21 @@ package Kernel::System::GenericAgent;
 use strict;
 use warnings;
 
-use Kernel::System::Cache;
-use Kernel::System::DynamicField;
-use Kernel::System::DynamicField::Backend;
-use Kernel::System::State;
 use Kernel::System::VariableCheck qw(:all);
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Queue',
+    'Kernel::System::State',
+    'Kernel::System::Ticket',
+    'Kernel::System::Time',
+);
 
 =head1 NAME
 
@@ -38,7 +48,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $GenericAgentObject = $Kernel::OM->Get('GenericAgentObject');
+    my $GenericAgentObject = $Kernel::OM->Get('Kernel::System::GenericAgent');
 
 =cut
 
@@ -49,30 +59,12 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (
-        qw(DBObject ConfigObject LogObject TimeObject TicketObject QueueObject MainObject EncodeObject)
-        )
-    {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
-
-    # create additional objects
-    $Self->{CacheObject}        = $Kernel::OM->Get('CacheObject');
-    $Self->{DynamicFieldObject} = Kernel::System::DynamicField->new( %{$Self} );
-    $Self->{BackendObject}      = Kernel::System::DynamicField::Backend->new( %{$Self} );
-    $Self->{StateObject}        = Kernel::System::State->new( %{$Self} );
-
-    my %PendingStates = $Self->{StateObject}->StateGetStatesByType(
-        StateType => [ 'pending auto', 'pending reminder' ],
-        Result => 'HASH',
-    );
-
-    $Self->{PendingStateList} = \%PendingStates || {};
-    $Self->{CurrentSystemTime} = $Self->{TimeObject}->SystemTime();
+    # get dynamic field objects
+    my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 
     # get the dynamic fields for ticket object
-    $Self->{DynamicField} = $Self->{DynamicFieldObject}->DynamicFieldListGet(
+    $Self->{DynamicField} = $DynamicFieldObject->DynamicFieldListGet(
         Valid      => 1,
         ObjectType => ['Ticket'],
     );
@@ -153,7 +145,7 @@ sub new {
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
         # get the field type of the dynamic fields for edit and search
-        my $FieldValueType = $Self->{BackendObject}->TemplateValueTypeGet(
+        my $FieldValueType = $DynamicFieldBackendObject->TemplateValueTypeGet(
             DynamicFieldConfig => $DynamicFieldConfig,
             FieldType          => 'All',
         );
@@ -189,7 +181,8 @@ sub JobRun {
     # check needed stuff
     for (qw(Job UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -204,7 +197,7 @@ sub JobRun {
         %Job = %{ $Param{Config} };
 
         # log event
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Run GenericAgent Job '$Param{Job}' from config file.",
         );
@@ -214,7 +207,7 @@ sub JobRun {
     else {
 
         # log event
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Run GenericAgent Job '$Param{Job}' from db.",
         );
@@ -256,14 +249,18 @@ sub JobRun {
         }
     }
 
+    # get dynamic field backend objects
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     # set dynamic fields search parameters
     my %DynamicFieldSearchParameters;
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
+
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
         # get search field preferences
-        my $SearchFieldPreferences = $Self->{BackendObject}->SearchFieldPreferences(
+        my $SearchFieldPreferences = $DynamicFieldBackendObject->SearchFieldPreferences(
             DynamicFieldConfig => $DynamicFieldConfig,
         );
 
@@ -284,7 +281,7 @@ sub JobRun {
             }
 
             # extract the dynamic field value from the profile
-            my $SearchParameter = $Self->{BackendObject}->SearchFieldParameterBuild(
+            my $SearchParameter = $DynamicFieldBackendObject->SearchFieldParameterBuild(
                 DynamicFieldConfig => $DynamicFieldConfig,
                 Profile            => \%DynamicFieldSearchTemplate,
                 Type               => $Preference->{Type},
@@ -301,14 +298,17 @@ sub JobRun {
     if ( $Param{OnlyTicketID} ) {
         $Job{TicketID} = $Param{OnlyTicketID};
     }
-    my %Tickets;
+
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     # escalation tickets
+    my %Tickets;
     if ( $Job{Escalation} ) {
 
         # Find all tickets which will escalate within the next five days.
         #   The notification module will determine if a notification must be sent out or not.
-        my @Tickets = $Self->{TicketObject}->TicketSearch(
+        my @Tickets = $TicketObject->TicketSearch(
             Result                           => 'ARRAY',
             Limit                            => 100,
             TicketEscalationTimeOlderMinutes => -( 5 * 24 * 60 ),
@@ -318,10 +318,10 @@ sub JobRun {
 
         for (@Tickets) {
             if ( !$Job{Queue} ) {
-                $Tickets{$_} = $Self->{TicketObject}->TicketNumberLookup( TicketID => $_ );
+                $Tickets{$_} = $TicketObject->TicketNumberLookup( TicketID => $_ );
             }
             else {
-                my %Ticket = $Self->{TicketObject}->TicketGet(
+                my %Ticket = $TicketObject->TicketGet(
                     TicketID      => $_,
                     DynamicFields => 0,
                 );
@@ -343,7 +343,7 @@ sub JobRun {
         }
         if ( !$Job{Queue} ) {
             %Tickets = (
-                $Self->{TicketObject}->TicketSearch(
+                $TicketObject->TicketSearch(
                     %Job,
                     %DynamicFieldSearchParameters,
                     ConditionInline => 1,
@@ -360,7 +360,7 @@ sub JobRun {
                     print " For Queue: $_\n";
                 }
                 %Tickets = (
-                    $Self->{TicketObject}->TicketSearch(
+                    $TicketObject->TicketSearch(
                         %Job,
                         %DynamicFieldSearchParameters,
                         ConditionInline => 1,
@@ -375,7 +375,7 @@ sub JobRun {
         }
         else {
             %Tickets = (
-                $Self->{TicketObject}->TicketSearch(
+                $TicketObject->TicketSearch(
                     %Job,
                     %DynamicFieldSearchParameters,
                     ConditionInline => 1,
@@ -388,7 +388,7 @@ sub JobRun {
             );
         }
         for ( sort keys %Tickets ) {
-            my %Ticket = $Self->{TicketObject}->TicketGet(
+            my %Ticket = $TicketObject->TicketGet(
                 TicketID      => $_,
                 DynamicFields => 0,
             );
@@ -417,7 +417,7 @@ sub JobRun {
 
             # log no search attribute
             if ( !$Count ) {
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Attention: Can't run GenericAgent Job '$Param{Job}' because no "
                         . "search attributes are used!.",
@@ -429,7 +429,7 @@ sub JobRun {
             if ( $Self->{NoticeSTDOUT} ) {
                 print " For all Queues: \n";
             }
-            %Tickets = $Self->{TicketObject}->TicketSearch(
+            %Tickets = $TicketObject->TicketSearch(
                 %Job,
                 %DynamicFieldSearchParameters,
                 ConditionInline => 1,
@@ -443,7 +443,7 @@ sub JobRun {
                     print " For Queue: $_\n";
                 }
                 %Tickets = (
-                    $Self->{TicketObject}->TicketSearch(
+                    $TicketObject->TicketSearch(
                         %Job,
                         %DynamicFieldSearchParameters,
                         ConditionInline => 1,
@@ -456,7 +456,7 @@ sub JobRun {
             }
         }
         else {
-            %Tickets = $Self->{TicketObject}->TicketSearch(
+            %Tickets = $TicketObject->TicketSearch(
                 %Job,
                 %DynamicFieldSearchParameters,
                 ConditionInline => 1,
@@ -491,23 +491,30 @@ returns a hash of jobs
 sub JobList {
     my ( $Self, %Param ) = @_;
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # check cache
     my $CacheKey = "JobList";
-    my $Cache    = $Self->{CacheObject}->Get(
+    my $Cache    = $CacheObject->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
     return %{$Cache} if ref $Cache;
 
-    return if !$Self->{DBObject}->Prepare(
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
         SQL => 'SELECT DISTINCT(job_name) FROM generic_agent_jobs',
     );
+
     my %Data;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Data{ $Row[0] } = $Row[0];
     }
 
-    $Self->{CacheObject}->Set(
+    $CacheObject->Set(
         Type  => 'GenericAgent',
         Key   => $CacheKey,
         Value => \%Data,
@@ -531,40 +538,41 @@ sub JobGet {
     # check needed stuff
     for (qw(Name)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # check cache
     my $CacheKey = 'JobGet::' . $Param{Name};
-    my $Cache    = $Self->{CacheObject}->Get(
+    my $Cache    = $CacheObject->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
     return %{$Cache} if ref $Cache;
 
-    return if !$Self->{DBObject}->Prepare(
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
         SQL => '
             SELECT job_key, job_value
             FROM generic_agent_jobs
             WHERE job_name = ?',
         Bind => [ \$Param{Name} ],
     );
+
     my %Data;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         if ( $Self->{Map}->{ $Row[0] } && $Self->{Map}->{ $Row[0] } eq 'ARRAY' ) {
             push @{ $Data{ $Row[0] } }, $Row[1];
         }
         else {
             $Data{ $Row[0] } = $Row[1];
-        }
-    }
-    for my $Key ( sort keys %Data ) {
-        if ( $Key =~ /(NewParam)Key(\d)/ ) {
-            if ( $Data{"$1Value$2"} ) {
-                $Data{"New$Data{$Key}"} = $Data{"$1Value$2"};
-            }
         }
     }
 
@@ -579,6 +587,7 @@ sub JobGet {
         TicketEscalationUpdate   => 'EscalationUpdateTime',
         TicketEscalationSolution => 'EscalationSolutionTime',
     );
+
     for my $Type (
         qw(TicketCreate TicketChange TicketClose TicketPending TicketEscalation TicketEscalationResponse TicketEscalationUpdate TicketEscalationSolution)
         )
@@ -692,7 +701,7 @@ sub JobGet {
         $Data{Name} = $Param{Name};
     }
 
-    $Self->{CacheObject}->Set(
+    $CacheObject->Set(
         Type  => 'GenericAgent',
         Key   => $CacheKey,
         Value => \%Data,
@@ -724,7 +733,8 @@ sub JobAdd {
     # check needed stuff
     for (qw(Name Data UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -732,19 +742,22 @@ sub JobAdd {
     # check if job name already exists
     my %Check = $Self->JobGet( Name => $Param{Name} );
     if (%Check) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't add job '$Param{Name}', job already exists!",
         );
         return;
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # insert data into db
     for my $Key ( sort keys %{ $Param{Data} } ) {
         if ( ref $Param{Data}->{$Key} eq 'ARRAY' ) {
             for my $Item ( @{ $Param{Data}->{$Key} } ) {
                 if ( defined $Item ) {
-                    $Self->{DBObject}->Do(
+                    $DBObject->Do(
                         SQL => 'INSERT INTO generic_agent_jobs '
                             . '(job_name, job_key, job_value) VALUES (?, ?, ?)',
                         Bind => [ \$Param{Name}, \$Key, \$Item ],
@@ -754,7 +767,7 @@ sub JobAdd {
         }
         else {
             if ( defined $Param{Data}->{$Key} ) {
-                $Self->{DBObject}->Do(
+                $DBObject->Do(
                     SQL => 'INSERT INTO generic_agent_jobs '
                         . '(job_name, job_key, job_value) VALUES (?, ?, ?)',
                     Bind => [ \$Param{Name}, \$Key, \$Param{Data}->{$Key} ],
@@ -762,12 +775,13 @@ sub JobAdd {
             }
         }
     }
-    $Self->{LogObject}->Log(
+
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "New GenericAgent job '$Param{Name}' added (UserID=$Param{UserID}).",
     );
 
-    $Self->{CacheObject}->CleanUp(
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => 'GenericAgent',
     );
 
@@ -788,22 +802,24 @@ sub JobDelete {
     # check needed stuff
     for (qw(Name UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
     # delete job
-    $Self->{DBObject}->Do(
+    $Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => 'DELETE FROM generic_agent_jobs WHERE job_name = ?',
         Bind => [ \$Param{Name} ],
     );
-    $Self->{LogObject}->Log(
+
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "GenericAgent job '$Param{Name}' deleted (UserID=$Param{UserID}).",
     );
 
-    $Self->{CacheObject}->CleanUp(
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => 'GenericAgent',
     );
 
@@ -821,9 +837,12 @@ returns a hash of events for each job
 sub JobEventList {
     my ( $Self, %Param ) = @_;
 
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # check cache
     my $CacheKey = "JobEventList";
-    my $Cache    = $Self->{CacheObject}->Get(
+    my $Cache    = $CacheObject->Get(
         Type => 'GenericAgent',
         Key  => $CacheKey,
     );
@@ -838,7 +857,7 @@ sub JobEventList {
         $Data{$JobName} = $Job{EventValues};
     }
 
-    $Self->{CacheObject}->Set(
+    $CacheObject->Set(
         Type  => 'GenericAgent',
         Key   => $CacheKey,
         Value => \%Data,
@@ -873,16 +892,20 @@ sub _JobRunTicket {
     # check needed stuff
     for (qw(TicketID TicketNumber Config UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
+
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
     my $Ticket = "($Param{TicketNumber}/$Param{TicketID})";
 
     # disable sending emails
     if ( $Param{Config}->{New}->{SendNoNotification} ) {
-        $Self->{TicketObject}->{SendNoNotification} = 1;
+        $TicketObject->{SendNoNotification} = 1;
     }
 
     # move ticket
@@ -890,8 +913,8 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Move Ticket $Ticket to Queue '$Param{Config}->{New}->{Queue}'\n";
         }
-        $Self->{TicketObject}->TicketQueueSet(
-            QueueID => $Self->{QueueObject}->QueueLookup(
+        $TicketObject->TicketQueueSet(
+            QueueID => $Kernel::OM->Get('Kernel::System::Queue')->QueueLookup(
                 Queue => $Param{Config}->{New}->{Queue},
                 Cache => 1,
             ),
@@ -903,7 +926,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Move Ticket $Ticket to QueueID '$Param{Config}->{New}->{QueueID}'\n";
         }
-        $Self->{TicketObject}->TicketQueueSet(
+        $TicketObject->TicketQueueSet(
             QueueID  => $Param{Config}->{New}->{QueueID},
             UserID   => $Param{UserID},
             TicketID => $Param{TicketID},
@@ -915,7 +938,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Add note to Ticket $Ticket\n";
         }
-        my $ArticleID = $Self->{TicketObject}->ArticleCreate(
+        my $ArticleID = $TicketObject->ArticleCreate(
             TicketID    => $Param{TicketID},
             ArticleType => $Param{Config}->{New}->{Note}->{ArticleType} || 'note-internal',
             SenderType  => 'agent',
@@ -936,7 +959,7 @@ sub _JobRunTicket {
         my $TimeUnits = $Param{Config}->{New}->{Note}->{TimeUnits}
             || $Param{Config}->{New}->{NoteTimeUnits};
         if ( $ArticleID && $TimeUnits ) {
-            $Self->{TicketObject}->TicketAccountTime(
+            $TicketObject->TicketAccountTime(
                 TicketID  => $Param{TicketID},
                 ArticleID => $ArticleID,
                 TimeUnit  => $TimeUnits,
@@ -945,14 +968,20 @@ sub _JobRunTicket {
         }
     }
 
-    my $IsPendingState;
+    my %PendingStates = $Kernel::OM->Get('Kernel::System::State')->StateGetStatesByType(
+        StateType => [ 'pending auto', 'pending reminder' ],
+        Result => 'HASH',
+    );
+
+    $Self->{PendingStateList} = \%PendingStates || {};
 
     # set new state
+    my $IsPendingState;
     if ( $Param{Config}->{New}->{State} ) {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - changed state of Ticket $Ticket to '$Param{Config}->{New}->{State}'\n";
         }
-        $Self->{TicketObject}->TicketStateSet(
+        $TicketObject->TicketStateSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             State    => $Param{Config}->{New}->{State},
@@ -965,7 +994,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - changed state id of ticket $Ticket to '$Param{Config}->{New}->{StateID}'\n";
         }
-        $Self->{TicketObject}->TicketStateSet(
+        $TicketObject->TicketStateSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             StateID  => $Param{Config}->{New}->{StateID},
@@ -976,37 +1005,35 @@ sub _JobRunTicket {
     }
 
     # set pending time, if new state is pending state
-    if ($IsPendingState) {
-        if ( $Param{Config}->{New}->{PendingTime} ) {
+    if ( $IsPendingState && $Param{Config}->{New}->{PendingTime} ) {
 
-            # pending time
-            my $PendingTime = $Param{Config}->{New}->{PendingTime};
+        # pending time
+        my $PendingTime = $Param{Config}->{New}->{PendingTime};
 
-            # calculate pending time based on hours, minutes, years...
-            if ( $Param{Config}->{New}->{PendingTimeType} ) {
-                $PendingTime *= $Param{Config}->{New}->{PendingTimeType};
-            }
-
-            # add systemtime
-            $PendingTime += $Self->{CurrentSystemTime};
-
-            # get date
-            my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                = $Self->{TimeObject}->SystemTime2Date(
-                SystemTime => $PendingTime,
-                );
-
-            # set pending time
-            $Self->{TicketObject}->TicketPendingTimeSet(
-                Year     => $Year,
-                Month    => $Month,
-                Day      => $Day,
-                Hour     => $Hour,
-                Minute   => $Min,
-                TicketID => $Param{TicketID},
-                UserID   => $Param{UserID},
-            );
+        # calculate pending time based on hours, minutes, years...
+        if ( $Param{Config}->{New}->{PendingTimeType} ) {
+            $PendingTime *= $Param{Config}->{New}->{PendingTimeType};
         }
+
+        # add systemtime
+        $PendingTime += $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+
+        # get date
+        my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
+            = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
+            SystemTime => $PendingTime,
+            );
+
+        # set pending time
+        $TicketObject->TicketPendingTimeSet(
+            Year     => $Year,
+            Month    => $Month,
+            Day      => $Day,
+            Hour     => $Hour,
+            Minute   => $Min,
+            TicketID => $Param{TicketID},
+            UserID   => $Param{UserID},
+        );
     }
 
     # set customer id and customer user
@@ -1023,7 +1050,7 @@ sub _JobRunTicket {
                     "  - set customer user id of Ticket $Ticket to '$Param{Config}->{New}->{CustomerUserLogin}'\n";
             }
         }
-        $Self->{TicketObject}->TicketCustomerSet(
+        $TicketObject->TicketCustomerSet(
             TicketID => $Param{TicketID},
             No       => $Param{Config}->{New}->{CustomerID} || '',
             User     => $Param{Config}->{New}->{CustomerUserLogin} || '',
@@ -1036,7 +1063,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set title of Ticket $Ticket to '$Param{Config}->{New}->{Title}'\n";
         }
-        $Self->{TicketObject}->TicketTitleUpdate(
+        $TicketObject->TicketTitleUpdate(
             Title    => $Param{Config}->{New}->{Title},
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
@@ -1048,7 +1075,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set type of Ticket $Ticket to '$Param{Config}->{New}->{Type}'\n";
         }
-        $Self->{TicketObject}->TicketTypeSet(
+        $TicketObject->TicketTypeSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             Type     => $Param{Config}->{New}->{Type},
@@ -1058,7 +1085,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set type id of Ticket $Ticket to '$Param{Config}->{New}->{TypeID}'\n";
         }
-        $Self->{TicketObject}->TicketTypeSet(
+        $TicketObject->TicketTypeSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             TypeID   => $Param{Config}->{New}->{TypeID},
@@ -1070,7 +1097,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set service of Ticket $Ticket to '$Param{Config}->{New}->{Service}'\n";
         }
-        $Self->{TicketObject}->TicketServiceSet(
+        $TicketObject->TicketServiceSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             Service  => $Param{Config}->{New}->{Service},
@@ -1080,7 +1107,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set service id of Ticket $Ticket to '$Param{Config}->{New}->{ServiceID}'\n";
         }
-        $Self->{TicketObject}->TicketServiceSet(
+        $TicketObject->TicketServiceSet(
             TicketID  => $Param{TicketID},
             UserID    => $Param{UserID},
             ServiceID => $Param{Config}->{New}->{ServiceID},
@@ -1092,7 +1119,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set sla of Ticket $Ticket to '$Param{Config}->{New}->{SLA}'\n";
         }
-        $Self->{TicketObject}->TicketSLASet(
+        $TicketObject->TicketSLASet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             SLA      => $Param{Config}->{New}->{SLA},
@@ -1102,7 +1129,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set sla id of Ticket $Ticket to '$Param{Config}->{New}->{SLAID}'\n";
         }
-        $Self->{TicketObject}->TicketSLASet(
+        $TicketObject->TicketSLASet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             SLAID    => $Param{Config}->{New}->{SLAID},
@@ -1114,7 +1141,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set priority of Ticket $Ticket to '$Param{Config}->{New}->{Priority}'\n";
         }
-        $Self->{TicketObject}->TicketPrioritySet(
+        $TicketObject->TicketPrioritySet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             Priority => $Param{Config}->{New}->{Priority},
@@ -1125,7 +1152,7 @@ sub _JobRunTicket {
             print
                 "  - set priority id of Ticket $Ticket to '$Param{Config}->{New}->{PriorityID}'\n";
         }
-        $Self->{TicketObject}->TicketPrioritySet(
+        $TicketObject->TicketPrioritySet(
             TicketID   => $Param{TicketID},
             UserID     => $Param{UserID},
             PriorityID => $Param{Config}->{New}->{PriorityID},
@@ -1137,7 +1164,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set owner of Ticket $Ticket to '$Param{Config}->{New}->{Owner}'\n";
         }
-        $Self->{TicketObject}->TicketOwnerSet(
+        $TicketObject->TicketOwnerSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             NewUser  => $Param{Config}->{New}->{Owner},
@@ -1147,7 +1174,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set owner id of Ticket $Ticket to '$Param{Config}->{New}->{OwnerID}'\n";
         }
-        $Self->{TicketObject}->TicketOwnerSet(
+        $TicketObject->TicketOwnerSet(
             TicketID  => $Param{TicketID},
             UserID    => $Param{UserID},
             NewUserID => $Param{Config}->{New}->{OwnerID},
@@ -1160,7 +1187,7 @@ sub _JobRunTicket {
             print
                 "  - set responsible of Ticket $Ticket to '$Param{Config}->{New}->{Responsible}'\n";
         }
-        $Self->{TicketObject}->TicketResponsibleSet(
+        $TicketObject->TicketResponsibleSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             NewUser  => $Param{Config}->{New}->{Responsible},
@@ -1171,7 +1198,7 @@ sub _JobRunTicket {
             print
                 "  - set responsible id of Ticket $Ticket to '$Param{Config}->{New}->{ResponsibleID}'\n";
         }
-        $Self->{TicketObject}->TicketResponsibleSet(
+        $TicketObject->TicketResponsibleSet(
             TicketID  => $Param{TicketID},
             UserID    => $Param{UserID},
             NewUserID => $Param{Config}->{New}->{ResponsibleID},
@@ -1183,7 +1210,7 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set lock of Ticket $Ticket to '$Param{Config}->{New}->{Lock}'\n";
         }
-        $Self->{TicketObject}->TicketLockSet(
+        $TicketObject->TicketLockSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             Lock     => $Param{Config}->{New}->{Lock},
@@ -1193,21 +1220,25 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - set lock id of Ticket $Ticket to '$Param{Config}->{New}->{LockID}'\n";
         }
-        $Self->{TicketObject}->TicketLockSet(
+        $TicketObject->TicketLockSet(
             TicketID => $Param{TicketID},
             UserID   => $Param{UserID},
             LockID   => $Param{Config}->{New}->{LockID},
         );
     }
 
+    # get dynamic field backend objects
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     # set new dynamic fields options
     # cycle trough the activated Dynamic Fields for this screen
     DYNAMICFIELD:
     for my $DynamicFieldConfig ( @{ $Self->{DynamicField} } ) {
+
         next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
 
         # extract the dynamic field value form the web request
-        my $Value = $Self->{BackendObject}->EditFieldValueGet(
+        my $Value = $DynamicFieldBackendObject->EditFieldValueGet(
             DynamicFieldConfig => $DynamicFieldConfig,
             Template           => $Param{Config}->{New},
             TransformDates     => 0,
@@ -1224,7 +1255,7 @@ sub _JobRunTicket {
             )
             )
         {
-            my $Success = $Self->{BackendObject}->ValueSet(
+            my $Success = $DynamicFieldBackendObject->ValueSet(
                 DynamicFieldConfig => $DynamicFieldConfig,
                 ObjectID           => $Param{TicketID},
                 Value              => $Value,
@@ -1233,7 +1264,7 @@ sub _JobRunTicket {
 
             if ($Success) {
                 if ( $Self->{NoticeSTDOUT} ) {
-                    my $ValueStrg = $Self->{BackendObject}->ReadableValueRender(
+                    my $ValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
                         DynamicFieldConfig => $DynamicFieldConfig,
                         Value              => $Value,
                     );
@@ -1242,7 +1273,7 @@ sub _JobRunTicket {
                 }
             }
             else {
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Could not set dynamic field $DynamicFieldConfig->{Name} "
                         . "for Ticket $Ticket.",
@@ -1256,22 +1287,23 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Use module ($Param{Config}->{New}->{Module}) for Ticket $Ticket.\n";
         }
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Use module ($Param{Config}->{New}->{Module}) for Ticket $Ticket.",
         );
         if ( $Self->{Debug} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'debug',
                 Message  => "Try to load module: $Param{Config}->{New}->{Module}!",
             );
         }
-        if ( $Self->{MainObject}->Require( $Param{Config}->{New}->{Module} ) ) {
+
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( $Param{Config}->{New}->{Module} ) )
+        {
 
             # protect parent process
             eval {
                 my $Object = $Param{Config}->{New}->{Module}->new(
-                    %{$Self},
                     Debug => $Self->{Debug},
                 );
                 if ($Object) {
@@ -1281,8 +1313,9 @@ sub _JobRunTicket {
                     );
                 }
             };
+
             if ($@) {
-                $Self->{LogObject}->Log( Priority => 'error', Message => $@ );
+                $Kernel::OM->Get('Kernel::System::Log')->Log( Priority => 'error', Message => $@ );
             }
         }
     }
@@ -1290,14 +1323,14 @@ sub _JobRunTicket {
     # set new archive flag
     if (
         $Param{Config}->{New}->{ArchiveFlag}
-        && $Self->{ConfigObject}->Get('Ticket::ArchiveSystem')
+        && $Kernel::OM->Get('Kernel::Config')->Get('Ticket::ArchiveSystem')
         )
     {
         if ( $Self->{NoticeSTDOUT} ) {
             print
                 "  - set archive flag of Ticket $Ticket to '$Param{Config}->{New}->{ArchiveFlag}'\n";
         }
-        $Self->{TicketObject}->TicketArchiveFlagSet(
+        $TicketObject->TicketArchiveFlagSet(
             TicketID    => $Param{TicketID},
             UserID      => $Param{UserID},
             ArchiveFlag => $Param{Config}->{New}->{ArchiveFlag},
@@ -1309,14 +1342,14 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Execute '$Param{Config}->{New}->{CMD}' for Ticket $Ticket.\n";
         }
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Execute '$Param{Config}->{New}->{CMD}' for Ticket $Ticket.",
         );
         system("$Param{Config}->{New}->{CMD} $Param{TicketNumber} $Param{TicketID} ");
 
         if ( $? ne 0 ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'notice',
                 Message  => "Command returned a nonzero return code: rc=$?, err=$!",
             );
@@ -1328,11 +1361,11 @@ sub _JobRunTicket {
         if ( $Self->{NoticeSTDOUT} ) {
             print "  - Delete Ticket $Ticket.\n";
         }
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Delete Ticket $Ticket.",
         );
-        $Self->{TicketObject}->TicketDelete(
+        $TicketObject->TicketDelete(
             UserID   => $Param{UserID},
             TicketID => $Param{TicketID},
         );
@@ -1346,32 +1379,40 @@ sub _JobUpdateRunTime {
     # check needed stuff
     for (qw(Name UserID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # check if job name already exists
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL  => 'SELECT job_key, job_value FROM generic_agent_jobs WHERE job_name = ?',
         Bind => [ \$Param{Name} ],
     );
     my @Data;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         if ( $Row[0] =~ /^(ScheduleLastRun|ScheduleLastRunUnixTime)/ ) {
             push @Data, { Key => $Row[0], Value => $Row[1] };
         }
     }
 
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
     # update new run time
     my %Insert = (
-        ScheduleLastRun => $Self->{TimeObject}->SystemTime2TimeStamp(
-            SystemTime => $Self->{TimeObject}->SystemTime()
+        ScheduleLastRun => $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $TimeObject->SystemTime()
         ),
-        ScheduleLastRunUnixTime => $Self->{TimeObject}->SystemTime(),
+        ScheduleLastRunUnixTime => $TimeObject->SystemTime(),
     );
+
     for my $Key ( sort keys %Insert ) {
-        $Self->{DBObject}->Do(
+        $DBObject->Do(
             SQL => 'INSERT INTO generic_agent_jobs (job_name,job_key, job_value) VALUES (?, ?, ?)',
             Bind => [ \$Param{Name}, \$Key, \$Insert{$Key} ],
         );
@@ -1379,14 +1420,14 @@ sub _JobUpdateRunTime {
 
     # remove old times
     for my $Time (@Data) {
-        $Self->{DBObject}->Do(
+        $DBObject->Do(
             SQL => 'DELETE FROM generic_agent_jobs WHERE '
                 . 'job_name = ? AND job_key = ? AND job_value = ?',
             Bind => [ \$Param{Name}, \$Time->{Key}, \$Time->{Value} ],
         );
     }
 
-    $Self->{CacheObject}->Delete(
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
         Key  => 'JobGet::' . $Param{Name},
         Type => 'GenericAgent',
     );

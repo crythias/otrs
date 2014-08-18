@@ -43,26 +43,22 @@ if ( $Opts{'h'} ) {
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.CleanUp.pl',
     },
 );
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(LogObject SessionObject)],
-);
-
-# create tmp storage objects
 
 # clean up tmp storage
 print "Cleaning up LogCache ...";
-if ( $CommonObject{LogObject}->CleanUp() ) {
+if ( $Kernel::OM->Get('Kernel::System::Log')->CleanUp() ) {
     print " done.\n";
 }
 else {
     print " failed.\n";
 }
+
 print "Cleaning up SessionData...";
-if ( $CommonObject{SessionObject}->CleanUp() ) {
+if ( $Kernel::OM->Get('Kernel::System::Session')->CleanUp() ) {
     print " done.\n";
 }
 else {

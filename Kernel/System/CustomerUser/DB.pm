@@ -15,10 +15,17 @@ use warnings;
 use Crypt::PasswdMD5 qw(unix_md5_crypt);
 use Digest::SHA;
 
-use Kernel::System::Cache;
-use Kernel::System::CheckItem;
-use Kernel::System::Time;
-use Kernel::System::Valid;
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::CheckItem',
+    'Kernel::System::DB',
+    'Kernel::System::Encode',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+    'Kernel::System::Valid',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -27,18 +34,13 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for my $Needed (
-        qw(DBObject ConfigObject LogObject PreferencesObject CustomerUserMap MainObject EncodeObject)
-        )
-    {
+    # check needed data
+    for my $Needed (qw( PreferencesObject CustomerUserMap )) {
         $Self->{$Needed} = $Param{$Needed} || die "Got no $Needed!";
     }
 
-    # create additional objects
-    $Self->{CheckItemObject} = Kernel::System::CheckItem->new( %{$Self} );
-    $Self->{TimeObject}      = Kernel::System::Time->new( %{$Self} );
-    $Self->{ValidObject}     = Kernel::System::Valid->new( %{$Self} );
+    # get database object
+    $Self->{DBObject} = $Kernel::OM->Get('Kernel::System::DB');
 
     # max shown user per search list
     $Self->{UserSearchListLimit} = $Self->{CustomerUserMap}->{CustomerUserSearchListLimit} || 250;
@@ -78,16 +80,12 @@ sub new {
 
     # create cache object, but only if CacheTTL is set in customer config
     if ( $Self->{CustomerUserMap}->{CacheTTL} ) {
-        $Self->{CacheObject} = $Kernel::OM->Get('CacheObject');
+        $Self->{CacheObject} = $Kernel::OM->Get('Kernel::System::Cache');
     }
 
     # create new db connect if DSN is given
     if ( $Self->{CustomerUserMap}->{Params}->{DSN} ) {
         $Self->{DBObject} = Kernel::System::DB->new(
-            LogObject    => $Param{LogObject},
-            ConfigObject => $Param{ConfigObject},
-            MainObject   => $Param{MainObject},
-            EncodeObject => $Param{EncodeObject},
             DatabaseDSN  => $Self->{CustomerUserMap}->{Params}->{DSN},
             DatabaseUser => $Self->{CustomerUserMap}->{Params}->{User},
             DatabasePw   => $Self->{CustomerUserMap}->{Params}->{Password},
@@ -112,7 +110,8 @@ sub CustomerName {
 
     # check needed stuff
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserLogin!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserLogin!' );
         return;
     }
 
@@ -181,7 +180,7 @@ sub CustomerSearch {
     # check needed stuff
     if ( !$Param{Search} && !$Param{UserLogin} && !$Param{PostMasterSearch} && !$Param{CustomerID} )
     {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Search, UserLogin, PostMasterSearch or CustomerID!',
         );
@@ -218,7 +217,7 @@ sub CustomerSearch {
     $SQL .= " FROM $Self->{CustomerTable} WHERE ";
     if ( $Param{Search} ) {
         if ( !$Self->{CustomerUserMap}->{CustomerUserSearchFields} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
                     "Need CustomerUserSearchFields in CustomerUser config, unable to search for '$Param{Search}'!",
@@ -304,9 +303,13 @@ sub CustomerSearch {
 
     # add valid option
     if ( $Self->{CustomerUserMap}->{CustomerValid} && $Valid ) {
+
+        # get valid object
+        my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
+
         $SQL .= ' AND '
             . $Self->{CustomerUserMap}->{CustomerValid}
-            . ' IN (' . join( ', ', $Self->{ValidObject}->ValidIDsGet() ) . ') ';
+            . ' IN (' . join( ', ', $ValidObject->ValidIDsGet() ) . ') ';
     }
 
     # get data
@@ -403,7 +406,11 @@ sub CustomerIDList {
 
     # add valid option
     if ( $Self->{CustomerUserMap}->{CustomerValid} && $Valid ) {
-        my $ValidIDs = join( ', ', $Self->{ValidObject}->ValidIDsGet() );
+
+        # get valid object
+        my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
+
+        my $ValidIDs = join( ', ', $ValidObject->ValidIDsGet() );
         $SQL .= "
             AND $Self->{CustomerUserMap}->{CustomerValid} IN ($ValidIDs) ";
     }
@@ -455,7 +462,8 @@ sub CustomerIDs {
 
     # check needed stuff
     if ( !$Param{User} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need User!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need User!' );
         return;
     }
 
@@ -522,7 +530,8 @@ sub CustomerUserDataGet {
 
     # check needed stuff
     if ( !$Param{User} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need User!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need User!' );
         return;
     }
 
@@ -607,9 +616,10 @@ sub CustomerUserDataGet {
 
     # add last login timestamp
     if ( $Preferences{UserLastLogin} ) {
-        $Preferences{UserLastLoginTimestamp} = $Self->{TimeObject}->SystemTime2TimeStamp(
+        $Preferences{UserLastLoginTimestamp}
+            = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
             SystemTime => $Preferences{UserLastLogin},
-        );
+            );
     }
 
     # cache request
@@ -630,7 +640,8 @@ sub CustomerUserAdd {
 
     # check ro/rw
     if ( $Self->{ReadOnly} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Customer backend is read only!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Customer backend is read only!' );
         return;
     }
 
@@ -642,19 +653,25 @@ sub CustomerUserAdd {
             # skip UserLogin, will be checked later
             next ENTRY if ( $Entry->[0] eq 'UserLogin' );
 
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Entry->[0]!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Entry->[0]!" );
             return;
         }
     }
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
     # if no UserLogin is given
     if ( !$Param{UserLogin} && $Self->{CustomerUserMap}->{AutoLoginCreation} ) {
-        my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Self->{TimeObject}->SystemTime2Date(
-            SystemTime => $Self->{TimeObject}->SystemTime(),
+
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+        my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
+            SystemTime => $TimeObject->SystemTime(),
         );
         my $Prefix = $Self->{CustomerUserMap}->{AutoLoginCreationPrefix} || 'auto';
         $Param{UserLogin} = "$Prefix-$Year$Month$Day$Hour$Min" . int( rand(99) );
@@ -662,7 +679,8 @@ sub CustomerUserAdd {
 
     # check if user login exists
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserLogin!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserLogin!' );
         return;
     }
 
@@ -673,7 +691,7 @@ sub CustomerUserAdd {
             PostMasterSearch => $Param{UserEmail},
         );
         if (%Result) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Email already exists!',
             );
@@ -681,16 +699,19 @@ sub CustomerUserAdd {
         }
     }
 
+    # get check item object
+    my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
+
     # check email address mx
     if (
         $Param{UserEmail}
-        && !$Self->{CheckItemObject}->CheckEmail( Address => $Param{UserEmail} )
+        && !$CheckItemObject->CheckEmail( Address => $Param{UserEmail} )
         )
     {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Email address ($Param{UserEmail}) not valid ("
-                . $Self->{CheckItemObject}->CheckError() . ")!",
+                . $CheckItemObject->CheckError() . ")!",
         );
         return;
     }
@@ -721,34 +742,38 @@ sub CustomerUserAdd {
     my $SQL = "INSERT INTO $Self->{CustomerTable} (";
     my @Bind;
     my %SeenKey;    # If the map contains duplicated field names, insert only once.
+    my @ColumnNames;
+
     MAPENTRY:
     for my $Entry ( @{ $Self->{CustomerUserMap}->{Map} } ) {
         next MAPENTRY if ( lc( $Entry->[0] ) eq "userpassword" );
         next MAPENTRY if $SeenKey{ $Entry->[2] }++;
-        $SQL .= " $Entry->[2], ";
+        push @ColumnNames, $Entry->[2];
     }
 
+    $SQL .= join ', ', @ColumnNames;
+
     if ( !$Self->{ForeignDB} ) {
-        $SQL .= 'create_time, create_by, change_time, change_by';
-    }
-    else {
-        chop $SQL;
-        chop $SQL;
+        $SQL .= ', create_time, create_by, change_time, change_by';
     }
 
     $SQL .= ') VALUES (';
 
     my %SeenValue;
+    my $BindColumns = 0;
+
     ENTRY:
     for my $Entry ( @{ $Self->{CustomerUserMap}->{Map} } ) {
         next ENTRY if ( lc( $Entry->[0] ) eq "userpassword" );
         next ENTRY if $SeenValue{ $Entry->[2] }++;
-        $SQL .= " ?, ";
+        $BindColumns++;
         push @Bind, \$Value{ $Entry->[0] };
     }
 
+    $SQL .= join ', ', ('?') x $BindColumns;
+
     if ( !$Self->{ForeignDB} ) {
-        $SQL .= 'current_timestamp, ?, current_timestamp, ?';
+        $SQL .= ', current_timestamp, ?, current_timestamp, ?';
         push @Bind, \$Param{UserID};
         push @Bind, \$Param{UserID};
     }
@@ -758,7 +783,7 @@ sub CustomerUserAdd {
     return if !$Self->{DBObject}->Do( SQL => $SQL, Bind => \@Bind );
 
     # log notice
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "CustomerUser: '$Param{UserLogin}' created successfully ($Param{UserID})!",
     );
@@ -778,28 +803,33 @@ sub CustomerUserUpdate {
 
     # check ro/rw
     if ( $Self->{ReadOnly} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Customer backend is read only!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Customer backend is read only!' );
         return;
     }
 
     # check needed stuff
     for my $Entry ( @{ $Self->{CustomerUserMap}->{Map} } ) {
         if ( !$Param{ $Entry->[0] } && $Entry->[4] && $Entry->[0] ne 'UserPassword' ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $Entry->[0]!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $Entry->[0]!" );
             return;
         }
     }
 
+    # get check item object
+    my $CheckItemObject = $Kernel::OM->Get('Kernel::System::CheckItem');
+
     # check email address
     if (
         $Param{UserEmail}
-        && !$Self->{CheckItemObject}->CheckEmail( Address => $Param{UserEmail} )
+        && !$CheckItemObject->CheckEmail( Address => $Param{UserEmail} )
         )
     {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Email address ($Param{UserEmail}) not valid ("
-                . $Self->{CheckItemObject}->CheckError() . ")!",
+                . $CheckItemObject->CheckError() . ")!",
         );
         return;
     }
@@ -819,7 +849,7 @@ sub CustomerUserUpdate {
             PostMasterSearch => $Param{UserEmail},
         );
         if (%Result) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Email already exists!',
             );
@@ -894,7 +924,7 @@ sub CustomerUserUpdate {
     }
 
     # log notice
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'info',
         Message  => "CustomerUser: '$Param{UserLogin}' updated successfully ($Param{UserID})!",
     );
@@ -920,19 +950,25 @@ sub SetPassword {
 
     # check ro/rw
     if ( $Self->{ReadOnly} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Customer backend is read only!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Customer backend is read only!' );
         return;
     }
 
     # check needed stuff
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserLogin!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserLogin!' );
         return;
     }
     my $CryptedPw = '';
 
     # get crypt type
-    my $CryptType = $Self->{ConfigObject}->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
+    my $CryptType
+        = $Kernel::OM->Get('Kernel::Config')->Get('Customer::AuthModule::DB::CryptType') || 'sha2';
+
+    # get encode object
+    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
     # crypt plain (no crypt at all)
     if ( $CryptType eq 'plain' ) {
@@ -943,22 +979,22 @@ sub SetPassword {
     elsif ( $CryptType eq 'crypt' ) {
 
         # encode output, needed by crypt() only non utf8 signs
-        $Self->{EncodeObject}->EncodeOutput( \$Pw );
-        $Self->{EncodeObject}->EncodeOutput( \$Login );
+        $EncodeObject->EncodeOutput( \$Pw );
+        $EncodeObject->EncodeOutput( \$Login );
 
         $CryptedPw = crypt( $Pw, $Login );
-        $Self->{EncodeObject}->EncodeInput( \$CryptedPw );
+        $EncodeObject->EncodeInput( \$CryptedPw );
     }
 
     # crypt with md5 crypt
     elsif ( $CryptType eq 'md5' || !$CryptType ) {
 
         # encode output, needed by unix_md5_crypt() only non utf8 signs
-        $Self->{EncodeObject}->EncodeOutput( \$Pw );
-        $Self->{EncodeObject}->EncodeOutput( \$Login );
+        $EncodeObject->EncodeOutput( \$Pw );
+        $EncodeObject->EncodeOutput( \$Login );
 
         $CryptedPw = unix_md5_crypt( $Pw, $Login );
-        $Self->{EncodeObject}->EncodeInput( \$CryptedPw );
+        $EncodeObject->EncodeInput( \$CryptedPw );
     }
 
     # crypt with sha1
@@ -967,7 +1003,7 @@ sub SetPassword {
         my $SHAObject = Digest::SHA->new('sha1');
 
         # encode output, needed by sha1_hex() only non utf8 signs
-        $Self->{EncodeObject}->EncodeOutput( \$Pw );
+        $EncodeObject->EncodeOutput( \$Pw );
 
         $SHAObject->add($Pw);
         $CryptedPw = $SHAObject->hexdigest();
@@ -976,8 +1012,11 @@ sub SetPassword {
     # bcrypt
     elsif ( $CryptType eq 'bcrypt' ) {
 
-        if ( !$Self->{MainObject}->Require('Crypt::Eksblowfish::Bcrypt') ) {
-            $Self->{LogObject}->Log(
+        # get main object
+        my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+        if ( !$MainObject->Require('Crypt::Eksblowfish::Bcrypt') ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message =>
                     "CustomerUser: '$Login' tried to store password with bcrypt but 'Crypt::Eksblowfish::Bcrypt' is not installed!",
@@ -986,10 +1025,10 @@ sub SetPassword {
         }
 
         my $Cost = 9;
-        my $Salt = $Self->{MainObject}->GenerateRandomString( Length => 16 );
+        my $Salt = $MainObject->GenerateRandomString( Length => 16 );
 
         # remove UTF8 flag, required by Crypt::Eksblowfish::Bcrypt
-        $Self->{EncodeObject}->EncodeOutput( \$Pw );
+        $EncodeObject->EncodeOutput( \$Pw );
 
         # calculate password hash
         my $Octets = Crypt::Eksblowfish::Bcrypt::bcrypt_hash(
@@ -1012,7 +1051,7 @@ sub SetPassword {
         my $SHAObject = Digest::SHA->new('sha256');
 
         # encode output, needed by sha256_hex() only non utf8 signs
-        $Self->{EncodeObject}->EncodeOutput( \$Pw );
+        $EncodeObject->EncodeOutput( \$Pw );
 
         $SHAObject->add($Pw);
         $CryptedPw = $SHAObject->hexdigest();
@@ -1047,7 +1086,7 @@ sub SetPassword {
         );
 
         # log notice
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "CustomerUser: '$Param{UserLogin}' changed password successfully!",
         );
@@ -1064,14 +1103,13 @@ sub SetPassword {
 sub GenerateRandomPassword {
     my ( $Self, %Param ) = @_;
 
-    # Generated passwords are eight characters long by default.
+    # generated passwords are eight characters long by default
     my $Size = $Param{Size} || 8;
 
-    my $Password = $Self->{MainObject}->GenerateRandomString(
+    my $Password = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
         Length => $Size,
     );
 
-    # Return the password.
     return $Password;
 }
 
@@ -1080,7 +1118,8 @@ sub SetPreferences {
 
     # check needed params
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
@@ -1094,7 +1133,8 @@ sub GetPreferences {
 
     # check needed params
     if ( !$Param{UserID} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserID!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserID!' );
         return;
     }
 
@@ -1113,7 +1153,8 @@ sub _CustomerUserCacheClear {
     return if !$Self->{CacheObject};
 
     if ( !$Param{UserLogin} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need UserLogin!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need UserLogin!' );
         return;
     }
 

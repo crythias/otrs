@@ -58,12 +58,9 @@ if ( !$Opts{q} ) {
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.PostMaster.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject)],
 );
 
 # Wrap the majority of the script in an "eval" block so that any
@@ -76,7 +73,7 @@ eval {
 
     # debug info
     if ( $Opts{d} ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global OTRS email handle (otrs.PostMaster.pl) started...',
         );
@@ -85,7 +82,7 @@ eval {
     # get email from SDTIN
     my @Email = <STDIN>;
     if ( !@Email ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Got no email on STDIN!',
         );
@@ -93,20 +90,20 @@ eval {
     }
 
     $Kernel::OM->ObjectParamAdd(
-        PostMasterObject => {
+        'Kernel::System::PostMaster' => {
             Email   => \@Email,
             Trusted => $Opts{'t'},
             Debug   => $Opts{'d'},
         },
     );
-    my @Return = $Kernel::OM->Get('PostMasterObject')->Run( Queue => $Opts{'q'} );
+    my @Return = $Kernel::OM->Get('Kernel::System::PostMaster')->Run( Queue => $Opts{'q'} );
     if ( !$Return[0] ) {
         die "Can't process mail, see log sub system!";
     }
 
     # debug info
     if ( $Opts{d} ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global OTRS email handle (otrs.PostMaster.pl) stopped.',
         );
@@ -121,7 +118,7 @@ if ($@) {
     # it; see sysexits.h. Most mail programs will retry an
     # EX_TEMPFAIL delivery for about four days, then bounce the
     # message.)
-    $CommonObject{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'error',
         Message  => $@,
     );

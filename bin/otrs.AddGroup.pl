@@ -32,12 +32,9 @@ use Kernel::System::ObjectManager;
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.AddGroup.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject GroupObject)],
 );
 
 my %Options;
@@ -64,7 +61,7 @@ $Param{ValidID} = '1';
 $Param{Comment} = $Options{c} || '';
 $Param{Name}    = $Options{n} || '';
 
-if ( my $GID = $CommonObject{GroupObject}->GroupAdd(%Param) ) {
+if ( my $GID = $Kernel::OM->Get('Kernel::System::Group')->GroupAdd(%Param) ) {
     print "Group '$Options{n}' added. Group id is '$GID'\n";
 }
 else {

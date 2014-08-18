@@ -12,6 +12,15 @@ package Kernel::System::Crypt::PGP;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Encode',
+    'Kernel::System::FileTemp',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Time',
+);
+
 =head1 NAME
 
 Kernel::System::Crypt::PGP - pgp crypt backend lib
@@ -37,21 +46,22 @@ check if environment is working
 sub Check {
     my ( $Self, %Param ) = @_;
 
-    my $GPGBin = $Self->{ConfigObject}->Get('PGP::Bin') || '/usr/bin/gpg';
+    my $GPGBin = $Kernel::OM->Get('Kernel::Config')->Get('PGP::Bin') || '/usr/bin/gpg';
     if ( !-e $GPGBin ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "No such $GPGBin!",
         );
         return "No such $GPGBin!";
     }
     elsif ( !-x $GPGBin ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "$GPGBin not executable!",
         );
         return "$GPGBin not executable!";
     }
+
     return;
 }
 
@@ -72,30 +82,31 @@ sub Crypt {
     # check needed stuff
     for my $ParamName (qw( Message Key )) {
         if ( !$Param{$ParamName} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $ParamName!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $ParamName!" );
             return;
         }
     }
 
-    # since the following write would auto-convert utf8-characters into iso-characters, we
-    # avoid that by explicitly encoding utf8-strings:
-    #    if ( utf8::is_utf8( $Param{Message} ) ) {
-    #        utf8::encode( $Param{Message} );
-    #    }
-    $Self->{EncodeObject}->EncodeOutput( \$Param{Message} );
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Param{Message} );
 
-    my ( $FH, $Filename ) = $Self->{FileTempObject}->TempFile();
+    # get temp file object
+    my $FileTempObject = $Kernel::OM->Get('Kernel::System::FileTemp');
+
+    my ( $FH, $Filename ) = $FileTempObject->TempFile();
     print $FH $Param{Message};
     close $FH;
 
-    my ( $FHCrypt, $FilenameCrypt ) = $Self->{FileTempObject}->TempFile();
+    my ( $FHCrypt, $FilenameCrypt ) = $FileTempObject->TempFile();
     close $FHCrypt;
     my $GPGOptions
         = "--always-trust --yes --encrypt --armor -o $FilenameCrypt -r $Param{Key} $Filename";
     my $LogMessage = qx{$Self->{GPGBin} $GPGOptions 2>&1};
 
     # get crypted content
-    my $CryptedDataRef = $Self->{MainObject}->FileRead( Location => $FilenameCrypt );
+    my $CryptedDataRef
+        = $Kernel::OM->Get('Kernel::System::Main')->FileRead( Location => $FilenameCrypt );
+
     return $$CryptedDataRef;
 }
 
@@ -122,16 +133,17 @@ sub Decrypt {
     # check needed stuff
     for (qw(Message)) {
         if ( !defined( $Param{$_} ) ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
-    my ( $FH, $Filename ) = $Self->{FileTempObject}->TempFile();
+    my ( $FH, $Filename ) = $Kernel::OM->Get('Kernel::System::FileTemp')->TempFile();
     print $FH $Param{Message};
     close $FH;
 
-    my %PasswordHash = %{ $Self->{ConfigObject}->Get('PGP::Key::Password') };
+    my %PasswordHash = %{ $Kernel::OM->Get('Kernel::Config')->Get('PGP::Key::Password') };
     my @Keys = $Self->_CryptedWithKey( File => $Filename );
     my %Return;
 
@@ -151,6 +163,7 @@ sub Decrypt {
             Message    => 'gpg: No private key found to decrypt this message!',
         );
     }
+
     return %Return;
 }
 
@@ -172,29 +185,37 @@ sub Sign {
     # check needed stuff
     for (qw(Message Key)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
-    my %PasswordHash = %{ $Self->{ConfigObject}->Get('PGP::Key::Password') };
+    my %PasswordHash = %{ $Kernel::OM->Get('Kernel::Config')->Get('PGP::Key::Password') };
     my $Pw = $PasswordHash{ $Param{Key} } || '';
     my $SigType
         = $Param{Type} && $Param{Type} eq 'Detached'
         ? '--detach-sign --armor'
         : '--clearsign';
 
+    # get temp file object
+    my $FileTempObject = $Kernel::OM->Get('Kernel::System::FileTemp');
+
     # create tmp files
-    my ( $FH, $Filename ) = $Self->{FileTempObject}->TempFile();
+    my ( $FH, $Filename ) = $FileTempObject->TempFile();
     close $FH;
-    my ( $FHSign, $FileSign ) = $Self->{FileTempObject}->TempFile();
+    my ( $FHSign, $FileSign ) = $FileTempObject->TempFile();
     close $FHSign;
-    $Self->{MainObject}->FileWrite(
+
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    $MainObject->FileWrite(
         Location => $Filename,
         Content  => \$Param{Message},
         Mode     => $Param{Charset} && $Param{Charset} =~ /utf(8|\-8)/i ? 'utf8' : 'binmode',
     );
 
-    my ( $FHPhrase, $FilePhrase ) = $Self->{FileTempObject}->TempFile();
+    my ( $FHPhrase, $FilePhrase ) = $FileTempObject->TempFile();
     print $FHPhrase $Pw;
     close $FHPhrase;
     my $GPGOptions
@@ -203,7 +224,7 @@ sub Sign {
 
     # error
     if ($LogMessage) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't sign with Key $Param{Key}: $LogMessage!"
         );
@@ -211,7 +232,7 @@ sub Sign {
     }
 
     # get signed content
-    my $SignedDataRef = $Self->{MainObject}->FileRead(
+    my $SignedDataRef = $MainObject->FileRead(
         Location => $FileSign,
         Mode => $Param{Charset} && $Param{Charset} =~ /utf(8|\-8)/i ? 'utf8' : 'binmode',
     );
@@ -252,7 +273,8 @@ sub Verify {
 
     # check needed stuff
     if ( !$Param{Message} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => 'Need Message!' );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => 'Need Message!' );
         return;
     }
 
@@ -260,17 +282,20 @@ sub Verify {
     if ( defined $Param{Charset} && $Param{Charset} =~ m{ utf -?? 8 }imsx ) {
 
         # encode the message to be written into the FS
-        $Self->{EncodeObject}->EncodeOutput( \$Param{Message} );
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Param{Message} );
     }
 
-    my ( $FH, $File ) = $Self->{FileTempObject}->TempFile();
+    # get temp file object
+    my $FileTempObject = $Kernel::OM->Get('Kernel::System::FileTemp');
+
+    my ( $FH, $File ) = $FileTempObject->TempFile();
     binmode($FH);
     print $FH $Param{Message};
     close $FH;
 
     my $GPGOptions = '--verify --status-fd 1';
     if ( $Param{Sign} ) {
-        my ( $FHSign, $FilenameSign ) = $Self->{FileTempObject}->TempFile();
+        my ( $FHSign, $FilenameSign ) = $FileTempObject->TempFile();
         binmode($FHSign);
         print $FHSign $Param{Sign};
         close $FHSign;
@@ -292,7 +317,7 @@ sub Verify {
             $KeyID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-ID from gpg output!'
             );
@@ -307,7 +332,7 @@ sub Verify {
             $KeyUserID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-user-ID from gpg output!'
             );
@@ -335,7 +360,7 @@ sub Verify {
             $KeyID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-ID from gpg output!'
             );
@@ -365,7 +390,7 @@ sub Verify {
             $KeyID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-ID from gpg output!'
             );
@@ -380,7 +405,7 @@ sub Verify {
             $KeyUserID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-user-ID from gpg output!'
             );
@@ -409,7 +434,7 @@ sub Verify {
             $KeyID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-ID from gpg output!'
             );
@@ -424,7 +449,7 @@ sub Verify {
             $KeyUserID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-user-ID from gpg output!'
             );
@@ -453,7 +478,7 @@ sub Verify {
             $KeyID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-ID from gpg output!'
             );
@@ -468,7 +493,7 @@ sub Verify {
             $KeyUserID = $1;
         }
         else {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => 'Unable to fetch key-user-ID from gpg output!'
             );
@@ -502,7 +527,7 @@ sub Verify {
 
     my @WarningTags;
 
-    my $Trusted = $Self->{ConfigObject}->Get('PGP::TrustedNetwork');
+    my $Trusted = $Kernel::OM->Get('Kernel::Config')->Get('PGP::TrustedNetwork');
     if ( !$Trusted ) {
         push @WarningTags, 'TRUST_UNDEFINED';
     }
@@ -618,7 +643,7 @@ sub PublicKeyGet {
     my $PublicKey;
     if ( $LogMessage =~ /nothing exported/i ) {
         $LogMessage =~ s/\n//g;
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't export key: $LogMessage!",
         );
@@ -661,7 +686,7 @@ sub SecretKeyGet {
 
     if ( $LogMessage =~ /nothing exported/i ) {
         $LogMessage =~ s/\n//g;
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't export key: $LogMessage!",
         );
@@ -697,7 +722,7 @@ sub PublicKeyDelete {
 
     # check needed stuff
     if ( !$Param{Key} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Key!',
         );
@@ -712,7 +737,7 @@ sub PublicKeyDelete {
 
     if ( $LogMessage{DELETE_PROBLEM} ) {
         $LogMessage{CleanLog} =~ s/\n//g;
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't delete key: $LogMessage{CleanLog}!",
         );
@@ -737,7 +762,7 @@ sub SecretKeyDelete {
 
     # check needed stuff
     if ( !$Param{Key} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Key!',
         );
@@ -746,14 +771,14 @@ sub SecretKeyDelete {
 
     my @Keys = $Self->PrivateKeySearch( Search => $Param{Key} );
     if ( @Keys > 1 ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't delete key, multiple key for $Param{Key}!",
         );
         return;
     }
     if ( !$Keys[0]->{FingerprintShort} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't delete key, found no fingerprint for $Param{Key}!",
         );
@@ -769,7 +794,7 @@ sub SecretKeyDelete {
     # with next code lines is wrong detected like an error
     #    if ($Message) {
     #        $Message =~ s/\n//g;
-    #        $Self->{LogObject}->Log(
+    #        $Kernel::OM->Get('Kernel::System::Log')->Log(
     #            Priority => 'error',
     #            Message  => "Can't delete private key: $Message!",
     #        );
@@ -794,13 +819,13 @@ sub KeyAdd {
 
     # check needed stuff
     if ( !$Param{Key} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Key!',
         );
         return;
     }
-    my ( $FH, $Filename ) = $Self->{FileTempObject}->TempFile();
+    my ( $FH, $Filename ) = $Kernel::OM->Get('Kernel::System::FileTemp')->TempFile();
     print $FH $Param{Key};
     my $GPGOptions = "--status-fd 1 --import $Filename";
     my $Message    = qx{$Self->{GPGBin} $GPGOptions 2>&1};
@@ -809,7 +834,7 @@ sub KeyAdd {
 
     if ( !$LogMessage{IMPORT_OK} ) {
         $Message =~ s/\n//g;
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Can't add key: $LogMessage{CleanLog}!",
         );
@@ -826,8 +851,11 @@ sub KeyAdd {
 sub _Init {
     my ( $Self, %Param ) = @_;
 
-    $Self->{GPGBin}  = $Self->{ConfigObject}->Get('PGP::Bin')     || '/usr/bin/gpg';
-    $Self->{Options} = $Self->{ConfigObject}->Get('PGP::Options') || '--batch --no-tty --yes';
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    $Self->{GPGBin}  = $ConfigObject->Get('PGP::Bin')     || '/usr/bin/gpg';
+    $Self->{Options} = $ConfigObject->Get('PGP::Options') || '--batch --no-tty --yes';
 
     if ( $^O =~ m/Win/i ) {
 
@@ -849,21 +877,25 @@ sub _DecryptPart {
     # check needed stuff
     for (qw(Key Password Filename)) {
         if ( !defined( $Param{$_} ) ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
-    my ( $FHDecrypt, $FileDecrypt ) = $Self->{FileTempObject}->TempFile();
+    # get temp file object
+    my $FileTempObject = $Kernel::OM->Get('Kernel::System::FileTemp');
+
+    my ( $FHDecrypt, $FileDecrypt ) = $FileTempObject->TempFile();
     close $FHDecrypt;
-    my ( $FHPhrase, $FilePhrase ) = $Self->{FileTempObject}->TempFile();
+    my ( $FHPhrase, $FilePhrase ) = $FileTempObject->TempFile();
     print $FHPhrase $Param{Password};
     close $FHPhrase;
     my $GPGOptions
         = qq{--batch --passphrase-fd 0 --yes --decrypt -o $FileDecrypt $Param{Filename}};
     my $LogMessage = qx{$Self->{GPGBin} $GPGOptions <$FilePhrase 2>&1};
     if ( $LogMessage =~ /failed/i ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "$LogMessage!",
         );
@@ -873,7 +905,8 @@ sub _DecryptPart {
         );
     }
     else {
-        my $DecryptedDataRef = $Self->{MainObject}->FileRead( Location => $FileDecrypt );
+        my $DecryptedDataRef
+            = $Kernel::OM->Get('Kernel::System::Main')->FileRead( Location => $FileDecrypt );
         return (
             Successful => 1,
             Message    => $LogMessage,
@@ -899,7 +932,8 @@ sub _HandleLog {
     # check needed stuff
     for (qw(LogString)) {
         if ( !defined( $Param{$_} ) ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
@@ -914,7 +948,7 @@ sub _HandleLog {
     }
 
     # get the hash of messages
-    my $LogDictionary = $Self->{ConfigObject}->Get('PGP::Log');
+    my $LogDictionary = $Kernel::OM->Get('Kernel::Config')->Get('PGP::Log');
 
     my %ComputableLog;
     for my $Line (@ComputableLines) {
@@ -949,6 +983,9 @@ parses given key list (as received from gpg) and returns an array with key infos
 
 sub _ParseGPGKeyList {
     my ( $Self, %Param ) = @_;
+
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     my %Key;
     my $InKey;
@@ -1036,7 +1073,7 @@ sub _ParseGPGKeyList {
         # convert system time to timestamp
         if ( $Key{Created} !~ /-/ ) {
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                = $Self->{TimeObject}->SystemTime2Date(
+                = $TimeObject->SystemTime2Date(
                 SystemTime => $Key{Created},
                 );
             $Key{Created} = "$Year-$Month-$Day";
@@ -1045,12 +1082,13 @@ sub _ParseGPGKeyList {
         # expires
         if ( $Key{Expires} =~ /^\d*$/ ) {
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                = $Self->{TimeObject}->SystemTime2Date(
+                = $TimeObject->SystemTime2Date(
                 SystemTime => $Key{Expires},
                 );
             $Key{Expires} = "$Year-$Month-$Day";
         }
     }
+
     if (%Key) {
         push( @Result, \%Key );
     }
@@ -1063,7 +1101,8 @@ sub _CryptedWithKey {
 
     # check needed stuff
     if ( !$Param{File} ) {
-        $Self->{LogObject}->Log( Priority => 'error', Message => "Need File!" );
+        $Kernel::OM->Get('Kernel::System::Log')
+            ->Log( Priority => 'error', Message => "Need File!" );
         return;
     }
 
@@ -1072,7 +1111,7 @@ sub _CryptedWithKey {
     # So we simply try to decrypt with an incorrect passphrase, which of course fails, but still
     # gives us the listing of the keys that we want ...
     # N.B.: if anyone knows how to get that info without resorting to such tricks - please tell!
-    my ( $FHPhrase, $FilePhrase ) = $Self->{FileTempObject}->TempFile();
+    my ( $FHPhrase, $FilePhrase ) = $Kernel::OM->Get('Kernel::System::FileTemp')->TempFile();
     print $FHPhrase '_no_this_is_not_the_@correct@_passphrase_';
     close $FHPhrase;
     my $GPGOptions
@@ -1089,6 +1128,7 @@ sub _CryptedWithKey {
             }
         }
     }
+
     return @Keys;
 }
 

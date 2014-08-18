@@ -58,27 +58,28 @@ if ( $Opts{b} && $Opts{b} !~ /^\d+$/ ) {
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.PostMasterMailbox.pl',
     },
 );
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject PIDObject)],
-);
 
 # create pid lock
-if ( !$Opts{f} && !$CommonObject{PIDObject}->PIDCreate( Name => 'PostMasterMailbox' ) ) {
+if (   !$Opts{f}
+    && !$Kernel::OM->Get('Kernel::System::PID')->PIDCreate( Name => 'PostMasterMailbox' ) )
+{
     print "NOTICE: PostMasterMailbox.pl is already running (use '-f 1' if you want to start it ";
     print "forced)!\n";
     exit 1;
 }
-elsif ( $Opts{f} && !$CommonObject{PIDObject}->PIDCreate( Name => 'PostMasterMailbox' ) ) {
+elsif ( $Opts{f}
+    && !$Kernel::OM->Get('Kernel::System::PID')->PIDCreate( Name => 'PostMasterMailbox' ) )
+{
     print "NOTICE: PostMasterMailbox.pl is already running but is starting again!\n";
 }
 
 # fetch mails -b is not used
 if ( !$Opts{b} ) {
-    Fetch(%CommonObject);
+    Fetch();
 }
 
 # while to run several times if -b is used
@@ -86,13 +87,13 @@ else {
     while (1) {
 
         # set new PID
-        $CommonObject{PIDObject}->PIDCreate(
+        $Kernel::OM->Get('Kernel::System::PID')->PIDCreate(
             Name  => 'PostMasterMailbox',
             Force => 1,
         );
 
         # fetch mails
-        Fetch(%CommonObject);
+        Fetch();
 
         # sleep till next interval
         print "NOTICE: Waiting for next interval ($Opts{b} min)...\n";
@@ -101,18 +102,17 @@ else {
 }
 
 # delete pid lock
-$CommonObject{PIDObject}->PIDDelete( Name => 'PostMasterMailbox' );
+$Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'PostMasterMailbox' );
 exit(0);
 
 sub Fetch {
-    my (%CommonObject) = @_;
 
-    my $MailAccount = Kernel::System::MailAccount->new(%CommonObject);
+    my $MailAccount = Kernel::System::MailAccount->new();
 
     # debug info
 
     if ( $Opts{d} > 1 ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global OTRS email handle (PostMasterMailbox.pl) started...',
         );
@@ -122,28 +122,28 @@ sub Fetch {
         if ( !$Opts{t} ) {
 
             # delete pid lock
-            $CommonObject{PIDObject}->PIDDelete( Name => 'PostMasterMailbox' );
+            $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'PostMasterMailbox' );
             print STDERR "ERROR: Need -t <TYPE> (POP3|IMAP)\n";
             exit 1;
         }
         if ( !$Opts{s} ) {
 
             # delete pid lock
-            $CommonObject{PIDObject}->PIDDelete( Name => 'PostMasterMailbox' );
+            $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'PostMasterMailbox' );
             print STDERR "ERROR: Need -s <SERVER>\n";
             exit 1;
         }
         if ( !$Opts{u} ) {
 
             # delete pid lock
-            $CommonObject{PIDObject}->PIDDelete( Name => 'PostMasterMailbox' );
+            $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'PostMasterMailbox' );
             print STDERR "ERROR: Need -u <USER>\n";
             exit 1;
         }
         if ( !$Opts{p} ) {
 
             # delete pid lock
-            $CommonObject{PIDObject}->PIDDelete( Name => 'PostMasterMailbox' );
+            $Kernel::OM->Get('Kernel::System::PID')->PIDDelete( Name => 'PostMasterMailbox' );
             print STDERR "ERROR: Need -p <PASSWORD>\n";
             exit 1;
         }
@@ -175,7 +175,7 @@ sub Fetch {
 
     # debug info
     if ( $Opts{d} > 1 ) {
-        $CommonObject{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
             Message  => 'Global OTRS email handle (PostMasterMailbox.pl) stopped.',
         );

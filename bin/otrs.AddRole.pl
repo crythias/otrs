@@ -32,12 +32,9 @@ use Kernel::System::ObjectManager;
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.AddRole.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject GroupObject)],
 );
 
 my %Param;
@@ -64,7 +61,7 @@ $Param{ValidID} = '1';
 $Param{Comment} = $Options{c} || '';
 $Param{Name}    = $Options{n} || '';
 
-if ( my $RID = $CommonObject{GroupObject}->RoleAdd(%Param) ) {
+if ( my $RID = $Kernel::OM->Get('Kernel::System::Group')->RoleAdd(%Param) ) {
     print "Role '$Options{n}' added. Role id is '$RID'\n";
 }
 else {

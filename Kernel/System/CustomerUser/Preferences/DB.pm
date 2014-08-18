@@ -12,7 +12,11 @@ package Kernel::System::CustomerUser::Preferences::DB;
 use strict;
 use warnings;
 
-use Kernel::System::CacheInternal;
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -21,33 +25,28 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (qw(DBObject ConfigObject LogObject EncodeObject MainObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
+    $Self->{CacheType} = 'CustomerUserPreferencesDB';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
-    $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
-        %{$Self},
-        Type => 'CustomerUserPreferencesDB',
-        TTL  => 60 * 60 * 24,
-    );
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # preferences table data
-    $Self->{PreferencesTable} = $Self->{ConfigObject}->Get('CustomerPreferences')->{Params}->{Table}
+    $Self->{PreferencesTable} = $ConfigObject->Get('CustomerPreferences')->{Params}->{Table}
         || 'customer_preferences';
     $Self->{PreferencesTableKey}
-        = $Self->{ConfigObject}->Get('CustomerPreferences')->{Params}->{TableKey}
+        = $ConfigObject->Get('CustomerPreferences')->{Params}->{TableKey}
         || 'preferences_key';
     $Self->{PreferencesTableValue}
-        = $Self->{ConfigObject}->Get('CustomerPreferences')->{Params}->{TableValue}
+        = $ConfigObject->Get('CustomerPreferences')->{Params}->{TableValue}
         || 'preferences_value';
     $Self->{PreferencesTableUserID}
-        = $Self->{ConfigObject}->Get('CustomerPreferences')->{Params}->{TableUserID}
+        = $ConfigObject->Get('CustomerPreferences')->{Params}->{TableUserID}
         || 'user_id';
 
     # set lower if database is case sensitive
     $Self->{Lower} = '';
-    if ( $Self->{DBObject}->GetDatabaseFunction('CaseSensitive') ) {
+    if ( $Kernel::OM->Get('Kernel::System::DB')->GetDatabaseFunction('CaseSensitive') ) {
         $Self->{Lower} = 'LOWER';
     }
 
@@ -69,8 +68,11 @@ sub SetPreferences {
 
     my $Value = defined $Param{Value} ? $Param{Value} : '';
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # delete old data
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => "
             DELETE FROM $Self->{PreferencesTable}
             WHERE $Self->{PreferencesTableUserID} = ?
@@ -79,7 +81,7 @@ sub SetPreferences {
     );
 
     # insert new data
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => "
             INSERT INTO $Self->{PreferencesTable}
             ($Self->{PreferencesTableUserID}, $Self->{PreferencesTableKey}, $Self->{PreferencesTableValue})
@@ -88,8 +90,9 @@ sub SetPreferences {
     );
 
     # delete cache
-    $Self->{CacheInternalObject}->Delete(
-        Key => $Self->{CachePrefix} . $Param{UserID},
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Self->{CachePrefix} . $Param{UserID},
     );
 
     return 1;
@@ -115,7 +118,7 @@ sub RenamePreferences {
     return if !$Param{OldUserID};
 
     # update the preferences
-    return if !$Self->{DBObject}->Prepare(
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Prepare(
         SQL => "
             UPDATE $Self->{PreferencesTable}
             SET $Self->{PreferencesTableUserID} = ?
@@ -124,8 +127,9 @@ sub RenamePreferences {
     );
 
     # delete cache
-    $Self->{CacheInternalObject}->Delete(
-        Key => $Self->{CachePrefix} . $Param{OldUserID},
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Self->{CachePrefix} . $Param{OldUserID},
     );
 
     return 1;
@@ -137,13 +141,17 @@ sub GetPreferences {
     return if !$Param{UserID};
 
     # read cache
-    my $Cache = $Self->{CacheInternalObject}->Get(
-        Key => $Self->{CachePrefix} . $Param{UserID},
+    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $Self->{CachePrefix} . $Param{UserID},
     );
     return %{$Cache} if $Cache;
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # get preferences
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL => "
             SELECT $Self->{PreferencesTableKey}, $Self->{PreferencesTableValue}
             FROM $Self->{PreferencesTable}
@@ -153,12 +161,14 @@ sub GetPreferences {
 
     # fetch the result
     my %Data;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Data{ $Row[0] } = $Row[1];
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set(
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
         Key   => $Self->{CachePrefix} . $Param{UserID},
         Value => \%Data,
     );
@@ -172,8 +182,11 @@ sub SearchPreferences {
     my $Key   = $Param{Key}   || '';
     my $Value = $Param{Value} || '';
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     my $Lower = '';
-    if ( $Self->{DBObject}->GetDatabaseFunction('CaseSensitive') ) {
+    if ( $DBObject->GetDatabaseFunction('CaseSensitive') ) {
         $Lower = 'LOWER';
     }
 
@@ -189,14 +202,14 @@ sub SearchPreferences {
     }
 
     # get preferences
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL  => $SQL,
         Bind => \@Bind,
     );
 
     # fetch the result
     my %UserID;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $UserID{ $Row[0] } = $Row[1];
     }
 

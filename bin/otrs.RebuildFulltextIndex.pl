@@ -43,13 +43,13 @@ if ( $Opts{h} ) {
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.RebuildFulltextIndex.pl',
     },
 );
 
 # create needed objects
-my $TicketObject = $Kernel::OM->Get('TicketObject');
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
 # get all tickets
 my @TicketIDs = $TicketObject->TicketSearch(

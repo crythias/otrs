@@ -12,6 +12,12 @@ package Kernel::System::AuthSession;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
+
 =head1 NAME
 
 Kernel::System::AuthSession - global session interface
@@ -32,7 +38,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $SessionObject = $Kernel::OM->Get('SessionObject');
+    my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
 
 =cut
 
@@ -43,21 +49,19 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (qw(LogObject ConfigObject TimeObject DBObject MainObject EncodeObject)) {
-        $Self->{$_} = $Param{$_} || die "No $_!";
-    }
-
     # get configured session backend
-    my $GenericModule = $Self->{ConfigObject}->Get('SessionModule');
+    my $GenericModule = $Kernel::OM->Get('Kernel::Config')->Get('SessionModule');
     $GenericModule ||= 'Kernel::System::AuthSession::DB';
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # load session backend module
-    if ( !$Self->{MainObject}->Require($GenericModule) ) {
-        $Self->{MainObject}->Die("Can't load backend module $GenericModule! $@");
+    if ( !$MainObject->Require($GenericModule) ) {
+        $MainObject->Die("Can't load backend module $GenericModule! $@");
     }
 
-    $Self->{Backend} = $GenericModule->new( %{$Self} );
+    $Self->{Backend} = $GenericModule->new();
 
     return $Self;
 }
@@ -172,7 +176,7 @@ sub UpdateSessionID {
         my @Parts = split /:/, $Param{Key};
 
         if ( defined $Parts[1] ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't update key: '$Param{Key}' because ':' is not allowed!",
             );
@@ -185,7 +189,8 @@ sub UpdateSessionID {
 
 =item GetExpiredSessionIDs()
 
-returns a array with expired session ids
+returns a array of an array of session ids that have expired,
+and one array of session ids that have been idle for too long.
 
     my @Sessions = $SessionObject->GetExpiredSessionIDs();
 
@@ -202,7 +207,7 @@ sub GetExpiredSessionIDs {
 
 =item GetAllSessionIDs()
 
-returns a array with all session ids
+returns an array with all session ids
 
     my @Sessions = $SessionObject->GetAllSessionIDs();
 

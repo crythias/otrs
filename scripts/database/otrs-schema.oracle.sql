@@ -321,6 +321,16 @@ CREATE TABLE personal_queues (
 CREATE INDEX personal_queues_queue_id ON personal_queues (queue_id);
 CREATE INDEX personal_queues_user_id ON personal_queues (user_id);
 -- ----------------------------------------------------------
+--  create table personal_services
+-- ----------------------------------------------------------
+CREATE TABLE personal_services (
+    user_id NUMBER (12, 0) NOT NULL,
+    service_id NUMBER (12, 0) NOT NULL
+);
+CREATE INDEX FK_personal_services_service14 ON personal_services (service_id);
+CREATE INDEX personal_services_queue_id ON personal_services (service_id);
+CREATE INDEX personal_services_user_id ON personal_services (user_id);
+-- ----------------------------------------------------------
 --  create table salutation
 -- ----------------------------------------------------------
 CREATE TABLE salutation (
@@ -2372,7 +2382,6 @@ CREATE TABLE package_repository (
     vendor VARCHAR2 (250) NOT NULL,
     install_status VARCHAR2 (250) NOT NULL,
     filename VARCHAR2 (250) NULL,
-    content_size VARCHAR2 (30) NULL,
     content_type VARCHAR2 (250) NULL,
     content CLOB NOT NULL,
     create_time DATE NOT NULL,
@@ -2986,13 +2995,6 @@ END;
 --;
 CREATE INDEX FK_pm_transition_action_chan4f ON pm_transition_action (change_by);
 CREATE INDEX FK_pm_transition_action_crea78 ON pm_transition_action (create_by);
--- ----------------------------------------------------------
---  create table pm_entity
--- ----------------------------------------------------------
-CREATE TABLE pm_entity (
-    entity_type VARCHAR2 (50) NOT NULL,
-    entity_counter NUMBER (12, 0) NOT NULL
-);
 -- ----------------------------------------------------------
 --  create table pm_entity_sync
 -- ----------------------------------------------------------

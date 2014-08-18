@@ -101,8 +101,11 @@ sub Run {
     }
 
     # get ACL restrictions
-    $Self->{TicketObject}->TicketAcl(
-        Data          => '-',
+    my %PossibleActions = ( 1 => $Self->{Action} );
+
+    my $ACL = $Self->{TicketObject}->TicketAcl(
+        Data          => \%PossibleActions,
+        Action        => $Self->{Action},
         TicketID      => $Self->{TicketID},
         ReturnType    => 'Action',
         ReturnSubType => '-',
@@ -110,11 +113,13 @@ sub Run {
     );
     my %AclAction = $Self->{TicketObject}->TicketAclActionData();
 
-    # check if ACL resctictions if exist
-    if ( IsHashRefWithData( \%AclAction ) ) {
+    # check if ACL restrictions exist
+    if ( $ACL || IsHashRefWithData( \%AclAction ) ) {
+
+        my %AclActionLookup = reverse %AclAction;
 
         # show error screen if ACL prohibits this action
-        if ( defined $AclAction{ $Self->{Action} } && $AclAction{ $Self->{Action} } eq '0' ) {
+        if ( !$AclActionLookup{ $Self->{Action} } ) {
             return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
         }
     }
@@ -615,7 +620,7 @@ sub Run {
 
         # check pending time
         if ( $GetParam{NewStateID} ) {
-            my %StateData = $Self->{TicketObject}->{StateObject}->StateGet(
+            my %StateData = $Self->{StateObject}->StateGet(
                 ID => $GetParam{NewStateID},
             );
 
@@ -761,48 +766,59 @@ sub Run {
             BodyClass => 'Popup',
         );
 
-        # get lock state && write (lock) permissions
-        if ( !$Self->{TicketObject}->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
+        # check if lock is required
+        if ( $Self->{Config}->{RequiredLock} ) {
 
-            # set owner
-            $Self->{TicketObject}->TicketOwnerSet(
-                TicketID  => $Self->{TicketID},
-                UserID    => $Self->{UserID},
-                NewUserID => $Self->{UserID},
-            );
+            # get lock state && write (lock) permissions
+            if ( !$Self->{TicketObject}->TicketLockGet( TicketID => $Self->{TicketID} ) ) {
 
-            # set lock
-            my $Success = $Self->{TicketObject}->TicketLockSet(
-                TicketID => $Self->{TicketID},
-                Lock     => 'lock',
-                UserID   => $Self->{UserID}
-            );
+                # set owner
+                $Self->{TicketObject}->TicketOwnerSet(
+                    TicketID  => $Self->{TicketID},
+                    UserID    => $Self->{UserID},
+                    NewUserID => $Self->{UserID},
+                );
 
-            # show lock state
-            if ($Success) {
+                # set lock
+                my $Success = $Self->{TicketObject}->TicketLockSet(
+                    TicketID => $Self->{TicketID},
+                    Lock     => 'lock',
+                    UserID   => $Self->{UserID}
+                );
+
+                # show lock state
+                if ($Success) {
+                    $Self->{LayoutObject}->Block(
+                        Name => 'PropertiesLock',
+                        Data => { %Param, TicketID => $Self->{TicketID} },
+                    );
+                    $Self->{TicketUnlock} = 1;
+                }
+            }
+            else {
+                my $AccessOk = $Self->{TicketObject}->OwnerCheck(
+                    TicketID => $Self->{TicketID},
+                    OwnerID  => $Self->{UserID},
+                );
+                if ( !$AccessOk ) {
+                    $Output .= $Self->{LayoutObject}->Warning(
+                        Message => "Sorry, you need to be the ticket owner to perform this action.",
+                        Comment => 'Please change the owner first.',
+                    );
+                    $Output .= $Self->{LayoutObject}->Footer(
+                        Type => 'Small',
+                    );
+                    return $Output;
+                }
+
+                # show back link
                 $Self->{LayoutObject}->Block(
-                    Name => 'PropertiesLock',
+                    Name => 'TicketBack',
                     Data => { %Param, TicketID => $Self->{TicketID} },
                 );
-                $Self->{TicketUnlock} = 1;
             }
         }
         else {
-            my $AccessOk = $Self->{TicketObject}->OwnerCheck(
-                TicketID => $Self->{TicketID},
-                OwnerID  => $Self->{UserID},
-            );
-            if ( !$AccessOk ) {
-                $Output .= $Self->{LayoutObject}->Warning(
-                    Message => "Sorry, you need to be the ticket owner to perform this action.",
-                    Comment => 'Please change the owner first.',
-                );
-                $Output .= $Self->{LayoutObject}->Footer(
-                    Type => 'Small',
-                );
-                return $Output;
-            }
-
             # show back link
             $Self->{LayoutObject}->Block(
                 Name => 'TicketBack',
@@ -909,7 +925,7 @@ sub Run {
         );
 
         # unlock the ticket after close
-        my %StateData = $Self->{TicketObject}->{StateObject}->StateGet(
+        my %StateData = $Self->{StateObject}->StateGet(
             ID => $GetParam{NewStateID},
         );
 
@@ -1217,7 +1233,7 @@ sub AgentMove {
     STATE_ID:
     for my $StateID ( sort keys %{ $Param{NextStates} } ) {
         next STATE_ID if !$StateID;
-        my %StateData = $Self->{TicketObject}->{StateObject}->StateGet( ID => $StateID );
+        my %StateData = $Self->{StateObject}->StateGet( ID => $StateID );
         if ( $StateData{TypeName} =~ /pending/i ) {
             $Param{DateString} = $Self->{LayoutObject}->BuildDateSelection(
                 Format           => 'DateInputFormatLong',

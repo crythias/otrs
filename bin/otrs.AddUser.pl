@@ -34,14 +34,9 @@ use Kernel::System::ObjectManager;
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.AddUser',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [
-        qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject UserObject GroupObject)
-    ],
 );
 
 my %Options;
@@ -79,7 +74,7 @@ $Param{UserEmail}     = $Options{e};
 
 my %Groups;
 if ( $Options{g} ) {
-    my %GroupList = reverse $CommonObject{GroupObject}->GroupList();
+    my %GroupList = reverse $Kernel::OM->Get('Kernel::System::Group')->GroupList();
 
     GROUP:
     for my $Group ( @{ $Options{g} } ) {
@@ -91,7 +86,8 @@ if ( $Options{g} ) {
     }
 }
 
-if ( $Param{UID} = $CommonObject{UserObject}->UserAdd( %Param, ChangeUserID => 1 ) ) {
+if ( $Param{UID} = $Kernel::OM->Get('Kernel::System::User')->UserAdd( %Param, ChangeUserID => 1 ) )
+{
     print "User $Param{UserLogin} added. User id is $Param{UID}.\n";
 }
 else {
@@ -100,7 +96,7 @@ else {
 
 for my $GroupID ( sort keys %Groups ) {
 
-    my $Success = $CommonObject{GroupObject}->GroupMemberAdd(
+    my $Success = $Kernel::OM->Get('Kernel::System::Group')->GroupMemberAdd(
         UID        => $Param{UID},
         GID        => $GroupID,
         Permission => { 'rw' => 1 },

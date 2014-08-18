@@ -12,7 +12,15 @@ package Kernel::System::PostMaster::FollowUp;
 use strict;
 use warnings;
 
-use Kernel::System::User;
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Log',
+    'Kernel::System::Ticket',
+    'Kernel::System::Time',
+    'Kernel::System::User',
+);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -21,17 +29,10 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (
-        qw(DBObject ConfigObject TicketObject LogObject TimeObject ParserObject MainObject EncodeObject)
-        )
-    {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
+    # get parser object
+    $Self->{ParserObject} = $Param{ParserObject} || die "Got no ParserObject!";
 
     $Self->{Debug} = $Param{Debug} || 0;
-
-    $Self->{UserObject} = Kernel::System::User->new( %{$Self} );
 
     return $Self;
 }
@@ -42,14 +43,18 @@ sub Run {
     # check needed stuff
     for (qw(TicketID InmailUserID GetParam Tn AutoResponseType)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
     my %GetParam = %{ $Param{GetParam} };
 
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # get ticket data
-    my %Ticket = $Self->{TicketObject}->TicketGet(
+    my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
@@ -59,18 +64,18 @@ sub Run {
     my $AutoResponseType = $Param{AutoResponseType} || '';
 
     # Check if owner of ticket is still valid
-    my %UserInfo = $Self->{UserObject}->GetUserData(
+    my %UserInfo = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
         UserID => $Ticket{OwnerID},
     );
 
     # 1) check user, out of office, unlock ticket
     if ( $UserInfo{OutOfOfficeMessage} ) {
-        $Self->{TicketObject}->TicketLockSet(
+        $TicketObject->TicketLockSet(
             TicketID => $Param{TicketID},
             Lock     => 'unlock',
             UserID   => $Param{InmailUserID},
         );
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Ticket [$Param{Tn}] unlocked, current owner is out of office!",
         );
@@ -81,14 +86,14 @@ sub Run {
 
         # set lock (if ticket should be locked on follow up)
         if ( $Lock && $Ticket{StateType} =~ /^close/i ) {
-            $Self->{TicketObject}->TicketLockSet(
+            $TicketObject->TicketLockSet(
                 TicketID => $Param{TicketID},
                 Lock     => 'lock',
                 UserID   => $Param{InmailUserID},
             );
             if ( $Self->{Debug} > 0 ) {
                 print "Lock: lock\n";
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'notice',
                     Message  => "Ticket [$Param{Tn}] still locked",
                 );
@@ -98,32 +103,35 @@ sub Run {
 
     # 3) Unlock ticket, because current user is set to invalid
     else {
-        $Self->{TicketObject}->TicketLockSet(
+        $TicketObject->TicketLockSet(
             TicketID => $Param{TicketID},
             Lock     => 'unlock',
             UserID   => $Param{InmailUserID},
         );
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'notice',
             Message  => "Ticket [$Param{Tn}] unlocked, current owner is invalid!",
         );
     }
 
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # set state
-    my $State = $Self->{ConfigObject}->Get('PostmasterFollowUpState') || 'open';
+    my $State = $ConfigObject->Get('PostmasterFollowUpState') || 'open';
     if (
         $Ticket{StateType} =~ /^close/
-        && $Self->{ConfigObject}->Get('PostmasterFollowUpStateClosed')
+        && $ConfigObject->Get('PostmasterFollowUpStateClosed')
         )
     {
-        $State = $Self->{ConfigObject}->Get('PostmasterFollowUpStateClosed');
+        $State = $ConfigObject->Get('PostmasterFollowUpStateClosed');
     }
     if ( $GetParam{'X-OTRS-FollowUp-State'} ) {
         $State = $GetParam{'X-OTRS-FollowUp-State'};
     }
 
     if ( $Ticket{StateType} !~ /^new/ || $GetParam{'X-OTRS-FollowUp-State'} ) {
-        $Self->{TicketObject}->TicketStateSet(
+        $TicketObject->TicketStateSet(
             State => $GetParam{'X-OTRS-FollowUp-State'} || $State,
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -161,12 +169,15 @@ sub Run {
 
             $Seconds = $Seconds * $UnitMultiplier{$Unit};
 
-            $TargetTimeStamp = $Self->{TimeObject}->SystemTime2TimeStamp(
-                SystemTime => $Self->{TimeObject}->SystemTime() + $Seconds,
+            # get time object
+            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+            $TargetTimeStamp = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $TimeObject->SystemTime() + $Seconds,
             );
         }
 
-        my $Updated = $Self->{TicketObject}->TicketPendingTimeSet(
+        my $Updated = $TicketObject->TicketPendingTimeSet(
             String   => $TargetTimeStamp,
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -182,7 +193,7 @@ sub Run {
 
     # set priority
     if ( $GetParam{'X-OTRS-FollowUp-Priority'} ) {
-        $Self->{TicketObject}->TicketPrioritySet(
+        $TicketObject->TicketPrioritySet(
             TicketID => $Param{TicketID},
             Priority => $GetParam{'X-OTRS-FollowUp-Priority'},
             UserID   => $Param{InmailUserID},
@@ -194,7 +205,7 @@ sub Run {
 
     # set queue
     if ( $GetParam{'X-OTRS-FollowUp-Queue'} ) {
-        $Self->{TicketObject}->TicketQueueSet(
+        $TicketObject->TicketQueueSet(
             Queue    => $GetParam{'X-OTRS-FollowUp-Queue'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -206,7 +217,7 @@ sub Run {
 
     # set lock
     if ( $GetParam{'X-OTRS-FollowUp-Lock'} ) {
-        $Self->{TicketObject}->TicketLockSet(
+        $TicketObject->TicketLockSet(
             Lock     => $GetParam{'X-OTRS-FollowUp-Lock'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -218,7 +229,7 @@ sub Run {
 
     # set ticket type
     if ( $GetParam{'X-OTRS-FollowUp-Type'} ) {
-        $Self->{TicketObject}->TicketTypeSet(
+        $TicketObject->TicketTypeSet(
             Type     => $GetParam{'X-OTRS-FollowUp-Type'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -230,7 +241,7 @@ sub Run {
 
     # set ticket service
     if ( $GetParam{'X-OTRS-FollowUp-Service'} ) {
-        $Self->{TicketObject}->TicketServiceSet(
+        $TicketObject->TicketServiceSet(
             Service  => $GetParam{'X-OTRS-FollowUp-Service'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -242,7 +253,7 @@ sub Run {
 
     # set ticket sla
     if ( $GetParam{'X-OTRS-FollowUp-SLA'} ) {
-        $Self->{TicketObject}->TicketSLASet(
+        $TicketObject->TicketSLASet(
             SLA      => $GetParam{'X-OTRS-FollowUp-SLA'},
             TicketID => $Param{TicketID},
             UserID   => $Param{InmailUserID},
@@ -252,12 +263,16 @@ sub Run {
         }
     }
 
+    # get dynamic field objects
+    my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     # dynamic fields
     my $DynamicFieldList =
-        $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldList(
+        $DynamicFieldObject->DynamicFieldList(
         Valid      => 1,
         ResultType => 'HASH',
-        ObjectType => 'Ticket'
+        ObjectType => 'Ticket',
         );
 
     # set dynamic fields for Ticket object type
@@ -270,11 +285,11 @@ sub Run {
 
             # get dynamic field config
             my $DynamicFieldGet
-                = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                = $DynamicFieldObject->DynamicFieldGet(
                 ID => $DynamicFieldID,
                 );
 
-            $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+            $DynamicFieldBackendObject->ValueSet(
                 DynamicFieldConfig => $DynamicFieldGet,
                 ObjectID           => $Param{TicketID},
                 Value              => $GetParam{$Key},
@@ -302,11 +317,11 @@ sub Run {
             if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
 
                 # get dynamic field config
-                my $DynamicFieldGet = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
                 );
                 if ($DynamicFieldGet) {
-                    my $Success = $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+                    my $Success = $DynamicFieldBackendObject->ValueSet(
                         DynamicFieldConfig => $DynamicFieldGet,
                         ObjectID           => $Param{TicketID},
                         Value              => $GetParam{$Key},
@@ -323,19 +338,27 @@ sub Run {
 
     # set ticket free time
     for my $Count ( 1 .. 6 ) {
+
         my $Key = 'X-OTRS-FollowUp-TicketTime' . $Count;
+
         if ( $GetParam{$Key} ) {
-            my $SystemTime = $Self->{TimeObject}->TimeStamp2SystemTime(
+
+            # get time object
+            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+            my $SystemTime = $TimeObject->TimeStamp2SystemTime(
                 String => $GetParam{$Key},
             );
+
             if ( $SystemTime && $DynamicFieldListReversed{ 'TicketFreeTime' . $Count } ) {
 
                 # get dynamic field config
-                my $DynamicFieldGet = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ 'TicketFreeTime' . $Count },
                 );
+
                 if ($DynamicFieldGet) {
-                    my $Success = $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+                    my $Success = $DynamicFieldBackendObject->ValueSet(
                         DynamicFieldConfig => $DynamicFieldGet,
                         ObjectID           => $Param{TicketID},
                         Value              => $GetParam{$Key},
@@ -351,7 +374,7 @@ sub Run {
     }
 
     # do db insert
-    my $ArticleID = $Self->{TicketObject}->ArticleCreate(
+    my $ArticleID = $TicketObject->ArticleCreate(
         TicketID         => $Param{TicketID},
         ArticleType      => $GetParam{'X-OTRS-FollowUp-ArticleType'},
         SenderType       => $GetParam{'X-OTRS-FollowUp-SenderType'},
@@ -384,7 +407,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $Self->{TicketObject}->ArticleWritePlain(
+    $TicketObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -392,7 +415,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $Self->{TicketObject}->ArticleWriteAttachment(
+        $TicketObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},
@@ -406,7 +429,7 @@ sub Run {
 
     # dynamic fields
     $DynamicFieldList =
-        $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldList(
+        $DynamicFieldObject->DynamicFieldList(
         Valid      => 1,
         ResultType => 'HASH',
         ObjectType => 'Article'
@@ -422,11 +445,11 @@ sub Run {
 
             # get dynamic field config
             my $DynamicFieldGet
-                = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                = $DynamicFieldObject->DynamicFieldGet(
                 ID => $DynamicFieldID,
                 );
 
-            $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+            $DynamicFieldBackendObject->ValueSet(
                 DynamicFieldConfig => $DynamicFieldGet,
                 ObjectID           => $ArticleID,
                 Value              => $GetParam{$Key},
@@ -454,11 +477,11 @@ sub Run {
             if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
 
                 # get dynamic field config
-                my $DynamicFieldGet = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
                 );
                 if ($DynamicFieldGet) {
-                    my $Success = $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+                    my $Success = $DynamicFieldBackendObject->ValueSet(
                         DynamicFieldConfig => $DynamicFieldGet,
                         ObjectID           => $ArticleID,
                         Value              => $GetParam{$Key},
@@ -474,7 +497,7 @@ sub Run {
     }
 
     # write log
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "FollowUp Article to Ticket [$Param{Tn}] created "
             . "(TicketID=$Param{TicketID}, ArticleID=$ArticleID). $Comment,"

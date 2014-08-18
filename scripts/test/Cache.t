@@ -17,7 +17,7 @@ use Kernel::System::Cache;
 use Kernel::System::UnitTest::Helper;
 
 # use local Config object because it will be modified
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # get home directory
 my $HomeDir = $ConfigObject->Get('Home');
@@ -68,6 +68,11 @@ for my $ModuleFile (@BackendModuleFiles) {
 
         # flush the cache to have a clear test enviroment
         $CacheObject->CleanUp();
+
+        # some tests check that the cache expires, for that we have to disable the in-memory cache
+        $CacheObject->Configure(
+            CacheInMemory => 0
+        );
 
         # set fixed time
         $HelperObject->FixedTimeSet();

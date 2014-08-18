@@ -15,10 +15,28 @@ use warnings;
 use Kernel::Language;
 use Kernel::System::HTMLUtils;
 use Kernel::System::JSON;
+use Kernel::System::Time;
 use Kernel::System::VariableCheck qw(:all);
 
 use Storable;
 use URI::Escape qw();
+
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::Language',
+    'Kernel::System::AuthSession',
+    'Kernel::System::DB',
+    'Kernel::System::Encode',
+    'Kernel::System::Group',
+    'Kernel::System::HTMLUtils',
+    'Kernel::System::JSON',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+    'Kernel::System::Ticket',
+    'Kernel::System::Time',
+    'Kernel::System::User',
+    'Kernel::System::Web::Request',
+);
 
 =head1 NAME
 
@@ -40,22 +58,22 @@ create a new object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        LayoutObject {
+        'Kernel::Output::HTML::Layout' => {
             Lang    => 'de',
         },
     );
-    my $LayoutObject = $Kernel::OM->Get('LayoutObject');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
 From the web installer, a special Option C<InstallerOnly> is passed
 to indicate that a database connection is not yet available.
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        LayoutObject {
+        'Kernel::Output::HTML::Layout' => {
             InstallerOnly => 1,
         },
     );
-    my $LayoutObject = $Kernel::OM->Get('LayoutObject');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
 =cut
 
@@ -69,19 +87,24 @@ sub new {
     # set debug
     $Self->{Debug} = 0;
 
-    for my $Object (
-        qw(ConfigObject LogObject TimeObject MainObject EncodeObject
-        ParamObject HTMLUtilsObject JSONObject)
-        )
-    {
-        $Self->{$Object} //= $Kernel::OM->Get($Object);
-    }
+    # get needed objects
+    $Self->{ConfigObject}    //= $Kernel::OM->Get('Kernel::Config');
+    $Self->{LogObject}       //= $Kernel::OM->Get('Kernel::System::Log');
+    $Self->{TimeObject}      //= $Kernel::OM->Get('Kernel::System::Time');
+    $Self->{MainObject}      //= $Kernel::OM->Get('Kernel::System::Main');
+    $Self->{EncodeObject}    //= $Kernel::OM->Get('Kernel::System::Encode');
+    $Self->{ParamObject}     //= $Kernel::OM->Get('Kernel::System::Web::Request');
+    $Self->{HTMLUtilsObject} //= $Kernel::OM->Get('Kernel::System::HTMLUtils');
+    $Self->{JSONObject}      //= $Kernel::OM->Get('Kernel::System::JSON');
 
     # Some objects are not available if we are setting up the system (no DB connection)
     if ( !$Param{InstallerOnly} ) {
-        for my $Object (qw(DBObject SessionObject TicketObject UserObject GroupObject)) {
-            $Self->{$Object} //= $Kernel::OM->Get($Object);
-        }
+
+        $Self->{DBObject}      //= $Kernel::OM->Get('Kernel::System::DB');
+        $Self->{SessionObject} //= $Kernel::OM->Get('Kernel::System::AuthSession');
+        $Self->{TicketObject}  //= $Kernel::OM->Get('Kernel::System::Ticket');
+        $Self->{UserObject}    //= $Kernel::OM->Get('Kernel::System::User');
+        $Self->{GroupObject}   //= $Kernel::OM->Get('Kernel::System::Group');
     }
 
     # reset block data
@@ -127,13 +150,13 @@ sub new {
     # create language object
     if ( !$Self->{LanguageObject} ) {
         $Kernel::OM->ObjectParamAdd(
-            LanguageObject => {
+            'Kernel::Language' => {
                 UserTimeZone => $Self->{UserTimeZone},
                 UserLanguage => $Self->{UserLanguage},
                 Action       => $Self->{Action},
             },
         );
-        $Self->{LanguageObject} = $Kernel::OM->Get('LanguageObject');
+        $Self->{LanguageObject} = $Kernel::OM->Get('Kernel::Language');
     }
 
     # set charset if there is no charset given
@@ -1299,6 +1322,14 @@ sub Print {
                 TemplateFile => $Param{TemplateFile} || '',
             );
         }
+    }
+
+    # There seems to be a bug in FastCGI that it cannot handle unicode output properly.
+    #   Work around this by converting to an utf8 byte stream instead.
+    #   See also http://bugs.otrs.org/show_bug.cgi?id=6284 and
+    #   http://bugs.otrs.org/show_bug.cgi?id=9802.
+    if ( $INC{'CGI/Fast.pm'} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH} ) {    # are we on FCGI?
+        $Self->{EncodeObject}->EncodeOutput( $Param{Output} );
     }
 
     print ${ $Param{Output} };

@@ -12,10 +12,14 @@ package Kernel::GenericInterface::Event::Handler;
 use strict;
 use warnings;
 
-use Kernel::GenericInterface::Requester;
-use Kernel::Scheduler;
-use Kernel::System::GenericInterface::Webservice;
 use Kernel::System::VariableCheck qw(IsHashRefWithData);
+
+our @ObjectDependencies = (
+    'Kernel::GenericInterface::Requester',
+    'Kernel::System::Scheduler',
+    'Kernel::System::GenericInterface::Webservice',
+    'Kernel::System::Log',
+);
 
 =head1 NAME
 
@@ -35,16 +39,6 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # get needed objects
-    for (
-        qw(ConfigObject LogObject DBObject MainObject EncodeObject TimeObject)
-        )
-    {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
-
-    $Self->{WebserviceObject} = Kernel::System::GenericInterface::Webservice->new(%$Self);
-
     return $Self;
 }
 
@@ -54,13 +48,17 @@ sub Run {
     # check needed stuff
     for (qw(Data Event Config)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
 
+    # get webservice objects
+    my $WebserviceObject = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice');
+
     my %WebserviceList = %{
-        $Self->{WebserviceObject}->WebserviceList(
+        $WebserviceObject->WebserviceList(
             Valid => 1,
         ),
     };
@@ -69,21 +67,21 @@ sub Run {
     WEBSERVICE:
     for my $WebserviceID ( sort keys %WebserviceList ) {
 
-        my $WebserviceData = $Self->{WebserviceObject}->WebserviceGet(
+        my $WebserviceData = $WebserviceObject->WebserviceGet(
             ID => $WebserviceID,
         );
 
-        next WEBSERVICE if ( !IsHashRefWithData( $WebserviceData->{Config} ) );
-        next WEBSERVICE if ( !IsHashRefWithData( $WebserviceData->{Config}->{Requester} ) );
-        next WEBSERVICE
-            if ( !IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{Invoker} ) );
+        next WEBSERVICE if !IsHashRefWithData( $WebserviceData->{Config} );
+        next WEBSERVICE if !IsHashRefWithData( $WebserviceData->{Config}->{Requester} );
+        next WEBSERVICE if !IsHashRefWithData( $WebserviceData->{Config}->{Requester}->{Invoker} );
 
         # check invokers of the webservice, to see if some might be connected to this event
         INVOKER:
         for my $Invoker ( sort keys %{ $WebserviceData->{Config}->{Requester}->{Invoker} } ) {
+
             my $InvokerConfig = $WebserviceData->{Config}->{Requester}->{Invoker}->{$Invoker};
 
-            next INVOKER if ( ref $InvokerConfig->{Events} ne 'ARRAY' );
+            next INVOKER if ref $InvokerConfig->{Events} ne 'ARRAY';
 
             EVENT:
             for my $Event ( @{ $InvokerConfig->{Events} } ) {
@@ -95,9 +93,8 @@ sub Run {
 
                     # create a scheduler task for later execution
                     if ( $Event->{Asynchronous} ) {
-                        my $SchedulerObject = Kernel::Scheduler->new( %{$Self} );
 
-                        my $TaskID = $SchedulerObject->TaskRegister(
+                        my $TaskID = $Kernel::OM->Get('Kernel::System::Scheduler')->TaskRegister(
                             Type => 'GenericInterface',
                             Data => {
                                 WebserviceID => $WebserviceID,
@@ -108,9 +105,8 @@ sub Run {
 
                     }
                     else {    # or execute Event directly
-                        my $RequesterObject = Kernel::GenericInterface::Requester->new( %{$Self} );
 
-                        $RequesterObject->Run(
+                        $Kernel::OM->Get('Kernel::GenericInterface::Requester')->Run(
                             WebserviceID => $WebserviceID,
                             Invoker      => $Invoker,
                             Data         => $Param{Data},

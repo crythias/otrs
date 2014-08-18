@@ -45,21 +45,18 @@ EOF
 {
     # common objects
     local $Kernel::OM = Kernel::System::ObjectManager->new(
-        LogObject => {
+        'Kernel::System::Log' => {
             LogPrefix => 'OTRS-otrs.CreateApacheStartupFile.pl',
         },
     );
-    my %CommonObject = $Kernel::OM->ObjectHash(
-        Objects => [qw(ConfigObject EncodeObject LogObject MainObject TimeObject DBObject)],
-    );
 
-    my $Home = $CommonObject{ConfigObject}->Get('Home');
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     #
     # Loop over all general system packages and include them
     #
     my $PackagesCode = '';
-    for my $Package ( GetPackageList( CommonObject => \%CommonObject ) ) {
+    for my $Package ( GetPackageList() ) {
         $PackagesCode .= "use $Package;\n";
     }
 
@@ -126,7 +123,7 @@ EOF
 
     print "Writing file $Home/scripts/apache2-perl-startup2.pl\n";
 
-    $CommonObject{MainObject}->FileWrite(
+    $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
         Location => "$Home/scripts/apache2-perl-startup2.pl",
         Content  => \$Content,
     );
@@ -137,38 +134,33 @@ EOF
 =cut
 
 sub GetPackageList {
-    my %Param        = @_;
-    my %CommonObject = %{ $Param{CommonObject} };
+    my %Param = @_;
 
     my @Packages = ( 'Apache::DBI', 'Kernel::Config' );
 
-    my $DBType = $CommonObject{DBObject}->GetDatabaseFunction('Type');
+    my $DBType = $Kernel::OM->Get('Kernel::System::DB')->GetDatabaseFunction('Type');
     if ( $DBType eq 'mysql' ) {
         push @Packages, 'DBD::mysql', 'Kernel::System::DB::mysql';
     }
     elsif ( $DBType =~ /postgresql/smxi ) {
         push @Packages, 'DBD::Pg', 'Kernel::System::DB::postgresql';
     }
-    elsif ( $DBType =~ /postgresql_before_8_2/smxi ) {
-        push @Packages, 'DBD::Pg', 'Kernel::System::DB::postgresql_before_8_2';
-    }
     elsif ( $DBType eq 'oracle' ) {
         push @Packages, 'DBD::Oracle', 'Kernel::System::DB::oracle';
     }
 
-    my $Home = $CommonObject{ConfigObject}->Get('Home');
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     # add all language files for configued languages
-    my $Languages = $CommonObject{ConfigObject}->Get('DefaultUsedLanguages');
+    my $Languages = $Kernel::OM->Get('Kernel::Config')->Get('DefaultUsedLanguages');
     for my $Language ( sort keys %{$Languages} ) {
-        my @LanguageFiles = $CommonObject{MainObject}->DirectoryRead(
+        my @LanguageFiles = $Kernel::OM->Get('Kernel::System::Main')->DirectoryRead(
             Directory => "$Home/Kernel/Language",
             Filter    => "$Language*.pm",
         );
         for my $LanguageFile ( sort @LanguageFiles ) {
             my $Package = CheckPerlPackage(
-                CommonObject => \%CommonObject,
-                Filename     => $LanguageFile,
+                Filename => $LanguageFile,
             );
             next FILE if !$Package;
             push @Packages, $Package;
@@ -211,8 +203,7 @@ sub GetPackageList {
     FILE:
     for my $File ( sort @Files ) {
         my $Package = CheckPerlPackage(
-            CommonObject => \%CommonObject,
-            Filename     => $File,
+            Filename => $File,
         );
         next FILE if !$Package;
         push @Packages, $Package;
@@ -238,11 +229,10 @@ Returns the package name, if it is valid, undef otherwise.
 =cut
 
 sub CheckPerlPackage {
-    my %Param        = @_;
-    my %CommonObject = %{ $Param{CommonObject} };
-    my $Filename     = $Param{Filename};
+    my %Param    = @_;
+    my $Filename = $Param{Filename};
 
-    my $Home = $CommonObject{ConfigObject}->Get('Home');
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     # Generate package name
     my $PackageName = substr( $Filename, length($Home) );
@@ -250,14 +240,14 @@ sub CheckPerlPackage {
     $PackageName =~ s{/}{::}smxg;
 
     # Check if the file really contains the package
-    my $FileContent = $CommonObject{MainObject}->FileRead(
+    my $FileContent = $Kernel::OM->Get('Kernel::System::Main')->FileRead(
         Location => $Filename,
     );
     return if !ref $FileContent;
     return if ( ${$FileContent} !~ /^package\s+\Q$PackageName\E/smx );
 
     # Check if the package compiles ok
-    return if ( !$CommonObject{MainObject}->Require($PackageName) );
+    return if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($PackageName) );
 
     return $PackageName;
 }

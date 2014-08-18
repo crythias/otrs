@@ -12,6 +12,13 @@ package Kernel::System::PostMaster::Reject;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Log',
+    'Kernel::System::Ticket',
+);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -19,10 +26,8 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for (qw(DBObject ConfigObject TicketObject LogObject ParserObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
+    # get parser object
+    $Self->{ParserObject} = $Param{ParserObject} || die "Got no ParserObject!";
 
     $Self->{Debug} = $Param{Debug} || 0;
 
@@ -35,14 +40,18 @@ sub Run {
     # check needed stuff
     for (qw(TicketID InmailUserID GetParam Tn AutoResponseType)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')
+                ->Log( Priority => 'error', Message => "Need $_!" );
             return;
         }
     }
     my %GetParam = %{ $Param{GetParam} };
 
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # get ticket data
-    my %Ticket = $Self->{TicketObject}->TicketGet(
+    my %Ticket = $TicketObject->TicketGet(
         TicketID      => $Param{TicketID},
         DynamicFields => 0,
     );
@@ -52,7 +61,7 @@ sub Run {
     my $AutoResponseType = $Param{AutoResponseType} || '';
 
     # do db insert
-    my $ArticleID = $Self->{TicketObject}->ArticleCreate(
+    my $ArticleID = $TicketObject->ArticleCreate(
         TicketID         => $Param{TicketID},
         ArticleType      => $GetParam{'X-OTRS-ArticleType'},
         SenderType       => $GetParam{'X-OTRS-SenderType'},
@@ -87,7 +96,7 @@ sub Run {
     }
 
     # write plain email to the storage
-    $Self->{TicketObject}->ArticleWritePlain(
+    $TicketObject->ArticleWritePlain(
         ArticleID => $ArticleID,
         Email     => $Self->{ParserObject}->GetPlainEmail(),
         UserID    => $Param{InmailUserID},
@@ -95,7 +104,7 @@ sub Run {
 
     # write attachments to the storage
     for my $Attachment ( $Self->{ParserObject}->GetAttachments() ) {
-        $Self->{TicketObject}->ArticleWriteAttachment(
+        $TicketObject->ArticleWriteAttachment(
             Filename           => $Attachment->{Filename},
             Content            => $Attachment->{Content},
             ContentType        => $Attachment->{ContentType},
@@ -107,12 +116,16 @@ sub Run {
         );
     }
 
+    # get dynamic field objects
+    my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
+    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
+
     # dynamic fields
     my $DynamicFieldList =
-        $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldList(
+        $DynamicFieldObject->DynamicFieldList(
         Valid      => 0,
         ResultType => 'HASH',
-        ObjectType => 'Article'
+        ObjectType => 'Article',
         );
 
     # set dynamic fields for Article object type
@@ -125,11 +138,11 @@ sub Run {
 
             # get dynamic field config
             my $DynamicFieldGet
-                = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                = $DynamicFieldObject->DynamicFieldGet(
                 ID => $DynamicFieldID,
                 );
 
-            $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+            $DynamicFieldBackendObject->ValueSet(
                 DynamicFieldConfig => $DynamicFieldGet,
                 ObjectID           => $ArticleID,
                 Value              => $GetParam{$Key},
@@ -157,11 +170,11 @@ sub Run {
             if ( $GetParam{$Key} && $DynamicFieldListReversed{ $Values{$Item} . $Count } ) {
 
                 # get dynamic field config
-                my $DynamicFieldGet = $Self->{TicketObject}->{DynamicFieldObject}->DynamicFieldGet(
+                my $DynamicFieldGet = $DynamicFieldObject->DynamicFieldGet(
                     ID => $DynamicFieldListReversed{ $Values{$Item} . $Count },
                 );
                 if ($DynamicFieldGet) {
-                    my $Success = $Self->{TicketObject}->{DynamicFieldBackendObject}->ValueSet(
+                    my $Success = $DynamicFieldBackendObject->ValueSet(
                         DynamicFieldConfig => $DynamicFieldGet,
                         ObjectID           => $ArticleID,
                         Value              => $GetParam{$Key},
@@ -177,7 +190,7 @@ sub Run {
     }
 
     # write log
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "Reject FollowUp Article to Ticket [$Param{Tn}] created "
             . "(TicketID=$Param{TicketID}, ArticleID=$ArticleID). $Comment"

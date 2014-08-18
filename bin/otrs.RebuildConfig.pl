@@ -34,13 +34,9 @@ use Kernel::System::ObjectManager;
 # common objects
 # ---
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.RebuildConfig.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects =>
-        [qw(ConfigObject EncodeObject LogObject TimeObject MainObject DBObject SysConfigObject)],
 );
 
 # ---
@@ -48,11 +44,11 @@ my %CommonObject = $Kernel::OM->ObjectHash(
 # ---
 print "otrs.RebuildConfig.pl - OTRS rebuild default config\n";
 print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-if ( $CommonObject{SysConfigObject}->WriteDefault() ) {
+if ( $Kernel::OM->Get('Kernel::System::SysConfig')->WriteDefault() ) {
     print "Done.\n";
     exit;
 }
 else {
-    $CommonObject{LogObject}->Log( Priority => 'error' );
+    $Kernel::OM->Get('Kernel::System::Log')->Log( Priority => 'error' );
     exit 1;
 }

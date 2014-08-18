@@ -57,8 +57,11 @@ sub Run {
     }
 
     # get ACL restrictions
-    $Self->{TicketObject}->TicketAcl(
-        Data          => '-',
+    my %PossibleActions = ( 1 => $Self->{Action} );
+
+    my $ACL = $Self->{TicketObject}->TicketAcl(
+        Data          => \%PossibleActions,
+        Action        => $Self->{Action},
         TicketID      => $Self->{TicketID},
         ReturnType    => 'Action',
         ReturnSubType => '-',
@@ -66,11 +69,13 @@ sub Run {
     );
     my %AclAction = $Self->{TicketObject}->TicketAclActionData();
 
-    # check if ACL resctictions if exist
-    if ( IsHashRefWithData( \%AclAction ) ) {
+    # check if ACL restrictions exist
+    if ( $ACL || IsHashRefWithData( \%AclAction ) ) {
+
+        my %AclActionLookup = reverse %AclAction;
 
         # show error screen if ACL prohibits this action
-        if ( defined $AclAction{ $Self->{Action} } && $AclAction{ $Self->{Action} } eq '0' ) {
+        if ( !$AclActionLookup{ $Self->{Action} } ) {
             return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
         }
     }
@@ -87,6 +92,18 @@ sub Run {
     if ( $Self->{ConfigObject}->Get('Ticket::Frontend::HistoryOrder') eq 'reverse' ) {
         @Lines = reverse(@Lines);
     }
+
+    # Get mapping of history types to readable strings
+    my %HistoryTypes;
+    my %HistoryTypeConfig
+        = %{ $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::HistoryTypes') // {} };
+    for my $Entry ( sort keys %HistoryTypeConfig ) {
+        %HistoryTypes = (
+            %HistoryTypes,
+            %{ $HistoryTypeConfig{$Entry} },
+        );
+    }
+
     for my $Data (@Lines) {
 
         # replace text
@@ -94,7 +111,7 @@ sub Run {
             $Data->{Name} =~ s/^%%//xg;
             my @Values = split( /%%/x, $Data->{Name} );
             $Data->{Name} = $Self->{LayoutObject}->{LanguageObject}->Translate(
-                'History::' . $Data->{HistoryType},
+                $HistoryTypes{ $Data->{HistoryType} },
                 @Values,
             );
 

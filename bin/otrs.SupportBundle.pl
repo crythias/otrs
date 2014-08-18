@@ -33,31 +33,13 @@ use Getopt::Std;
 use Kernel::System::ObjectManager;
 use Kernel::System::SupportBundleGenerator;
 
-sub _OM {
-    local $Kernel::OM = Kernel::System::ObjectManager->new(
-        ConfigObject => {
+sub Run {
+
+    local $Kernel::OM = $Kernel::OM = Kernel::System::ObjectManager->new(
+        'Kernel::System::Log' => {
             LogPrefix => 'OTRS-otrs.SupportBundle.pl',
         },
     );
-
-    # early construct the objects
-    for my $Object (
-        qw(Config Encode Log Time Main DB User)
-        )
-    {
-        $Kernel::OM->Get( $Object . 'Object' );
-    }
-
-    return $Kernel::OM;
-}
-
-sub Run {
-
-    local $Kernel::OM = _OM();
-    my $CommonObjects = { $Kernel::OM->ObjectHash() };
-
-    $CommonObjects->{SupportBundleGeneratorObject}
-        = Kernel::System::SupportBundleGenerator->new( %{$CommonObjects} );
 
     # Refresh common objects after a certain number of loop iterations.
     #   This will call event handlers and clean up caches to avoid excessive mem usage.
@@ -80,33 +62,19 @@ EOF
         exit 1;
     }
 
-    # ---
-    # TODO: Delete
-    # ---
-    use Time::HiRes;
-    my $TimeStart = [ Time::HiRes::gettimeofday() ];
+    my $Response = $Kernel::OM->Get('Kernel::System::SupportBundleGenerator')->Generate();
 
-    # ---
-    my $Response = $CommonObjects->{SupportBundleGeneratorObject}->Generate();
-
-    # ---
-    # TODO: Delete
-    # ---
-    my $TimeElapsed = Time::HiRes::tv_interval($TimeStart);
-    print "Took $TimeElapsed seconds to generate!\n";
-
-    # ---
     if ( $Response->{Success} ) {
 
         my $FileData = $Response->{Data};
 
-        my $OutputDir = $CommonObjects->{ConfigObject}->Get('Home');
+        my $OutputDir = $Kernel::OM->Get('Kernel::Config')->Get('Home');
         if ( $Opts{o} ) {
             $OutputDir = $Opts{o};
             $OutputDir =~ s{\/\z}{};
         }
 
-        my $FileLocation = $CommonObjects->{MainObject}->FileWrite(
+        my $FileLocation = $Kernel::OM->Get('Kernel::System::Main')->FileWrite(
             Location   => $OutputDir . '/' . $FileData->{Filename},
             Content    => $FileData->{Filecontent},
             Mode       => 'binmode',
@@ -117,7 +85,7 @@ EOF
             print "\nSupport Bundle saved to: $FileLocation\n";
         }
         else {
-            $CommonObjects->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Support Bundle could not be written!",
             );

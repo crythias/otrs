@@ -17,7 +17,7 @@ use Kernel::System::CustomerUser;
 use Kernel::System::CustomerAuth;
 
 # create local objects
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # add three users
 $ConfigObject->Set(
@@ -27,16 +27,8 @@ $ConfigObject->Set(
 
 my $DatabaseCaseSensitive                = $Self->{DBObject}->{Backend}->{'DB::CaseSensitive'};
 my $CustomerDatabaseCaseSensitiveDefault = $ConfigObject->{CustomerUser}->{Params}->{CaseSensitive};
-
-my $CustomerUserObject = Kernel::System::CustomerUser->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-
-my $CacheObject = Kernel::System::Cache->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+my $CacheObject                          = $Kernel::OM->Get('Kernel::System::Cache');
+my $CustomerUserObject                   = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
 my $UserID = '';
 for my $Key ( 1 .. 3, 'ä', 'カス' ) {

@@ -12,12 +12,16 @@ package Kernel::GenericInterface::Requester;
 use strict;
 use warnings;
 
-use Kernel::System::GenericInterface::Webservice;
 use Kernel::GenericInterface::Debugger;
 use Kernel::GenericInterface::Invoker;
 use Kernel::GenericInterface::Mapping;
 use Kernel::GenericInterface::Transport;
 use Kernel::System::VariableCheck qw(IsHashRefWithData);
+
+our @ObjectDependencies = (
+    'Kernel::System::GenericInterface::Webservice',
+    'Kernel::System::Log',
+);
 
 =head1 NAME
 
@@ -33,47 +37,11 @@ Kernel::GenericInterface::Requester - GenericInterface handler for sending web s
 
 =item new()
 
-create an object
+create an object. Do not create it directly, instead use:
 
-    use Kernel::Config;
-    use Kernel::System::Encode;
-    use Kernel::System::Log;
-    use Kernel::System::Time;
-    use Kernel::System::Main;
-    use Kernel::System::DB;
-    use Kernel::GenericInterface::Requester;
-
-    my $ConfigObject = Kernel::Config->new();
-    my $EncodeObject = Kernel::System::Encode->new(
-        ConfigObject => $ConfigObject,
-    );
-    my $LogObject = Kernel::System::Log->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-    );
-    my $TimeObject = Kernel::System::Time->new(
-        ConfigObject => $ConfigObject,
-        LogObject    => $LogObject,
-    );
-    my $MainObject = Kernel::System::Main->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-    );
-    my $DBObject = Kernel::System::DB->new(
-        ConfigObject => $ConfigObject,
-        EncodeObject => $EncodeObject,
-        LogObject    => $LogObject,
-        MainObject   => $MainObject,
-    );
-    my $RequesterObject = Kernel::GenericInterface::Requester->new(
-        ConfigObject       => $ConfigObject,
-        LogObject          => $LogObject,
-        DBObject           => $DBObject,
-        MainObject         => $MainObject,
-        TimeObject         => $TimeObject,
-        EncodeObject       => $EncodeObject,
-    );
+    use Kernel::System::ObjectManager;
+    local $Kernel::OM = Kernel::System::ObjectManager->new();
+    my $RequesterObject = $Kernel::OM->Get('Kernel::GenericInterface::Requester');
 
 =cut
 
@@ -83,14 +51,6 @@ sub new {
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for (qw(MainObject ConfigObject LogObject EncodeObject TimeObject DBObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
-
-    $Self->{WebserviceObject}
-        = Kernel::System::GenericInterface::Webservice->new( %{$Self} );
 
     return $Self;
 }
@@ -102,18 +62,18 @@ and returns an appropriate answer based on the configured requested
 web service.
 
     my $Result = $RequesterObject->Run(
-        WebserviceID     => 1,                      # ID of the configured remote web service to use OR
-        Invoker          => 'some_operation',       # Name of the Invoker to be used for sending the request
-        Data             => {                       # Data payload for the Invoker request (remote webservice)
-            ...
+        WebserviceID => 1,                      # ID of the configured remote web service to use OR
+        Invoker      => 'some_operation',       # Name of the Invoker to be used for sending the request
+        Data         => {                       # Data payload for the Invoker request (remote webservice)
+           #...
         },
     );
 
     $Result = {
-        Success         => 1,   # 0 or 1
-        ErrorMessage    => '',  # if an error occurred
-        Data            => {    # Data payload of Invoker result (web service response)
-            ...
+        Success      => 1,   # 0 or 1
+        ErrorMessage => '',  # if an error occurred
+        Data         => {    # Data payload of Invoker result (web service response)
+            #...
         },
     };
 
@@ -124,7 +84,7 @@ sub Run {
 
     for my $Needed (qw(WebserviceID Invoker Data)) {
         if ( !$Param{$Needed} ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Got no $Needed!",
             );
@@ -142,12 +102,13 @@ sub Run {
 
     my $WebserviceID = $Param{WebserviceID};
 
-    my $Webservice = $Self->{WebserviceObject}->WebserviceGet(
+    my $Webservice
+        = $Kernel::OM->Get('Kernel::System::GenericInterface::Webservice')->WebserviceGet(
         ID => $WebserviceID,
-    );
+        );
 
     if ( !IsHashRefWithData($Webservice) ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message =>
                 "Could not load web service configuration for web service $Param{WebserviceID}",
@@ -167,21 +128,21 @@ sub Run {
     #   communication entry.
     #
 
-    $Self->{DebuggerObject} = Kernel::GenericInterface::Debugger->new(
-        %{$Self},
+    my $DebuggerObject = Kernel::GenericInterface::Debugger->new(
         DebuggerConfig    => $Webservice->{Config}->{Debugger},
         WebserviceID      => $WebserviceID,
         CommunicationType => 'Requester',
     );
 
-    if ( ref $Self->{DebuggerObject} ne 'Kernel::GenericInterface::Debugger' ) {
+    if ( ref $DebuggerObject ne 'Kernel::GenericInterface::Debugger' ) {
+
         return {
             Success      => 0,
             ErrorMessage => "Could not initialize debugger",
         };
     }
 
-    $Self->{DebuggerObject}->Debug(
+    $DebuggerObject->Debug(
         Summary => 'Communication sequence started',
         Data    => $Param{Data},
     );
@@ -191,14 +152,15 @@ sub Run {
     #
 
     my $InvokerObject = Kernel::GenericInterface::Invoker->new(
-        %{$Self},
-        InvokerType  => $RequesterConfig->{Invoker}->{ $Param{Invoker} }->{Type},
-        WebserviceID => $WebserviceID,
+        DebuggerObject => $DebuggerObject,
+        InvokerType    => $RequesterConfig->{Invoker}->{ $Param{Invoker} }->{Type},
+        WebserviceID   => $WebserviceID,
     );
 
     # bail out if invoker init failed
     if ( ref $InvokerObject ne 'Kernel::GenericInterface::Invoker' ) {
-        return $Self->{DebuggerObject}->Error(
+
+        return $DebuggerObject->Error(
             Summary => 'InvokerObject could not be initialized',
             Data    => $InvokerObject,
         );
@@ -209,17 +171,19 @@ sub Run {
     );
 
     if ( !$FunctionResult->{Success} ) {
-        return $Self->{DebuggerObject}->Error(
-            Summary => 'InvokerObject returned an error, cancelling Request',
+
+        return $DebuggerObject->Error(
+            Summary => 'InvokerObject returned an error, canceling Request',
             Data    => $FunctionResult->{ErrorMessage},
         );
     }
 
     # not always a success on the invoker prepare request means that invoker need to do something
     # there are cases in which the requester does not need to do anything, for this cases
-    # StopCommunication can be sent. in this cases the request will be successfull with out sending
-    # the request acctually
+    # StopCommunication can be sent. in this cases the request will be successful with out sending
+    # the request actually
     elsif ( $FunctionResult->{StopCommunication} && $FunctionResult->{StopCommunication} eq 1 ) {
+
         return {
             Success => 1,
         };
@@ -231,7 +195,7 @@ sub Run {
 
     my $DataOut = $FunctionResult->{Data};
 
-    $Self->{DebuggerObject}->Debug(
+    $DebuggerObject->Debug(
         Summary => "Outgoing data before mapping",
         Data    => $DataOut,
     );
@@ -244,18 +208,19 @@ sub Run {
         )
     {
         my $MappingOutObject = Kernel::GenericInterface::Mapping->new(
-            %{$Self},
+            DebuggerObject => $DebuggerObject,
             MappingConfig =>
                 $RequesterConfig->{Invoker}->{ $Param{Invoker} }->{MappingOutbound},
         );
 
         # if mapping init failed, bail out
         if ( ref $MappingOutObject ne 'Kernel::GenericInterface::Mapping' ) {
-            $Self->{DebuggerObject}->Error(
+            $DebuggerObject->Error(
                 Summary => 'MappingOut could not be initialized',
                 Data    => $MappingOutObject,
             );
-            return $Self->{DebuggerObject}->Error(
+
+            return $DebuggerObject->Error(
                 Summary => $FunctionResult->{ErrorMessage},
             );
         }
@@ -265,27 +230,29 @@ sub Run {
         );
 
         if ( !$FunctionResult->{Success} ) {
-            return $Self->{DebuggerObject}->Error(
+
+            return $DebuggerObject->Error(
                 Summary => $FunctionResult->{ErrorMessage},
             );
         }
 
         $DataOut = $FunctionResult->{Data};
 
-        $Self->{DebuggerObject}->Debug(
+        $DebuggerObject->Debug(
             Summary => "Outgoing data after mapping",
             Data    => $DataOut,
         );
     }
 
     my $TransportObject = Kernel::GenericInterface::Transport->new(
-        %{$Self},
+        DebuggerObject  => $DebuggerObject,
         TransportConfig => $RequesterConfig->{Transport},
     );
 
     # bail out if transport init failed
     if ( ref $TransportObject ne 'Kernel::GenericInterface::Transport' ) {
-        return $Self->{DebuggerObject}->Error(
+
+        return $DebuggerObject->Error(
             Summary => 'TransportObject could not be initialized',
             Data    => $TransportObject,
         );
@@ -298,7 +265,7 @@ sub Run {
     );
 
     if ( !$FunctionResult->{Success} ) {
-        my $ErrorReturn = $Self->{DebuggerObject}->Error(
+        my $ErrorReturn = $DebuggerObject->Error(
             Summary => $FunctionResult->{ErrorMessage},
         );
 
@@ -313,7 +280,7 @@ sub Run {
 
     my $DataIn = $FunctionResult->{Data};
 
-    $Self->{DebuggerObject}->Debug(
+    $DebuggerObject->Debug(
         Summary => "Incoming data before mapping",
         Data    => $DataIn,
     );
@@ -326,18 +293,19 @@ sub Run {
         )
     {
         my $MappingInObject = Kernel::GenericInterface::Mapping->new(
-            %{$Self},
+            DebuggerObject => $DebuggerObject,
             MappingConfig =>
                 $RequesterConfig->{Invoker}->{ $Param{Invoker} }->{MappingInbound},
         );
 
         # if mapping init failed, bail out
         if ( ref $MappingInObject ne 'Kernel::GenericInterface::Mapping' ) {
-            $Self->{DebuggerObject}->Error(
+            $DebuggerObject->Error(
                 Summary => 'MappingOut could not be initialized',
                 Data    => $MappingInObject,
             );
-            return $Self->{DebuggerObject}->Error(
+
+            return $DebuggerObject->Error(
                 Summary => $FunctionResult->{ErrorMessage},
             );
         }
@@ -347,14 +315,15 @@ sub Run {
         );
 
         if ( !$FunctionResult->{Success} ) {
-            return $Self->{DebuggerObject}->Error(
+
+            return $DebuggerObject->Error(
                 Summary => $FunctionResult->{ErrorMessage},
             );
         }
 
         $DataIn = $FunctionResult->{Data};
 
-        $Self->{DebuggerObject}->Debug(
+        $DebuggerObject->Debug(
             Summary => "Incoming data after mapping",
             Data    => $DataIn,
         );
@@ -370,7 +339,8 @@ sub Run {
     );
 
     if ( !$FunctionResult->{Success} ) {
-        return $Self->{DebuggerObject}->Error(
+
+        return $DebuggerObject->Error(
             Summary => 'Error handling response data in Invoker',
             Data    => $FunctionResult->{ErrorMessage},
         );

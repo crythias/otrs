@@ -167,6 +167,15 @@ CREATE TABLE personal_queues (
 CREATE INDEX personal_queues_queue_id ON personal_queues (queue_id);
 CREATE INDEX personal_queues_user_id ON personal_queues (user_id);
 -- ----------------------------------------------------------
+--  create table personal_services
+-- ----------------------------------------------------------
+CREATE TABLE personal_services (
+    user_id INTEGER NOT NULL,
+    service_id INTEGER NOT NULL
+);
+CREATE INDEX personal_services_queue_id ON personal_services (service_id);
+CREATE INDEX personal_services_user_id ON personal_services (user_id);
+-- ----------------------------------------------------------
 --  create table salutation
 -- ----------------------------------------------------------
 CREATE TABLE salutation (
@@ -1138,7 +1147,6 @@ CREATE TABLE package_repository (
     vendor NVARCHAR (250) NOT NULL,
     install_status NVARCHAR (250) NOT NULL,
     filename NVARCHAR (250) NULL,
-    content_size NVARCHAR (30) NULL,
     content_type NVARCHAR (250) NULL,
     content NVARCHAR (MAX) NOT NULL,
     create_time DATETIME NOT NULL,
@@ -1361,13 +1369,6 @@ CREATE TABLE pm_transition_action (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT pm_transition_action_entity_id UNIQUE (entity_id)
-);
--- ----------------------------------------------------------
---  create table pm_entity
--- ----------------------------------------------------------
-CREATE TABLE pm_entity (
-    entity_type NVARCHAR (50) NOT NULL,
-    entity_counter INTEGER NOT NULL
 );
 -- ----------------------------------------------------------
 --  create table pm_entity_sync

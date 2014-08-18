@@ -34,29 +34,36 @@ use Kernel::System::ObjectManager;
 
 # get options
 my %Opts;
-getopt( 'hdnop', \%Opts );
+getopt( 'hdnops', \%Opts );
 if ( $Opts{h} ) {
-    print "otrs.UnitTest.pl - OTRS test handle\n";
+    print "otrs.UnitTest.pl - Run OTRS unit tests\n";
     print "Copyright (C) 2001-2014 OTRS AG, http://otrs.com/\n";
-    print
-        "usage: otrs.UnitTest.pl [-n Name e.g. Ticket or Queue, or both Ticket:Queue] [-d Directory] [-o ASCII|HTML|XML] [-p PRODUCT]\n";
+    print <<EOF;
+Usage: otrs.UnitTest.pl
+    [-n Name]           # Single Tests to run, e.g. 'Ticket', 'Queue', or 'Ticket:Queue'
+    [-d Directory]      # Test directory to process
+    [-o ASCII|HTML|XML]
+    [-p PRODUCT]
+    [-s URL]            # Submit test results to unit test server
+EOF
     exit 1;
 }
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.UnitTest',
     },
-    UnitTestObject => {
+    'Kernel::System::UnitTest' => {
         Output => $Opts{o} || '',
     },
 );
 
-$Kernel::OM->Get('UnitTestObject')->Run(
+$Kernel::OM->Get('Kernel::System::UnitTest')->Run(
     Name      => $Opts{n} || '',
     Directory => $Opts{d} || '',
     Product   => $Opts{p} || '',
+    SubmitURL => $Opts{s} || '',
 );
 
 exit 0;

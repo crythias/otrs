@@ -32,12 +32,9 @@ use Kernel::System::ObjectManager;
 
 # create common objects
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    LogObject => {
+    'Kernel::System::Log' => {
         LogPrefix => 'OTRS-otrs.CryptPassword.pl',
     },
-);
-my %CommonObject = $Kernel::OM->ObjectHash(
-    Objects => [qw(ConfigObject EncodeObject LogObject MainObject DBObject)],
 );
 
 # check args
@@ -51,6 +48,6 @@ if ( !$Password ) {
 }
 else {
     chomp $Password;
-    my $H = $CommonObject{DBObject}->_Encrypt($Password);
+    my $H = $Kernel::OM->Get('Kernel::System::DB')->_Encrypt($Password);
     print "Crypted password: {$H}\n";
 }

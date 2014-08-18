@@ -10,36 +10,28 @@
 use strict;
 use warnings;
 use utf8;
-use vars qw($Self);
 
-use Kernel::Config;
-use Kernel::System::UnitTest::Helper;
-use Kernel::System::Ticket;
-use Kernel::System::ProcessManagement::TransitionAction::TicketArticleCreate;
+use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# create local objects
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
-
-my $ConfigObject = Kernel::Config->new();
-my $TicketObject = Kernel::System::Ticket->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $ModuleObject = Kernel::System::ProcessManagement::TransitionAction::TicketArticleCreate->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-    TicketObject => $TicketObject,
-);
+# get needed objects
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $HelperObject = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
+my $ModuleObject
+    = $Kernel::OM->Get('Kernel::System::ProcessManagement::TransitionAction::TicketArticleCreate');
 
 # define variables
 my $UserID     = 1;
 my $ModuleName = 'TicketArticleCreate';
+
+# set user details
+my $TestUserLogin = $HelperObject->TestUserCreate();
+my $TestUserID    = $UserObject->UserLookup(
+    UserLogin => $TestUserLogin,
+);
 
 # ----------------------------------------
 # Create a test ticket
@@ -246,7 +238,98 @@ my @Tests = (
         },
         Success => 1,
     },
-
+    {
+        Name   => 'Correct Ticket->Title',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                ArticleType => 'note-internal',
+                SenderType  => 'agent',
+                ContentType => 'text/plain; charset=ISO-8859-15',
+                Subject =>
+                    '<OTRS_Ticket_Title>',
+                Body =>
+                    'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
+                HistoryType    => 'OwnerUpdate',
+                HistoryComment => 'Some free text!',
+                From           => 'Some Agent <email@example.com>',
+                To             => 'Some Customer A <customer-a@example.com>',
+                Cc             => 'Some Customer B <customer-b@example.com>',
+                ReplyTo        => 'Some Customer B <customer-b@example.com>',
+                MessageID      => '<asdasdasd.123@example.com>',
+                InReplyTo      => '<asdasdasd.12@example.com>',
+                References =>
+                    '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
+                NoAgentNotify => 0,
+                ForceNotificationToUserID => [ 1, 43, 56, ],
+                ExcludeNotificationToUserID     => [ 43, 56, ],
+                ExcludeMuteNotificationToUserID => [ 43, 56, ],
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct Ticket->NotExistent',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                ArticleType => 'note-internal',
+                SenderType  => 'agent',
+                ContentType => 'text/plain; charset=ISO-8859-15',
+                Subject =>
+                    '<OTRS_Ticket_NotExisting>',
+                Body =>
+                    'äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ-カスタ-用迎使用-Язык',
+                HistoryType    => 'OwnerUpdate',
+                HistoryComment => 'Some free text!',
+                From           => 'Some Agent <email@example.com>',
+                To             => 'Some Customer A <customer-a@example.com>',
+                Cc             => 'Some Customer B <customer-b@example.com>',
+                ReplyTo        => 'Some Customer B <customer-b@example.com>',
+                MessageID      => '<asdasdasd.123@example.com>',
+                InReplyTo      => '<asdasdasd.12@example.com>',
+                References =>
+                    '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
+                NoAgentNotify => 0,
+                ForceNotificationToUserID => [ 1, 43, 56, ],
+                ExcludeNotificationToUserID     => [ 43, 56, ],
+                ExcludeMuteNotificationToUserID => [ 43, 56, ],
+            },
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'Correct Using Diferent UserID',
+        Config => {
+            UserID => $UserID,
+            Ticket => \%Ticket,
+            Config => {
+                ArticleType    => 'note-internal',
+                SenderType     => 'agent',
+                ContentType    => 'text/plain; charset=ISO-8859-15',
+                Subject        => 'some short description',
+                Body           => 'the message text',
+                HistoryType    => 'OwnerUpdate',
+                HistoryComment => 'Some free text!',
+                From           => 'Some Agent <email@example.com>',
+                To             => 'Some Customer A <customer-a@example.com>',
+                Cc             => 'Some Customer B <customer-b@example.com>',
+                ReplyTo        => 'Some Customer B <customer-b@example.com>',
+                MessageID      => '<asdasdasd.123@example.com>',
+                InReplyTo      => '<asdasdasd.12@example.com>',
+                References =>
+                    '<asdasdasd.1@example.com> <asdasdasd.12@example.com>',
+                NoAgentNotify => 0,
+                ForceNotificationToUserID => [ 1, 43, 56, ],
+                ExcludeNotificationToUserID     => [ 43, 56, ],
+                ExcludeMuteNotificationToUserID => [ 43, 56, ],
+                UserID                          => $TestUserID,
+            },
+        },
+        Success => 1,
+    },
 );
 
 my %ExcludedArtributes = (
@@ -260,6 +343,10 @@ my %ExcludedArtributes = (
 );
 
 for my $Test (@Tests) {
+
+    # make a deep copy to avoid changing the definition
+    my $OrigTest = Storable::dclone($Test);
+
     my $Success = $ModuleObject->Run(
         %{ $Test->{Config} },
         ProcessEntityID          => 'P1',
@@ -289,24 +376,60 @@ for my $Test (@Tests) {
 
             next ATTRIBUTE if $ExcludedArtributes{$Attribute};
 
+            if (
+                $OrigTest->{Config}->{Config}->{$Attribute} eq '<OTRS_Ticket_NotExisting>'
+                && $Self->{DBObject}->GetDatabaseFunction('Type') eq 'oracle'
+                )
+            {
+                $Article{$Attribute} //= '';
+            }
+
             $Self->True(
-                $Article{$Attribute},
+                defined $Article{$Attribute},
                 "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
                     . " $Article{ArticleID} exists with True",
             );
 
+            my $ExpectedValue = $Test->{Config}->{Config}->{$Attribute};
+            if (
+                $OrigTest->{Config}->{Config}->{$Attribute}
+                =~ m{\A<OTRS_Ticket_([A-Za-z0-9_]+)>\z}msx
+                )
+            {
+                $ExpectedValue = $Ticket{$1} // '';
+                $Self->IsNot(
+                    $Test->{Config}->{Config}->{$Attribute},
+                    $OrigTest->{Config}->{Config}->{$Attribute},
+                    "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute value: $OrigTest->{Config}->{Config}->{$Attribute} should been replaced",
+                );
+            }
+
+            # if article is created by another user it is automatically sent also to Owner
+            if ( $OrigTest->{Config}->{Config}->{UserID} && $Attribute eq 'To' ) {
+                $ExpectedValue .= ', Admin OTRS <root@localhost>'
+            }
+
             $Self->Is(
                 $Article{$Attribute},
-                $Test->{Config}->{Config}->{$Attribute},
+                $ExpectedValue,
                 "$ModuleName - Test:'$Test->{Name}' | Attribute: $Attribute for ArticleID:"
                     . " $Article{ArticleID} match expected value",
+            );
+        }
+
+        if ( $OrigTest->{Config}->{Config}->{UserID} ) {
+            $Self->Is(
+                $Test->{Config}->{Config}->{UserID},
+                undef,
+                "$ModuleName - Test:'$Test->{Name}' | Attribute: UserID for TicketID:"
+                    . " $TicketID should be removed (as it was used)",
             );
         }
     }
     else {
         $Self->False(
             $Success,
-            "$ModuleName Run() - Test:'$Test->{Name}' | excecuted with False"
+            "$ModuleName Run() - Test:'$Test->{Name}' | executed with False"
         );
     }
 }

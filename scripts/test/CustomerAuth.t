@@ -12,11 +12,12 @@ use warnings;
 use utf8;
 use vars (qw($Self));
 
+use Kernel::System::CustomerUser;
 use Kernel::System::CustomerAuth;
 use Kernel::System::User;
 
 # use local Config object because it will be modified
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # configure CustomerAuth backend to db
 $ConfigObject->Set( 'CustomerAuthBackend', 'DB' );

@@ -12,17 +12,19 @@ package Kernel::System::Queue::PreferencesDB;
 use strict;
 use warnings;
 
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::System::Cache',
+    'Kernel::System::DB',
+    'Kernel::System::Log',
+);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
     my $Self = {};
     bless( $Self, $Type );
-
-    # check needed objects
-    for (qw(DBObject ConfigObject LogObject EncodeObject MainObject CacheInternalObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
 
     # preferences table data
     $Self->{PreferencesTable}        = 'queue_preferences';
@@ -37,6 +39,9 @@ sub new {
         . $Self->{PreferencesTableValue}
         . $Self->{PreferencesTableQueueID};
 
+    $Self->{CacheType} = 'Queue';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
+
     return $Self;
 }
 
@@ -46,20 +51,26 @@ sub QueuePreferencesSet {
     # check needed stuff
     for (qw(QueueID Key Value)) {
         if ( !defined $Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!",
+            );
             return;
         }
     }
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # delete old data
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => "DELETE FROM $Self->{PreferencesTable} WHERE "
             . "$Self->{PreferencesTableQueueID} = ? AND $Self->{PreferencesTableKey} = ?",
         Bind => [ \$Param{QueueID}, \$Param{Key} ],
     );
 
     # insert new data
-    return if !$Self->{DBObject}->Do(
+    return if !$DBObject->Do(
         SQL => "INSERT INTO $Self->{PreferencesTable} ($Self->{PreferencesTableQueueID}, "
             . " $Self->{PreferencesTableKey}, $Self->{PreferencesTableValue}) "
             . " VALUES (?, ?, ?)",
@@ -67,8 +78,9 @@ sub QueuePreferencesSet {
     );
 
     # delete cache
-    $Self->{CacheInternalObject}->Delete(
-        Key => $Self->{CachePrefix} . $Param{QueueID},
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Self->{CachePrefix} . $Param{QueueID},
     );
 
     return 1;
@@ -80,34 +92,43 @@ sub QueuePreferencesGet {
     # check needed stuff
     for (qw(QueueID)) {
         if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!",
+            );
             return;
         }
     }
 
     # check if queue preferences are available
-    return if !$Self->{ConfigObject}->Get('QueuePreferences');
+    return if !$Kernel::OM->Get('Kernel::Config')->Get('QueuePreferences');
 
     # read cache
-    my $Cache = $Self->{CacheInternalObject}->Get(
-        Key => $Self->{CachePrefix} . $Param{QueueID},
+    my $Cache = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $Self->{CachePrefix} . $Param{QueueID},
     );
     return %{$Cache} if $Cache;
 
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
     # get preferences
-    return if !$Self->{DBObject}->Prepare(
+    return if !$DBObject->Prepare(
         SQL => "SELECT $Self->{PreferencesTableKey}, $Self->{PreferencesTableValue} "
             . " FROM $Self->{PreferencesTable} WHERE $Self->{PreferencesTableQueueID} = ?",
         Bind => [ \$Param{QueueID} ],
     );
 
     my %Data;
-    while ( my @Row = $Self->{DBObject}->FetchrowArray() ) {
+    while ( my @Row = $DBObject->FetchrowArray() ) {
         $Data{ $Row[0] } = $Row[1];
     }
 
     # set cache
-    $Self->{CacheInternalObject}->Set(
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
         Key   => $Self->{CachePrefix} . $Param{QueueID},
         Value => \%Data,
     );

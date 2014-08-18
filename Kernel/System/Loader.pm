@@ -15,12 +15,13 @@ use warnings;
 use CSS::Minifier qw();
 use JavaScript::Minifier qw();
 
-use Kernel::System::CacheInternal;
-## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
-use Kernel::Output::HTML::Layout;
-## nofilter(TidyAll::Plugin::OTRS::Perl::ParamObject)
-use Kernel::System::Web::Request;
-use Kernel::System::Time;
+our @ObjectDependencies = (
+    'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
+    'Kernel::System::Cache',
+    'Kernel::System::Log',
+    'Kernel::System::Main',
+);
 
 =head1 NAME
 
@@ -42,7 +43,7 @@ create an object
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $LoaderObject = $Kernel::OM->Get('LoaderObject');
+    my $LoaderObject = $Kernel::OM->Get('Kernel::System::Loader');
 
 =cut
 
@@ -53,16 +54,8 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # check needed objects
-    for my $Object (qw(ConfigObject EncodeObject LogObject MainObject)) {
-        $Self->{$Object} = $Param{$Object} || die "Got no $Object!";
-    }
-
-    $Self->{CacheInternalObject} = Kernel::System::CacheInternal->new(
-        %{$Self},
-        Type => 'Loader',
-        TTL  => 60 * 60 * 24 * 3,
-    );
+    $Self->{CacheType} = 'Loader';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
     return $Self;
 }
@@ -91,7 +84,7 @@ sub MinifyFiles {
     # check needed params
     my $List = $Param{List};
     if ( ref $List ne 'ARRAY' || !@{$List} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need List!',
         );
@@ -101,7 +94,7 @@ sub MinifyFiles {
     my $TargetDirectory = $Param{TargetDirectory};
     if ( !-e $TargetDirectory ) {
         if ( !mkdir( $TargetDirectory, 0775 ) ) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Can't create directory '$TargetDirectory': $!",
             );
@@ -110,7 +103,7 @@ sub MinifyFiles {
     }
 
     if ( !$TargetDirectory || !-d $TargetDirectory ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Need valid TargetDirectory, got '$TargetDirectory'!",
         );
@@ -125,12 +118,14 @@ sub MinifyFiles {
     );
 
     if ( !$Param{Type} || !$ValidTypeParams{ $Param{Type} } ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message => "Need Type! Must be one of '" . join( ', ', keys %ValidTypeParams ) . "'."
         );
         return;
     }
+
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     my $FileString;
     LOCATION:
@@ -138,7 +133,7 @@ sub MinifyFiles {
         if ( !-e $Location ) {
             next LOCATION;
         }
-        my $FileMTime = $Self->{MainObject}->FileGetMTime(
+        my $FileMTime = $MainObject->FileGetMTime(
             Location => $Location
         );
 
@@ -147,7 +142,7 @@ sub MinifyFiles {
         $FileString .= "$Location:$FileMTime:";
     }
 
-    my $Filename = $TargetFilenamePrefix . $Self->{MainObject}->MD5sum(
+    my $Filename = $TargetFilenamePrefix . $MainObject->MD5sum(
         String => \$FileString,
     );
 
@@ -183,7 +178,7 @@ sub MinifyFiles {
                 };
 
                 if ($@) {
-                    $Self->{LogObject}->Log(
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'error',
                         Message  => "Error during file minification: $@",
                     );
@@ -202,7 +197,7 @@ sub MinifyFiles {
 
                 if ($@) {
                     my $JSError = "Error during minification of file $Location: $@";
-                    $Self->{LogObject}->Log(
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
                         Priority => 'error',
                         Message  => $JSError,
                     );
@@ -214,7 +209,7 @@ sub MinifyFiles {
             }
         }
 
-        my $FileLocation = $Self->{MainObject}->FileWrite(
+        my $FileLocation = $MainObject->FileWrite(
             Directory => $TargetDirectory,
             Filename  => $Filename,
             Content   => \$Content,
@@ -245,7 +240,7 @@ sub GetMinifiedFile {
     # check needed params
     my $Location = $Param{Location};
     if ( !$Location ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Location!',
         );
@@ -258,14 +253,16 @@ sub GetMinifiedFile {
     );
 
     if ( !$Param{Type} || !$ValidTypeParams{ $Param{Type} } ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message => "Need Type! Must be one of '" . join( ', ', keys %ValidTypeParams ) . "'."
         );
         return;
     }
 
-    my $FileMTime = $Self->{MainObject}->FileGetMTime(
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    my $FileMTime = $MainObject->FileGetMTime(
         Location => $Location,
     );
 
@@ -274,8 +271,9 @@ sub GetMinifiedFile {
     my $CacheKey = "$Location:$FileMTime";
 
     # check if a cached version exists
-    my $CacheContent = $Self->{CacheInternalObject}->Get(
-        Key => $CacheKey,
+    my $CacheContent = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $CacheKey,
     );
 
     if ( ref $CacheContent eq 'SCALAR' ) {
@@ -283,7 +281,7 @@ sub GetMinifiedFile {
     }
 
     # no cache available, read and minify file
-    my $FileContents = $Self->{MainObject}->FileRead(
+    my $FileContents = $MainObject->FileRead(
         Location => $Location,
 
         # It would be more correct to use UTF8 mode, but then the JavaScript::Minifier
@@ -305,7 +303,9 @@ sub GetMinifiedFile {
     }
 
     # and put it in the cache
-    $Self->{CacheInternalObject}->Set(
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
         Key   => $CacheKey,
         Value => \$Result,
     );
@@ -329,7 +329,7 @@ sub MinifyCSS {
 
     # check needed params
     if ( !$Param{Code} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Code Param!',
         );
@@ -376,7 +376,7 @@ sub MinifyJavaScript {
 
     # check needed params
     if ( !$Param{Code} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need Code Param!',
         );
@@ -399,22 +399,11 @@ sub CacheGenerate {
 
     my @Result;
 
-    my $ParamObject = Kernel::System::Web::Request->new(
-        %{$Self},
-        WebRequest => 0,
-    );
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    ## nofilter(TidyAll::Plugin::OTRS::Perl::LayoutObject)
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    my $TimeObject = Kernel::System::Time->new( %{$Self} );
-
-    my $LayoutObject = Kernel::Output::HTML::Layout->new(
-        %{$Self},
-        TimeObject   => $TimeObject,
-        ParamObject  => $ParamObject,
-        Lang         => 'en',
-        UserTimeZone => '+0',
-    );
-
-    my %AgentFrontends = %{ $Self->{ConfigObject}->Get('Frontend::Module') // {} };
+    my %AgentFrontends = %{ $ConfigObject->Get('Frontend::Module') // {} };
 
     for my $FrontendModule ( sort { $a cmp $b } keys %AgentFrontends ) {
         $LayoutObject->{Action} = $FrontendModule;
@@ -424,8 +413,8 @@ sub CacheGenerate {
     }
 
     my %CustomerFrontends = (
-        %{ $Self->{ConfigObject}->Get('CustomerFrontend::Module') // {} },
-        %{ $Self->{ConfigObject}->Get('PublicFrontend::Module')   // {} },
+        %{ $ConfigObject->Get('CustomerFrontend::Module') // {} },
+        %{ $ConfigObject->Get('PublicFrontend::Module')   // {} },
     );
 
     for my $FrontendModule ( sort { $a cmp $b } keys %CustomerFrontends ) {
@@ -453,7 +442,7 @@ sub CacheDelete {
 
     my @Result;
 
-    my $Home = $Self->{ConfigObject}->Get('Home');
+    my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
 
     my $JSCacheFolder       = "$Home/var/httpd/htdocs/js/js-cache";
     my @SkinTypeDirectories = (
@@ -463,9 +452,11 @@ sub CacheDelete {
 
     my @CacheFoldersList = ($JSCacheFolder);
 
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # Looking for all skin folders that may contain a cache folder
     for my $Folder (@SkinTypeDirectories) {
-        my @List = $Self->{MainObject}->DirectoryRead(
+        my @List = $MainObject->DirectoryRead(
             Directory => $Folder,
             Filter    => '*',
         );
@@ -473,7 +464,7 @@ sub CacheDelete {
         FOLDER:
         for my $Folder (@List) {
             next FOLDER if ( !-d $Folder );
-            my @CacheFolder = $Self->{MainObject}->DirectoryRead(
+            my @CacheFolder = $MainObject->DirectoryRead(
                 Directory => $Folder,
                 Filter    => 'css-cache',
             );
@@ -490,16 +481,16 @@ sub CacheDelete {
     for my $FolderToDelete (@CacheFoldersList) {
         next FOLDERTODELETE if ( !-d $FolderToDelete );
 
-        my @FilesList = $Self->{MainObject}->DirectoryRead(
+        my @FilesList = $MainObject->DirectoryRead(
             Directory => $FolderToDelete,
             Filter    => \@FileTypes,
         );
         for my $File (@FilesList) {
-            if ( $Self->{MainObject}->FileDelete( Location => $File ) ) {
+            if ( $MainObject->FileDelete( Location => $File ) ) {
                 push @Result, $File;
             }
             else {
-                $Self->{LogObject}->Log(
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
                     Message  => "Can't remove: $File"
                 );
@@ -508,7 +499,9 @@ sub CacheDelete {
     }
 
     # finally, also clean up the internal perl cache files
-    $Self->{CacheInternalObject}->CleanUp();
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType},
+    );
 
     return @Result;
 }

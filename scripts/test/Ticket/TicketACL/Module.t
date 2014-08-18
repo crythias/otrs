@@ -33,16 +33,16 @@ my $HelperObject = Kernel::System::UnitTest::Helper->new(
     RestoreSystemConfiguration => 0,
 );
 
-my $ConfigObject = Kernel::Config->new();
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 $ConfigObject->Set(
     Key   => 'Ticket::Acl::Module',
     Value => {
         DummyModule => {
-            Module        => 'scripts::test::sample::Ticket::Acl::DummyModule',
+            Module        => 'scripts::test::Ticket::TicketACL::DummyModule',
             ReturnType    => 'Ticket',
             ReturnSubType => 'State',
             Checks        => ['Ticket'],
-            }
+        },
     },
 );
 my $ValidObject = Kernel::System::Valid->new( %{$Self} );

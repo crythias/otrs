@@ -157,23 +157,29 @@ sub Run {
         }
 
         # get ACL restrictions
-        $Self->{TicketObject}->TicketAcl(
-            Data          => '-',
-            TicketID      => $TicketID,
+        my %PossibleActions = ( 1 => $Self->{Action} );
+
+        my $ACL = $Self->{TicketObject}->TicketAcl(
+            Data          => \%PossibleActions,
+            Action        => $Self->{Action},
+            TicketID      => $Self->{TicketID},
             ReturnType    => 'Action',
             ReturnSubType => '-',
             UserID        => $Self->{UserID},
         );
         my %AclAction = $Self->{TicketObject}->TicketAclActionData();
 
-        # check if ACL resctictions if exist
-        if ( IsHashRefWithData( \%AclAction ) ) {
+        # check if ACL restrictions exist
+        if ( $ACL || IsHashRefWithData( \%AclAction ) ) {
+
+            my %AclActionLookup = reverse %AclAction;
 
             # show error screen if ACL prohibits this action
-            if ( defined $AclAction{ $Self->{Action} } && $AclAction{ $Self->{Action} } eq '0' ) {
+            if ( !$AclActionLookup{ $Self->{Action} } ) {
                 return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
             }
         }
+
         if ( IsHashRefWithData($ActivityDialogHashRef) ) {
 
             # check if it's already locked by somebody else
@@ -232,26 +238,24 @@ sub Run {
                 $Param{ParentReload} = 1;
             }
 
+            my $PossibleActivityDialogs = { 1 => $ActivityDialogEntityID };
+
             # get ACL restrictions
-            $Self->{TicketObject}->TicketAcl(
-                Data                   => '-',
+            my $ACL = $Self->{TicketObject}->TicketAcl(
+                Data                   => $PossibleActivityDialogs,
                 ActivityDialogEntityID => $ActivityDialogEntityID,
                 TicketID               => $TicketID,
-                ReturnType             => 'Ticket',
+                ReturnType             => 'ActivityDialog',
                 ReturnSubType          => '-',
                 UserID                 => $Self->{UserID},
             );
 
-            my @PossibleActivityDialogs
-                = $Self->{TicketObject}->TicketAclActivityDialogData(
-                ActivityDialogs => [ $ActivityDialogEntityID, ]
-                );
+            if ($ACL) {
+                %{$PossibleActivityDialogs} = $Self->{TicketObject}->TicketAclData();
+            }
 
             # check if ACL resctictions exist
-            if (
-                !$PossibleActivityDialogs[0]
-                || $PossibleActivityDialogs[0] ne $ActivityDialogEntityID
-                )
+            if ( !IsHashRefWithData($PossibleActivityDialogs) )
             {
                 return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
             }
@@ -261,9 +265,11 @@ sub Run {
     # list only Active processes by default
     my @ProcessStates = ('Active');
 
-    # set IsMainWindow and IsAjaxRequest for proper error responses, screen display and process list
-    $Self->{IsMainWindow}  = $Self->{ParamObject}->GetParam( Param => 'IsMainWindow' )  || '';
-    $Self->{IsAjaxRequest} = $Self->{ParamObject}->GetParam( Param => 'IsAjaxRequest' ) || '';
+    # set IsMainWindow, IsAjaxRequest, IsProcessEnroll for proper error responses, screen display
+    # and process list
+    $Self->{IsMainWindow}    = $Self->{ParamObject}->GetParam( Param => 'IsMainWindow' )    || '';
+    $Self->{IsAjaxRequest}   = $Self->{ParamObject}->GetParam( Param => 'IsAjaxRequest' )   || '';
+    $Self->{IsProcessEnroll} = $Self->{ParamObject}->GetParam( Param => 'IsProcessEnroll' ) || '';
 
     # fetch also FadeAway processes to continue working with existing tickets, but not to start new
     #    ones
@@ -286,17 +292,15 @@ sub Run {
     }
 
     # validate the ProcessList with stored acls
-    $Self->{TicketObject}->TicketAcl(
-        ReturnType    => 'Ticket',
+    my $ACL = $Self->{TicketObject}->TicketAcl(
+        ReturnType    => 'Process',
         ReturnSubType => '-',
         Data          => $ProcessList,
         UserID        => $Self->{UserID},
     );
 
-    if ( IsHashRefWithData($ProcessList) ) {
-        $ProcessList = $Self->{TicketObject}->TicketAclProcessData(
-            Processes => $ProcessList,
-        );
+    if ( IsHashRefWithData($ProcessList) && $ACL ) {
+        %{$ProcessList} = $Self->{TicketObject}->TicketAclData();
     }
 
     # get form id
@@ -328,7 +332,8 @@ sub Run {
         return $Self->_DisplayProcessList(
             %Param,
             ProcessList     => $ProcessList,
-            ProcessEntityID => $ProcessEntityID
+            ProcessEntityID => $ProcessEntityID,
+            TicketID        => $TicketID,
         );
     }
 
@@ -347,7 +352,7 @@ sub Run {
             = $Self->{LayoutObject}->{LanguageObject}
             ->Translate("The selected process is invalid!");
 
-        # return a predefined HTML sctructure as the AJAX call is expecting and HTML response
+        # return a predefined HTML structure as the AJAX call is expecting and HTML response
         return $Self->{LayoutObject}->Attachment(
             ContentType => 'text/html; charset=' . $Self->{LayoutObject}->{Charset},
             Content     => '<div class="ServerError" data-message="' . $ErrorMessage . '"></div>',
@@ -356,7 +361,7 @@ sub Run {
         );
     }
 
-    # if invalid process is detected on a ActivityDilog popup screen show an error message
+    # if invalid process is detected on a ActivityDilog pop-up screen show an error message
     elsif (
         $Self->{Subaction} eq 'DisplayActivityDialog'
         && !$ProcessList->{$ProcessEntityID}
@@ -429,7 +434,7 @@ sub Run {
 
 sub _RenderAjax {
 
-    # FatalError is safe because a JSON strcuture is expecting, then it will result into a
+    # FatalError is safe because a JSON structure is expecting, then it will result into a
     # communications error
 
     my ( $Self, %Param ) = @_;
@@ -808,7 +813,7 @@ sub _GetParam {
 
     # If we got no ActivityDialogEntityID and no TicketID
     # we have to get the Processes' Startpoint
-    if ( !$ActivityDialogEntityID && !$TicketID ) {
+    if ( !$ActivityDialogEntityID && ( !$TicketID || $Self->{IsProcessEnroll} ) ) {
         my $ActivityActivityDialog = $Self->{ProcessObject}->ProcessStartpointGet(
             ProcessEntityID => $ProcessEntityID,
         );
@@ -862,15 +867,17 @@ sub _GetParam {
             );
         }
 
-        $ActivityEntityID = $Ticket{
-            'DynamicField_'
-                . $Self->{ConfigObject}->Get("Process::DynamicFieldProcessManagementActivityID")
-        };
-        if ( !$ActivityEntityID ) {
-            $Self->{LayoutObject}->FatalError(
-                Message =>
-                    "Couldn't determine ActivityEntityID. DynamicField or Config isn't set properly!",
-            );
+        if ( !$Self->{IsProcessEnroll} ) {
+            $ActivityEntityID = $Ticket{
+                'DynamicField_'
+                    . $Self->{ConfigObject}->Get("Process::DynamicFieldProcessManagementActivityID")
+            };
+            if ( !$ActivityEntityID ) {
+                $Self->{LayoutObject}->FatalError(
+                    Message =>
+                        "Couldn't determine ActivityEntityID. DynamicField or Config isn't set properly!",
+                );
+            }
         }
 
     }
@@ -1006,7 +1013,7 @@ sub _GetParam {
             }
 
             if ( $GetParam{StateID} ) {
-                %StateData = $Self->{TicketObject}->{StateObject}->StateGet(
+                %StateData = $Self->{StateObject}->StateGet(
                     ID => $GetParam{StateID},
                 );
             }
@@ -1165,7 +1172,7 @@ sub _OutputActivityDialog {
     %Error         = %{ $Param{Error} }         if ( IsHashRefWithData( $Param{Error} ) );
     %ErrorMessages = %{ $Param{ErrorMessages} } if ( IsHashRefWithData( $Param{ErrorMessages} ) );
 
-    if ( !$TicketID ) {
+    if ( !$TicketID || $Self->{IsProcessEnroll} ) {
         $ActivityActivityDialog = $Self->{ProcessObject}->ProcessStartpointGet(
             ProcessEntityID => $Param{ProcessEntityID},
         );
@@ -1218,6 +1225,14 @@ sub _OutputActivityDialog {
             Activity       => $Ticket{$DynamicFieldActivityID},
             ActivityDialog => $ActivityDialogEntityID,
         };
+    }
+
+    if ( !%Ticket && $Self->{IsProcessEnroll} ) {
+        %Ticket = $Self->{TicketObject}->TicketGet(
+            TicketID      => $TicketID,
+            UserID        => $Self->{UserID},
+            DynamicFields => 1,
+        );
     }
 
     my $Activity = $Self->{ActivityObject}->ActivityGet(
@@ -1281,7 +1296,7 @@ sub _OutputActivityDialog {
     my $Output;
     my $MainBoxClass;
 
-    if ( !$Self->{IsMainWindow} ) {
+    if ( !$Self->{IsMainWindow} && !$Self->{IsProcessEnroll} ) {
         $Output = $Self->{LayoutObject}->Header(
             Type  => 'Small',
             Value => $Ticket{Number},
@@ -1306,7 +1321,11 @@ sub _OutputActivityDialog {
                 }
         );
     }
-    elsif ( $Self->{IsMainWindow} && ( IsHashRefWithData( \%Error ) || $Param{IsUpload} ) ) {
+    elsif (
+        ( $Self->{IsMainWindow} || $Self->{IsProcessEnroll} )
+        && ( IsHashRefWithData( \%Error ) || $Param{IsUpload} )
+        )
+    {
 
         # add rich text editor
         if ( $Self->{LayoutObject}->{BrowserRichText} ) {
@@ -1322,13 +1341,23 @@ sub _OutputActivityDialog {
         }
 
         # display complete header and nav bar in ajax dialogs when there is a server error
-        $Output = $Self->{LayoutObject}->Header();
-        $Output .= $Self->{LayoutObject}->NavigationBar();
+        #    unless we are in a process enrollment (only when IsMainWindow is active)
+        my $Type = $Self->{IsMainWindow} ? '' : 'Small';
+        $Output = $Self->{LayoutObject}->Header(
+            Type => $Type,
+        );
+        if ( $Self->{IsMainWindow} ) {
+            $Output .= $Self->{LayoutObject}->NavigationBar();
+        }
 
         # display original header texts (the process list maybe is not necessary)
         $Output .= $Self->{LayoutObject}->Output(
-            TemplateFile => 'AgentTicketProcess',
-            Data         => {},
+            TemplateFile => 'AgentTicketProcess' . $Type,
+            Data         => {
+                %Param,
+                FormID          => $Self->{FormID},
+                IsProcessEnroll => $Self->{IsProcessEnroll},
+            },
         );
 
         # set the MainBox class to add correct borders to the screen
@@ -1393,7 +1422,7 @@ sub _OutputActivityDialog {
     }
 
     # show close & cancel link if neccessary
-    if ( !$Self->{IsMainWindow} ) {
+    if ( !$Self->{IsMainWindow} && !$Self->{IsProcessEnroll} ) {
         if ( $Param{RenderLocked} ) {
             $Self->{LayoutObject}->Block(
                 Name => 'PropertiesLock',
@@ -1426,8 +1455,9 @@ sub _OutputActivityDialog {
                     'Process::DynamicFieldProcessManagementProcessID'
                     )
                 },
-            IsMainWindow => $Self->{IsMainWindow},
-            MainBoxClass => $MainBoxClass || '',
+            IsMainWindow    => $Self->{IsMainWindow},
+            IsProcessEnroll => $Self->{IsProcessEnroll},
+            MainBoxClass    => $MainBoxClass || '',
         },
     );
 
@@ -4028,7 +4058,7 @@ sub _StoreActivityDialog {
                     );
                 }
 
-                # Will be extended lateron for ACL Checking:
+                # Will be extended later on for ACL Checking:
                 my $PossibleValuesFilter;
 
                 # Check DynamicField Values
@@ -4117,7 +4147,7 @@ sub _StoreActivityDialog {
             elsif ( $CurrentField eq 'PendingTime' ) {
                 my $Prefix = 'PendingTime';
 
-                # Make sure we have Values otherwise take an emptystring
+                # Make sure we have Values otherwise take an empty string
                 if (
                     IsHashRefWithData( $Param{GetParam}{PendingTime} )
                     && defined $Param{GetParam}{PendingTime}{Year}
@@ -4238,7 +4268,7 @@ sub _StoreActivityDialog {
             # if StartActivityDialog does not provide a ticket title set a default value
             if ( !$TicketParam{Title} ) {
 
-                # get the current server Timestamp
+                # get the current server Time-stamp
                 my $CurrentTimeStamp = $Self->{TimeObject}->CurrentTimestamp();
                 $TicketParam{Title} = "$Param{ProcessName} - $CurrentTimeStamp";
 
@@ -4328,6 +4358,71 @@ sub _StoreActivityDialog {
             # remember new created TicketID
             $NewTicketID = $TicketID;
         }
+    }
+
+    elsif ( $TicketID && $Self->{IsProcessEnroll} ) {
+
+        # use Error instead of FatalError as we are in a Pop-up window
+        # Get Ticket to check TicketID was valid
+        %Ticket = $Self->{TicketObject}->TicketGet(
+            TicketID      => $TicketID,
+            UserID        => $Self->{UserID},
+            DynamicFields => 0,
+        );
+
+        if ( !IsHashRefWithData( \%Ticket ) ) {
+            $Self->{LayoutObject}->Error(
+                Message => "Invalid TicketID: $TicketID!",
+            );
+        }
+
+        my $Success = $Self->{ProcessObject}->ProcessTicketProcessSet(
+            ProcessEntityID => $Param{ProcessEntityID},
+            TicketID        => $TicketID,
+            UserID          => $Self->{UserID},
+        );
+        if ( !$Success ) {
+            $Self->{LayoutObject}->Error(
+                Message => "Couldn't set ProcessEntityID '$Param{ProcessEntityID}' on"
+                    . " TicketID '$TicketID'!",
+            );
+        }
+
+        $Success = undef;
+
+        $ProcessStartpoint = $Self->{ProcessObject}->ProcessStartpointGet(
+            ProcessEntityID => $Param{ProcessEntityID},
+        );
+
+        if (
+            !$ProcessStartpoint
+            || !IsHashRefWithData($ProcessStartpoint)
+            || !$ProcessStartpoint->{Activity} || !$ProcessStartpoint->{ActivityDialog}
+            )
+        {
+            $Self->{LayoutObject}->Error(
+                Message => "No StartActivityDialog or StartActivityDialog for Process"
+                    . " '$Param{ProcessEntityID}' configured!",
+            );
+        }
+
+        $Success = $Self->{ProcessObject}->ProcessTicketActivitySet(
+            ProcessEntityID  => $Param{ProcessEntityID},
+            ActivityEntityID => $ProcessStartpoint->{Activity},
+            TicketID         => $TicketID,
+            UserID           => $Self->{UserID},
+        );
+
+        if ( !$Success ) {
+            $Self->{LayoutObject}->Error(
+                Message => "Couldn't set ActivityEntityID '$Param{ProcessEntityID}' on"
+                    . " TicketID '$TicketID'!",
+                Comment => 'Please contact the admin.',
+            );
+        }
+
+        # Check if we deal with a Ticket Update
+        my $UpdateTicketID = $TicketID;
     }
 
     # If we had a TicketID, get the Ticket
@@ -4523,7 +4618,7 @@ sub _StoreActivityDialog {
                     );
                 }
 
-                # remove pre submited attachments
+                # remove pre submitted attachments
                 $Self->{UploadCacheObject}->FormIDRemove( FormID => $Self->{FormID} );
             }
         }
@@ -4534,7 +4629,7 @@ sub _StoreActivityDialog {
             my $Success;
             if ( $Self->{NameToID}{$CurrentField} eq 'Title' ) {
 
-                # if there is no title, nothig is needed to be done
+                # if there is no title, nothing is needed to be done
                 if (
                     !defined $TicketParam{'Title'}
                     || ( defined $TicketParam{'Title'} && $TicketParam{'Title'} eq '' )
@@ -4590,7 +4685,7 @@ sub _StoreActivityDialog {
 
                     # here too: unfortunately TicketCreate takes Param 'CustomerUser'
                     # instead of CustomerUserID, so our TicketParam hash
-                    # has the CustomerUser Key instad of 'CustomerUserID'
+                    # has the CustomerUser Key instead of 'CustomerUserID'
                     User     => $TicketParam{CustomerUser},
                     TicketID => $TicketID,
                     UserID   => $Self->{UserID},
@@ -4647,7 +4742,7 @@ sub _StoreActivityDialog {
                         $FieldUpdate = 1;
                     }
 
-                    # update any other field that its value is defiend and not emoty
+                    # update any other field that its value is defined and not empty
                     elsif (
                         $UpdateFieldName ne 'ServiceID'
                         && $UpdateFieldName ne 'SLAID'
@@ -4669,7 +4764,7 @@ sub _StoreActivityDialog {
                         );
 
                         # in case of a new service and no new SLA is to be set, check if current
-                        # asssined SLA is still valid
+                        # assigned SLA is still valid
                         if (
                             $UpdateFieldName eq 'ServiceID'
                             && !defined $TicketParam{SLAID}
@@ -4716,11 +4811,11 @@ sub _StoreActivityDialog {
 
     # Transitions will be handled by ticket event module (TicketProcessTransitions.pm).
 
-    # if we were updating a ticket, close the popup and return to zoom
+    # if we were updating a ticket, close the pop-up and return to zoom
     # else (new ticket) just go to zoom to show the new ticket
     if ($UpdateTicketID) {
 
-        # load new URL in parent window and close popup
+        # load new URL in parent window and close pop-up
         return $Self->{LayoutObject}->PopupClose(
             URL => "Action=AgentTicketZoom;TicketID=$UpdateTicketID",
         );
@@ -4779,13 +4874,27 @@ sub _DisplayProcessList {
         },
     );
 
-    my $Output = $Self->{LayoutObject}->Header();
-    $Output .= $Self->{LayoutObject}->NavigationBar();
+    # on initial screen from navbar there is no IsMainWinow but also no IsProcessEnroll,
+    # then it must be a MainWindow
+    if ( !$Self->{IsMainWindow} && !$Self->{IsProcessEnroll} ) {
+        $Self->{IsMainWindow} = 1;
+    }
+
+    my $Type = $Self->{IsMainWindow} ? '' : 'Small';
+
+    my $Output = $Self->{LayoutObject}->Header(
+        Type => $Type,
+    );
+    if ( $Self->{IsMainWindow} ) {
+        $Output .= $Self->{LayoutObject}->NavigationBar();
+    }
+
     $Output .= $Self->{LayoutObject}->Output(
-        TemplateFile => 'AgentTicketProcess',
+        TemplateFile => 'AgentTicketProcess' . $Type,
         Data         => {
             %Param,
-            FormID => $Self->{FormID},
+            FormID          => $Self->{FormID},
+            IsProcessEnroll => $Self->{IsProcessEnroll},
         },
     );
 
@@ -4794,7 +4903,7 @@ sub _DisplayProcessList {
     # this options in the footer again
     $Self->{LayoutObject}->{HasDatepicker} = 1;
 
-    $Output .= $Self->{LayoutObject}->Footer();
+    $Output .= $Self->{LayoutObject}->Footer( Type => $Type );
 
     return $Output;
 }
@@ -4804,10 +4913,10 @@ sub _DisplayProcessList {
 _CheckField()
 
 checks all the possible ticket fields and returns the ID (if possible) value of the field, if valid
-and checks are successfull
+and checks are successful
 
 if Display param is set to 0 or not given, it uses ActivityDialog field default value for all fields
-or global default value as fallback only for certain fields
+or global default value as fall-back only for certain fields
 
 if Display param is set to 1 or 2 it uses the value from the web request
 
@@ -4852,7 +4961,7 @@ sub _CheckField {
 
     my $Value;
 
-    # if no Display (or Display == 0) is commited
+    # if no Display (or Display == 0) is committed
     if ( !$Param{Display} ) {
 
         # Check if a DefaultValue is given
@@ -4891,7 +5000,7 @@ sub _CheckField {
     }
     elsif ( $Param{Display} == 1 ) {
 
-        # Display == 1 is logicaliy not possible for a ticket required field
+        # Display == 1 is logicality not possible for a ticket required field
         if ($TicketRequiredField) {
             $Self->{LayoutObject}->FatalError(
                 Message => "Wrong ActivityDialog Field config: $Param{Field} can't be"
@@ -5164,7 +5273,7 @@ sub _GetOwners {
         Valid => 1,
     );
 
-    # if we are updating a ticket show the full list of posible owners
+    # if we are updating a ticket show the full list of possible owners
     if ( $Param{TicketID} ) {
         if ( $Param{QueueID} && !$Param{AllUsers} ) {
             my $GID = $Self->{QueueObject}->GetQueueGroupID( QueueID => $Param{QueueID} );

@@ -7,35 +7,23 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+## no critic (Modules::RequireExplicitPackage)
 use strict;
 use warnings;
-use vars (qw($Self));
-
 use utf8;
 
-use Kernel::Config;
-use Kernel::System::ProcessManagement::DB::Activity;
-use Kernel::System::ProcessManagement::DB::ActivityDialog;
-use Kernel::System::UnitTest::Helper;
+use vars (qw($Self));
+
 use Kernel::System::VariableCheck qw(:all);
 
-# Create Helper instance which will restore system configuration in destructor
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject             => $Self,
-    RestoreSystemConfiguration => 0,
-);
-
-my $ConfigObject = Kernel::Config->new();
-
-my $ActivityObject = Kernel::System::ProcessManagement::DB::Activity->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-my $ActivityDialogObject = Kernel::System::ProcessManagement::DB::ActivityDialog->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
+# get needed objects
+my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+my $CacheObject    = $Kernel::OM->Get('Kernel::System::Cache');
+my $HelperObject   = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ActivityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity');
+my $ActivityDialogObject
+    = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::ActivityDialog');
+my $EntityObject = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Entity');
 
 # set fixed time
 $HelperObject->FixedTimeSet();
@@ -49,6 +37,11 @@ my $ActivityDialogEntityID3 = 'AD3-' . $RandomID;
 my $ActivityDialogName1     = 'ActivityDialog1';
 my $ActivityDialogName2     = 'ActivityDialog2';
 my $ActivityDialogName3     = 'ActivityDialog3';
+
+my $EntityID = $EntityObject->EntityIDGenerate(
+    EntityType => 'Activity',
+    UserID     => 1,
+);
 
 my %ActivityDialogLookup = (
     $ActivityDialogEntityID1 => $ActivityDialogName1,
@@ -228,7 +221,23 @@ my @Tests = (
         },
         Success => 1,
     },
-
+    {
+        Name   => 'ActivityAdd Test 10: EntityID Full Lenght',
+        Config => {
+            EntityID => $EntityID,
+            Name     => $EntityID,
+            Config   => {
+                Description    => 'a Description -äöüßÄÖÜ€исáéíúóúÁÉÍÓÚñÑ',
+                ActivityDialog => {
+                    1 => $ActivityDialogEntityID1,
+                    2 => $ActivityDialogEntityID2,
+                    3 => $ActivityDialogEntityID3,
+                },
+            },
+            UserID => $UserID,
+        },
+        Success => 1,
+    },
 );
 
 my %AddedActivities;
@@ -497,7 +506,7 @@ for my $Test (@Tests) {
                 . $ActivityDialogNames;
         }
 
-        my $Cache = $ActivityObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Activity',
             Key  => $CacheKey,
         );
@@ -512,17 +521,19 @@ for my $Test (@Tests) {
         my %ExpectedActivity = %{ $AddedActivities{ $Activity->{ID} } };
         delete $ExpectedActivity{UserID};
 
+        # create a variable copy otherwise the cache will be altered
+        my %ActivityCopy = %{$Activity};
         for my $Attribute (qw(ID ActivityDialogs CreateTime ChangeTime)) {
             $Self->IsNot(
-                $Activity->{$Attribute},
+                $ActivityCopy{$Attribute},
                 undef,
-                "$Test->{Name} | Activity->{$Attribute} should not be undef",
+                "$Test->{Name} | ActivityCopy{$Attribute} should not be undef",
             );
-            delete $Activity->{$Attribute};
+            delete $ActivityCopy{$Attribute};
         }
 
         $Self->IsDeeply(
-            $Activity,
+            \%ActivityCopy,
             \%ExpectedActivity,
             "$Test->{Name} | Activity"
         );
@@ -697,7 +708,7 @@ for my $Test (@Tests) {
         # check cache
         my $CacheKey = 'ActivityGet::ID::' . $Test->{Config}->{ID} . '::ActivityDialogNames::0';
 
-        my $Cache = $ActivityObject->{CacheObject}->Get(
+        my $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Activity',
             Key  => $CacheKey,
         );
@@ -724,7 +735,7 @@ for my $Test (@Tests) {
         );
 
         # check cache
-        $Cache = $ActivityObject->{CacheObject}->Get(
+        $Cache = $CacheObject->Get(
             Type => 'ProcessManagement_Activity',
             Key  => $CacheKey,
         );
@@ -758,12 +769,14 @@ for my $Test (@Tests) {
             my %ExpectedActivity = %{ $Test->{Config} };
             delete $ExpectedActivity{UserID};
 
+            # create a variable copy otherwise the cache will be altered
+            my %NewActivityCopy = %{$NewActivity};
             for my $Attribute (qw( ActivityDialogs CreateTime ChangeTime )) {
-                delete $NewActivity->{$Attribute};
+                delete $NewActivityCopy{$Attribute};
             }
 
             $Self->IsDeeply(
-                $NewActivity,
+                \%NewActivityCopy,
                 \%ExpectedActivity,
                 "$Test->{Name} | Activity"
             );
@@ -819,25 +832,28 @@ $Self->IsNotDeeply(
     "ActivityList Test 2: | Should be different than the original",
 );
 
+# create a variable copy otherwise the cache will be altered
+my %TestActivityListCopy = %{$TestActivityList};
+
 # delete original activities
 for my $ActivityID ( sort keys %{$OriginalActivityList} ) {
-    delete $TestActivityList->{$ActivityID};
+    delete $TestActivityListCopy{$ActivityID};
 }
 
 $Self->Is(
-    scalar keys %{$TestActivityList},
+    scalar keys %TestActivityListCopy,
     scalar @AddedActivityList,
     "ActivityList Test 2: | Number of activities match added activities",
 );
 
 my $Counter = 0;
-for my $ActivityID ( sort { $a <=> $b } keys %{$TestActivityList} ) {
+for my $ActivityID ( sort { $a <=> $b } keys %TestActivityListCopy ) {
     $Self->Is(
         $ActivityID,
         $AddedActivityList[$Counter],
         "ActivityList Test 2: | ActivityID match AddedActivityID",
-        ),
-        $Counter++;
+    );
+    $Counter++;
 }
 
 #
@@ -947,7 +963,7 @@ $Self->IsDeeply(
 # check cache
 my $CacheKey = 'ActivityListGet';
 
-my $Cache = $ActivityObject->{CacheObject}->Get(
+my $Cache = $CacheObject->Get(
     Type => 'ProcessManagement_Activity',
     Key  => $CacheKey,
 );
