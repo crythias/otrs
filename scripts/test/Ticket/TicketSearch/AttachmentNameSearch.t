@@ -38,7 +38,7 @@ my @TicketIDs;
 # create 2 tickets
 # create ticket 1
 my $TicketID1 = $TicketObject->TicketCreate(
-    Title        => 'Ticket One Title',
+    Title        => $RandomID . 'Ticket One Title',
     Queue        => 'Raw',
     Lock         => 'unlock',
     Priority     => '3 normal',
@@ -73,7 +73,7 @@ push @TicketIDs, $TicketID1;
 
 # create ticket 2
 my $TicketID2 = $TicketObject->TicketCreate(
-    Title        => 'Ticket Two Title ' . $RandomID,
+    Title        => $RandomID . 'Ticket Two Title ' . $RandomID,
     Queue        => 'Raw',
     Lock         => 'unlock',
     Priority     => '3 normal',
@@ -255,7 +255,7 @@ my @Tests = (
         Name   => 'AttachmentName Title Ticket 1',
         Config => {
             AttachmentName => 'StdAttachment-Test1' . $RandomID . '.txt',
-            Title          => 'Ticket One Title',
+            Title          => $RandomID . 'Ticket One Title',
             UserID         => 1,
         },
         ExpectedResults => [$TicketID1],
@@ -265,11 +265,11 @@ my @Tests = (
         Name   => 'AttachmentName Title (Like) Ticket 1',
         Config => {
             AttachmentName => 'StdAttachment-Test1' . $RandomID . '.txt',
-            Title          => '*Title',
+            Title          => $RandomID . '*Title',
             UserID         => 1,
         },
         ExpectedResults => [$TicketID1],
-        ForBothStorages => 0,
+        ForBothStorages => 1,
     },
     {
         Name   => 'AttachmentName (AsCustomer)',
@@ -278,7 +278,7 @@ my @Tests = (
             CustomerUserID => 'customerOne@example.com',
         },
         ExpectedResults => [ $TicketID1, $TicketID2 ],
-        ForBothStorages => 0,
+        ForBothStorages => 1,
     },
     {
         Name   => 'AttachmentName (AsCustomer) Ticket2 Article2',
