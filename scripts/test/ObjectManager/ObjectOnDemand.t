@@ -1,5 +1,5 @@
 # --
-# ObjectManager/ObjectManagerAware.t - ObjectManager tests
+# ObjectManager/ObjectOnDemand.t - ObjectManager tests
 # Copyright (C) 2001-2014 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -11,16 +11,14 @@ use strict;
 use warnings;
 use vars (qw($Self));
 
-use Scalar::Util qw/weaken/;
+#
+# This test makes sure that object dependencies are only created when
+#   the object actively asks for them, not earlier
+#
 
 use Kernel::System::ObjectManager;
 local $Kernel::OM = Kernel::System::ObjectManager->new();
 $Self->True( $Kernel::OM, 'Could build object manager' );
-
-$Self->True(
-    $Kernel::OM->{Objects}->{'Kernel::Config'},
-    'Kernel::Config was preloaded',
-);
 
 $Self->False(
     exists $Kernel::OM->{Objects}->{'Kernel::System::Time'},
@@ -41,7 +39,7 @@ $Self->True(
 
 $Self->False(
     exists $Kernel::OM->{Objects}->{'Kernel::System::Log'},
-    'Kernel::System::Log is a dependency of Kernel::System::Time, but was not yet loaded because of ObjectManagerAware in Kernel::System::Time',
+    'Kernel::System::Log is a dependency of Kernel::System::Time, but was not yet loaded',
 );
 
 1;
