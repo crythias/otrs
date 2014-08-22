@@ -34,10 +34,6 @@ PACKAGE_TMP_SPEC="/tmp/$PACKAGE.spec"
 RPM_BUILD="rpmbuild"
 #RPM_BUILD="rpm"
 
-#IPHONE_PACKAGE="http://ftp.otrs.org/pub/otrs/packages/iPhoneHandle-1.1.1.opm"
-MANUAL_EN="http://ftp.otrs.org/pub/otrs/doc/doc-admin/3.3/en/pdf/otrs_admin_book.pdf"
-#MANUAL_DE="http://ftp.otrs.org/pub/otrs/doc/doc-admin/3.2/de/pdf/otrs_admin_book.pdf"
-
 
 if ! test $PATH_TO_CVS_SRC || ! test $VERSION || ! test $RELEASE; then
     # --
@@ -91,17 +87,6 @@ rm -rf $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm
 # --
 rm -rf $PACKAGE_DEST_DIR
 mkdir $PACKAGE_DEST_DIR
-mkdir -p $PACKAGE_DEST_DIR/RPMS/fedora/4
-mkdir -p $PACKAGE_DEST_DIR/RPMS/rhel/5
-mkdir -p $PACKAGE_DEST_DIR/RPMS/rhel/6
-mkdir -p $PACKAGE_DEST_DIR/RPMS/suse/10.0
-mkdir -p $PACKAGE_DEST_DIR/RPMS/suse/11.0
-
-mkdir -p $PACKAGE_DEST_DIR/SRPMS/fedora/4
-mkdir -p $PACKAGE_DEST_DIR/SRPMS/rhel/5
-mkdir -p $PACKAGE_DEST_DIR/SRPMS/rhel/6
-mkdir -p $PACKAGE_DEST_DIR/SRPMS/suse/10.0
-mkdir -p $PACKAGE_DEST_DIR/SRPMS/suse/11.0
 
 # --
 # build
@@ -127,75 +112,33 @@ echo "BUILDHOST = `hostname -f`" >> $RELEASEFILE
 # --
 cd $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ || exit 1;
 
-# remove .cvs ignore files
-find -name ".gitignore" | xargs rm -rf
-
-#
 # remove old sessions, articles and spool and other stuff
 # (remainders of a running system, should not really happen)
-#
-rm -f var/sessions/*
-rm -rf var/article/*
-rm -rf var/spool/*
-rm -rf Kernel/Config.pm
-
+rm -rf .gitignore var/sessions/* var/article/* var/spool/* Kernel/Config.pm
 # remove development content
 rm -rf development
-
 # remove swap/temp stuff
 find -name ".#*" | xargs rm -rf
 find -name ".keep" | xargs rm -f
 
-# include pdf docs
-mkdir -p doc/manual/en
-wget "$MANUAL_EN" || exit 1;
-mv otrs_admin_book.pdf doc/manual/en
-
-#mkdir -p doc/manual/de
-#wget "$MANUAL_DE" || exit 1;
-#mv otrs_admin_book.pdf doc/manual/de
-
 # mk ARCHIVE
 bin/otrs.CheckSum.pl -a create
 
-# add pre installed packages
-mkdir var/packages/
+function CreateArchive() {
+    SUFFIX=$1
+    COMMANDLINE=$2
 
-if test $IPHONE_PACKAGE; then
-    wget "$IPHONE_PACKAGE" || exit 1;
-    mv iPhoneHandle*.opm var/packages/
-fi
+    cd $PACKAGE_BUILD_DIR/ || exit 1;
+    SOURCE_LOCATION=$SYSTEM_SOURCE_DIR/$PACKAGE-$VERSION.$SUFFIX
+    rm $SOURCE_LOCATION
+    echo "Building $SOURCE_LOCATION..."
+    $COMMANDLINE $SOURCE_LOCATION $ARCHIVE_DIR/ > /dev/null || exit 1;
+    cp $SOURCE_LOCATION $PACKAGE_DEST_DIR/
+}
 
-# --
-# create tar
-# --
-cd $PACKAGE_BUILD_DIR/ || exit 1;
-SOURCE_LOCATION=$SYSTEM_SOURCE_DIR/$PACKAGE-$VERSION.tar.gz
-rm $SOURCE_LOCATION
-echo "Building tar.gz..."
-tar -czf $SOURCE_LOCATION $ARCHIVE_DIR/ || exit 1;
-cp $SOURCE_LOCATION $PACKAGE_DEST_DIR/
-
-# --
-# create bzip2
-# --
-cd $PACKAGE_BUILD_DIR/ || exit 1;
-SOURCE_LOCATION=$SYSTEM_SOURCE_DIR/$PACKAGE-$VERSION.tar.bz2
-rm $SOURCE_LOCATION
-echo "Building tar.bz2..."
-tar -cjf $SOURCE_LOCATION $ARCHIVE_DIR/ || exit 1;
-cp $SOURCE_LOCATION $PACKAGE_DEST_DIR/
-
-# --
-# create zip
-# --
-cd $PACKAGE_BUILD_DIR/ || exit 1;
-SOURCE_LOCATION=$SYSTEM_SOURCE_DIR/$PACKAGE-$VERSION.zip
-rm $SOURCE_LOCATION
-echo "Building zip..."
-zip -r $SOURCE_LOCATION $ARCHIVE_DIR/ || exit 1;
-cp $SOURCE_LOCATION $PACKAGE_DEST_DIR/
-
+CreateArchive "tar.gz"  "tar -czf"
+CreateArchive "tar.bz2" "tar -cjf"
+CreateArchive "zip"     "zip -r"
 
 # --
 # create rpm spec files
@@ -203,96 +146,34 @@ cp $SOURCE_LOCATION $PACKAGE_DEST_DIR/
 DESCRIPTION=$PATH_TO_CVS_SRC/scripts/auto_build/description.txt
 FILES=$PATH_TO_CVS_SRC/scripts/auto_build/files.txt
 
-# --
-# build SuSE 11.0 rpm
-# --
-echo "Building SuSE 11.0 rpm..."
-specfile=$PACKAGE_TMP_SPEC
-# replace version and release
-cat $ARCHIVE_DIR/scripts/suse-otrs-11.0.spec | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
-# replace sourced files
-perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
-# replace package description
-perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
-$RPM_BUILD -ba --clean $specfile || exit 1;
-rm $specfile || exit 1;
+function CreateRPM() {
+    DistroName=$1
+    SpecfileName=$2
+    TargetPath=$3
 
-mv $SYSTEM_RPM_DIR/*/$PACKAGE*$VERSION*$RELEASE*.rpm $PACKAGE_DEST_DIR/RPMS/suse/11.0/
-mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/suse/11.0/
+    echo "Building $DistroName rpm..."
 
-# --
-# build SuSE 10.0 rpm
-# --
-echo "Building SuSE 10.0 rpm..."
-specfile=$PACKAGE_TMP_SPEC
-# replace version and release
-cat $ARCHIVE_DIR/scripts/suse-otrs-10.0.spec | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
-# replace sourced files
-perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
-# replace package description
-perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
-$RPM_BUILD -ba --clean $specfile || exit 1;
-rm $specfile || exit 1;
+    specfile=$PACKAGE_TMP_SPEC
+    # replace version and release
+    cat $ARCHIVE_DIR/scripts/$SpecfileName | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
+    # replace sourced files
+    perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
+    # replace package description
+    perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
+    $RPM_BUILD -ba --clean $specfile || exit 1;
+    rm $specfile || exit 1;
 
-mv $SYSTEM_RPM_DIR/*/$PACKAGE*$VERSION*$RELEASE*.rpm $PACKAGE_DEST_DIR/RPMS/suse/10.0/
-mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/suse/10.0/
+    mkdir -p $PACKAGE_DEST_DIR/RPMS/$TargetPath
+    mv $SYSTEM_RPM_DIR/*/$PACKAGE*$VERSION*$RELEASE*.rpm $PACKAGE_DEST_DIR/RPMS/$TargetPath
+    mkdir -p $PACKAGE_DEST_DIR/SRPMS/$TargetPath
+    mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/$TargetPath
+}
 
-# --
-# build Fedora rpm
-# --
-echo "Building Fedora rpm..."
-cp $ARCHIVE_DIR/scripts/redhat-rpmmacros ~/.rpmmacros || exit 1
-specfile=$PACKAGE_TMP_SPEC
-cat $ARCHIVE_DIR/scripts/fedora-otrs-4.spec | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
-# replace sourced files
-perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
-# replace package description
-perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
-$RPM_BUILD -ba --clean $specfile || exit 1;
-rm $specfile || exit 1;
-rm ~/.rpmmacros || exit 1;
+CreateRPM "SuSE 11.0" "suse-otrs-11.0.spec" "suse/11.0/"
+CreateRPM "SuSE 10.0" "suse-otrs-10.0.spec" "suse/10.0/"
+CreateRPM "Fedora"    "fedora-otrs-4.spec"  "fedora/4/"
+CreateRPM "RHEL6"     "rhel6-otrs.spec"     "rhel/6"
 
-mv $SYSTEM_RPM_DIR/*/$PACKAGE*$VERSION*$RELEASE*.rpm $PACKAGE_DEST_DIR/RPMS/fedora/4/
-mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/fedora/4/
-
-# --
-# build RHEL6 rpm
-# --
-echo "Building RHEL6 rpm..."
-cp $ARCHIVE_DIR/scripts/redhat-rpmmacros ~/.rpmmacros || exit 1
-specfile=$PACKAGE_TMP_SPEC
-cat $ARCHIVE_DIR/scripts/rhel6-otrs.spec | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
-# replace sourced files
-perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
-# replace package description
-perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
-$RPM_BUILD -ba --clean $specfile || exit 1;
-rm $specfile || exit 1;
-rm ~/.rpmmacros || exit 1;
-
-mv $SYSTEM_RPM_DIR/*/$PACKAGE*$VERSION*$RELEASE*.rpm $PACKAGE_DEST_DIR/RPMS/rhel/6/
-mv $SYSTEM_SRPM_DIR/$PACKAGE*$VERSION*$RELEASE*.src.rpm $PACKAGE_DEST_DIR/SRPMS/rhel/6/
-
-# --
-# stats
-# --
-echo "-----------------------------------------------------------------";
-echo -n "Source code lines (*.sh) : "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.sh | xargs cat | wc -l
-echo -n "Source code lines (*.pl) : "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.pl | xargs cat | wc -l
-echo -n "Source code lines (*.pm) : "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.pm | xargs cat | wc -l
-echo -n "Source code lines (*.t) : "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.t | xargs cat | wc -l
-echo -n "Source code lines (*.dtl): "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.dtl | xargs cat | wc -l
-echo -n "Source code lines (*.xml): "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.xml | xargs cat | wc -l
-echo -n "Source code lines (*.js): "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.js | xargs cat | wc -l
-echo -n "Source code lines (*.css): "
-find $PACKAGE_BUILD_DIR/$ARCHIVE_DIR/ -name *.css | xargs cat | wc -l
 echo "-----------------------------------------------------------------";
 echo "You will find your tar.gz, RPMs and SRPMs in $PACKAGE_DEST_DIR";
 cd $PACKAGE_DEST_DIR

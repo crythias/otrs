@@ -35,7 +35,7 @@
 </TableAlter>
 
 <!-- remove pm_entity table as it is not longer needed with use of GUIDs -->
- <TableDrop Name="pm_entity"/>
+<TableDrop Name="pm_entity"/>
 
 <!-- personal_services - stores all "my services" -->
 <TableCreate Name="personal_services">
@@ -59,5 +59,28 @@
 <TableAlter Name="package_repository">
     <ColumnDrop Name="content_size"/>
 </TableAlter>
+
+<!-- system_maintenance - an scheduled system maintenance -->
+<Table Name="system_maintenance">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER"/>
+    <Column Name="start_date" Required="true" Type="INTEGER"/>
+    <Column Name="stop_date" Required="true" Type="INTEGER"/>
+    <Column Name="comments" Required="false" Size="250" Type="VARCHAR"/>
+    <Column Name="login_message" Required="false" Size="250" Type="VARCHAR"/>
+    <Column Name="show_login_message" Required="false" Type="SMALLINT"/>
+    <Column Name="notify_message" Required="false" Size="250" Type="VARCHAR"/>
+    <Column Name="valid_id" Required="true" Type="SMALLINT"/>
+    <Column Name="create_time" Required="true" Type="DATE"/>
+    <Column Name="create_by" Required="true" Type="INTEGER"/>
+    <Column Name="change_time" Required="true" Type="DATE"/>
+    <Column Name="change_by" Required="true" Type="INTEGER"/>
+    <ForeignKey ForeignTable="valid">
+        <Reference Local="valid_id" Foreign="id"/>
+    </ForeignKey>
+    <ForeignKey ForeignTable="users">
+        <Reference Local="create_by" Foreign="id"/>
+        <Reference Local="change_by" Foreign="id"/>
+    </ForeignKey>
+</Table>
 
 </database>
