@@ -32,9 +32,16 @@ sub Run {
     # only show it on admin start screen
     return '' if $Self->{LayoutObject}->{Action} ne 'Admin';
 
+    # generate manual link
+    my $ManualVersion = $Self->{ConfigObject}->Get('Version');
+    $ManualVersion =~ m{^(\d{1,2}).+};
+    $ManualVersion = $1;
+
     $Self->{LayoutObject}->Block(
         Name => 'AdminNavBar',
-        Data => {},
+        Data => {
+            ManualVersion => $ManualVersion,
+        },
     );
 
     # get all Frontend::Module
