@@ -172,7 +172,7 @@ CREATE TABLE personal_queues (
 CREATE TABLE personal_services (
     user_id INTEGER NOT NULL,
     service_id INTEGER NOT NULL,
-    INDEX personal_services_queue_id (service_id),
+    INDEX personal_services_service_id (service_id),
     INDEX personal_services_user_id (user_id)
 );
 # ----------------------------------------------------------
@@ -234,7 +234,7 @@ CREATE TABLE system_maintenance (
     id INTEGER NOT NULL AUTO_INCREMENT,
     start_date INTEGER NOT NULL,
     stop_date INTEGER NOT NULL,
-    comments VARCHAR (250) NULL,
+    comments VARCHAR (250) NOT NULL,
     login_message VARCHAR (250) NULL,
     show_login_message SMALLINT NULL,
     notify_message VARCHAR (250) NULL,

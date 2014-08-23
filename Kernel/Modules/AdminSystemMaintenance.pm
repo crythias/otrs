@@ -45,6 +45,8 @@ sub Run {
         = $Self->{ParamObject}->GetParam( Param => 'SystemMaintenanceID' ) || '';
     my $WantSessionID = $Self->{ParamObject}->GetParam( Param => 'WantSessionID' ) || '';
 
+    my $SessionVisibility = 'Collapsed';
+
     # ------------------------------------------------------------ #
     # kill session id
     # ------------------------------------------------------------ #
@@ -54,7 +56,10 @@ sub Run {
         $Self->{LayoutObject}->ChallengeTokenCheck();
 
         $Self->{SessionObject}->RemoveSessionID( SessionID => $WantSessionID );
-        return $Self->{LayoutObject}->Redirect( OP => "Action=AdminSystemMaintenance" );
+        return $Self->{LayoutObject}->Redirect(
+            OP =>
+                "Action=AdminSystemMaintenance;Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID;Kill=1"
+        );
     }
 
     # ------------------------------------------------------------ #
@@ -72,7 +77,10 @@ sub Run {
             $Self->{SessionObject}->RemoveSessionID( SessionID => $Session );
         }
 
-        return $Self->{LayoutObject}->Redirect( OP => "Action=AdminSystemMaintenance" );
+        return $Self->{LayoutObject}->Redirect(
+            OP =>
+                "Action=AdminSystemMaintenance;Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID;KillAll=1"
+        );
     }
 
     # ------------------------------------------------------------ #
@@ -123,11 +131,17 @@ sub Run {
             };
         }
 
+        if ( !$SystemMaintenanceData->{Comment} ) {
+
+            # add server error class
+            $Error{CommentServerError} = 'ServerError';
+
+        }
+
         if ( !$SystemMaintenanceData->{ValidID} ) {
 
-            # add server error error class
-            $Error{ValidIDServerError}        = 'ServerError';
-            $Error{ValidIDServerErrorMessage} = 'This field is required';
+            # add server error class
+            $Error{ValidIDServerError} = 'ServerError';
         }
 
         # if there is an error return to edit screen
@@ -164,7 +178,7 @@ sub Run {
         return $Self->{LayoutObject}
             ->Redirect(
             OP =>
-                "Action=$Self->{Action};Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID"
+                "Action=$Self->{Action};Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID;Saved=1"
             );
     }
 
@@ -172,6 +186,9 @@ sub Run {
     # Edit View
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'SystemMaintenanceEdit' ) {
+
+        # initialize notify container
+        my @NotifyData;
 
         # check for SystemMaintenanceID
         if ( !$SystemMaintenanceID ) {
@@ -203,10 +220,45 @@ sub Run {
             );
         }
 
+        if ( $Self->{ParamObject}->GetParam( Param => 'Saved' ) ) {
+
+            # add notification
+            push @NotifyData, {
+                Priority => 'Notice',
+                Info     => "System Maintenance was saved successfully!",
+            };
+        }
+
+        if ( $Self->{ParamObject}->GetParam( Param => 'Kill' ) ) {
+
+            # add notification
+            push @NotifyData, {
+                Priority => 'Notice',
+                Info     => 'Session has been killed!',
+            };
+
+            # set class for expanding sessions widget
+            $SessionVisibility = 'Expanded';
+        }
+
+        if ( $Self->{ParamObject}->GetParam( Param => 'KillAll' ) ) {
+
+            # add notification
+            push @NotifyData, {
+                Priority => 'Notice',
+                Info     => 'All sessions has been killed, exept the current one!',
+            };
+
+            # set class for expanding sessions widget
+            $SessionVisibility = 'Expanded';
+        }
+
         return $Self->_ShowEdit(
             %Param,
             SystemMaintenanceID   => $SystemMaintenanceID,
             SystemMaintenanceData => $SystemMaintenanceData,
+            NotifyData            => \@NotifyData,
+            SessionVisibility     => $SessionVisibility,
             Action                => 'Edit',
         );
 
@@ -247,11 +299,17 @@ sub Run {
             };
         }
 
+        if ( !$SystemMaintenanceData->{Comment} ) {
+
+            # add server error class
+            $Error{CommentServerError} = 'ServerError';
+
+        }
+
         if ( !$SystemMaintenanceData->{ValidID} ) {
 
-            # add server error error class
-            $Error{ValidIDServerError}        = 'ServerError';
-            $Error{ValidIDServerErrorMessage} = 'This field is required';
+            # add server error class
+            $Error{ValidIDServerError} = 'ServerError';
         }
 
         # if there is an error return to edit screen
@@ -291,7 +349,7 @@ sub Run {
         return $Self->{LayoutObject}
             ->Redirect(
             OP =>
-                "Action=$Self->{Action};Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID"
+                "Action=$Self->{Action};Subaction=SystemMaintenanceEdit;SystemMaintenanceID=$SystemMaintenanceID;Saved=1"
             );
     }
 
@@ -435,8 +493,8 @@ sub _ShowEdit {
     $Param{ValidOption} = $Self->{LayoutObject}->BuildSelection(
         Data       => \%ValidList,
         Name       => 'ValidID',
-        SelectedID => $SystemMaintenanceData->{ValidID} || $ValidList{valid},
-        Class      => 'Validate_Required ' . ( $Param{Errors}->{'ValidIDInvalid'} || '' ),
+        SelectedID => $SystemMaintenanceData->{ValidID} || 1,
+        Class      => 'Validate_Required ' . ( $Param{ValidIDServerError} || '' ),
     );
 
     if (
@@ -500,6 +558,7 @@ sub _ShowEdit {
                 Name => $UserSession->{UserType} . 'Session',
                 Data => {
                     %{$UserSession},
+                    %Param,
                 },
             );
         }
