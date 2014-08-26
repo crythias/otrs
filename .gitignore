@@ -9,6 +9,7 @@
 *~
 
 # OTRS
+.procmailrc
 /ARCHIVE
 doc/manual/en
 Kernel/Config/Files/ZZZ*.pm
@@ -82,11 +83,28 @@ Kernel/cpan-lib/Pod/Strip.pm
 scripts/install-git-hooks.pl
 scripts/uninstall-git-hooks.pl
 OTRSCodePolicy*
+perltidy.LOG
 
 # ITSM
 var/stats/*.xml.installed
 bin/CodeInstall.pl
 bin/ModuleCode.pl
 bin/DatabaseInstall.pl
-perltidy.LOG
-.procmailrc
+
+# OTRSBusiness
+OTRSBusiness.*
+Kernel/Language/de_OTRSBusiness.pm
+Kernel/Modules/*Chat*
+Kernel/Modules/AgentTicketAttachmentView.pm
+Kernel/System/*Chat*
+Kernel/Output/HTML/*Chat*
+Kernel/Output/HTML/TicketMenuAttachmentView.pm
+Kernel/Output/HTML/Standard/*Chat*
+Kernel/Output/HTML/Standard/AgentTicketAttachmentView.tt
+scripts/test/Chat
+var/httpd/htdocs/js/*Chat*
+var/httpd/htdocs/js/*ChronicalView*
+var/httpd/htdocs/js/Core.Agent.TicketAttachmentView.js
+var/httpd/htdocs/skins/Agent/default/css/*Chat*
+var/httpd/htdocs/skins/Customer/default/css/*Chat*
+var/httpd/htdocs/skins/Agent/default/css/Core.Agent.AttachmentView.css
