@@ -1,4 +1,17 @@
 #4.0.0.beta1 20??-??-??
+ - 2014-08-25 Updated CPAN module YAML to version 1.09.
+ - 2014-08-25 Updated CPAN module URI to version 1.64.
+ - 2014-08-25 Updated CPAN module Selenium::Remote::Driver to version 0.2102.
+ - 2014-08-25 Updated CPAN module Net::SSLGlue to version 1.053.
+ - 2014-08-25 Updated CPAN module Net::IMAP::Simple to version 1.2205.
+ - 2014-08-25 Updated CPAN module Net::HTTP to version 6.07.
+ - 2014-08-25 Updated CPAN module Locale::Codes to version 3.31.
+ - 2014-08-25 Updated CPAN module LWP::Protocol::https to version 6.06.
+ - 2014-08-25 Updated CPAN module LWP to version 6.08.
+ - 2014-08-25 Updated CPAN module Email::Valid to version 1.194.
+ - 2014-08-25 Updated CPAN module CGI::Emulate::PSGI to version 0.18.
+ - 2014-08-25 Updated CPAN module CGI::Fast to version 2.02.
+ - 2014-08-25 Updated CPAN module CGI to version 4.03.
  - 2014-08-18 Added Attachment Name option in ticket search screens.
  - 2014-08-18 Added ProcessManagement Dashboard widget (for valid running process tickets).
  - 2014-08-18 Fixed bug#[10682](http://bugs.otrs.org/show_bug.cgi?id=10682) - Customers are able to search in non customer articles.
