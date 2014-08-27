@@ -165,11 +165,19 @@ sub HandleLanguage {
 
     my $DefaultTheme = $Kernel::OM->Get('Kernel::Config')->Get('DefaultTheme');
 
+    # We need to map internal codes to the official ones used by Transifex
+    my %TransifexLanguagesMap = (
+        sr_Cyrl => 'sr',
+        sr_Latn => 'sr@Latin',
+    );
+
+    my $TransifexLanguage = $TransifexLanguagesMap{$Language} // $Language;
+
     if ( !$Module ) {
         $LanguageFile  = "$Home/Kernel/Language/$Language.pm";
         $TargetFile    = "$Home/Kernel/Language/$Language.pm";
         $TargetPOTFile = "$Home/i18n/otrs/otrs.pot";
-        $TargetPOFile  = "$Home/i18n/otrs/otrs.$Language.po";
+        $TargetPOFile  = "$Home/i18n/otrs/otrs.$TransifexLanguage.po";
     }
     else {
         $IsSubTranslation = 1;
@@ -193,7 +201,7 @@ sub HandleLanguage {
         $TargetFile = "$ModuleDirectory/Kernel/Language/${Language}_$Module.pm";
 
         $TargetPOTFile = "$ModuleDirectory/i18n/$Module/$Module.pot";
-        $TargetPOFile  = "$ModuleDirectory/i18n/$Module/$Module.$Language.po";
+        $TargetPOFile  = "$ModuleDirectory/i18n/$Module/$Module.$TransifexLanguage.po";
     }
 
     if ( !-w $TargetFile ) {
@@ -285,7 +293,7 @@ sub HandleLanguage {
                 # if we translate a module, we must handle also that possibly
                 # there is already a translation in the core files
                 if ($IsSubTranslation) {
-                    if ($LanguageCoreObject->{Translation}->{$Word} ) {
+                    if (!exists $LanguageCoreObject->{Translation}->{$Word} ) {
 
                         # lookup for existing translation in module language object
                         $UsedWords{$Word} = $POTranslations{$Word} || $LanguageObject->{Translation}->{$Word};

@@ -233,9 +233,9 @@ sub Data {
         'There is no acount with that user name.' => 'Es gibt kein Benutzerkonto mit diesem Benutzernamen.',
         'Please contact your administrator' => 'Bitte kontaktieren Sie Ihren Administrator',
         'Authentication succeeded, but no customer record is found in the customer backend. Please contact your administrator.' =>
-            '',
+            'Authentifizierung erfolgreich, aber im Kunden Backend wurde kein Kunden Eintrag gefunden. Bitte kontaktieren Sie Ihren Administrator.',
         'This e-mail address already exists. Please log in or reset your password.' =>
-            '',
+            'Diese E-Mail Adresse existiert bereits. Bitte meldne Sie sich an oder setzen Ihr Passwort zurück.',
         'Logout' => 'Abmelden',
         'Logout successful. Thank you for using %s!' => 'Abmeldung erfolgreich! Danke für die Benutzung von  %s!',
         'Feature not active!' => 'Funktion nicht aktiviert!',
@@ -257,6 +257,8 @@ sub Data {
             'Sollte ein Root-Passwort für die Datenbank gesetzt sein, muss dieses hier angegeben werden. Anderenfalls muss dieses Feld leer bleiben.',
         'Database already contains data - it should be empty!' => 'Die Datenbank enthält bereits Daten obwohl sie leer sein sollte!',
         'Login is needed!' => 'Login wird benötigt!',
+        'It is currently not possible to login due to a scheduled system maintenance.' =>
+            'Die Anmeldung ist derzeit aufgrund einer geplanten Systemwartung nicht verfügbar.',
         'Password is needed!' => 'Passwort wird benötigt!',
         'Take this Customer' => 'Kunden übernehmen',
         'Take this User' => 'Benutzer übernehmen',
@@ -347,7 +349,7 @@ sub Data {
             'Keine oder keine neuen Pakete im ausgewählten Verzeichnis gefunden.',
         'Edit the system configuration settings.' => 'Systemeinstellungen bearbeiten.',
         'ACL information from database is not in sync with the system configuration, please deploy all ACLs.' =>
-            '',
+            'ACL Konfiguration laut Datenbank nicht synchron mit der System Configuration, bitte ACLs in Betrieb nehmen.',
         'printed at' => 'gedruckt am',
         'Loading...' => 'Laden...',
         'Dear Mr. %s,' => 'Sehr geehrter Herr %s,',
@@ -971,7 +973,7 @@ sub Data {
         'Export ACLs' => 'ACLs exportieren',
         'Configuration import' => 'Konfiguration importieren',
         'Here you can upload a configuration file to import ACLs to your system. The file needs to be in .yml format as exported by the ACL editor module.' =>
-            '',
+            'Hier können Sie über eine Konfigurationsdatei ACLs ins System importieren. Diese Datei muss das vom ACL Editor verwendeten .yml Format haben.',
         'This field is required.' => 'Dieses Feld wird benötigt.',
         'Overwrite existing ACLs?' => 'Existierende ACLs überschreiben?',
         'Upload ACL configuration' => 'ACL-Konfiguration hochladen',
@@ -1017,7 +1019,7 @@ sub Data {
 
         # Template: AdminACLNew
         'Create a new ACL by submitting the form data. After creating the ACL, you will be able to add configuration items in edit mode.' =>
-            '',
+            'Neue ACL Erstellen, durch Eingabe der Daten. Nach Anlage der ACL ist es möglich Konfigurations Parameter im Änderungsmodus einzufügen.',
 
         # Template: AdminAttachment
         'Attachment Management' => 'Anlagenverwaltung',
@@ -1094,7 +1096,7 @@ sub Data {
         'You can manage these groups via the configuration setting "CustomerGroupAlwaysGroups".' =>
             'Sie können diese Gruppen mit der Konfigurationseinstellung "CustomerGroupAlwaysGroups" bearbeiten.',
         'Filter for Groups' => 'Filter für Gruppen',
-        'Just start typing to filter...' => '',
+        'Just start typing to filter...' => 'Beginnen Sie mit der Eingabe zum zu filtern...',
         'Select the customer:group permissions.' => 'Wählen sie die Kunde:Gruppe-Rechte aus',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
             'Wenn nichts ausgewählt ist, hat der Kunde in dieser Gruppe keine Rechte (und kann nicht auf Tickets zugreifen).',
@@ -1208,8 +1210,8 @@ sub Data {
         'Check RegEx' => 'Auf RegEx prüfen',
         'Here you can specify a regular expression to check the value. The regex will be executed with the modifiers xms.' =>
             'Hier können Sie einen regulären Ausdruck definieren um den Wert zu prüfen. Der RegEx wird mit den Modifikatoren xms ausgeführt.',
-        'RegEx' => '',
-        'Invalid RegEx' => '',
+        'RegEx' => 'RegEx',
+        'Invalid RegEx' => 'Ungültige RegEx',
         'Error Message' => 'Fehlermeldung',
         'Add RegEx' => 'RegEx hinzufügen',
 
@@ -1263,7 +1265,7 @@ sub Data {
         'This event is already attached to the job, Please use a different one.' =>
             'Dieses Event ist dem Job bereits zugeordnet. Bitte wählen Sie ein anderes aus.',
         'Delete this Event Trigger' => 'Diesen Event-Trigger löschen',
-        'Select Tickets' => '',
+        'Select Tickets' => 'Tickets selektieren',
         '(e. g. 10*5155 or 105658*)' => 'z .B. 10*5144 oder 105658*',
         '(e. g. 234321)' => 'z. B. 234321',
         'Customer login' => 'Kundenlogin',
@@ -1301,7 +1303,7 @@ sub Data {
         'Ticket solution time reached' => 'Ticket-Lösungszeit erreicht',
         'Ticket solution time reached between' => 'Ticket-Lösungszeit erreicht zwischen',
         'Archive search option' => 'Im Archiv suchen',
-        'Update/Add Ticket Attributes' => '',
+        'Update/Add Ticket Attributes' => 'Ticket Attribute Aktualisieren/Hinzufügen',
         'Set new service' => 'Neuen Service setzen',
         'Set new Service Level Agreement' => 'Neues Service-Level-Abkommen setzen',
         'Set new priority' => 'Neue Priorität setzen',
@@ -1320,7 +1322,7 @@ sub Data {
         'Archive selected tickets' => 'Ausgewählte Tickets archivieren',
         'Add Note' => 'Notiz hinzufügen',
         'Time units' => 'Zeiteinheiten',
-        'Execute Ticket Commands' => '',
+        'Execute Ticket Commands' => 'Ticket Kommandos ausführen',
         'Send agent/customer notifications on changes' => 'Sende eine Agent/Kunden Benachrichtigung bei Änderungen',
         'CMD' => 'CMD',
         'This command will be executed. ARG[0] will be the ticket number. ARG[1] the ticket id.' =>
@@ -1630,6 +1632,7 @@ sub Data {
         'Queue Settings' => 'Queue-Einstellungen',
         'Ticket Settings' => 'Ticket-Einstellungen',
         'System Administration' => 'Systemverwaltung',
+        'Online Admin Manual' => '',
 
         # Template: AdminNotification
         'Notification Management' => 'Benachrichtigungs-Verwaltung',
@@ -2352,6 +2355,32 @@ sub Data {
         'The display name and email address will be shown on mail you send.' =>
             'Der Anzeigename und die E-Mail-Adresse werden für die gesendeten Mail verwendet.',
 
+        # Template: AdminSystemMaintenance
+        'System Maintenance Management' => 'Systemwartungs-Verwaltung',
+        'Schedule New System Maintenance' => 'Neue Systemwartung planen',
+        'Schedule a system maintenance period for announcing the Agents and Customers the system is down for a time period.' =>
+            'Ein Systemwartungs-Zeitfenster planen, um Agenten und Kunden auf die Downtime hinzuweisen.',
+        'Some time before this system maintenance starts the users will receive a notification on each screen announcing about this fact.' =>
+            'Einige Zeit vor der Systemwartung werden die Nutzer einen Hinweis auf jedem Bildschirm sehen.',
+        'Start date' => 'Startzeitpunkt',
+        'Stop date' => 'Endzeitpunkt',
+        'Delete System Maintenance' => 'Systemwartung entfernen',
+        'Do you really want to delete this scheduled system maintenance?' =>
+            'Wollen Sie diese geplante Systemwartung wirklich löschen?',
+
+        # Template: AdminSystemMaintenanceEdit
+        'Edit System Maintenance %s' => 'Systemwartung %s bearbeiten',
+        'Edit System Maintenance information' => 'Systemwartungs-Information bearbeiten',
+        'Date invalid!' => 'Ungültiges Datum',
+        'Login message' => 'Anmeldungs-Nachricht',
+        'Show login message' => 'Anmeldungs-Nachricht anzeigen',
+        'Notify message' => 'Hinweistext',
+        'Manage Sessions' => 'Sitzungen verwalten',
+        'All Sessions' => 'Alle Sitzungen',
+        'Agent Sessions' => 'Agenten-Sitzungen',
+        'Customer Sessions' => 'Kunden-Sitzungen',
+        'Kill all Sessions, exept current' => 'Alle Sitzungen außer der aktuellen löschen',
+
         # Template: AdminTemplate
         'Manage Templates' => 'Vorlagen verwalten',
         'Add template' => 'Vorlage hinzufügen',
@@ -2444,6 +2473,7 @@ sub Data {
         'Customer information' => 'Kundeninformation',
         'Phone ticket' => 'Telefon-Ticket',
         'Email ticket' => 'E-Mail-Ticket',
+        'Start Chat' => '',
         '%s open ticket(s) of %s' => '%s offene Tickets von %s',
         '%s closed ticket(s) of %s' => '%s geschlossene Tickets von %s',
         'New phone ticket from %s' => 'Neues Telefonticket von %s',
@@ -2644,7 +2674,6 @@ sub Data {
         'Text Template' => 'Textvorlage',
         'Note type' => 'Notiztyp',
         'Next state' => 'Nächster Status',
-        'Date invalid!' => 'Ungültiges Datum',
 
         # Template: AgentTicketBounce
         'Bounce Ticket' => 'Ticket umleiten',
@@ -2731,9 +2760,12 @@ sub Data {
         'Column Filters Form' => 'Spalten-Filter-Formular',
 
         # Template: AgentTicketPhone
+        'Split Into New Phone Ticket' => '',
+        'Save Chat Into New Phone Ticket' => '',
         'Create New Phone Ticket' => 'Neues Telefon-Ticket anlegen',
         'Please include at least one customer for the ticket.' => 'Bitte geben Sie mindestens einen Kunden für das Ticket an.',
         'To queue' => 'An Queue',
+        'Chat protocol' => '',
 
         # Template: AgentTicketPlain
         'Email Text Plain View' => 'E-Mail unformatiert anzeigen',
@@ -2768,6 +2800,8 @@ sub Data {
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
             'Sucht in den Attributen Von, Cc, Betreff, Artikelinhalt und überschreibt Attribute mit dem selben Namen.',
         'Customer User Login' => 'Anmeldung Kundenkontakt',
+        'Attachment Name' => '',
+        '(e. g. m*file or myfi*)' => '',
         'Created in Queue' => 'Erstellt in Queue',
         'Lock state' => 'Status Sperre',
         'Watcher' => 'Beobachter',
@@ -2859,6 +2893,7 @@ sub Data {
         'Your email address (this will become your username)' => 'Ihre E-Mail-Adresse (das wird Ihr Benutzername)',
 
         # Template: CustomerNavigationBar
+        'Incoming Chat Requests' => '',
         'Edit personal preferences' => 'Persönliche Einstellungen vornehmen',
 
         # Template: CustomerTicketMessage
@@ -2879,6 +2914,7 @@ sub Data {
         'Customer ID' => 'Kunden-ID',
         'Fulltext search in tickets (e. g. "John*n" or "Will*")' => 'Volltextsuche in Tickets (z. B. "Max*" oder "Muster*")',
         'Carbon Copy' => 'Kopie an',
+        'e. g. m*file or myfi*' => '',
         'Types' => 'Typen',
         'Time restrictions' => 'Zeitbeschränkungen',
         'No time settings' => 'Keine Zeiteinstellungen',
@@ -3115,6 +3151,7 @@ sub Data {
         'Activates the ticket archive system to have a faster system by moving some tickets out of the daily scope. To search for these tickets, the archive flag has to be enabled in the ticket search.' =>
             '',
         'Activates time accounting.' => '',
+        'ActivityID' => '',
         'Added email. %s' => 'E-Mail hinzugefügt. %s',
         'Added link to ticket "%s".' => 'Verknüpfung zu "%s" hergestellt.',
         'Added note (%s)' => 'Notiz hinzugefügt (%s)',
@@ -3334,8 +3371,6 @@ sub Data {
         'Customer request via web.' => 'Kunde stellte Anfrage über Web.',
         'CustomerName' => 'Kundenname',
         'Customers <-> Groups' => '',
-        'Customizable system name. If empty, config item \'Home\' is being used for display.' =>
-            '',
         'Data used to export the search result in CSV format.' => '',
         'Date / Time' => 'Datum / Zeit',
         'Debugs the translation set. If this is set to "Yes" all strings (text) without translations are written to STDERR. This can be helpful when you are creating a new translation file. Otherwise, this option should remain set to "No".' =>
@@ -3781,6 +3816,8 @@ sub Data {
             '',
         'Defines the module to display a notification in the agent interface, if the agent is logged in while having out-of-office active.' =>
             '',
+        'Defines the module to display a notification in the agent interface, if the agent is logged in while having system maintenance active.' =>
+            '',
         'Defines the module to display a notification in the agent interface, if the system is used by the admin user (normally you shouldn\'t work as admin).' =>
             '',
         'Defines the module to generate html refresh headers of html sites, in the customer interface.' =>
@@ -3830,8 +3867,6 @@ sub Data {
         'Defines the next state of a ticket after being moved to another queue, in the move ticket screen of the agent interface.' =>
             '',
         'Defines the number of header fields in frontend modules for add and update postmaster filters. It can be up to 99 fields.' =>
-            '',
-        'Defines the opacity of the Fred console, e.g. 0.9 for 10% transparency.' =>
             '',
         'Defines the parameters for the customer preferences table.' => '',
         'Defines the parameters for the dashboard backend. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTL" indicates the cache expiration period in minutes for the plugin.' =>
@@ -3934,7 +3969,6 @@ sub Data {
             '',
         'Defines the width for the rich text editor component. Enter number (pixels) or percent value (relative).' =>
             '',
-        'Defines the width of the Fred console in percent.' => '',
         'Defines the width of the legend.' => '',
         'Defines which article sender types should be shown in the preview of a ticket.' =>
             'Gibt an, welche Artikel-Sendertypen in der Vorschau eines Tickets angezeigt werden sollen.',
@@ -4158,9 +4192,6 @@ sub Data {
             '',
         'Frontend module registration for the agent interface.' => '',
         'Frontend module registration for the customer interface.' => '',
-        'Frontend module registration for the devel fred object in the admin area.' =>
-            '',
-        'Frontend module registration for the public interface.' => '',
         'Frontend theme' => 'Oberflächen-Schema',
         'Fulltext index regex filters to remove parts of the text.' => '',
         'General ticket data shown in the ticket overviews (fall-back). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note that TicketNumber can not be disabled, because it is necessary.' =>
@@ -4453,8 +4484,6 @@ sub Data {
         'Old: "%s" New: "%s"' => 'Alt: "%s" Neu: "%s"',
         'Open tickets (customer user)' => '',
         'Open tickets (customer)' => '',
-        'Output filter to show the name of the current system in the system header.' =>
-            '',
         'Overloads (redefines) existing functions in Kernel::System::Ticket. Used to easily add customizations.' =>
             '',
         'Overview Escalated Tickets' => 'Übersicht eskalierte Tickets',
@@ -4494,6 +4523,8 @@ sub Data {
         'Parameters for the dashboard backend of the new tickets overview of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin. Note: Only Ticket attributes and Dynamic Fields (DynamicField_NameX) are allowed for DefaultColumns. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.' =>
             '',
         'Parameters for the dashboard backend of the queue overview widget of the agent interface. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "QueuePermissionGroup" is not mandatory, queues are only listed if they belong to this permission group if you enable it. "States" is a list of states, the key is the sort order of the state in the widget. "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.' =>
+            '',
+        'Parameters for the dashboard backend of the running process tickets overview of the agent interface . "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.' =>
             '',
         'Parameters for the dashboard backend of the ticket calendar of the agent interface. "Limit" is the number of entries shown by default. "Group" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). "Default" determines if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" is the cache time in minutes for the plugin.' =>
             '',
@@ -4539,6 +4570,7 @@ sub Data {
         'Process Management Path GUI' => '',
         'Process Management Transition Action GUI' => '',
         'Process Management Transition GUI' => '',
+        'ProcessID' => '',
         'Protection against CSRF (Cross Site Request Forgery) exploits (for more info see http://en.wikipedia.org/wiki/Cross-site_request_forgery).' =>
             '',
         'Provides a matrix overview of the tickets per state per queue.' =>
@@ -4593,6 +4625,7 @@ sub Data {
         'S/MIME Certificate Upload' => 'S/MIME Zertifikat hochladen',
         'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data.' =>
             '',
+        'Schedule a maintenance period.' => '',
         'Search Customer' => 'Kunden suchen',
         'Search User' => '',
         'Search backend default router.' => '',
@@ -4667,7 +4700,13 @@ sub Data {
             '',
         'Sets the default body text for notes added in the ticket responsible screen of the agent interface.' =>
             '',
+        'Sets the default error message for the login screen on Agent and Customer interface, it\'s shown when a running system maintenance period is active.' =>
+            '',
         'Sets the default link type of splitted tickets in the agent interface.' =>
+            '',
+        'Sets the default message for the login screen on Agent and Customer interface, it\'s shown when a running system maintenance period is active.' =>
+            '',
+        'Sets the default message for the notification is shown on a running system maintenance period.' =>
             '',
         'Sets the default next state for new phone tickets in the agent interface.' =>
             '',
@@ -4716,6 +4755,8 @@ sub Data {
         'Sets the maximum number of active sessions per customers within the timespan defined in SessionActiveTime.' =>
             '',
         'Sets the minimal ticket counter size (if "AutoIncrement" was selected as TicketNumberGenerator). Default is 5, this means the counter starts from 10000.' =>
+            '',
+        'Sets the minutes a notification is shown for notice about upcoming system maintenance period.' =>
             '',
         'Sets the number of lines that are displayed in text messages (e.g. ticket lines in the QueueZoom).' =>
             '',
@@ -5062,7 +5103,7 @@ sub Data {
         'Strips empty lines on the ticket preview in the queue view.' => '',
         'Strips empty lines on the ticket preview in the service view.' =>
             '',
-        'Subscribe the output filter at the system.' => '',
+        'System Maintenance' => '',
         'System Request (%s).' => 'Systemanfrage (%s).',
         'Templates <-> Queues' => 'Vorlagen <-> Queues',
         'Textarea' => 'Textfeld',
@@ -5099,8 +5140,6 @@ sub Data {
             '',
         'This module and its PreRun() function will be executed, if defined, for every request. This module is useful to check some user options or to display news about new applications.' =>
             '',
-        'This option defines the background color for the sytem name box.' =>
-            '',
         'This option defines the dynamic field in which a Process Management activity entity id is stored.' =>
             '',
         'This option defines the dynamic field in which a Process Management process entity id is stored.' =>
@@ -5125,18 +5164,6 @@ sub Data {
         'Toggles display of OTRS FeatureAddons list in PackageManager.' =>
             '',
         'Toolbar Item for a shortcut.' => '',
-        'Turn on if you want a JavaScript code quality checker. Only works in CVS Head / OTRS 3 with jQuery.' =>
-            '',
-        'Turn on if you want an realtime HTML-checker.' => '',
-        'Turn on if you want an realtime SQL statement log function.' => '',
-        'Turn on if you want the translation debugger.' => '',
-        'Turn on if you want to see the STDERRLog.' => '',
-        'Turn on if you want to see the data in the environment of the layout object.' =>
-            '',
-        'Turn on if you want to see the data in the serverside session object.' =>
-            '',
-        'Turn on if you want to use the config log mechanism.' => '',
-        'Turn on if you want to use the fred console.' => '',
         'Turns on the animations used in the GUI. If you have problems with these animations (e.g. performance issues), you can turn them off here.' =>
             '',
         'Turns on the remote ip address check. It should be set to "No" if the application is used, for example, via a proxy farm or a dialup connection, because the remote ip address is mostly different for the requests.' =>
@@ -5172,7 +5199,6 @@ sub Data {
             '',
         'When tickets are merged, the customer can be informed per email by setting the check box "Inform Sender". In this text area, you can define a pre-formatted text which can later be modified by the agents.' =>
             '',
-        'Which order should the config log data have?' => '',
         'Your queue selection of your favorite queues. You also get notified about those queues via email if enabled.' =>
             'Auswahl der bevorzugten Queues. Es werden E-Mail-Benachrichtigungen über diese ausgewählten Queues versendet.',
         'Your service selection of your favorite services. You also get notified about those services via email if enabled.' =>
