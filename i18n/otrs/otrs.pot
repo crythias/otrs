@@ -891,6 +891,10 @@ msgid "Login is needed!"
 msgstr ""
 
 #. Template: AAABase
+msgid "It is currently not possible to login due to a scheduled system maintenance."
+msgstr ""
+
+#. Template: AAABase
 msgid "Password is needed!"
 msgstr ""
 
@@ -5538,6 +5542,10 @@ msgstr ""
 msgid "System Administration"
 msgstr ""
 
+#. Template: AdminNavigationBar
+msgid "Online Admin Manual"
+msgstr ""
+
 #. Template: AdminNotification
 msgid "Notification Management"
 msgstr ""
@@ -7706,6 +7714,82 @@ msgstr ""
 msgid "The display name and email address will be shown on mail you send."
 msgstr ""
 
+#. Template: AdminSystemMaintenance
+msgid "System Maintenance Management"
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Schedule New System Maintenance"
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Schedule a system maintenance period for announcing the Agents and Customers the system is down for a time period."
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Some time before this system maintenance starts the users will receive a notification on each screen announcing about this fact."
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Start date"
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Stop date"
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Delete System Maintenance"
+msgstr ""
+
+#. Template: AdminSystemMaintenance
+msgid "Do you really want to delete this scheduled system maintenance?"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Edit System Maintenance %s"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Edit System Maintenance information"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Date invalid!"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Login message"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Show login message"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Notify message"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Manage Sessions"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "All Sessions"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Agent Sessions"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Customer Sessions"
+msgstr ""
+
+#. Template: AdminSystemMaintenanceEdit
+msgid "Kill all Sessions, exept current"
+msgstr ""
+
 #. Template: AdminTemplate
 msgid "Manage Templates"
 msgstr ""
@@ -7948,6 +8032,10 @@ msgstr ""
 
 #. Template: AgentDashboardCustomerUserList
 msgid "Email ticket"
+msgstr ""
+
+#. Template: AgentDashboardCustomerUserList
+msgid "Start Chat"
 msgstr ""
 
 #. Template: AgentDashboardCustomerUserList
@@ -8490,10 +8578,6 @@ msgstr ""
 msgid "Next state"
 msgstr ""
 
-#. Template: AgentTicketActionCommon
-msgid "Date invalid!"
-msgstr ""
-
 #. Template: AgentTicketBounce
 msgid "Bounce Ticket"
 msgstr ""
@@ -8727,6 +8811,14 @@ msgid "Column Filters Form"
 msgstr ""
 
 #. Template: AgentTicketPhone
+msgid "Split Into New Phone Ticket"
+msgstr ""
+
+#. Template: AgentTicketPhone
+msgid "Save Chat Into New Phone Ticket"
+msgstr ""
+
+#. Template: AgentTicketPhone
 msgid "Create New Phone Ticket"
 msgstr ""
 
@@ -8736,6 +8828,10 @@ msgstr ""
 
 #. Template: AgentTicketPhone
 msgid "To queue"
+msgstr ""
+
+#. Template: AgentTicketPhone
+msgid "Chat protocol"
 msgstr ""
 
 #. Template: AgentTicketPlain
@@ -8828,6 +8924,14 @@ msgstr ""
 
 #. Template: AgentTicketSearch
 msgid "Customer User Login"
+msgstr ""
+
+#. Template: AgentTicketSearch
+msgid "Attachment Name"
+msgstr ""
+
+#. Template: AgentTicketSearch
+msgid "(e. g. m*file or myfi*)"
 msgstr ""
 
 #. Template: AgentTicketSearch
@@ -9119,6 +9223,10 @@ msgid "Your email address (this will become your username)"
 msgstr ""
 
 #. Template: CustomerNavigationBar
+msgid "Incoming Chat Requests"
+msgstr ""
+
+#. Template: CustomerNavigationBar
 msgid "Edit personal preferences"
 msgstr ""
 
@@ -9164,6 +9272,10 @@ msgstr ""
 
 #. Template: CustomerTicketSearch
 msgid "Carbon Copy"
+msgstr ""
+
+#. Template: CustomerTicketSearch
+msgid "e. g. m*file or myfi*"
 msgstr ""
 
 #. Template: CustomerTicketSearch
@@ -9819,6 +9931,10 @@ msgid "Activates time accounting."
 msgstr ""
 
 #. SysConfig
+msgid "ActivityID"
+msgstr ""
+
+#. SysConfig
 msgid "Added email. %s"
 msgstr ""
 
@@ -10408,10 +10524,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Customers <-> Groups"
-msgstr ""
-
-#. SysConfig
-msgid "Customizable system name. If empty, config item 'Home' is being used for display."
 msgstr ""
 
 #. SysConfig
@@ -11387,6 +11499,10 @@ msgid "Defines the module to display a notification in the agent interface, if t
 msgstr ""
 
 #. SysConfig
+msgid "Defines the module to display a notification in the agent interface, if the agent is logged in while having system maintenance active."
+msgstr ""
+
+#. SysConfig
 msgid "Defines the module to display a notification in the agent interface, if the system is used by the admin user (normally you shouldn't work as admin)."
 msgstr ""
 
@@ -11488,10 +11604,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Defines the number of header fields in frontend modules for add and update postmaster filters. It can be up to 99 fields."
-msgstr ""
-
-#. SysConfig
-msgid "Defines the opacity of the Fred console, e.g. 0.9 for 10% transparency."
 msgstr ""
 
 #. SysConfig
@@ -11720,10 +11832,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Defines the width for the rich text editor component. Enter number (pixels) or percent value (relative)."
-msgstr ""
-
-#. SysConfig
-msgid "Defines the width of the Fred console in percent."
 msgstr ""
 
 #. SysConfig
@@ -12272,14 +12380,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Frontend module registration for the customer interface."
-msgstr ""
-
-#. SysConfig
-msgid "Frontend module registration for the devel fred object in the admin area."
-msgstr ""
-
-#. SysConfig
-msgid "Frontend module registration for the public interface."
 msgstr ""
 
 #. SysConfig
@@ -13015,10 +13115,6 @@ msgid "Open tickets (customer)"
 msgstr ""
 
 #. SysConfig
-msgid "Output filter to show the name of the current system in the system header."
-msgstr ""
-
-#. SysConfig
 msgid "Overloads (redefines) existing functions in Kernel::System::Ticket. Used to easily add customizations."
 msgstr ""
 
@@ -13108,6 +13204,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Parameters for the dashboard backend of the queue overview widget of the agent interface. \"Group\" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). \"QueuePermissionGroup\" is not mandatory, queues are only listed if they belong to this permission group if you enable it. \"States\" is a list of states, the key is the sort order of the state in the widget. \"Default\" determines if the plugin is enabled by default or if the user needs to enable it manually. \"CacheTTLLocal\" is the cache time in minutes for the plugin."
+msgstr ""
+
+#. SysConfig
+msgid "Parameters for the dashboard backend of the running process tickets overview of the agent interface . \"Limit\" is the number of entries shown by default. \"Group\" is used to restrict the access to the plugin (e. g. Group: admin;group1;group2;). \"Default\" determines if the plugin is enabled by default or if the user needs to enable it manually. \"CacheTTLLocal\" is the cache time in minutes for the plugin."
 msgstr ""
 
 #. SysConfig
@@ -13224,6 +13324,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Process Management Transition GUI"
+msgstr ""
+
+#. SysConfig
+msgid "ProcessID"
 msgstr ""
 
 #. SysConfig
@@ -13344,6 +13448,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Saves the attachments of articles. \"DB\" stores all data in the database (not recommended for storing big attachments). \"FS\" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data."
+msgstr ""
+
+#. SysConfig
+msgid "Schedule a maintenance period."
 msgstr ""
 
 #. SysConfig
@@ -13535,7 +13643,19 @@ msgid "Sets the default body text for notes added in the ticket responsible scre
 msgstr ""
 
 #. SysConfig
+msgid "Sets the default error message for the login screen on Agent and Customer interface, it's shown when a running system maintenance period is active."
+msgstr ""
+
+#. SysConfig
 msgid "Sets the default link type of splitted tickets in the agent interface."
+msgstr ""
+
+#. SysConfig
+msgid "Sets the default message for the login screen on Agent and Customer interface, it's shown when a running system maintenance period is active."
+msgstr ""
+
+#. SysConfig
+msgid "Sets the default message for the notification is shown on a running system maintenance period."
 msgstr ""
 
 #. SysConfig
@@ -13632,6 +13752,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Sets the minimal ticket counter size (if \"AutoIncrement\" was selected as TicketNumberGenerator). Default is 5, this means the counter starts from 10000."
+msgstr ""
+
+#. SysConfig
+msgid "Sets the minutes a notification is shown for notice about upcoming system maintenance period."
 msgstr ""
 
 #. SysConfig
@@ -14399,7 +14523,7 @@ msgid "Strips empty lines on the ticket preview in the service view."
 msgstr ""
 
 #. SysConfig
-msgid "Subscribe the output filter at the system."
+msgid "System Maintenance"
 msgstr ""
 
 #. SysConfig
@@ -14483,10 +14607,6 @@ msgid "This module and its PreRun() function will be executed, if defined, for e
 msgstr ""
 
 #. SysConfig
-msgid "This option defines the background color for the sytem name box."
-msgstr ""
-
-#. SysConfig
 msgid "This option defines the dynamic field in which a Process Management activity entity id is stored."
 msgstr ""
 
@@ -14552,42 +14672,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Toolbar Item for a shortcut."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want a JavaScript code quality checker. Only works in CVS Head / OTRS 3 with jQuery."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want an realtime HTML-checker."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want an realtime SQL statement log function."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want the translation debugger."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want to see the STDERRLog."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want to see the data in the environment of the layout object."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want to see the data in the serverside session object."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want to use the config log mechanism."
-msgstr ""
-
-#. SysConfig
-msgid "Turn on if you want to use the fred console."
 msgstr ""
 
 #. SysConfig
@@ -14688,10 +14772,6 @@ msgstr ""
 
 #. SysConfig
 msgid "When tickets are merged, the customer can be informed per email by setting the check box \"Inform Sender\". In this text area, you can define a pre-formatted text which can later be modified by the agents."
-msgstr ""
-
-#. SysConfig
-msgid "Which order should the config log data have?"
 msgstr ""
 
 #. SysConfig
