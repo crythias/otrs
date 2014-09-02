@@ -1,6 +1,6 @@
 # --
-# RPM spec file for Fedora of the OTRS package
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
+# RPM spec file for RHEL7 of the OTRS package
+# Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -16,7 +16,9 @@ Version:      0.0
 Copyright:    GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Group:        Applications/Mail
 Provides:     otrs
-Requires:     perl cronie httpd mod_perl procmail perl(Archive::Zip) perl(Archive::Tar) perl(Crypt::Eksblowfish::Bcrypt) perl(Date::Format) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(GD::Graph) perl(GD::Text) perl(LWP::UserAgent) perl(Mail::IMAPClient) perl(Net::DNS) perl(Net::LDAP) perl(Net::SSL) perl(PDF::API2) perl(Sys::Syslog) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(Time::Piece) perl(URI) perl(version) perl(XML::Parser) perl(YAML::XS)
+# mod_perl removed for now, not available
+Requires:     cronie httpd perl perl(Archive::Zip) perl(Crypt::SSLeay) perl(Date::Format) perl(DBI) perl(Digest::SHA) perl(IO::Socket::SSL) perl(LWP::UserAgent) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(URI) perl(XML::Parser) perl-core procmail
+#Requires:     cronie httpd mod_perl perl perl(Archive::Zip) perl(Crypt::SSLeay) perl(Date::Format) perl(DBI) perl(Digest::SHA) perl(IO::Socket::SSL) perl(LWP::UserAgent) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(URI) perl(XML::Parser) perl-core procmail
 Autoreqprov:  no
 Release:      01
 Source0:      otrs-%{version}.tar.bz2
@@ -59,9 +61,6 @@ install -m 644 scripts/redhat-rcotrs-config $RPM_BUILD_ROOT/etc/sysconfig/otrs
 
 # copy apache2-httpd.include.conf to /etc/httpd/conf.d/zzz_otrs.conf
 install -m 644 scripts/apache2-httpd.include.conf $RPM_BUILD_ROOT/etc/httpd/conf.d/zzz_otrs.conf
-
-# register apache
-#systemctl enable httpd.service
 
 # set permission
 export OTRSUSER=otrs
@@ -114,7 +113,7 @@ echo ""
 echo "Next steps: "
 echo ""
 echo "[httpd services]"
-echo " Restart httpd 'systemctl restart httpd.service'"
+echo " Restart httpd 'service httpd restart'"
 echo ""
 echo "[install the OTRS database]"
 echo " Make sure your database server is running."
@@ -140,6 +139,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Mon Dec 17 2012 - mb@otrs.com
-- Updated to use Fedora 17 & 18 packages.
-* Thu Mar 07 2007 - martin+rpm@otrs.org
-- spec for Fedora created
+- Added dependencies to Digest::SHA, Net::LDAP and Crypt::SSLeay, available from base repositories.
+- Removed dependency on Time::HiRes in favor of perl-core package.
+* Tue Dec 12 2012 - mb@otrs.com
+- spec for RHEL6 created.
