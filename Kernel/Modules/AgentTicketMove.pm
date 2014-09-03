@@ -137,7 +137,7 @@ sub Run {
             );
             $Output .= $Self->{LayoutObject}->Warning(
                 Message => $Self->{LayoutObject}->{LanguageObject}
-                    ->Get('Sorry, you need to be the ticket owner to perform this action.'),
+                    ->Translate('Sorry, you need to be the ticket owner to perform this action.'),
                 Comment =>
                     $Self->{LayoutObject}->{LanguageObject}
                     ->Translate('Please change the owner first.'),
@@ -801,10 +801,25 @@ sub Run {
                     OwnerID  => $Self->{UserID},
                 );
                 if ( !$AccessOk ) {
-                    $Output .= $Self->{LayoutObject}->Warning(
-                        Message => "Sorry, you need to be the ticket owner to perform this action.",
-                        Comment => 'Please change the owner first.',
+
+                    my $Output = $Self->{LayoutObject}->Header(
+                        Type      => 'Small',
+                        BodyClass => 'Popup',
                     );
+                    $Output .= $Self->{LayoutObject}->Warning(
+                        Message => $Self->{LayoutObject}->{LanguageObject}
+                            ->Translate('Sorry, you need to be the ticket owner to perform this action.'),
+                        Comment =>
+                            $Self->{LayoutObject}->{LanguageObject}
+                            ->Translate('Please change the owner first.'),
+                    );
+
+                    # show back link
+                    $Self->{LayoutObject}->Block(
+                        Name => 'TicketBack',
+                        Data => { %Param, TicketID => $Self->{TicketID} },
+                    );
+
                     $Output .= $Self->{LayoutObject}->Footer(
                         Type => 'Small',
                     );
@@ -1345,8 +1360,21 @@ sub AgentMove {
 
         $Param{WidgetStatus} = 'Collapsed';
 
-        if ( $Self->{Config}->{NoteMandatory} ) {
+        if ( $Self->{Config}->{NoteMandatory} || $Self->{ConfigObject}->Get('Ticket::Frontend::NeedAccountedTime') ) {
             $Param{WidgetStatus}    = 'Expanded';
+            $Param{SubjectRequired} = 'Validate_Required';
+            $Param{BodyRequired}    = 'Validate_Required';
+        }
+        else {
+            $Param{SubjectRequired} = 'Validate_DependingRequiredAND Validate_Depending_RichText Validate_Depending_AttachmentDeleteButton1';
+            $Param{BodyRequired}    = 'Validate_DependingRequiredAND Validate_Depending_Subject Validate_Depending_AttachmentDeleteButton1 ';
+
+            # time units are being stored with the article, so we need to make sure that once
+            # the time accounting field has been filled in, we also have subject and body
+            if ($Self->{ConfigObject}->Get('Ticket::Frontend::AccountTime')) {
+                $Param{SubjectRequired} .= ' Validate_Depending_TimeUnits';
+                $Param{BodyRequired}    .= ' Validate_Depending_TimeUnits';
+            }
         }
 
         $Self->{LayoutObject}->Block(
@@ -1365,11 +1393,6 @@ sub AgentMove {
             $Param{Subject} = $Self->{LayoutObject}->Output(
                 Template => $Self->{Config}->{Subject},
             );
-        }
-
-        if ( $Self->{Config}->{NoteMandatory} ) {
-            $Param{SubjectRequired} = 'Validate_Required';
-            $Param{BodyRequired}    = 'Validate_Required';
         }
 
         $Self->{LayoutObject}->Block(
@@ -1474,7 +1497,7 @@ sub AgentMove {
             );
         }
 
-        if ( $Self->{Config}->{NoteMandatory} ) {
+        if ( $Self->{Config}->{NoteMandatory} || $Self->{ConfigObject}->Get('Ticket::Frontend::NeedAccountedTime') ) {
             $Self->{LayoutObject}->Block(
                 Name => 'SubjectLabelMandatory',
             );
