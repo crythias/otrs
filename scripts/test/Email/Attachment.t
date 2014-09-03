@@ -37,9 +37,7 @@ use vars (qw($Self));
 
 use Kernel::System::EmailParser;
 
-# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-my $EmailObject  = $Kernel::OM->Get('Kernel::System::Email');
 
 # Constants for test(s): 1 - enabled, 0 - disabled.
 # SEND - check sending body. PARSE - check parsed body.
@@ -148,9 +146,11 @@ my @Tests = (
 
 );
 
-my $Count = 0;
+# get email object
+my $EmailObject  = $Kernel::OM->Get('Kernel::System::Email');
 
-# Testing loop
+# testing loop
+my $Count = 0;
 TEST:
 for my $Test (@Tests) {
 
@@ -162,6 +162,18 @@ for my $Test (@Tests) {
     my ( $Header, $Body ) = $EmailObject->Send(
         %{ $Test->{Data} },
     );
+
+    if ( !$Header || ref $Header ne 'SCALAR' ) {
+
+        my $String = '';
+        $Header = \$String;
+    }
+
+    if ( !$Body || ref $Body ne 'SCALAR' ) {
+
+        my $String = '';
+        $Body = \$String;
+    }
 
     # some MIME::Tools workaround
     my $Email = ${$Header} . "\n" . ${$Body};
