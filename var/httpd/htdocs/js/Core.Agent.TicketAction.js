@@ -155,6 +155,14 @@ Core.Agent.TicketAction = (function (TargetNS) {
                 Core.Config.Set('TextIsSpellChecked', '1');
             });
 
+            if ( parseInt(Core.Config.Get('RichTextSet')) === 0){
+                $('#RichTextField, .RichTextField').on('change', '#RichText', function() {
+                    if (Core.Config.Get('TextIsSpellChecked') === '1'){
+                        Core.Config.Set('TextIsSpellChecked', '0');
+                    }
+                });
+            }
+
             Core.Form.Validate.SetSubmitFunction($('form[name=compose]'), function(Form) {
                 if ( $('#RichText').val() && !$('#RichText').hasClass('ValidationIgnore') && parseInt(Core.Config.Get('TextIsSpellChecked'), 10) === 0 ) {
                     Core.UI.Dialog.ShowContentDialog('<p>' + Core.Config.Get('SpellCheckNeededMsg') + '</p>', '', '150px', 'Center', true, [
@@ -206,16 +214,28 @@ Core.Agent.TicketAction = (function (TargetNS) {
             }
 
             if ($WidgetElement.hasClass('Expanded')) {
-                $('#Subject').val($('#Subject').data('defaultvalue'));
-                $('#RichText').val($('#RichText').data('defaultvalue'));
+
+                // if widget is being opened and subject/body are not filled in,
+                // fill in the default values.
+                if (!$('#Subject').val()) {
+                    $('#Subject').val($('#Subject').data('defaultvalue'));
+                }
+                if (!$('#RichText').val()) {
+                    $('#RichText').val($('#RichText').data('defaultvalue'));
+
+                    // set RichText contents separately
+                    var Instance = CKEDITOR.instances['RichText'];
+                    Instance.setData($('#RichText').data('defaultvalue'));
+                }
+
             }
             else if ($WidgetElement.hasClass('Collapsed')) {
-                // if widget is closed and subject / body values
-                // are still the default values, remove them again
+
+                // if widget is being closed and subject / body values
+                // are still the default values, remove them again.
                 if ($('#Subject').val() === $('#Subject').data('defaultvalue')) {
                     $('#Subject').val('');
                 }
-
                 if ($('#RichText').val() === $('#RichText').data('defaultvalue')) {
                     $('#RichText').val('');
                 }
