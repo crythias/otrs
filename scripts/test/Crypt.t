@@ -9,12 +9,12 @@
 
 use strict;
 use warnings;
-use vars qw($Self);
+
+use vars (qw($Self));
 
 use Kernel::System::Crypt;
-use Kernel::Config;
 
-# create local object
+# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
 # set config
@@ -42,9 +42,7 @@ if ( !-e $ConfigObject->Get('PGP::Bin') ) {
 
 # create local crypt object
 my $CryptObject = Kernel::System::Crypt->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-    CryptType    => 'PGP',
+    CryptType => 'PGP',
 );
 
 if ( !$CryptObject ) {

@@ -127,7 +127,7 @@ sub new {
 
     # init of event handler
     $Self->EventHandlerInit(
-        Config     => 'Package::EventModulePost',
+        Config => 'Package::EventModulePost',
     );
 
     # reserve space for merged packages
@@ -3527,6 +3527,8 @@ sub _FileSystemCheck {
 
 sub _Encode {
     my ( $Self, $Text ) = @_;
+
+    return $Text if !defined $Text;
 
     $Text =~ s/&/&amp;/g;
     $Text =~ s/</&lt;/g;
