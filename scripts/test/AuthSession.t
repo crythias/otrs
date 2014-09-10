@@ -9,28 +9,30 @@
 
 use strict;
 use warnings;
-use vars (qw($Self));
 use utf8;
+
+use vars (qw($Self));
 
 use Storable;
 
 use Kernel::System::AuthSession;
 
-# use local Config object because it will be modified
+# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
 # get home directory
 my $HomeDir = $ConfigObject->Get('Home');
 
 # get all avaliable backend modules
-my @BackendModuleFiles = $Self->{MainObject}->DirectoryRead(
+my @BackendModuleFiles = $MainObject->DirectoryRead(
     Directory => $HomeDir . '/Kernel/System/AuthSession/',
     Filter    => '*.pm',
     Silent    => 1,
 );
 
 # read sample data
-my @SampleSessionFiles = $Self->{MainObject}->DirectoryRead(
+my @SampleSessionFiles = $MainObject->DirectoryRead(
     Directory => $HomeDir . '/scripts/test/sample/AuthSession/',
     Filter    => '*',
 );
@@ -40,7 +42,7 @@ SESSIONFILE:
 for my $SessionFile (@SampleSessionFiles) {
 
     # read data
-    my $Content = $Self->{MainObject}->FileRead(
+    my $Content = $MainObject->FileRead(
         Location        => $SessionFile,
         Type            => 'Local',
         Mode            => 'binmode',
@@ -72,10 +74,7 @@ for my $ModuleFile (@BackendModuleFiles) {
         Value => "Kernel::System::AuthSession::$Module",
     );
 
-    my $SessionObject = Kernel::System::AuthSession->new(
-        %{$Self},
-        ConfigObject => $ConfigObject,
-    );
+    my $SessionObject = Kernel::System::AuthSession->new();
 
     my $LongString = '';
     for my $Count ( 1 .. 2 ) {
