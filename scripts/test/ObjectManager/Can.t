@@ -14,17 +14,39 @@ use vars (qw($Self));
 
 use Kernel::System::ObjectManager;
 
-local $Kernel::OM = Kernel::System::ObjectManager->new();
+local $Kernel::OM = Kernel::System::ObjectManager->new(
+    'Kernel::System::Stats' => {
+        UserID => 1,
+    },
+    'Kernel::System::PostMaster' => {
+        Email => [],
+    },
+    'Kernel::System::Crypt' => {
+        CryptType => 'SMIME',
+    },
+);
 
 $Self->True( $Kernel::OM, 'Could build object manager' );
 
-my $Home = $Kernel::OM->Get('Kernel::Config')->Get('Home');
+# get config object
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+my $SkipCrypt;
+if ( !$ConfigObject->Get('SMIME') ) {
+    $SkipCrypt = 1;
+}
+
+my $Home = $ConfigObject->Get('Home');
+
+# get main object
 my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
 my %OperationChecked;
 
 my @DirectoriesToSearch = (
+    '/bin',
+    '/Custom/Kernel/Output',
+    '/Custom/Kernel/System',
     '/Kernel/GenericInterface',
     '/Kernel/Output/',
     '/Kernel/System',
@@ -33,7 +55,7 @@ my @DirectoriesToSearch = (
 for my $Directory ( sort @DirectoriesToSearch ) {
     my @FilesInDirectory = $MainObject->DirectoryRead(
         Directory => $Home . $Directory,
-        Filter    => '*.pm',
+        Filter    => [ '*.pm', '*.pl' ],
         Recursive => 1,
     );
 
@@ -54,12 +76,17 @@ for my $Directory ( sort @DirectoriesToSearch ) {
         #    $1 will contain Kernel::Config
         #    $2 will contain Get
         OPERATION:
-        while ( ${$ContentSCALARRef}
-            =~ m{ \$Kernel::OM \s* -> \s* Get\( \s* '([^']+)'\) \s* -> \s* ([a-zA-Z1-9]+)\( }msxg )
+        while (
+            ${$ContentSCALARRef}
+            =~ m{ \$Kernel::OM \s* -> \s* Get\( \s* '([^']+)'\) \s* -> \s* ([a-zA-Z1-9]+)\( }msxg
+            )
         {
 
             # skip if the function for the object was already checked before
             next OPERATION if $OperationChecked{"$1->$2()"};
+
+            # skip crypt object if it is not configured
+            next OPERATION if $1 eq 'Kernel::System::Crypt' && $SkipCrypt;
 
             # load object
             my $Object = $Kernel::OM->Get("$1");
