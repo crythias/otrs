@@ -10,45 +10,13 @@
 use strict;
 use warnings;
 use utf8;
+
 use vars (qw($Self %Param));
 
-# use Kernel::System::AuthSession;
-# use Kernel::System::Web::Request;
-# use Kernel::System::Group;
-# use Kernel::System::Ticket;
-# use Kernel::System::User;
-# use Kernel::Output::HTML::Layout;
+use Kernel::System::ObjectManager;
 
-# # create local objects
-# my $SessionObject = Kernel::System::AuthSession->new( %{$Self} );
-# my $GroupObject   = Kernel::System::Group->new( %{$Self} );
-# my $TicketObject  = Kernel::System::Ticket->new( %{$Self} );
-# my $UserObject    = Kernel::System::User->new( %{$Self} );
-# my $ParamObject   = Kernel::System::Web::Request->new(
-#     %{$Self},
-#     WebRequest => $Param{WebRequest} || 0,
-# );
-# my $LayoutObject = Kernel::Output::HTML::Layout->new(
-#     ConfigObject       => $Self->{ConfigObject},
-#     LogObject          => $Self->{LogObject},
-#     TimeObject         => $Self->{TimeObject},
-#     MainObject         => $Self->{MainObject},
-#     EncodeObject       => $Self->{EncodeObject},
-#     SessionObject      => $SessionObject,
-#     DBObject           => $Self->{DBObject},
-#     ParamObject        => $ParamObject,
-#     TicketObject       => $TicketObject,
-#     UserObject         => $UserObject,
-#     GroupObject        => $GroupObject,
-#     UserChallengeToken => 'TestToken',
-#     UserID             => 1,
-#     Lang               => 'de',
-#     SessionID          => 123,
-# );
-
-use Kernel::Output::Template::Provider;
-
-my $ProviderObject = Kernel::Output::Template::Provider->new();
+# get needed objects
+my $ProviderObject = $Kernel::OM->Get('Kernel::Output::Template::Provider');
 
 my @Tests = (
     {
@@ -288,7 +256,9 @@ console.log(123);
 <!-- dtl:block:b12 -->
 <!-- dtl:block:b1 -->
 <!-- dtl:block:b2 -->
-<!-- dtl:block:b2 -->',
+<!-- dtl:block:b2 -->
+#<!-- dtl:block:b2 -->
+#<!-- dtl:block:b2 -->',
         TT => '
 [% RenderBlockStart("b1") %]
 [% RenderBlockStart("b11") %]
@@ -297,7 +267,9 @@ console.log(123);
 [% RenderBlockEnd("b12") %]
 [% RenderBlockEnd("b1") %]
 [% RenderBlockStart("b2") %]
-[% RenderBlockEnd("b2") %]',
+[% RenderBlockEnd("b2") %]
+#[% RenderBlockStart("b2") %]
+#[% RenderBlockEnd("b2") %]',
     },
 );
 

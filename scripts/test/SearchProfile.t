@@ -10,27 +10,19 @@
 use strict;
 use warnings;
 use utf8;
+
 use vars (qw($Self));
 
-use Kernel::System::SearchProfile;
-use Kernel::System::UnitTest::Helper;
 use Kernel::System::VariableCheck qw(:all);
+
+# get needed objects
+my $ConfigObject        = $Kernel::OM->Get('Kernel::Config');
+my $HelperObject        = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $DBObject            = $Kernel::OM->Get('Kernel::System::DB');
+my $SearchProfileObject = $Kernel::OM->Get('Kernel::System::SearchProfile');
 
 # set UserID
 my $UserID = 1;
-
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-my $SearchProfileObject = Kernel::System::SearchProfile->new(
-    %{$Self},
-    ConfigObject => $ConfigObject,
-);
-
-# Create Helper instance which will restore system configuration in destructor
-my $HelperObject = Kernel::System::UnitTest::Helper->new(
-    %{$Self},
-    UnitTestObject => $Self,
-);
 
 my $RandomID = $HelperObject->GetRandomID();
 
@@ -41,7 +33,7 @@ my $Base = 'TicketSearch' . $RandomID;
 # workaround for oracle
 # oracle databases can't determine the difference between NULL and ''
 my $IsNotOracle = 1;
-if ( $Self->{DBObject}->GetDatabaseFunction('Type') eq 'oracle' ) {
+if ( $DBObject->GetDatabaseFunction('Type') eq 'oracle' ) {
     $IsNotOracle = 0;
 }
 
