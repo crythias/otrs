@@ -56,7 +56,7 @@ sub new {
 
     # Please note: ZoomTimeline is an OTRSBusiness feature
     $Self->{ZoomTimeline} = $Self->{ParamObject}->GetParam( Param => 'ZoomTimeline' );
-    if ( $Self->{ConfigObject}->Get('ChronicalViewEnabled') != 1 ) {
+    if ( !$Self->{ConfigObject}->Get('ChronicalViewEnabled') ) {
         $Self->{ZoomTimeline} = 0;
     }
 
@@ -82,7 +82,7 @@ sub new {
     );
 
     if ( !defined $Self->{ZoomExpand} ) {
-        if ( $UserPreferences{UserLastUsedZoomViewType} eq 'Expand' ) {
+        if ( $UserPreferences{UserLastUsedZoomViewType} && $UserPreferences{UserLastUsedZoomViewType} eq 'Expand' ) {
             $Self->{ZoomExpand} = 1;
         }
         else {
@@ -92,7 +92,7 @@ sub new {
 
     if (
         !defined $Self->{ZoomTimeline}
-        && $UserPreferences{UserLastUsedZoomViewType} eq 'Timeline'
+        && $UserPreferences{UserLastUsedZoomViewType} && $UserPreferences{UserLastUsedZoomViewType} eq 'Timeline'
         )
     {
         $Self->{ZoomTimeline} = 1;
@@ -203,7 +203,7 @@ sub new {
 
     # Add custom files to the zoom's frontend module registration on the fly
     #    to avoid conflicts with other modules.
-    if ( $Self->{ConfigObject}->Get('ChronicalViewEnabled') == 1 ) {
+    if ( defined $Self->{ConfigObject}->Get('ChronicalViewEnabled') && $Self->{ConfigObject}->Get('ChronicalViewEnabled') == 1 ) {
         my $ZoomFrontendConfiguration
             = $Self->{ConfigObject}->Get('Frontend::Module')->{AgentTicketZoom};
         my @CustomJSFiles = (
