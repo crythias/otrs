@@ -36,6 +36,12 @@ $Self->Is(
     "Data collection status",
 );
 
+$Self->Is(
+    $Result{ErrorMessage},
+    undef,
+    "There is no error message",
+);
+
 $Self->True(
     scalar @{ $Result{Result} || [] } >= 1,
     "Data collection result count",
