@@ -133,7 +133,7 @@ sub Data {
         'Hit' => 'Träff',
         'Hits' => 'Träffar',
         'Text' => 'Text',
-        'Standard' => '',
+        'Standard' => 'Standard',
         'Lite' => 'Enkel',
         'User' => 'Användare',
         'Username' => 'Användarnamn',
@@ -610,7 +610,7 @@ sub Data {
             '',
         'Disk Partitions Usage' => '',
         'Distribution' => 'Distribution',
-        'Could not determine distribution.' => '',
+        'Could not determine distribution.' => 'Kunde inte bestämma distribution.',
         'Kernel Version' => 'Kernelversion',
         'Could not determine kernel version.' => '',
         'System Load' => '',
@@ -620,8 +620,8 @@ sub Data {
         'Not all required Perl modules are correctly installed.' => 'Alla nödvändiga Perl-moduler är inte korrekt installerade.',
         'Perl Version' => 'Perl-version',
         'Free Swap Space (%)' => '',
-        'No Swap Enabled.' => '',
-        'Used Swap Space (MB)' => '',
+        'No Swap Enabled.' => 'Inget växlingsutrymme aktiverat.',
+        'Used Swap Space (MB)' => 'Använt växlingsutrymme (MB)',
         'There should be more than 60% free swap space.' => '',
         'There should be no more than 200 MB swap space used.' => '',
         'Config Settings' => '',
@@ -947,7 +947,7 @@ sub Data {
         'All open tickets, these tickets have already been worked on, but need a response' =>
             '',
         'All new tickets, these tickets have not been worked on yet' => '',
-        'All escalated tickets' => '',
+        'All escalated tickets' => 'Alla eskalerade ärenden',
         'All tickets with a reminder set where the reminder date has been reached' =>
             '',
         'Archived tickets' => 'Arkiverade ärenden',
@@ -1038,7 +1038,7 @@ sub Data {
         'Edit Auto Response' => '',
         'Response' => 'Svar',
         'Auto response from' => '',
-        'Reference' => '',
+        'Reference' => 'Referens',
         'You can use the following tags' => '',
         'To get the first 20 character of the subject.' => 'För att få dom första 20 tecknen i ärenderaden',
         'To get the first 5 lines of the email.' => 'För att få dom första fem raderna i mejlet',
@@ -1058,7 +1058,7 @@ sub Data {
 
         # Template: AdminCustomerCompany
         'Customer Management' => 'Hantera kunder',
-        'Wildcards like \'*\' are allowed.' => '',
+        'Wildcards like \'*\' are allowed.' => 'Jokertecken som \'*\' är tillåtna.',
         'Add customer' => 'Lägg till kund',
         'Select' => 'Välj',
         'Please enter a search term to look for customers.' => '',
@@ -1097,7 +1097,7 @@ sub Data {
         'You can manage these groups via the configuration setting "CustomerGroupAlwaysGroups".' =>
             'Du kan hantera dessa grupper via "CustomerGroupAlwaysGroups".',
         'Filter for Groups' => 'Filtrera grupper',
-        'Just start typing to filter...' => '',
+        'Just start typing to filter...' => 'Börja skriva för att filtrera...',
         'Select the customer:group permissions.' => '',
         'If nothing is selected, then there are no permissions in this group (tickets will not be available for the customer).' =>
             '',
@@ -1202,10 +1202,10 @@ sub Data {
             '',
 
         # Template: AdminDynamicFieldText
-        'Number of rows' => '',
+        'Number of rows' => 'Antal rader',
         'Specify the height (in lines) for this field in the edit mode.' =>
             '',
-        'Number of cols' => '',
+        'Number of cols' => 'Antal kolumner',
         'Specify the width (in characters) for this field in the edit mode.' =>
             '',
         'Check RegEx' => '',
@@ -1222,7 +1222,7 @@ sub Data {
             'Med denna modul kan administratörer skicka meddelanden till handläggare och medlemmar i grupper och roller.',
         'Create Administrative Message' => '',
         'Your message was sent to' => '',
-        'Send message to users' => '',
+        'Send message to users' => 'Skicka meddelande till användare',
         'Send message to group members' => '',
         'Group members need to have permission' => '',
         'Send message to role members' => '',
@@ -1278,6 +1278,10 @@ sub Data {
         'No create time settings.' => 'Inga Skapat-Tider.',
         'Ticket created' => 'Ärende skapat',
         'Ticket created between' => 'Ärendet skapat mellan',
+        'Last changed times' => '',
+        'No last changed time settings.' => '',
+        'Ticket last changed' => '',
+        'Ticket last changed between' => '',
         'Change times' => '',
         'No change time settings.' => 'Inga Ändringstider',
         'Ticket changed' => 'Ärende ändrat',
@@ -1312,13 +1316,13 @@ sub Data {
         'Set new state' => '',
         'Pending date' => 'Väntande datum',
         'Set new agent' => 'Ange ny handläggare',
-        'new owner' => '',
-        'new responsible' => '',
+        'new owner' => 'ny ägare',
+        'new responsible' => 'ny ansvarig',
         'Set new ticket lock' => '',
         'New customer' => 'Ny kund',
         'New customer ID' => '',
-        'New title' => '',
-        'New type' => '',
+        'New title' => 'Ny titel',
+        'New type' => 'Ny typ',
         'New Dynamic Field Values' => '',
         'Archive selected tickets' => '',
         'Add Note' => 'Lägg till anteckning',
@@ -1334,7 +1338,7 @@ sub Data {
         'Execute Custom Module' => '',
         'Param %s key' => '',
         'Param %s value' => '',
-        'Save Changes' => '',
+        'Save Changes' => 'Spara ändringar',
         'Results' => 'Resultat',
         '%s Tickets affected! What do you want to do?' => '',
         'Warning: You used the DELETE option. All deleted tickets will be lost!' =>
@@ -1354,7 +1358,7 @@ sub Data {
         'Request List' => '',
         'Time' => 'Tid',
         'Remote IP' => '',
-        'Loading' => '',
+        'Loading' => 'Laddar',
         'Select a single request to see its details.' => '',
         'Filter by type' => '',
         'Filter from' => '',
@@ -1381,7 +1385,7 @@ sub Data {
         'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
             '',
         'Mapping for outgoing request data' => '',
-        'Configure' => '',
+        'Configure' => 'Konfigurera',
         'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             '',
         'Mapping for incoming response data' => '',
@@ -1393,7 +1397,7 @@ sub Data {
             '',
         'Synchronous event triggers would be processed directly during the web request.' =>
             '',
-        'Save and continue' => '',
+        'Save and continue' => 'Spara och fortsätt',
         'Delete this Invoker' => '',
 
         # Template: AdminGenericInterfaceMappingSimple
@@ -1471,7 +1475,7 @@ sub Data {
             '',
         'Default command' => '',
         'The default HTTP command to use for the requests.' => '',
-        'Authentication' => '',
+        'Authentication' => 'Autentisering',
         'The authentication mechanism to access the remote system.' => '',
         'A "-" value means no authentication.' => '',
         'The user name to be used to access the remote system.' => '',
@@ -1541,7 +1545,7 @@ sub Data {
         'Configuration File' => '',
         'The file must be a valid web service configuration YAML file.' =>
             '',
-        'Import' => '',
+        'Import' => 'Importera',
         'Configuration history' => '',
         'Delete web service' => '',
         'Do you really want to delete this web service?' => '',
@@ -2669,7 +2673,7 @@ sub Data {
         'All fields marked with an asterisk (*) are mandatory.' => 'Alla fält markerade med en asterisk (*) är obligatoriska.',
         'Service invalid.' => '',
         'New Owner' => 'Ny Ägare',
-        'Please set a new owner!' => 'Vänligen sätt en ny ägare!',
+        'Please set a new owner!' => 'Vänligen ange en ny ägare!',
         'Previous Owner' => 'Tidigare ägare',
         'Next state' => 'Nästa tillstånd',
         'Add Article' => '',
@@ -2820,6 +2824,8 @@ sub Data {
         'Ticket Create Time (between)' => '',
         'Ticket Change Time (before/after)' => '',
         'Ticket Change Time (between)' => '',
+        'Ticket Last Change Time (before/after)' => '',
+        'Ticket Last Change Time (between)' => '',
         'Ticket Close Time (before/after)' => '',
         'Ticket Close Time (between)' => '',
         'Ticket Escalation Time (before/after)' => '',
@@ -2884,17 +2890,18 @@ sub Data {
         'Could not open popup window. Please disable any popup blockers for this application.' =>
             'Kund einte öppnapopupfönster. Avaktivera popupblockerare för denna applikation.',
         'There are currently no elements available to select from.' => 'Det finns inga poster att välja just nu.',
+        'Please turn off Compatibility Mode in Internet Explorer!' => '',
+        'The browser you are using is too old.' => 'Din webbläsare är för gammal.',
+        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
+            'OTRS fungerar i många webbläsare. Uppdatera till en av dessa.',
+        'Please see the documentation or ask your admin for further information.' =>
+            'Läs dokumentationen eller kontakta en administratör för mer information.',
 
         # Template: CustomerLogin
         'JavaScript Not Available' => 'Javaskript är avstängt',
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             'För att OTRS ska fungera behöver javaskript vara påslaget i din webbläsare.',
         'Browser Warning' => 'Browservarning',
-        'The browser you are using is too old.' => 'Din webbläsare är för gammal.',
-        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
-            'OTRS fungerar i många webbläsare. Uppdatera till en av dessa.',
-        'Please see the documentation or ask your admin for further information.' =>
-            'Läs dokumentationen eller kontakta en administratör för mer information.',
         'Login' => 'Inloggning',
         'User name' => 'Användarnamn',
         'Your user name' => 'Ditt användarnamn',

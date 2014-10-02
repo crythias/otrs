@@ -1276,6 +1276,10 @@ sub Data {
         'No create time settings.' => 'No existen configuraciones para tiempo de creación.',
         'Ticket created' => 'Ticket creado',
         'Ticket created between' => 'Ticket creado entre',
+        'Last changed times' => '',
+        'No last changed time settings.' => '',
+        'Ticket last changed' => '',
+        'Ticket last changed between' => '',
         'Change times' => '',
         'No change time settings.' => 'Sin cambio de marca de tiempo',
         'Ticket changed' => 'Ticket modificado',
@@ -1359,19 +1363,19 @@ sub Data {
         'Filter to' => '',
         'Filter by remote IP' => '',
         'Refresh' => 'Refrescar',
-        'Request Details' => '',
+        'Request Details' => 'Detalles de la petición',
         'An error occurred during communication.' => '',
         'Show or hide the content.' => '',
         'Clear debug log' => '',
 
         # Template: AdminGenericInterfaceInvokerDefault
-        'Add new Invoker to Web Service %s' => '',
-        'Change Invoker %s of Web Service %s' => '',
-        'Add new invoker' => '',
-        'Change invoker %s' => '',
-        'Do you really want to delete this invoker?' => '',
+        'Add new Invoker to Web Service %s' => 'Añadir un Invocador nuevo al Servicio Web %s',
+        'Change Invoker %s of Web Service %s' => 'Cambiar Invocador %s del Servicio Web %s',
+        'Add new invoker' => 'Añadir nuevo invocador',
+        'Change invoker %s' => 'Cambiar invocador %s',
+        'Do you really want to delete this invoker?' => 'Realmente desea eliminar este invocador?',
         'All configuration data will be lost.' => '',
-        'Invoker Details' => '',
+        'Invoker Details' => 'Detalles del invocador',
         'The name is typically used to call up an operation of a remote web service.' =>
             '',
         'Please provide a unique name for this web service invoker.' => '',
@@ -1392,7 +1396,7 @@ sub Data {
         'Synchronous event triggers would be processed directly during the web request.' =>
             '',
         'Save and continue' => '',
-        'Delete this Invoker' => '',
+        'Delete this Invoker' => 'Eliminar este invocador',
 
         # Template: AdminGenericInterfaceMappingSimple
         'GenericInterface Mapping Simple for Web Service %s' => '',
@@ -1425,7 +1429,7 @@ sub Data {
         'Add new operation' => '',
         'Change operation %s' => '',
         'Do you really want to delete this operation?' => '',
-        'Operation Details' => '',
+        'Operation Details' => 'Detalles del a operación',
         'The name is typically used to call up this web service operation from a remote system.' =>
             '',
         'Please provide a unique name for this web service.' => '',
@@ -1568,7 +1572,7 @@ sub Data {
             '',
         'Delete webservice' => '',
         'Delete operation' => '',
-        'Delete invoker' => '',
+        'Delete invoker' => 'Eliminar invocador',
         'Clone webservice' => '',
         'Import webservice' => '',
 
@@ -1842,10 +1846,10 @@ sub Data {
         'Filter available fields' => '',
         'Available Fields' => '',
         'Assigned Fields' => '',
-        'Edit Details for Field' => '',
+        'Edit Details for Field' => 'Editar Detalles para el campo',
         'ArticleType' => '',
         'Display' => '',
-        'Edit Field Details' => '',
+        'Edit Field Details' => 'Editar detalles',
         'Customer interface does not support internal article types.' => '',
 
         # Template: AdminProcessManagementPath
@@ -2012,7 +2016,7 @@ sub Data {
 
         # Template: AdminRegistration
         'System Registration Management' => '',
-        'Edit details' => '',
+        'Edit details' => 'Editar detalles',
         'Deregister system' => '',
         'Overview of registered systems' => '',
         'System Registration' => '',
@@ -2264,7 +2268,7 @@ sub Data {
             '',
         'Support Data' => '',
         'Error: Support data could not be collected (%s).' => '',
-        'Details' => '',
+        'Details' => 'Detalles',
 
         # Template: AdminSession
         'Session Management' => 'Administración de Sesiones',
@@ -2818,6 +2822,8 @@ sub Data {
         'Ticket Create Time (between)' => 'Tiempo de Creación del Ticket (entre)',
         'Ticket Change Time (before/after)' => 'Tiempo de Modificación del Ticket (antes/después)',
         'Ticket Change Time (between)' => 'Tiempo de Modificación del Ticket (entre)',
+        'Ticket Last Change Time (before/after)' => '',
+        'Ticket Last Change Time (between)' => '',
         'Ticket Close Time (before/after)' => 'Tiempo de Cierre del Ticket (antes/después)',
         'Ticket Close Time (between)' => 'Tiempo de Cierre del Ticket (entre)',
         'Ticket Escalation Time (before/after)' => '',
@@ -2882,17 +2888,18 @@ sub Data {
         'Could not open popup window. Please disable any popup blockers for this application.' =>
             'No se pudo abrir la ventana pop-up. Por favor, deshabilite cualquier bloqueador de pop-ups para esta aplicación.',
         'There are currently no elements available to select from.' => '',
+        'Please turn off Compatibility Mode in Internet Explorer!' => '',
+        'The browser you are using is too old.' => 'El explorador que está usando es muy antiguo.',
+        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
+            'OTRS correo en una amplia lista de exploradores, por favor utilice alguno de ellos.',
+        'Please see the documentation or ask your admin for further information.' =>
+            'Por favor, refiérase a la documentación o pregunte a su administrador para obtener más información.',
 
         # Template: CustomerLogin
         'JavaScript Not Available' => 'JavaScript No Disponible',
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             'Para utilizar OTRS correctamente, es necesario que habilite JavaScript en su explorador web.',
         'Browser Warning' => 'Advertencia del Explorador',
-        'The browser you are using is too old.' => 'El explorador que está usando es muy antiguo.',
-        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
-            'OTRS correo en una amplia lista de exploradores, por favor utilice alguno de ellos.',
-        'Please see the documentation or ask your admin for further information.' =>
-            'Por favor, refiérase a la documentación o pregunte a su administrador para obtener más información.',
         'Login' => 'Identificador',
         'User name' => 'Nombre de usuario',
         'Your user name' => 'Su nombre de usuario',

@@ -1,12 +1,13 @@
 #
 # Translators:
+# bb16390 <bb16390@gmail.com>, 2014
 # 陈德文 <sggggy@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRS\n"
 "POT-Creation-Date: 2014-08-08 19:10+0200\n"
-"PO-Revision-Date: 2014-09-18 09:25+0000\n"
-"Last-Translator: 陈德文 <sggggy@gmail.com>\n"
+"PO-Revision-Date: 2014-10-02 05:08+0000\n"
+"Last-Translator: Carlos Rodríguez <carlos.rodriguez@otrs.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/OTRS/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -208,7 +209,7 @@ msgstr "秒"
 
 #. Template: AAABase
 msgid "Time unit"
-msgstr ""
+msgstr "时间单位"
 
 #. Template: AAABase
 msgid "wrote"
@@ -512,7 +513,7 @@ msgstr "全部"
 
 #. Template: AAABase
 msgid "all"
-msgstr ""
+msgstr "全部"
 
 #. Template: AAABase
 msgid "Sorry"
@@ -620,7 +621,7 @@ msgstr "搜索"
 
 #. Template: AAABase
 msgid "and"
-msgstr ""
+msgstr "和"
 
 #. Template: AAABase
 msgid "between"
@@ -996,7 +997,7 @@ msgstr "你已设置为不在办公室，是否取消它?"
 
 #. Template: AAABase
 msgid "News about OTRS releases!"
-msgstr ""
+msgstr "OTRS版本新闻"
 
 #. Template: AAABase
 msgid "Customer %s added"
@@ -1464,7 +1465,7 @@ msgstr ""
 
 #. Template: AAACalendar
 msgid "New Year's Day"
-msgstr ""
+msgstr "新年"
 
 #. Template: AAACalendar
 msgid "International Workers' Day"
@@ -1472,7 +1473,7 @@ msgstr ""
 
 #. Template: AAACalendar
 msgid "Christmas Eve"
-msgstr ""
+msgstr "圣诞节前夕"
 
 #. Template: AAACalendar
 msgid "First Christmas Day"
@@ -1952,11 +1953,11 @@ msgstr "信息"
 
 #. Template: AAASupportDataCollector
 msgid "OK"
-msgstr ""
+msgstr "好"
 
 #. Template: AAASupportDataCollector
 msgid "Problem"
-msgstr ""
+msgstr "问题"
 
 #. Template: AAASupportDataCollector
 msgid "Webserver"
@@ -1968,7 +1969,7 @@ msgstr "操作系统"
 
 #. Template: AAASupportDataCollector
 msgid "OTRS"
-msgstr ""
+msgstr "OTRS"
 
 #. Template: AAASupportDataCollector
 msgid "Table Presence"
@@ -1992,7 +1993,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Database Size"
-msgstr ""
+msgstr "数据库大小"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine database size."
@@ -2000,7 +2001,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Database Version"
-msgstr ""
+msgstr "数据库版本"
 
 #. Template: AAASupportDataCollector
 msgid "Could not determine database version."
@@ -2104,7 +2105,7 @@ msgstr ""
 
 #. Template: AAASupportDataCollector
 msgid "Disk Usage"
-msgstr ""
+msgstr "硬盘使用情况"
 
 #. Template: AAASupportDataCollector
 msgid "The partition where OTRS is located is almost full."
@@ -4397,6 +4398,22 @@ msgstr "工单创建时间(相对)"
 #. Template: AdminGenericAgent
 msgid "Ticket created between"
 msgstr "工单创建时间(绝对)"
+
+#. Template: AdminGenericAgent
+msgid "Last changed times"
+msgstr ""
+
+#. Template: AdminGenericAgent
+msgid "No last changed time settings."
+msgstr ""
+
+#. Template: AdminGenericAgent
+msgid "Ticket last changed"
+msgstr ""
+
+#. Template: AdminGenericAgent
+msgid "Ticket last changed between"
+msgstr ""
 
 #. Template: AdminGenericAgent
 msgid "Change times"
@@ -8999,6 +9016,14 @@ msgid "Ticket Change Time (between)"
 msgstr "工单更新时间(绝对)"
 
 #. Template: AgentTicketSearch
+msgid "Ticket Last Change Time (before/after)"
+msgstr ""
+
+#. Template: AgentTicketSearch
+msgid "Ticket Last Change Time (between)"
+msgstr ""
+
+#. Template: AgentTicketSearch
 msgid "Ticket Close Time (before/after)"
 msgstr "工单关闭时间(相对)"
 
@@ -9039,6 +9064,18 @@ msgid "Save filter settings as default"
 msgstr "将过滤器作为缺省设置并保存"
 
 #. Template: AgentTicketZoom
+msgid "Event Type Filter"
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Event Type"
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Save as default"
+msgstr ""
+
+#. Template: AgentTicketZoom
 msgid "Archive"
 msgstr "归档"
 
@@ -9071,6 +9108,10 @@ msgid "This item has no articles yet."
 msgstr "此条目没有信件。"
 
 #. Template: AgentTicketZoom
+msgid "Ticket Timeline View"
+msgstr ""
+
+#. Template: AgentTicketZoom
 msgid "Article Overview"
 msgstr ""
 
@@ -9097,6 +9138,10 @@ msgstr "显示单一信件"
 #. Template: AgentTicketZoom
 msgid "Show all articles"
 msgstr "显示所有信件"
+
+#. Template: AgentTicketZoom
+msgid "Show Ticket Timeline View"
+msgstr ""
 
 #. Template: AgentTicketZoom
 msgid "Unread articles"
@@ -9130,6 +9175,22 @@ msgstr "内部信息"
 msgid "Resize"
 msgstr "调整大小"
 
+#. Template: AgentTicketZoom
+msgid "Show Full Text"
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "Full Article Text"
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "No more events found. Please try changing the filter settings."
+msgstr ""
+
+#. Template: AgentTicketZoom
+msgid "This is a chat log. Please zoom this entry in order to see the complete log."
+msgstr ""
+
 #. Template: AttachmentBlocker
 msgid "To protect your privacy, remote content was blocked."
 msgstr "为了保护你的隐私,远程内容被阻挡。"
@@ -9162,6 +9223,22 @@ msgstr "无法打开弹出窗口，请禁用弹出窗口拦截。"
 msgid "There are currently no elements available to select from."
 msgstr "目前没有可供选择的元素。"
 
+#. Template: CustomerFooterJS
+msgid "Please turn off Compatibility Mode in Internet Explorer!"
+msgstr ""
+
+#. Template: CustomerFooterJS
+msgid "The browser you are using is too old."
+msgstr "你使用的游览器太旧了."
+
+#. Template: CustomerFooterJS
+msgid "OTRS runs with a huge lists of browsers, please upgrade to one of these."
+msgstr "OTRS 已确认下列的游览器可正常显示, 请挑一个你喜欢用的升级之."
+
+#. Template: CustomerFooterJS
+msgid "Please see the documentation or ask your admin for further information."
+msgstr "欲了解更多信息, 请向你的管理询问或参考相关文档."
+
 #. Template: CustomerLogin
 msgid "JavaScript Not Available"
 msgstr "没有启用 JavaScript"
@@ -9173,18 +9250,6 @@ msgstr "要继续使用 OTRS，请打开浏览器的 JavaScript 功能."
 #. Template: CustomerLogin
 msgid "Browser Warning"
 msgstr "提示"
-
-#. Template: CustomerLogin
-msgid "The browser you are using is too old."
-msgstr "你使用的游览器太旧了."
-
-#. Template: CustomerLogin
-msgid "OTRS runs with a huge lists of browsers, please upgrade to one of these."
-msgstr "OTRS 已确认下列的游览器可正常显示, 请挑一个你喜欢用的升级之."
-
-#. Template: CustomerLogin
-msgid "Please see the documentation or ask your admin for further information."
-msgstr "欲了解更多信息, 请向你的管理询问或参考相关文档."
 
 #. Template: CustomerLogin
 msgid "Login"
@@ -10404,6 +10469,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Controls if more than one from entry can be set in the new phone ticket in the agent interface."
+msgstr ""
+
+#. SysConfig
+msgid "Controls if the admin is allowed to import a saved system configuration in SysConfig."
 msgstr ""
 
 #. SysConfig
@@ -13348,7 +13417,7 @@ msgstr ""
 
 #. SysConfig
 msgid "Picture-Upload"
-msgstr ""
+msgstr "图片上传"
 
 #. SysConfig
 msgid "PostMaster Filters"
@@ -13360,7 +13429,7 @@ msgstr "邮件接收地址"
 
 #. SysConfig
 msgid "Process Information"
-msgstr ""
+msgstr "进程信息"
 
 #. SysConfig
 msgid "Process Management Activity Dialog GUI"
@@ -13384,7 +13453,7 @@ msgstr ""
 
 #. SysConfig
 msgid "ProcessID"
-msgstr ""
+msgstr "进程ID"
 
 #. SysConfig
 msgid "Protection against CSRF (Cross Site Request Forgery) exploits (for more info see http://en.wikipedia.org/wiki/Cross-site_request_forgery)."
@@ -14844,45 +14913,5 @@ msgstr "您的最常用队列，如果您设置了邮件通知，您将会得到
 
 #. SysConfig
 msgid "Your service selection of your favorite services. You also get notified about those services via email if enabled."
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Event Type Filter"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Event Type"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Save as default"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Ticket Timeline View"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Show Ticket Timeline View"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Show Full Text"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "Full Article Text"
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "No more events found. Please try changing the filter settings."
-msgstr ""
-
-#. Template: AgentTicketZoom
-msgid "This is a chat log. Please zoom this entry in order to see the complete log."
-msgstr ""
-
-#. SysConfig
-msgid "Controls if the admin is allowed to import a saved system configuration in SysConfig."
 msgstr ""
 

@@ -381,11 +381,11 @@ sub Data {
         '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
             '<br> Nếu bạn tiếp tục cài đặt gói này, các vấn đề sau đây có thể xảy ra <br> & nbsp;! vấn đề -An ninh <br> & nbsp; vấn đề -Stability <br> & nbsp; vấn đề -Performance <br> Xin lưu ý rằng vấn đề được gây ra bằng cách làm việc với phần mềm này không được bảo hiểm theo hợp đồng dịch vụ OTRS! <br>',
         'Mark' => 'Đánh dấu',
-        'Unmark' => '',
-        'Bold' => '',
-        'Italic' => '',
-        'Underline' => '',
-        'Font Color' => '',
+        'Unmark' => 'Hủy dấu',
+        'Bold' => 'Chữ đậm',
+        'Italic' => 'Chữ nghiêng',
+        'Underline' => 'Gạch dưới',
+        'Font Color' => 'Màu chữ',
         'Background Color' => 'Màu nền',
         'Remove Formatting' => 'Hủy bỏ định dạng',
         'Show/Hide Hidden Elements' => '',
@@ -399,7 +399,7 @@ sub Data {
         'Create an Unordered List' => 'Tạo một danh sách không có thứ tự',
         'Create an Ordered List' => 'Tạo một danh sách có thứ tự',
         'HTML Link' => 'HTML liên kết',
-        'Insert Image' => '',
+        'Insert Image' => 'Chèn ảnh',
         'CTRL' => 'CTRL Kiểm soát ',
         'SHIFT' => ' Sự thay đổi',
         'Undo' => '',
@@ -554,10 +554,10 @@ sub Data {
         'Ticket/Article Accounted Time' => '',
         'TicketAccountedTime' => '',
         'Ticket Create Time' => '',
-        'Ticket Close Time' => '',
+        'Ticket Close Time' => 'Giờ Đóng Vé',
 
         # Template: AAASupportDataCollector
-        'Unknown' => '',
+        'Unknown' => 'Không biết',
         'Information' => '',
         'OK' => '',
         'Problem' => 'Vấn đề',
@@ -1275,6 +1275,10 @@ sub Data {
         'No create time settings.' => 'Không có thiết đặt lần khởi tạo',
         'Ticket created' => 'Thẻ đã tạo',
         'Ticket created between' => 'Thẻ đã tạo giữa',
+        'Last changed times' => '',
+        'No last changed time settings.' => '',
+        'Ticket last changed' => '',
+        'Ticket last changed between' => '',
         'Change times' => 'Thay đổi lần',
         'No change time settings.' => 'Không thay đổi thời gian cài đặt.',
         'Ticket changed' => 'Vé thay đổi',
@@ -2802,11 +2806,11 @@ sub Data {
         'Add another attribute' => '',
         'Output' => 'Kết quả từ',
         'Fulltext' => 'Toàn bộ văn bản',
-        'Remove' => '',
+        'Remove' => 'Hủy bỏ',
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
             '',
         'Customer User Login' => 'Đăng nhập người dùng khách hàng',
-        'Attachment Name' => '',
+        'Attachment Name' => 'Tên tập tin đính kèm',
         '(e. g. m*file or myfi*)' => '',
         'Created in Queue' => 'Đã tạo trong hàng đợi',
         'Lock state' => '',
@@ -2817,6 +2821,8 @@ sub Data {
         'Ticket Create Time (between)' => '',
         'Ticket Change Time (before/after)' => '',
         'Ticket Change Time (between)' => '',
+        'Ticket Last Change Time (before/after)' => '',
+        'Ticket Last Change Time (between)' => '',
         'Ticket Close Time (before/after)' => '',
         'Ticket Close Time (between)' => '',
         'Ticket Escalation Time (before/after)' => '',
@@ -2881,17 +2887,18 @@ sub Data {
         'Could not open popup window. Please disable any popup blockers for this application.' =>
             '',
         'There are currently no elements available to select from.' => '',
+        'Please turn off Compatibility Mode in Internet Explorer!' => '',
+        'The browser you are using is too old.' => '',
+        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
+            '',
+        'Please see the documentation or ask your admin for further information.' =>
+            '',
 
         # Template: CustomerLogin
         'JavaScript Not Available' => '',
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             '',
         'Browser Warning' => '',
-        'The browser you are using is too old.' => '',
-        'OTRS runs with a huge lists of browsers, please upgrade to one of these.' =>
-            '',
-        'Please see the documentation or ask your admin for further information.' =>
-            '',
         'Login' => 'Đăng nhập',
         'User name' => '',
         'Your user name' => '',
