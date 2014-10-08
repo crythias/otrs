@@ -12,10 +12,7 @@ package Kernel::Output::HTML::DashboardCmdOutput;
 use strict;
 use warnings;
 
-our @ObjectDependencies = (
-    'Kernel::Output::HTML::Layout',
-    'Kernel::System::Encode',
-);
+our $ObjectManagerDisabled = 1;
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -24,6 +21,7 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # get needed parameters
     for (qw(Config Name UserID)) {
         die "Got no $_!" if ( !$Self->{$_} );
     }
