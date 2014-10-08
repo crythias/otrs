@@ -212,10 +212,10 @@
         <Setting>
             <Hash>
                 <Item Key="URL">skins/Agent/default/img/logo_bg.png</Item>
-                <Item Key="StyleTop">12px</Item>
+                <Item Key="StyleTop">4px</Item>
                 <Item Key="StyleRight">38px</Item>
                 <Item Key="StyleHeight">67px</Item>
-                <Item Key="StyleWidth">244px</Item>
+                <Item Key="StyleWidth">270px</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -3618,6 +3618,26 @@ You can log in via the following URL:
                 <Item Key="0">No</Item>
                 <Item Key="1">Yes</Item>
             </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerPanelCreateAccount::MailRestrictions::Whitelist" Required="0" Valid="0">
+        <Description Translatable="1">If active, one of the regular expressions has to match the user's email address to allow registration.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <Array>
+              <Item>\@your\.domain\.example$</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="CustomerPanelCreateAccount::MailRestrictions::Blacklist" Required="0" Valid="0">
+        <Description Translatable="1">If active, none of the regular expressions may match the user's email address to allow registration.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Customer</SubGroup>
+        <Setting>
+            <Array>
+              <Item>\@your\.domain\.example$</Item>
+            </Array>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanelSubjectLostPasswordToken" Required="1" Valid="1">
