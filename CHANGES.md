@@ -1,4 +1,11 @@
 #4.0.0.beta3 2014-10-07
+ - 2014-10-14 Added flat design skin for the customer interface.
+ - 2014-10-14 Fixed bug#[10728](http://bugs.otrs.org/show_bug.cgi?id=10728) - Removing watcher does not work on ticket merge.
+ - 2014-10-14 Fixed bug#[10750](http://bugs.otrs.org/show_bug.cgi?id=10750) - Strange tree view in complex tree of queues.
+ - 2014-10-14 Fixed bug#[10790](http://bugs.otrs.org/show_bug.cgi?id=10790) - Editing fields in Activity Dialogs not possible in IE8.
+ - 2014-10-14 Fixed bug#[10725](http://bugs.otrs.org/show_bug.cgi?id=10725) - Translation affects suggested article type.
+ - 2014-10-14 Improved email address validity check to conform to RFC 5321, thanks to gitbensons.
+ - 2014-10-14 Added cache benchmark script, thanks to ib.pl.
  - 2014-10-14 Fixed bug#10579 - Error with &-sign in an eMail address.
  - 2014-10-14 Fixed bug#[10621](http://bugs.otrs.org/show_bug.cgi?id=10621) - Queues are false sorted in Ticket Zoom select box.
  - 2014-10-13 Changed default skin for CKEditor to bootstrapck, http://ckeditor.com/addon/bootstrapck.
@@ -154,6 +161,8 @@
  - 2013-12-12 Added additional information to install commands for different distributions (see perl bin/otrs.CheckModules.pl -h) for more information.
 
 #3.3.9 2014-09-09
+ - 2014-10-14 Fixed bug#[8535](http://bugs.otrs.org/show_bug.cgi?id=8535) - Only first 1000 Tickets are shown in CustomerInterface.
+ - 2014-10-14 Fixed bug#[10729](http://bugs.otrs.org/show_bug.cgi?id=10729) - Dynamic Fields are shown incorrect at Ticket Overview, thanks to S7.
  - 2014-09-12 Fixed bug#[10710](http://bugs.otrs.org/show_bug.cgi?id=10710) - Adding agent with username that has already existed in AdminUser leads to SQL error message, thanks to S7.
  - 2014-09-12 Fixed bug#[10703](http://bugs.otrs.org/show_bug.cgi?id=10703) - Fulltext field is not added by defoult if there are not default fields in Ticket search, thanks to S7.
  - 2014-08-29 Fixed bug#[10697](http://bugs.otrs.org/show_bug.cgi?id=10697) - Column name in CSV report of stats is lowercase.
