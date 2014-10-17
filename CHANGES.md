@@ -1,4 +1,11 @@
-#4.0.0.beta3 2014-10-07
+#4.0.0.beta5 2014-??-??
+ - 2014-10-17 Fixed bug#[10810](http://bugs.otrs.org/show_bug.cgi?id=10810) - Reference of uninitialized value at login.
+
+#4.0.0.beta4 2014-10-21
+ - 2014-10-16 Updated translations, thanks to all translators.
+ - 2014-10-16 Fixed bug#[10631](http://bugs.otrs.org/show_bug.cgi?id=10631) - Search attribute are unordered.
+ - 2014-10-16 Added new screen for outgoing emails on a ticket that are not replies.
+ - 2014-10-16 Follow-up fix for bug#10644. Make sure that params get passed to any modules used. Make tests more robust.
  - 2014-10-14 Added flat design skin for the customer interface.
  - 2014-10-14 Fixed bug#[10728](http://bugs.otrs.org/show_bug.cgi?id=10728) - Removing watcher does not work on ticket merge.
  - 2014-10-14 Fixed bug#[10750](http://bugs.otrs.org/show_bug.cgi?id=10750) - Strange tree view in complex tree of queues.
@@ -13,6 +20,8 @@
  - 2014-10-07 Added the possibility to restrict customer self registration by email address whitelist or blacklist.
  - 2014-10-07 Fixed customer account creation message.
  - 2014-10-07 Added new dashboard module that shows the output of an external command, thanks to ib.pl.
+
+#4.0.0.beta3 2014-10-07
  - 2014-09-29 Fixed bug#[10588](http://bugs.otrs.org/show_bug.cgi?id=10588) - Search profile names with special characters break functionality.
  - 2014-09-26 Added functionality to search for the last change time of the ticket (TicketLastChangeTimeOlderMinutes, TicketLastChangeTimeNewerMinutes, TicketLastChangeTimeNewerDate, TicketLastChangeTimeOlderDate).
  - 2014-09-25 Readded AgentZoom.pm to fix compatibility problems of older systems.
