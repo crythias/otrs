@@ -1185,29 +1185,66 @@ sub Run {
             }
         }
         my @Attributes = (
+            # Main fields
             {
-                Key   => 'StateIDs',
-                Value => 'State',
+                Key   => 'TicketNumber',
+                Value => 'Ticket Number',
             },
             {
-                Key   => 'QueueIDs',
-                Value => 'Queue',
+                Key   => 'Fulltext',
+                Value => 'Fulltext',
             },
             {
-                Key   => 'ArticleCreateTimePoint',
-                Value => 'Article Create Time (before/after)',
+                Key   => 'Title',
+                Value => 'Title',
             },
             {
-                Key   => 'ArticleCreateTimeSlot',
-                Value => 'Article Create Time (between)',
+                Key      => '',
+                Value    => '-',
+                Disabled => 1,
+            },
+            # Article fields
+            {
+                Key   => 'From',
+                Value => 'From',
+            },
+            {
+                Key   => 'To',
+                Value => 'To',
+            },
+            {
+                Key   => 'Cc',
+                Value => 'Cc',
+            },
+            {
+                Key   => 'Subject',
+                Value => 'Subject',
             },
             {
                 Key   => 'Body',
                 Value => 'Body',
             },
+        );
+
+        if (
+            $Self->{ConfigObject}->Get('Ticket::StorageModule') eq
+            'Kernel::System::Ticket::ArticleStorageDB'
+            )
+        {
+            push @Attributes, (
+                {
+                    Key   => 'AttachmentName',
+                    Value => 'Attachment Name',
+                },
+            );
+        }
+
+        # Ticket fields
+        push @Attributes, (
             {
-                Key   => 'Cc',
-                Value => 'Cc',
+                Key      => '',
+                Value    => '-',
+                Disabled => 1,
             },
             {
                 Key   => 'CustomerID',
@@ -1218,41 +1255,78 @@ sub Run {
                 Value => 'Customer User Login',
             },
             {
-                Key   => 'From',
-                Value => 'From',
+                Key   => 'StateIDs',
+                Value => 'State',
             },
             {
-                Key   => 'Fulltext',
-                Value => 'Fulltext',
+                Key   => 'PriorityIDs',
+                Value => 'Priority',
+            },
+            {
+                Key   => 'LockIDs',
+                Value => 'Lock',
+            },
+            {
+                Key   => 'QueueIDs',
+                Value => 'Queue',
+            },
+            {
+                Key   => 'CreatedQueueIDs',
+                Value => 'Created in Queue',
             },
         );
 
-        # show Article Name option only if the ArticleStorage is in the DB
-        if (
-            $Self->{ConfigObject}->Get('Ticket::StorageModule') eq
-            'Kernel::System::Ticket::ArticleStorageDB'
-            )
-        {
-            push @Attributes, {
-                Key   => 'AttachmentName',
-                Value => 'Attachment Name',
-                },
-        }
-
-        if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
+        if ( $Self->{ConfigObject}->Get('Ticket::Type') ) {
             push @Attributes, (
                 {
-                    Key   => 'SearchInArchive',
-                    Value => 'Archive Search',
+                    Key   => 'TypeIDs',
+                    Value => 'Type',
+                },
+            );
+        }
+
+        if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
+            push @Attributes, (
+                {
+                    Key   => 'ServiceIDs',
+                    Value => 'Service',
+                },
+                {
+                    Key   => 'SLAIDs',
+                    Value => 'SLA',
                 },
             );
         }
 
         push @Attributes, (
             {
-                Key   => 'Subject',
-                Value => 'Subject',
+                Key   => 'OwnerIDs',
+                Value => 'Owner',
             },
+            {
+                Key   => 'CreatedUserIDs',
+                Value => 'Created by',
+            },
+        );
+        if ( $Self->{ConfigObject}->Get('Ticket::Watcher') ) {
+            push @Attributes, (
+                {
+                    Key   => 'WatchUserIDs',
+                    Value => 'Watcher',
+                },
+            );
+        }
+        if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
+            push @Attributes, (
+                {
+                    Key   => 'ResponsibleIDs',
+                    Value => 'Responsible',
+                },
+            );
+        }
+
+        # Time fields
+        push @Attributes, (
             {
                 Key      => '',
                 Value    => '-',
@@ -1299,85 +1373,25 @@ sub Run {
                 Value => 'Ticket Escalation Time (between)',
             },
             {
-                Key   => 'TicketNumber',
-                Value => 'Ticket Number',
+                Key   => 'ArticleCreateTimePoint',
+                Value => 'Article Create Time (before/after)',
             },
             {
-                Key   => 'Title',
-                Value => 'Title',
-            },
-            {
-                Key   => 'To',
-                Value => 'To',
-            },
-            {
-                Key      => '',
-                Value    => '-',
-                Disabled => 1,
-            },
-            {
-                Key   => 'PriorityIDs',
-                Value => 'Priority',
-            },
-            {
-                Key   => 'OwnerIDs',
-                Value => 'Owner',
-            },
-            {
-                Key   => 'CreatedQueueIDs',
-                Value => 'Created in Queue',
-            },
-            {
-                Key   => 'CreatedUserIDs',
-                Value => 'Created by',
+                Key   => 'ArticleCreateTimeSlot',
+                Value => 'Article Create Time (between)',
             },
         );
 
-        if ( $Self->{ConfigObject}->Get('Ticket::Watcher') ) {
+        if ( $Self->{ConfigObject}->Get('Ticket::ArchiveSystem') ) {
             push @Attributes, (
                 {
-                    Key   => 'WatchUserIDs',
-                    Value => 'Watcher',
-                },
-            );
-        }
-        if ( $Self->{ConfigObject}->Get('Ticket::Responsible') ) {
-            push @Attributes, (
-                {
-                    Key   => 'ResponsibleIDs',
-                    Value => 'Responsible',
-                },
-            );
-        }
-        if ( $Self->{ConfigObject}->Get('Ticket::Type') ) {
-            push @Attributes, (
-                {
-                    Key   => 'TypeIDs',
-                    Value => 'Type',
+                    Key   => 'SearchInArchive',
+                    Value => 'Archive Search',
                 },
             );
         }
 
-        push @Attributes, (
-            {
-                Key   => 'LockIDs',
-                Value => 'Lock',
-            },
-        );
-
-        if ( $Self->{ConfigObject}->Get('Ticket::Service') ) {
-            push @Attributes, (
-                {
-                    Key   => 'ServiceIDs',
-                    Value => 'Service',
-                },
-                {
-                    Key   => 'SLAIDs',
-                    Value => 'SLA',
-                },
-            );
-        }
-
+        # Dynamic fields
         my $DynamicFieldSeparator = 1;
 
         # create dynamic fields search options for attribute select
@@ -1397,7 +1411,6 @@ sub Run {
                         Disabled => 1,
                     },
                 );
-
                 $DynamicFieldSeparator = 0;
             }
 
@@ -1434,17 +1447,6 @@ sub Run {
                     },
                 );
             }
-        }
-
-        # create a separator if a dynamic field attribute was pushed
-        if ( !$DynamicFieldSeparator ) {
-            push @Attributes, (
-                {
-                    Key      => '',
-                    Value    => '-',
-                    Disabled => 1,
-                },
-            );
         }
 
         # create HTML strings for all dynamic fields
@@ -2137,9 +2139,21 @@ sub Run {
                 }
             }
 
+            my @OrderedDefaults;
             if (%Defaults) {
+
+                # ordering atributes on the same order like in Atributes
+                for my $Item (@Attributes) {
+                    my $KeyAtr = $Item->{Key};
+                    for my $Key ( sort keys %Defaults ) {
+                        if ( $Key eq $KeyAtr ) {
+                            push @OrderedDefaults, $Key;
+                        }
+                    }
+                }
+
                 KEY:
-                for my $Key ( sort keys %Defaults ) {
+                for my $Key (@OrderedDefaults) {
                     next KEY if $Key eq 'DynamicField';    # Ignore entry for DF config
                     next KEY if $AlreadyShown{$Key};
                     $AlreadyShown{$Key} = 1;
