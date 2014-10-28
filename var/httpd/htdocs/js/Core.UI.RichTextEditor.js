@@ -47,6 +47,10 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             Instance,
             UserLanguage;
 
+        if (isJQueryObject($EditorArea) && $EditorArea.hasClass('HasCKEInstance')) {
+            return false;
+        }
+
         if (isJQueryObject($EditorArea) && $EditorArea.length === 1) {
             EditorID = $EditorArea.attr('id');
         }
@@ -55,13 +59,11 @@ Core.UI.RichTextEditor = (function (TargetNS) {
             Core.Exception.Throw('RichTextEditor: Need exactly one EditorArea!', 'TypeError');
         }
 
-        // remove the CKEditor instance if already exists
-        Instance = CKEDITOR.instances[EditorID];
-        if (Instance) {
-            Instance.destroy(true);
-        }
+        // mark the editor textarea as linked with an RTE instance to avoid multiple instances
+        $EditorArea.addClass('HasCKEInstance');
 
         CKEDITOR.on('instanceCreated', function (Editor) {
+
             CKEDITOR.addCss(Core.Config.Get('RichText.EditingAreaCSS'));
 
             // Remove the validation error tooltip if content is added to the editor
