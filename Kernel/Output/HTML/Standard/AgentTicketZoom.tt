@@ -489,7 +489,7 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
 [% RenderBlockStart("NextActivityDialogs") %]
                 <div class="LightRow Bottom">
                     <ul class="Actions">
-                        <li><strong>[% Data.ActivityName | html %] [% Translate("Dialogs") | html %]:</strong></li>
+                        <li><strong>[% Data.ActivityName | html %]:</strong></li>
 [% RenderBlockStart("ActivityDialog") %]
                         <li>
                             <a title="[% Data.Name | html %]" class="AsPopup PopupType_TicketAction" href="[% Env("Baselink") %]Action=AgentTicketProcess;Subaction=DisplayActivityDialog;TicketID=[% Data.TicketID | uri %];ProcessEntityID=[% Data.ProcessEntityID | uri %];ActivityDialogEntityID=[% Data.ActivityDialogEntityID | uri %]">[% Data.Name | html %]</a>
@@ -770,6 +770,10 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
         <ul class="Hidden">
             <li id="TemplateListItem">
                 <h3>
+                    <div class="UnreadArticles Remarkable" title="[% Translate("Mark this article as read") | html %]">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
                     <i class="fa fa-info-circle" title="[% Translate("Important") | html %]"></i>
                     <em></em>
                     <strong class="Type"></strong>
@@ -818,8 +822,8 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
 <script type="text/javascript">//<![CDATA[
 
 [% IF Config("ChronicalViewEnabled") == 1 %]
-
-var ListObjects = [
+var TicketID    = [% Data.TicketID | JSON %],
+    ListObjects = [
 [% FOREACH Item IN Data.Items %]
     {
         'orientation'   : [% Item.Orientation | JSON %],
@@ -841,7 +845,8 @@ var ListObjects = [
             'cc'     : [% Item.ArticleData.Cc | truncate(75) | JSON %],
             'bcc'    : [% Item.ArticleData.Bcc | truncate(75) | JSON %],
             'is_important' : [% Item.ArticleData.ArticleIsImportant | JSON %],
-            'text'   : [% IF Item.IsChatArticle %][% Item.ArticleData.BodyChat | JSON %][% ELSE %][% Item.ArticleData.Body | truncate(200) | JSON %][% END %],
+            'is_seen' : [% Item.ArticleData.ArticleIsSeen | JSON %],
+            'text'   : [% IF Item.IsChatArticle %][% Item.ArticleData.BodyChat | JSON %][% ELSE %][% Item.ArticleData.Body | truncate(260) | JSON %][% END %],
             'text_long' : [% IF Item.IsChatArticle %][% Item.ArticleData.Body %][% ELSE %][% IF !Item.ArticleData.AttachmentIDOfHTMLBody %][% Item.ArticleData.Body | JSON %][% ELSE %]""[% END %][% END %],
             'attachment_id' : [% Item.ArticleData.AttachmentIDOfHTMLBody | JSON %],
             'iframe_html' : '<iframe sandbox="allow-same-origin allow-popups" data-url="[% Env("Baselink") %]Action=AgentTicketAttachment;Subaction=HTMLView;ArticleID=[% Item.ArticleID | html %];FileID=[% Item.ArticleData.AttachmentIDOfHTMLBody | html %];[% Env("SessionName") | html %]=[% Env("SessionID") | html %]" [% Data.MSSecurityRestricted %] width="100%" frameborder="0" id="Iframe[% Item.ArticleID | html %]" class="ChronicalArticleiFrame" src=""></iframe>'
@@ -851,7 +856,7 @@ var ListObjects = [
 [% END %]
 ];
 
-Core.Agent.TicketZoom.ChronicalView.Init(ListObjects);
+Core.Agent.TicketZoom.ChronicalView.Init(TicketID, ListObjects);
 
 [% END %]
 
