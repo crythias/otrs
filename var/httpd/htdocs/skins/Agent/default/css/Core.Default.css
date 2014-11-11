@@ -505,6 +505,7 @@ dd {
 .Flag.Small {
     width: 17px;
     height: 8px;
+    margin: 0px auto;
 }
 
 .Flag span {
@@ -613,6 +614,10 @@ span.ImportantArticles {
 
 span.ImportantArticles em {
     display: none;
+}
+
+span.ImportantArticles i {
+    color: #C10505;
 }
 
 /**
