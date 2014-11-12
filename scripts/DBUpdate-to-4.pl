@@ -34,6 +34,7 @@ use Kernel::Output::Template::Provider;
 use Kernel::System::ObjectManager;
 use Kernel::System::SysConfig;
 use Kernel::System::Cache;
+use Kernel::System::DynamicField;
 use Kernel::System::Package;
 use Kernel::System::ProcessManagement::DB::Activity;
 use Kernel::System::ProcessManagement::DB::ActivityDialog;
@@ -84,7 +85,7 @@ Please run it as the 'otrs' user or with the help of su:
     print "\nMigration started...\n\n";
 
     # define the number of steps
-    my $Steps = 12;
+    my $Steps = 13;
     my $Step  = 1;
 
     print "Step $Step of $Steps: Refresh configuration cache... ";
@@ -179,6 +180,16 @@ Please run it as the 'otrs' user or with the help of su:
 
     print "Step $Step of $Steps: Migrate SysConfig settings from DT to Template::Toolkit... ";
     if ( _MigrateDTLInSysConfig() ) {
+        print "done.\n\n";
+    }
+    else {
+        print "error.\n\n";
+        die;
+    }
+    $Step++;
+
+    print "Step $Step of $Steps: Migrate Dynamic Field links from DT to Template::Toolkit... ";
+    if ( _MigrateDTLInDynamicFieldLinks() ) {
         print "done.\n\n";
     }
     else {
@@ -418,15 +429,12 @@ Migrate process management EntityIDs from consecutive to GUID style.
 =cut
 
 sub _MigrateProcessManagementEntityIDs {
-    my $ProcessObject  = Kernel::System::ProcessManagement::DB::Process->new();
-    my $EntityObject   = Kernel::System::ProcessManagement::DB::Entity->new();
-    my $ActivityObject = Kernel::System::ProcessManagement::DB::Activity->new();
-    my $ActivityDialogObject
-        = Kernel::System::ProcessManagement::DB::ActivityDialog->new();
-    my $TransitionObject
-        = Kernel::System::ProcessManagement::DB::Transition->new();
-    my $TransitionActionObject
-        = Kernel::System::ProcessManagement::DB::TransitionAction->new();
+    my $ProcessObject          = Kernel::System::ProcessManagement::DB::Process->new();
+    my $EntityObject           = Kernel::System::ProcessManagement::DB::Entity->new();
+    my $ActivityObject         = Kernel::System::ProcessManagement::DB::Activity->new();
+    my $ActivityDialogObject   = Kernel::System::ProcessManagement::DB::ActivityDialog->new();
+    my $TransitionObject       = Kernel::System::ProcessManagement::DB::Transition->new();
+    my $TransitionActionObject = Kernel::System::ProcessManagement::DB::TransitionAction->new();
 
     # get current process management data from the DB
     my %ProcessManagementList;
@@ -513,9 +521,8 @@ sub _MigrateProcessManagementEntityIDs {
         for my $Attribute (qw(Activity ActivityDialog)) {
             next ATTRIBUTE if !$Process->{Config}->{"Start$Attribute"};
 
-            my $AttributeEntityID = $Process->{Config}->{"Start$Attribute"};
-            my $NewAttributeEntityID
-                = $EntityLookup{$Attribute}->{$AttributeEntityID};
+            my $AttributeEntityID    = $Process->{Config}->{"Start$Attribute"};
+            my $NewAttributeEntityID = $EntityLookup{$Attribute}->{$AttributeEntityID};
             if ( !$NewAttributeEntityID ) {
                 die "Error: No new EntityID was created for $Attribute: $AttributeEntityID";
             }
@@ -570,8 +577,7 @@ sub _MigrateProcessManagementEntityIDs {
                     }
 
                     # set new transition to its entity hash key
-                    $NewPath{$NewActivityEntityID}->{$NewTransitionEntityID}
-                        = $NewTransition;
+                    $NewPath{$NewActivityEntityID}->{$NewTransitionEntityID} = $NewTransition;
                 }
             }
         }
@@ -627,8 +633,7 @@ sub _MigrateProcessManagementEntityIDs {
                 die
                     "Error: No new EntityID was created for ActivityDialog: $ActivityDialogEntityID";
             }
-            $Activity->{Config}->{ActivityDialog}->{$OrderKey}
-                = $NewActivityDialogEntityID;
+            $Activity->{Config}->{ActivityDialog}->{$OrderKey} = $NewActivityDialogEntityID;
         }
 
         # update dynamic fields
@@ -930,8 +935,7 @@ sub _MigrateProcessManagementEntityIDs {
 
     if ($DeployProcesses) {
 
-        my $Location
-            = $Kernel::OM->Get('Kernel::Config')->Get('Home')
+        my $Location = $Kernel::OM->Get('Kernel::Config')->Get('Home')
             . '/Kernel/Config/Files/ZZZProcessManagement.pm';
 
         my $ProcessDump = ${ProcessObject}->ProcessDump(
@@ -1083,8 +1087,9 @@ Migrate process management Dynamic Fields to use their own driver.
 
 sub _MigrateProcessManagementDynamicFieldTypes {
 
-    my $ProcessManagementProcessID = $Kernel::OM->Get('Kernel::Config')
-        ->Get('Process::DynamicFieldProcessManagementProcessID') || '';
+    my $ProcessManagementProcessID
+        = $Kernel::OM->Get('Kernel::Config')->Get('Process::DynamicFieldProcessManagementProcessID')
+        || '';
 
     if ( !$ProcessManagementProcessID ) {
         print "\tProcess Management dynamic field for Process ID configuration is invalid!\n";
@@ -1092,7 +1097,8 @@ sub _MigrateProcessManagementDynamicFieldTypes {
         return;
     }
 
-    my $ProcessManagementActivityID = $Kernel::OM->Get('Kernel::Config')
+    my $ProcessManagementActivityID
+        = $Kernel::OM->Get('Kernel::Config')
         ->Get('Process::DynamicFieldProcessManagementActivityID') || '';
 
     if ( !$ProcessManagementActivityID ) {
@@ -1285,8 +1291,7 @@ sub _MigrateDBACLs {
 
         # convert old hash into an array using only the keys set to 0, and skip those that are set
         # to 1, set them as PossibleNot and delete the Possible->Action section form the ACL.
-        my @NewAction
-            = grep { $ACL->{ConfigChange}->{Possible}->{Action}->{$_} == 0 }
+        my @NewAction = grep { $ACL->{ConfigChange}->{Possible}->{Action}->{$_} == 0 }
             sort keys %{ $ACL->{ConfigChange}->{Possible}->{Action} };
 
         delete $ACL->{ConfigChange}->{Possible}->{Action};
@@ -1313,8 +1318,7 @@ sub _MigrateDBACLs {
                 . " possible, please check all ACLs and deploy them manually!\n";
         }
         else {
-            my $Location
-                = $Kernel::OM->Get('Kernel::Config')->Get('Home')
+            my $Location = $Kernel::OM->Get('Kernel::Config')->Get('Home')
                 . '/Kernel/Config/Files/ZZZACL.pm';
 
             my $ACLDump = $ACLObject->ACLDump(
@@ -1466,7 +1470,7 @@ sub _MigrateDTLInSysConfig {
     my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
     my $ProviderObject  = Kernel::Output::Template::Provider->new();
 
-    # initialize erro message
+    # initialize error message
     my $ErrorMessage = '';
 
     # define setting for migrating
@@ -1480,7 +1484,11 @@ sub _MigrateDTLInSysConfig {
         )
         )
     {
-        push @SettingsToTT, { Key => 'Ticket::Frontend::' . $Item, SubKey => 'Subject' };
+        push @SettingsToTT,
+            {
+            Key    => 'Ticket::Frontend::' . $Item,
+            SubKey => 'Subject'
+            };
     }
 
     # include menu settings
@@ -1491,13 +1499,21 @@ sub _MigrateDTLInSysConfig {
         if ( IsHashRefWithData($SysConfigEntry) ) {
 
             for my $Item ( sort keys %{$SysConfigEntry} ) {
-                push @SettingsToTT, { Key => $SettingName, SubKey => $Item };
+                push @SettingsToTT,
+                    {
+                    Key    => $SettingName,
+                    SubKey => $Item
+                    };
             }
         }
     }
 
     # add no hash setting
-    push @SettingsToTT, { Key => 'Ticket::Frontend::ResponseFormat', SubKey => '' };
+    push @SettingsToTT,
+        {
+        Key    => 'Ticket::Frontend::ResponseFormat',
+        SubKey => ''
+        };
 
     SETTING:
     for my $Values (@SettingsToTT) {
@@ -1579,6 +1595,88 @@ EOF
 
     return 1;
 
+}
+
+=item _MigrateDTLInDynamicFieldLinks()
+
+migrate dynamic field links that contain DTL to TT.
+
+    _MigrateDTLInDynamicFieldLinks ($CommonObject);
+
+=cut
+
+sub _MigrateDTLInDynamicFieldLinks {
+
+    my $DynamicFieldObject = Kernel::System::DynamicField->new();
+
+    # get a list of all Dynamic Fields
+    my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
+        Valid => 0,
+    );
+
+    # return success if there are no dynamic fields in the system, nothing to do
+    return 1 if !IsArrayRefWithData($DynamicFieldList);
+
+    my $ProviderObject = Kernel::Output::Template::Provider->new();
+
+    # initialize error message
+    my $ErrorMessage = '';
+
+    DYNAMICFIELD:
+    for my $DynamicField ( @{$DynamicFieldList} ) {
+
+        # validate only dynamic fields with links set are updated
+        next DYNAMICFIELD if !$DynamicField->{Name};
+        next DYNAMICFIELD if !$DynamicField->{Config};
+        next DYNAMICFIELD if !IsHashRefWithData( $DynamicField->{Config} );
+        next DYNAMICFIELD if !$DynamicField->{Config}->{Link};
+
+        # make shortcuts
+        my $DynamicFieldConfig = $DynamicField->{Config};
+
+        my $TTLink;
+        eval {
+            $TTLink = $ProviderObject->MigrateDTLtoTT( Content => $DynamicFieldConfig->{Link} );
+        };
+        if ($@) {
+
+            $ErrorMessage .= " Dynamic Field $DynamicField->{Name} : $@ \n";
+        }
+        else {
+
+            # only update field where the link has been updated
+            next DYNAMICFIELD if $TTLink eq $DynamicFieldConfig->{Link};
+
+            # set new link in the dynamic field configuration
+            $DynamicFieldConfig->{Link} = $TTLink;
+
+            # update the field
+            my $Success = $DynamicFieldObject->DynamicFieldUpdate(
+                %{$DynamicField},
+                Config  => $DynamicFieldConfig,
+                Reorder => 0,
+                UserID  => 1,
+            );
+        }
+    }
+
+    # check if an error is present
+    if ($ErrorMessage) {
+        print STDERR <<EOF;
+
+One or more dynamic field links could not be automatically converted
+from DTL to Template::Toolkit. The error was:
+$ErrorMessage
+
+The upgrading script will continue, please check and update this links in the dynamic fileds manually.
+See also http://otrs.github.io/doc/manual/developer/4.0/en/html/package-porting.html#package-porting-template-engine.
+
+EOF
+
+        # Treat as success, the user should fix this manually.
+    }
+
+    return 1;
 }
 
 1;
