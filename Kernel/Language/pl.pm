@@ -485,7 +485,7 @@ sub Data {
         'Can\'t update password, this password has already been used. Please choose a new one!' =>
             'Nie można zmienić hasła ponieważ było już używane. Należy wybrać nowe hasło!',
         'Select the separator character used in CSV files (stats and searches). If you don\'t select a separator here, the default separator for your language will be used.' =>
-            'Wskaż znak separatora w pliku CSV (statystyki i wyszukiwania). Jeśli nie wskażzesz tutaj separatora, użyty zostanie domyślny separator dla twojego języka.',
+            'Wskaż znak separatora w pliku CSV (statystyki i wyszukiwania). Jeśli nie wskażesz tutaj separatora, użyty zostanie domyślny separator dla twojego języka.',
         'CSV Separator' => 'Separator CSV',
 
         # Template: AAAStats
@@ -641,6 +641,8 @@ sub Data {
         'Groups' => 'Grupy',
         'Dynamic Fields' => 'Pola dynamiczne',
         'Dynamic Field Values' => '',
+        'Invalid Dynamic Fields' => '',
+        'Invalid Dynamic Field Values' => '',
         'GenericInterface Webservices' => '',
         'Processes' => 'Procesy',
         'Months Between First And Last Ticket' => '',
@@ -682,6 +684,7 @@ sub Data {
         'Environment Variables' => '',
         'Webserver Version' => '',
         'Could not determine webserver version.' => '',
+        'Loaded Apache Modules' => '',
         'CGI Accelerator Usage' => '',
         'You should use FastCGI or mod_perl to increase your performance.' =>
             '',
@@ -1263,6 +1266,7 @@ sub Data {
             'Jeśli zgłoszenie zostanie wykonane wówczas filtr zgłoszeń zostanie wykonany dla sprawdzenia dopasowania zgłoszenia. Tylko wówczas zadanie jest wykonane na danym zgłoszeniu.',
         'Do you really want to delete this event trigger?' => 'Czy na pewno chcesz usunąć ten trigger?',
         'Add Event Trigger' => 'Dodaj trigger',
+        'Add Event' => '',
         'To add a new event select the event object and event name and click on the "+" button' =>
             'Aby dodać nowe zdarzenie, zaznacz obiekt zdarzenia i nazwę zdarzenia i kliknij przycisk "+"',
         'Duplicate event.' => 'Duplikuj zdarzenie',
@@ -2421,6 +2425,7 @@ sub Data {
         'Add ticket type' => 'Dodaj typ zgłoszenia',
         'Add Type' => 'Dodaj typ',
         'Edit Type' => 'Edytuj typ zgłoszenia',
+        'A type with this name already exists!' => '',
 
         # Template: AdminUser
         'Add agent' => 'Dodaj agenta',
@@ -2875,13 +2880,14 @@ sub Data {
         'Outgoing message' => 'Wiadomość wychodząca',
         'Internal message' => 'Wiadomość wewnętrzna',
         'Resize' => 'Zmień rozmiar',
+        'Mark this article as read' => '',
         'Show Full Text' => '',
         'Full Article Text' => '',
         'No more events found. Please try changing the filter settings.' =>
             '',
 
         # Template: AttachmentBlocker
-        'To protect your privacy, remote content was blocked.' => 'Aby chronić twoją prywatnąć, zdalna zawartość została zablokowana.',
+        'To protect your privacy, remote content was blocked.' => 'Aby chronić twoją prywatność, zdalna zawartość została zablokowana.',
         'Load blocked content.' => 'Załaduj zablokowaną treść.',
 
         # Template: CustomerError
@@ -2908,6 +2914,7 @@ sub Data {
         'In order to experience OTRS, you\'ll need to enable JavaScript in your browser.' =>
             'Aby korzystać z OTRS, musisz włączyć obsługę JavaScript w twojej przeglądarce.',
         'Browser Warning' => 'Ostrzeżenie dotyczące przeglądarki',
+        'One moment please, you are being redirected...' => '',
         'Login' => 'Zaloguj się',
         'User name' => 'Nazwa użytkownika',
         'Your user name' => 'Twoja nazwa użytkownika',
@@ -3076,7 +3083,7 @@ sub Data {
         'Generated password' => 'Wygenerowane hasło',
 
         # Template: InstallerDBmysql
-        'Passwords do not match' => 'Hasła nie zgadzzają się',
+        'Passwords do not match' => 'Hasła nie zgadzają się',
 
         # Template: InstallerDBoracle
         'SID' => 'SID',
@@ -3091,8 +3098,8 @@ sub Data {
         'Your OTRS Team' => 'Twój Zespół OTRS',
 
         # Template: InstallerLicense
-        'Accept license' => 'Akceptuję licencję',
         'Don\'t accept license' => 'Nie akceptuję licencji',
+        'Accept license and continue' => '',
 
         # Template: InstallerSystem
         'The identifier of the system. Each ticket number and each HTTP session ID contain this number.' =>
@@ -3120,7 +3127,7 @@ sub Data {
 
         # Template: Login
         'Lost your password?' => 'Zapomniałeś hasła?',
-        'Request New Password' => 'Żądaj nowego hasła',
+        'Request New Password' => 'Prośba o nowe hasło',
         'Back to login' => 'Powrót do logowania',
 
         # Template: Motd
@@ -4050,7 +4057,7 @@ sub Data {
         'Determines the next screen after new customer ticket in the customer interface.' =>
             'Determinuje kolejne okno dla nowych zgłoszeń klienta w interfejsie klienta.',
         'Determines the next screen after the follow up screen of a zoomed ticket in the customer interface.' =>
-            'Determinuje kolejne okno po oknie odpowiedzi przybliżonego zgłoszzenia w interfejsie klienta.',
+            'Determinuje kolejne okno po oknie odpowiedzi przybliżonego zgłoszenia w interfejsie klienta.',
         'Determines the next screen after the ticket is moved. LastScreenOverview will return the last overview screen (e.g. search results, queueview, dashboard). TicketZoom will return to the TicketZoom.' =>
             '',
         'Determines the possible states for pending tickets that changed state after reaching time limit.' =>
@@ -4160,7 +4167,9 @@ sub Data {
         'Enables S/MIME support.' => 'Aktywuje wsparcie dla S/MIME.',
         'Enables customers to create their own accounts.' => 'Umożliwia klientom na tworzenie własnych kont.',
         'Enables file upload in the package manager frontend.' => 'Włącza możliwość zamieszczania plików w menadzeże pakietów.',
-        'Enables or disable the debug mode over frontend interface.' => 'Włącza lub wyłacza tryb debugowania w interfejsie.',
+        'Enables or disables the caching for templates. WARNING: Do NOT disable template caching for production environments for it will cause a massive performance drop! This setting should only be disabled for debugging reasons!' =>
+            '',
+        'Enables or disables the debug mode over frontend interface.' => '',
         'Enables or disables the ticket watcher feature, to keep track of tickets without being the owner nor the responsible.' =>
             '',
         'Enables performance log (to log the page response time). It will affect the system performance. Frontend::Module###AdminPerformanceLog must be enabled.' =>
@@ -4213,7 +4222,7 @@ sub Data {
         'Exports the whole article tree in search result (it can affect the system performance).' =>
             'Eksportuje całe drzewo artykułów z rezultatów wyszukiwania (może to mieć wpływ na wydajnośc systemu).',
         'Fetches packages via proxy. Overwrites "WebUserAgent::Proxy".' =>
-            'Pobiera pakiety przezz proxy. Nadpisuje "WebUserAgent::Proxy".',
+            'Pobiera pakiety przez proxy. Nadpisuje "WebUserAgent::Proxy".',
         'File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.dtl.' =>
             'Plik kóry jest wyświetlony w module Kernel::Modules::AgentInfo ',
         'Filter for debugging ACLs. Note: More ticket attributes can be added in the format <OTRS_TICKET_Attribute> e.g. <OTRS_TICKET_Priority>.' =>

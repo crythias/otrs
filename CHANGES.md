@@ -1,4 +1,6 @@
-#4.0.0.? ????-??-??
+#4.0.0.rc1 2014-11-18
+ - 2014-10-30 Updated translation files, thanks to all translators.
+ - 2014-11-12 Fixed bug#[10866](http://bugs.otrs.org/show_bug.cgi?id=10866) - Wrong default article shown in AgentTicketZoom.
  - 2014-11-11 Fixed bug#[7369](http://bugs.otrs.org/show_bug.cgi?id=7369) - LinkQoute fails for some characters in hash or parameter.
  - 2014-11-11 Fixed bug#[8404](http://bugs.otrs.org/show_bug.cgi?id=8404) - Wrong sorting of responses dropdown in TicketZoom.
  - 2014-11-11 Fixed bug#[8781](http://bugs.otrs.org/show_bug.cgi?id=8781) - 508 Compliance: In Ticket Overviews the title attribute of large view link is incorrect.
