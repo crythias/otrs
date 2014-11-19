@@ -7,7 +7,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-[% SET OTRSBusinessLabel = '<b>OTRS Business Solution</b>™' %]
+[% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Manage %s", OTRSBusinessLabel) %]</h1>
@@ -69,6 +69,7 @@
                     <li>[% Translate('Chat') | html %]</li>
                     <li>[% Translate('Timeline view in ticket zoom') | html %]</li>
                     <li>[% Translate('DynamicField ContactWithData') | html %]</li>
+                    <li>[% Translate('The %s skin', OTRSBusinessLabel) %]</li>
                 </ul>
                 <p class="SpacingTop">
                     <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=UninstallAction">

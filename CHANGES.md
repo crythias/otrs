@@ -1,4 +1,13 @@
 #4.0.1 2014-??-??
+ - 2014-11-18 Fixed bug#[10879](http://bugs.otrs.org/show_bug.cgi?id=10879) - GenericInterfae: TicketSearch operation does not take escalation parameters.
+ - 2014-11-18 Fixed bug#[10812](http://bugs.otrs.org/show_bug.cgi?id=10812) - SOAP Response is always in version SOAP 1.2.
+ - 2014-11-18 Fixed bug#[10083](http://bugs.otrs.org/show_bug.cgi?id=10083) - SMIME and Email address detection is case sensitive (for the right part)..
+ - 2014-11-18 Fixed bug#[10841](http://bugs.otrs.org/show_bug.cgi?id=10841) - ORA-00932 in DBUpdate-to-4.pl.
+ - 2014-11-18 Fixed bug#[10872](http://bugs.otrs.org/show_bug.cgi?id=10872) - Dynamic field regular expressions don't work.
+ - 2014-11-18 Fixed bug#[10712](http://bugs.otrs.org/show_bug.cgi?id=10712) - Incorrect utf8 in ZZZAuto.pm (via SysConfig).
+ - 2014-11-18 Fixed bug#[10826](http://bugs.otrs.org/show_bug.cgi?id=10826) - German - Translation Problem.
+ - 2014-11-18 Fixed bug#[10506](http://bugs.otrs.org/show_bug.cgi?id=10506) - Title mouse over text is truncated.
+ - 2014-11-18 Fixed bug#[10678](http://bugs.otrs.org/show_bug.cgi?id=10678) - Dates off by one on area diagram in dashboard widget.
  - 2014-11-18 Added new Swahili language translation, thanks to all translators.
 
 #4.0.0.rc1 2014-11-18
