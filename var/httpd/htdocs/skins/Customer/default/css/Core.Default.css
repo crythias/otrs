@@ -101,6 +101,11 @@ strong {
  * @subsection  Content
  */
 
+#MainBox.TicketView {
+    margin: 13px;
+    border: 1px solid #ddd;
+}
+
 .Content {
     padding: 13px 21px;
 }
@@ -274,7 +279,7 @@ div.Clear {
  * @subsection  Datepicker
  */
 .DatepickerIcon {
-    margin: 0 0 0 4px;
+    margin: 1px 0 0 4px;
     height: 16px;
     width: 16px;
     display: inline-block;
