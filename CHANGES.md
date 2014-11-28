@@ -1,4 +1,10 @@
-#4.0.2 2014-??-??
+#4.0.3 2014-??-??
+ - 2014-11-28 Fixed bug#[10776](http://bugs.otrs.org/show_bug.cgi?id=10776) - Medium and Large view don't indicate active filters.
+ - 2014-11-28 Fixed bug#[10808](http://bugs.otrs.org/show_bug.cgi?id=10808) - Set of pending time is not working at all in Frontend::Agent::Ticket::ViewNote.
+ - 2014-11-28 Fixed bug#[10843](http://bugs.otrs.org/show_bug.cgi?id=10843) - Adding Queue's with same name in AdminQueue leads to SQL error message.
+
+#4.0.2 2014-12-02
+ - 2014-11-27 Updated translations, thanks to all translators.
  - 2014-11-27 Fixed bug#[10906](http://bugs.otrs.org/show_bug.cgi?id=10906) - SysConfig settings are mistakenly reset.
  - 2014-11-25 Added overview of data that is transferred to cloud.otrs.com. Only call BusinessPermissionCheck for registered systems.
  - 2014-11-24 Fixed bug#[10892](http://bugs.otrs.org/show_bug.cgi?id=10892) - TicketActionsPerTicket open multiple popups at TicketOverview.
