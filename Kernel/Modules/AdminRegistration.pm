@@ -18,6 +18,8 @@ use Kernel::System::SystemData;
 use Kernel::System::OTRSBusiness;
 use Kernel::System::PID;
 
+our $ObjectManagerDisabled = 1;
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -136,6 +138,11 @@ sub Run {
 
         $Self->{LayoutObject}->Block(
             Name => 'OTRSIDValidation',
+            Data => \%Param,
+        );
+
+        $Self->{LayoutObject}->Block(
+            Name => 'OTRSIDValidationForm',
             Data => \%Param,
         );
 

@@ -24,6 +24,8 @@ use Kernel::System::ProcessManagement::Transition;
 use Kernel::System::ProcessManagement::TransitionAction;
 use Kernel::System::VariableCheck qw(:all);
 
+our $ObjectManagerDisabled = 1;
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -318,14 +320,6 @@ sub Run {
 
         my $NextScreen = $Self->{NextScreen} || $Self->{Config}->{NextScreenAfterFollowUp};
         my %Error;
-
-        # rewrap body if no rich text is used
-        if ( $GetParam{Body} && !$Self->{LayoutObject}->{BrowserRichText} ) {
-            $GetParam{Body} = $Self->{LayoutObject}->WrapPlainText(
-                MaxCharacters => $Self->{ConfigObject}->Get('Ticket::Frontend::TextAreaNote'),
-                PlainText     => $GetParam{Body},
-            );
-        }
 
         # get follow up option (possible or not)
         my $FollowUpPossible = $Self->{QueueObject}->GetFollowUpOption(
