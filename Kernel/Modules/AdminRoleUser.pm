@@ -45,9 +45,8 @@ sub Run {
         my %RoleData = $Self->{GroupObject}->RoleList( Valid => 1 );
 
         # get roles in which the user is a member
-        my %Member = $Self->{GroupObject}->GroupUserRoleMemberList(
+        my %Member = $Self->{GroupObject}->PermissionUserRoleGet(
             UserID => $ID,
-            Result => 'HASH',
         );
 
         my $Output = $Self->{LayoutObject}->Header();
@@ -83,9 +82,8 @@ sub Run {
         }
 
         # get members of the the role
-        my %Member = $Self->{GroupObject}->GroupUserRoleMemberList(
+        my %Member = $Self->{GroupObject}->PermissionRoleUserGet(
             RoleID => $ID,
-            Result => 'HASH',
         );
 
         my $Output = $Self->{LayoutObject}->Header();
@@ -128,7 +126,7 @@ sub Run {
                 $Active = 1;
                 last MEMBER_OF_ROLE;
             }
-            $Self->{GroupObject}->GroupUserRoleMemberAdd(
+            $Self->{GroupObject}->PermissionRoleUserAdd(
                 UID    => $UserID,
                 RID    => $ID,
                 Active => $Active,
@@ -165,7 +163,7 @@ sub Run {
                 $Active = 1;
                 last ROLE_OF_MEMBER;
             }
-            $Self->{GroupObject}->GroupUserRoleMemberAdd(
+            $Self->{GroupObject}->PermissionRoleUserAdd(
                 UID    => $ID,
                 RID    => $RoleID,
                 Active => $Active,

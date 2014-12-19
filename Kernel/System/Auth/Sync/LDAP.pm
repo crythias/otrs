@@ -530,10 +530,9 @@ sub Sync {
         for my $PermissionType ( @{ $ConfigObject->Get('System::Permission') } ) {
 
             # get current permission for type
-            my %GroupPermissions = $GroupObject->GroupGroupMemberList(
+            my %GroupPermissions = $GroupObject->PermissionUserGroupGet(
                 UserID => $UserID,
                 Type   => $PermissionType,
-                Result => 'HASH',
             );
 
             GROUPID:
@@ -723,9 +722,8 @@ sub Sync {
     if (%RolePermissionsFromLDAP) {
 
         # get current user roles
-        my %UserRoles = $GroupObject->GroupUserRoleMemberList(
+        my %UserRoles = $GroupObject->PermissionUserRoleGet(
             UserID => $UserID,
-            Result => 'HASH',
         );
 
         ROLEID:
@@ -745,7 +743,7 @@ sub Sync {
                 Priority => 'notice',
                 Message  => "User: '$Param{User}' sync ldap role $SystemRoles{$RoleID}!",
             );
-            $GroupObject->GroupUserRoleMemberAdd(
+            $GroupObject->PermissionRoleUserAdd(
                 UID    => $UserID,
                 RID    => $RoleID,
                 Active => $RolePermissionsFromLDAP{$RoleID} || 0,
