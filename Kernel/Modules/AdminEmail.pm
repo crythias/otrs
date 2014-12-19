@@ -89,11 +89,14 @@ sub Run {
 
             # get group recipients address
             for my $GroupID ( $Self->{ParamObject}->GetArray( Param => 'GroupIDs' ) ) {
-                my @GroupMemberList = $Self->{GroupObject}->GroupMemberList(
-                    Result  => 'ID',
-                    Type    => $Param{GroupPermission},
+
+                my %UserList = $Self->{GroupObject}->PermissionGroupGet(
                     GroupID => $GroupID,
+                    Type    => $Param{GroupPermission},
                 );
+
+                my @GroupMemberList = sort keys %UserList;
+
                 for my $GroupMember (@GroupMemberList) {
                     my %UserData = $Self->{UserObject}->GetUserData(
                         UserID => $GroupMember,
@@ -127,15 +130,18 @@ sub Run {
 
             # get role recipients addresses
             for my $RoleID ( $Self->{ParamObject}->GetArray( Param => 'RoleIDs' ) ) {
-                my @RoleMemberList = $Self->{GroupObject}->GroupUserRoleMemberList(
-                    Result => 'ID',
+
+                my %RoleMemberList = $Self->{GroupObject}->PermissionRoleUserGet(
                     RoleID => $RoleID,
                 );
-                for my $RoleMember (@RoleMemberList) {
+
+                for my $RoleMember ( sort keys %RoleMemberList ) {
+
                     my %UserData = $Self->{UserObject}->GetUserData(
                         UserID => $RoleMember,
                         Valid  => 1,
                     );
+
                     if ( $UserData{UserEmail} ) {
                         $Bcc{ $UserData{UserLogin} } = $UserData{UserEmail};
                     }
