@@ -19,7 +19,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 my @Tests = (
     {
-        Name   => 'Output filter post, all templates',
+        Name   => 'Output filter post, all templates (ignored)',
         Config => {
             "Frontend::Output::FilterElementPre"  => {},
             "Frontend::Output::FilterElementPost" => {
@@ -37,8 +37,7 @@ my @Tests = (
         Data        => {
             Title => 'B&B 1'
         },
-        Result => 'OutputFilterPostPrefix1:
-Test: B&B 1
+        Result => 'Test: B&B 1
 ',
     },
     {
@@ -60,8 +59,7 @@ Test: B&B 1
         Data        => {
             Title => 'B&B 2'
         },
-        Result => 'OutputFilterPostPrefix2:
-Test: B&B 2
+        Result => 'Test: B&B 2
 ',
     },
     {
@@ -124,17 +122,16 @@ Test: B&B 4
             },
             "Frontend::Output::FilterElementPost" => {},
         },
-        IsCacheable => 0,
+        IsCacheable => 1,
         UseCache    => 0,
         Data        => {
             Title => 'B&B 5'
         },
-        Result => 'OutputFilterPrePrefix5:
-Test: B&B 5
+        Result => 'Test: B&B 5
 ',
     },
     {
-        Name   => 'Output filter pre, all templates, cache test (uncacheable)',
+        Name   => 'Output filter pre, all templates, filter ignored',
         Config => {
             "Frontend::Output::FilterElementPre" => {
                 "100-TestFilter" => {
@@ -147,13 +144,12 @@ Test: B&B 5
             },
             "Frontend::Output::FilterElementPost" => {},
         },
-        IsCacheable => 0,
+        IsCacheable => 1,
         UseCache    => 1,
         Data        => {
             Title => 'B&B 6'
         },
-        Result => 'OutputFilterPrePrefix6:
-Test: B&B 6
+        Result => 'Test: B&B 6
 ',
     },
     {
