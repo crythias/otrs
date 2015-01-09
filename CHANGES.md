@@ -3,7 +3,11 @@
 - 2015-01-07 Fixed ticket# 2015010142053495 - Unable to change password in customer interface.
 - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
-#4.0.4 2015-??-??
+#4.0.5 2015-??-??
+ - 2015-01-08 Fixed bug#[10884](http://bugs.otrs.org/show_bug.cgi?id=10884) - /etc/init.d/otrs running httpd is not detected on CentOS 7.
+
+#4.0.4 2015-01-13
+ - 2015-01-08 Updated translations, thanks to all translators.
  - 2015-01-06 Fixed bug#[10967](http://bugs.otrs.org/show_bug.cgi?id=10967) - Error 500 instead of showing a finished process.
  - 2015-01-06 Fixed bug#[10972](http://bugs.otrs.org/show_bug.cgi?id=10972) - AgentTicketProcess - Form not loading when RichText Editor is turned off.
  - 2015-01-05 Fixed bug#[10895](http://bugs.otrs.org/show_bug.cgi?id=10895) - Dynamic Field shown information in customer interface is not consistent with agent interface.
@@ -18,7 +22,7 @@
  - 2014-12-16 Fixed bug#[10574](http://bugs.otrs.org/show_bug.cgi?id=10574) - DropDown "Crypt" is to large.
  - 2014-12-16 Fixed bug#[10957](http://bugs.otrs.org/show_bug.cgi?id=10957) - Low "Max" attribute from Layout BuildSelection breaks execution.
  - 2014-12-15 Fixed bug#[10941](http://bugs.otrs.org/show_bug.cgi?id=10941) - Process activity names not correctly displayed in process information widget.
- - 2014-12-12 Followup for bug[10724](http://bugs.otrs.org/show_bug.cgi?id=107248) - Sorting of DynamicField object types based on its Prio does not work.
+ - 2014-12-12 Followup for bug#[10724](http://bugs.otrs.org/show_bug.cgi?id=10724) - Sorting of DynamicField object types based on its Prio does not work.
  - 2014-12-12 Fixed bug#[10948](http://bugs.otrs.org/show_bug.cgi?id=10948) - CloseParentAfterClosedChilds ACL does not work anymore.
 
 #4.0.3 2014-12-16
