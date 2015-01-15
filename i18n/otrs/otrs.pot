@@ -1255,10 +1255,6 @@ msgid "Hello %s,"
 msgstr ""
 
 #. Template: AAABase
-msgid "This email address already exists. Please log in or reset your password."
-msgstr ""
-
-#. Template: AAABase
 msgid "This email address is not allowed to register. Please contact support staff."
 msgstr ""
 
@@ -5903,6 +5899,18 @@ msgid "DynamicField ContactWithData"
 msgstr ""
 
 #. Template: AdminOTRSBusinessUninstall
+msgid "DynamicField Database"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "SLA Selection Dialog"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
+msgid "Ticket Attachment View"
+msgstr ""
+
+#. Template: AdminOTRSBusinessUninstall
 msgid "The %s skin"
 msgstr ""
 
@@ -9892,6 +9900,10 @@ msgstr ""
 
 #. Template: Header
 msgid "You are logged in as"
+msgstr ""
+
+#. Template: Header
+msgid "There are new chat requests available. Please visit the chat manager."
 msgstr ""
 
 #. Template: Installer
