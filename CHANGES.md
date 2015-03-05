@@ -10,6 +10,9 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.7 2015-??-??
+ - 2015-03-04 Fixed bug#[11097](http://bugs.otrs.org/show_bug.cgi?id=11097) - Generic Agent - Event Delete Icon disappear.
+ - 2015-03-04 Fixed bug#[11137](http://bugs.otrs.org/show_bug.cgi?id=11137) - Installer fails on Oracle.
+ - 2015-03-03 Fixed bug#[11133](http://bugs.otrs.org/show_bug.cgi?id=11133) - Not possible to change customer.
  - 2015-03-03 Fixed bug#[11115](http://bugs.otrs.org/show_bug.cgi?id=11115) - Error from GenericInterface using SOAP and TicketGet operation.
  - 2015-03-03 Fixed bug#[11134](http://bugs.otrs.org/show_bug.cgi?id=11134) - TicketAccountedTime dynamic field restriction does not work anymore.
  - 2015-03-03 Fixed bug#[11088](http://bugs.otrs.org/show_bug.cgi?id=11088) - <OTRS_...> placeholders in mailto-links don't get replaced, thanks to Thorsten Eckel.
