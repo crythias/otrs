@@ -1,4 +1,6 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-03-20 Let LWP::UserAgent handle https-proxy commands, thanks to Michiel Beijen.
+ - 2015-03-20 Added possibility to specify minimum log level, thanks to Renée Bäcker.
  - 2015-02-23 Added Ping() to Kernel::System::DB.pm API.
  - 2015-02-06 Fixed bug#[11054](http://bugs.otrs.org/show_bug.cgi?id=11054) - HTMLUtils::Safety breaks links.
  - 2015-02-03 Fixed bug#[11029](http://bugs.otrs.org/show_bug.cgi?id=11029) - Improved wording for responsible to make it more consistent.
@@ -10,6 +12,8 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.7 2015-??-??
+ - 2015-03-20 Fixed bug#[10816](http://bugs.otrs.org/show_bug.cgi?id=10816) - apache2 with mod_deflate enabled will not start.
+ - 2015-03-19 Fixed bug#[11181](http://bugs.otrs.org/show_bug.cgi?id=11181) - outputfilters pre not matching on includes.
  - 2015-03-13 Fixed bug#[11119](http://bugs.otrs.org/show_bug.cgi?id=11119) - Activity Dialog can't be hidden if ACL features Action condition in CustomerTicketZoom.
  - 2015-03-13 Fixed bug#[11136](http://bugs.otrs.org/show_bug.cgi?id=11136) - uninitialized value $RealName NotificationEvent.pm line 717.
  - 2015-03-13 Fixed bug#[11106](http://bugs.otrs.org/show_bug.cgi?id=11106) - Owner type is ignored if set previous owner to blanc in AgentTicketOwner.
