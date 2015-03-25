@@ -1,4 +1,6 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-03-24 Added new console interface for a massively improved user and developer experience on the commandline.
+ - 2015-03-24 Removed Kernel::System::Crypt layer to use Kernel::System::Crypt::PGP and ::SMIME directly.
  - 2015-03-20 Let LWP::UserAgent handle https-proxy commands, thanks to Michiel Beijen.
  - 2015-03-20 Added possibility to specify minimum log level, thanks to Renée Bäcker.
  - 2015-02-23 Added Ping() to Kernel::System::DB.pm API.
@@ -12,6 +14,7 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.7 2015-??-??
+ - 2015-03-24 Fixed bug#[11189](http://bugs.otrs.org/show_bug.cgi?id=11189) - Go to Dashboard link in No Permissions screen is broken.
  - 2015-03-23 Fixed bug#[11194](http://bugs.otrs.org/show_bug.cgi?id=11194) - Download button for dashboard stats visible even if no permissions for AgentStats exist..
  - 2015-03-23 Fixed bug#[11104](http://bugs.otrs.org/show_bug.cgi?id=11104) - Invalid utf-8 parameters not filtered sufficciently.
  - 2015-03-20 Fixed bug#[11072](http://bugs.otrs.org/show_bug.cgi?id=11072) - DynamicField Filter in AgentDashboard accepts only one value.
