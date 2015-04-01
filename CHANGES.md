@@ -1,4 +1,6 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-04-01 Added link from dashboard queue overview to AgentTicketQueue for better usability, thanks to Norihiro Tanaka.
+ - 2015-03-31 Fixed bug#[11200](http://bugs.otrs.org/show_bug.cgi?id=11200) - Wrong realization of  Dynamic Fields in SOAP Response.
  - 2015-03-24 Added new console interface for a massively improved user and developer experience on the commandline.
  - 2015-03-24 Removed Kernel::System::Crypt layer to use Kernel::System::Crypt::PGP and ::SMIME directly.
  - 2015-03-20 Let LWP::UserAgent handle https-proxy commands, thanks to Michiel Beijen.
@@ -14,6 +16,7 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.8 2015-??-??
+ - 2015-03-31 Fixed bug#[11211](http://bugs.otrs.org/show_bug.cgi?id=11211) - REST WADL file does not pass validation tests.
  - 2015-03-30 Fixed bug#[11207](http://bugs.otrs.org/show_bug.cgi?id=11207) - Wrong column encoding in Kernel::System::Notification::NotificationGet().
  - 2015-03-30 Fixed bug#[9449](http://bugs.otrs.org/show_bug.cgi?id=9449) - Generic Agent ticket actions can't be unselect.
  - 2015-03-28 Fixed bug#[11204](http://bugs.otrs.org/show_bug.cgi?id=11204) - SOAP WSDL file does not pass validation tests.

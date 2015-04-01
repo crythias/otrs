@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions name="GTCSOAP" targetNamespace="http://www.otrs.org/TicketConnector/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.otrs.org/TicketConnector/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions name="GenericTicketConnectorSOAP" targetNamespace="http://www.otrs.org/TicketConnector/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.otrs.org/TicketConnector/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
     <wsdl:documentation>
 The Generic Ticket Connector web service for SOAP protocol
 
@@ -848,9 +848,9 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 minOccurs="1">
             </xsd:element>
             <xsd:element
-                name="DynamicField_X"
-                type="xsd:string"
-                minOccurs="0">
+                name="DynamicField"
+                type="tns:OTRS_DynamicField"
+                minOccurs="0" maxOccurs="unbounded">
             </xsd:element>
             <xsd:element
                 name="EscalationDestinationDate"
@@ -1280,9 +1280,9 @@ WARNING: This WSDL file is for Development and Test purposes ONLY!
                 minOccurs="1">
             </xsd:element>
             <xsd:element
-                name="DynamicField_X"
+                name="DynamicField"
                 type="xsd:string"
-                minOccurs="0">
+                minOccurs="0" maxOccurs="unbounded">
             </xsd:element>
             <xsd:element
                 name="EscalationDestinationDate"
