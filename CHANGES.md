@@ -1,4 +1,6 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-04-10 Added searching for article flags, thanks to Moritz Lenz.
+ - 2015-04-09 Added no match message for administration screens that use filters, thanks to S7.
  - 2015-04-01 Added link from dashboard queue overview to AgentTicketQueue for better usability, thanks to Norihiro Tanaka.
  - 2015-03-31 Fixed bug#[11200](http://bugs.otrs.org/show_bug.cgi?id=11200) - Wrong realization of  Dynamic Fields in SOAP Response.
  - 2015-03-24 Added new console interface for a massively improved user and developer experience on the commandline.
@@ -16,6 +18,10 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.8 2015-??-??
+ - 2015-04-10 Fixed bug#[11163](http://bugs.otrs.org/show_bug.cgi?id=11163) - Uninitialized value warning in Excel output in AgentTicketSearch.
+ - 2015-04-09 Fixed bug#[11156](http://bugs.otrs.org/show_bug.cgi?id=11156) - No translated headers in Excel output in AgentTicketSearch.
+ - 2015-04-09 Fixed bug#[11219](http://bugs.otrs.org/show_bug.cgi?id=11219) - Uninitialized warning in Kernel::Output::HTML::DashboardCalendar.
+ - 2015-04-09 Fixed bug#[11232](http://bugs.otrs.org/show_bug.cgi?id=11232) - OTRS does not recognize language "vi" as it only provides "vi_VI".
  - 2015-04-07 Fixed display bug in IE when showing ticket list tables with only one entry (Ticket#2015031842001505).
  - 2015-04-02 Fixed bug#[11161](http://bugs.otrs.org/show_bug.cgi?id=11161) - ticket_history table is always joined in TicketSearch.
  - 2015-04-01 Fixed bug#[11214](http://bugs.otrs.org/show_bug.cgi?id=11214) - Ticket Zoom JS breaks on French language.
