@@ -149,6 +149,8 @@ JAVASCRIPT
                     'Check for opened confirm text',
                 );
 
+                sleep 1;    # allow some time for field deletion
+
                 $Selenium->refresh();
                 my $Success;
                 eval {
@@ -165,7 +167,7 @@ JAVASCRIPT
             # Make sure the cache is correct.
             $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => "DynamicField" );
         }
-        }
+    }
 );
 
 1;
