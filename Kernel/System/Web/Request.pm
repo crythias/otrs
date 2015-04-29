@@ -1,5 +1,4 @@
 # --
-# Kernel/System/Web/Request.pm - a wrapper for CGI.pm or Apache::Request.pm
 # Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
@@ -344,7 +343,7 @@ checks if the current request was sent by AJAX
 sub IsAJAXRequest {
     my ( $Self, %Param ) = @_;
 
-    return $Self->{Query}->http('X-Requested-With') eq 'XMLHttpRequest' ? 1 : 0;
+    return ( $Self->{Query}->http('X-Requested-With') // '' ) eq 'XMLHttpRequest' ? 1 : 0;
 }
 
 1;
