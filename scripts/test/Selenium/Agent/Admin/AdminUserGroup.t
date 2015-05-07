@@ -14,26 +14,13 @@ our $ObjectManagerDisabled = 1;
 
 use vars (qw($Self));
 
-# get config object
+# get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-# get selenium object
-$Kernel::OM->ObjectParamAdd(
-    'Kernel::System::UnitTest::Selenium' => {
-        Verbose => 1,
-        }
-);
-my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
+my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get helper object
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 0,
-                }
-        );
         my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
         my $TestUserLogin = $Helper->TestUserCreate(
@@ -125,7 +112,8 @@ $Selenium->RunTest(
             "rw permission for group $RandomID is disabled",
         );
 
-        $Selenium->go_back();
+        # go back to AdminUserGroup screen
+        $Selenium->get("${ScriptAlias}index.pl?Action=AdminUserGroup");
 
         # edit test agent permission for test group
         my $TestGroupID = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
