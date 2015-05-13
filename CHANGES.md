@@ -1,4 +1,5 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-05-12 Only show article accounted time if there is a nonzero value, thanks to Paweł Bogusławski.
  - 2015-05-12 Removed support for pre output filters. This can cause bad performance problems and can be replaced by post output filters that render their own templates instead.
  - 2015-05-08 Changed format for all successful messages in customer login screen, thanks to S7.
  - 2015-04-24 Added possibility to create a ticket without article in transition action "TicketCreate".
@@ -26,6 +27,7 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.9 2015-??-??
+ - 2015-05-13 Fixed bug#[11290](http://bugs.otrs.org/show_bug.cgi?id=11290) - Lang parameter not correctly validated.
  - 2015-05-11 Fixed bug#[11277](http://bugs.otrs.org/show_bug.cgi?id=11277) - Search for multiple ticket numbers with GenericInterface.
 
 #4.0.8 2015-05-12
