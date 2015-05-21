@@ -1,22 +1,18 @@
 # --
-# RPM spec file for Fedora of the OTRS package
-# Copyright (C) 2001-2013 OTRS AG, http://otrs.org/
+# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
-#
-# please file bugfixes or comments on http://bugs.otrs.org
-#
-# --
+
 Summary:      OTRS Help Desk.
 Name:         otrs
 Version:      0.0
 Copyright:    GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Group:        Applications/Mail
 Provides:     otrs
-Requires:     perl cronie httpd mod_perl procmail perl(Archive::Zip) perl(Archive::Tar) perl(Crypt::Eksblowfish::Bcrypt) perl(Date::Format) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(GD::Graph) perl(GD::Text) perl(LWP::UserAgent) perl(Mail::IMAPClient) perl(Net::DNS) perl(Net::LDAP) perl(Net::SSL) perl(PDF::API2) perl(Sys::Syslog) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(Time::Piece) perl(URI) perl(version) perl(XML::Parser) perl(YAML::XS)
+Requires:     perl cronie httpd mod_perl procmail perl(Archive::Zip) perl(Archive::Tar) perl(Crypt::Eksblowfish::Bcrypt) perl(Date::Format) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(GD::Graph) perl(GD::Text) perl(LWP::UserAgent) perl(Mail::IMAPClient) perl(Net::DNS) perl(Net::LDAP) perl(Net::SSL) perl(PDF::API2) perl(Sys::Syslog) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(Time::Piece) perl(URI) perl(version) perl(XML::Parser) perl(XML::LibXML) perl(XML::LibXSLT) perl(YAML::XS)
 Autoreqprov:  no
 Release:      01
 Source0:      otrs-%{version}.tar.bz2
