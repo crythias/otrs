@@ -11,6 +11,10 @@ package Kernel::Modules::AdminServiceCenter;
 use strict;
 use warnings;
 
+use Kernel::System::SupportDataCollector::PluginBase;
+
+use Kernel::System::VariableCheck qw(:all);
+
 our $ObjectManagerDisabled = 1;
 
 sub new {
@@ -103,7 +107,10 @@ sub _SupportDataCollectorView {
                 $Entry->{Status}
             };
 
-            my ( $Group, $SubGroup ) = split( m{/}, $Entry->{DisplayPath} // '' );
+            # get the display path, display type and additional information for the output
+            my ( $DisplayPath, $DisplayType, $DisplayAdditional ) = split( m{[\@\:]}, $Entry->{DisplayPath} // '' );
+
+            my ( $Group, $SubGroup ) = split( m{/}, $DisplayPath );
             if ( $Group ne $LastGroup ) {
                 $LayoutObject->Block(
                     Name => 'SupportDataGroup',
@@ -115,6 +122,7 @@ sub _SupportDataCollectorView {
             $LastGroup = $Group // '';
 
             if ( !$SubGroup || $SubGroup ne $LastSubGroup ) {
+
                 $LayoutObject->Block(
                     Name => 'SupportDataRow',
                     Data => $Entry,
@@ -122,6 +130,7 @@ sub _SupportDataCollectorView {
             }
 
             if ( $SubGroup && $SubGroup ne $LastSubGroup ) {
+
                 $LayoutObject->Block(
                     Name => 'SupportDataSubGroup',
                     Data => {
@@ -132,7 +141,48 @@ sub _SupportDataCollectorView {
             }
             $LastSubGroup = $SubGroup // '';
 
-            if ( !$SubGroup ) {
+            if ( $DisplayType && $DisplayType eq 'Table' && ref $Entry->{Value} eq 'ARRAY' ) {
+
+                $LayoutObject->Block(
+                    Name => 'SupportDataEntryTable',
+                    Data => $Entry,
+                );
+
+                if ( IsArrayRefWithData( $Entry->{Value} ) ) {
+
+                    # get the table columns
+                    my @TableColumns = split( m{,}, $DisplayAdditional // '' );
+
+                    my @Identifiers;
+                    my @Labels;
+
+                    COLUMN:
+                    for my $Column (@TableColumns) {
+
+                        next COLUMN if !$Column;
+
+                        # get the identifier and label
+                        my ( $Identifier, $Label ) = split( m{\|}, $Column );
+
+                        # set the identifier as default label
+                        $Label ||= $Identifier;
+
+                        push @Identifiers, $Identifier;
+                        push @Labels, $Label;
+                    }
+
+                    $LayoutObject->Block(
+                        Name => 'SupportDataEntryTableDetails',
+                        Data => {
+                            Identifiers => \@Identifiers,
+                            Labels      => \@Labels,
+                            %{$Entry},
+                        },
+                    );
+                }
+            }
+            elsif ( !$SubGroup ) {
+
                 $LayoutObject->Block(
                     Name => 'SupportDataEntry',
                     Data => $Entry,

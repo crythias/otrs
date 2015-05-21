@@ -22,6 +22,16 @@ my $TaskManagerObject = $Kernel::OM->Get('Kernel::System::Scheduler::TaskManager
 
 my $RandomID = $HelperObject->GetRandomID();
 
+my $TestTaskList = sub {
+
+    my %IgnoreTaskTypes = (
+        SupportDataCollectorAsynchronous => 1,
+        RegistrationUpdate               => 1,
+    );
+
+    return grep { !$IgnoreTaskTypes{ $_->{Type} } } $TaskManagerObject->TaskList();
+};
+
 my @Tests = (
     {
         Name             => 'Synchronous event call',
@@ -381,7 +391,7 @@ for my $Test (@Tests) {
             print "Waiting for Scheduler to execute tasks, $Wait seconds\n";
             sleep 1;
 
-            my @List = $TaskManagerObject->TaskList();
+            my @List = $TestTaskList->();
 
             if ( scalar @List eq 0 ) {
                 $Self->True(
