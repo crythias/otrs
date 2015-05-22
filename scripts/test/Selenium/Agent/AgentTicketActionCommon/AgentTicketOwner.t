@@ -49,7 +49,7 @@ $Selenium->RunTest(
             Key   => 'Ticket::Frontend::AgentTicketOwner',
             Value => {
                 %$Config,
-                Note => 1,
+                Note          => 1,
                 NoteMandatory => 1,
             },
         );
@@ -169,7 +169,7 @@ $Selenium->RunTest(
             Type => 'Ticket',
         );
 
-    }
+        }
 );
 
 1;

@@ -56,7 +56,7 @@ $Selenium->RunTest(
             Key   => 'Ticket::Frontend::AgentTicketResponsible',
             Value => {
                 %$Config,
-                Note => 1,
+                Note          => 1,
                 NoteMandatory => 1,
             },
         );
@@ -177,7 +177,7 @@ $Selenium->RunTest(
             Type => 'Ticket',
         );
 
-    }
+        }
 );
 
 1;
