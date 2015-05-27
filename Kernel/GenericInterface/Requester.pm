@@ -278,11 +278,20 @@ sub Run {
     }
 
     my $DataIn = $FunctionResult->{Data};
+    my $SizeExeeded = $FunctionResult->{SizeExeeded} || 0;
 
-    $DebuggerObject->Debug(
-        Summary => "Incoming data before mapping",
-        Data    => $DataIn,
-    );
+    if ( $SizeExeeded ) {
+        $DebuggerObject->Debug(
+            Summary => "Incoming data before mapping was too large for logging",
+            Data    => 'See SysConfig option GenericInterface::Operation::ResponseLoggingMaxSize to change the maximum.',
+        );
+    }
+    else {
+        $DebuggerObject->Debug(
+            Summary => "Incoming data before mapping",
+            Data    => $DataIn,
+        );
+    }
 
     # decide if mapping needs to be used or not
     if (
@@ -322,10 +331,18 @@ sub Run {
 
         $DataIn = $FunctionResult->{Data};
 
-        $DebuggerObject->Debug(
-            Summary => "Incoming data after mapping",
-            Data    => $DataIn,
-        );
+        if ( $SizeExeeded ) {
+            $DebuggerObject->Debug(
+                Summary => "Incoming data after mapping was too large for logging",
+                Data    => 'See SysConfig option GenericInterface::Operation::ResponseLoggingMaxSize to change the maximum.',
+            );
+        }
+        else {
+            $DebuggerObject->Debug(
+                Summary => "Incoming data after mapping",
+                Data    => $DataIn,
+            );
+        }
     }
 
     #
