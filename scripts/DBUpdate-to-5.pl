@@ -260,13 +260,39 @@ sub _MigrateConfigs {
             next MENUMODULE;
         }
 
-        $Module =~ s{Kernel::Output::HTML::TicketMenu(\w+)}{Kernel::Output::HTML::Ticket::Menu$1}xmsg;
+        $Module =~ s{Kernel::Output::HTML::TicketMenu(\w+)}{Kernel::Output::HTML::TicketMenu::$1}xmsg;
         $Setting->{$MenuModule}->{'Module'} = $Module;
 
         # set new setting,
         my $Success = $SysConfigObject->ConfigItemUpdate(
             Valid => 1,
             Key   => 'Ticket::Frontend::MenuModule###' . $MenuModule,
+            Value => $Setting->{$MenuModule},
+        );
+    }
+
+    print "...done.\n";
+    print "--- Ticket overview menu modules...";
+
+    # Ticket Menu Modules
+    $Setting = $ConfigObject->Get('Ticket::Frontend::OverviewMenuModule');
+
+    MENUMODULE:
+    for my $MenuModule ( sort keys %{$Setting} ) {
+
+        # update module location
+        my $Module = $Setting->{$MenuModule}->{'Module'};
+        if ( $Module !~ m{Kernel::Output::HTML::TicketOverviewMenu(\w+)} ) {
+            next MENUMODULE;
+        }
+
+        $Module =~ s{Kernel::Output::HTML::TicketOverviewMenu(\w+)}{Kernel::Output::HTML::TicketOverviewMenu::$1}xmsg;
+        $Setting->{$MenuModule}->{'Module'} = $Module;
+
+        # set new setting,
+        my $Success = $SysConfigObject->ConfigItemUpdate(
+            Valid => 1,
+            Key   => 'Ticket::Frontend::OverviewMenuModule###' . $MenuModule,
             Value => $Setting->{$MenuModule},
         );
     }
@@ -286,7 +312,7 @@ sub _MigrateConfigs {
             next OVERVIEWMODULE;
         }
 
-        $Module =~ s{Kernel::Output::HTML::TicketOverview(\w+)}{Kernel::Output::HTML::Ticket::Overview$1}xmsg;
+        $Module =~ s{Kernel::Output::HTML::TicketOverview(\w+)}{Kernel::Output::HTML::TicketOverview::$1}xmsg;
         $Setting->{$OverviewModule}->{'Module'} = $Module;
 
         # set new setting,
@@ -364,11 +390,11 @@ sub _MigrateConfigs {
 
         # update module location
         my $Module = $Setting->{$ArticlePreViewModule}->{'Module'};
-        if ( $Module !~ m{Kernel::Output::HTML::Article(\w+)} ) {
+        if ( $Module !~ m{Kernel::Output::HTML::ArticleCheck(\w+)} ) {
             next ARTICLEMODULE;
         }
 
-        $Module =~ s{Kernel::Output::HTML::Article(\w+)}{Kernel::Output::HTML::Article::$1}xmsg;
+        $Module =~ s{Kernel::Output::HTML::ArticleCheck(\w+)}{Kernel::Output::HTML::ArticleCheck::$1}xmsg;
         $Setting->{$ArticlePreViewModule}->{'Module'} = $Module;
 
         # set new setting,
