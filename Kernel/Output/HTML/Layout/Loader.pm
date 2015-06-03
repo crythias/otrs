@@ -11,8 +11,6 @@ package Kernel::Output::HTML::Layout::Loader;
 use strict;
 use warnings;
 
-use Kernel::System::Loader;
-
 our $ObjectManagerDisabled = 1;
 
 =head1 NAME
@@ -440,7 +438,7 @@ sub _HandleJSList {
     }
 
     if ( $Param{DoMinify} && @FileList ) {
-        my $MinifiedFile = $Self->{LoaderObject}->MinifyFiles(
+        my $MinifiedFile = $Kernel::OM->Get('Kernel::System::Loader')->MinifyFiles(
             List                 => \@FileList,
             Type                 => 'JavaScript',
             TargetDirectory      => "$Param{JSHome}/js-cache/",
