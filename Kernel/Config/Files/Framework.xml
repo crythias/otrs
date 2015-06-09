@@ -737,7 +737,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="InfoFile" Required="1" Valid="1" ConfigLevel="300">
-        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Standard/AgentInfo.tt.</Description>
+        <Description Translatable="1">File that is displayed in the Kernel::Modules::AgentInfo module, if located under Kernel/Output/HTML/Templates/Standard/AgentInfo.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Agent</SubGroup>
         <Setting>
@@ -3859,7 +3859,7 @@ You can log in via the following URL:
         </Setting>
     </ConfigItem>
     <ConfigItem Name="CustomerPanel::InfoFile" Required="0" Valid="0">
-        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Standard/CustomerAccept.tt.</Description>
+        <Description Translatable="1">Defines the path of the shown info file, that is located under Kernel/Output/HTML/Templates/Standard/CustomerAccept.tt.</Description>
         <Group>Framework</Group>
         <SubGroup>Frontend::Customer</SubGroup>
         <Setting>
@@ -4380,16 +4380,14 @@ via the Preferences button after logging in.
                 <Loader>
                     <CSS>Core.Agent.Dashboard.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <CSS>thirdparty/fullcalendar-1.6.1/fullcalendar.css</CSS>
-                    <CSS>thirdparty/d3js/nv.d3.css</CSS>
-                    <JavaScript>thirdparty/flot-0.8.3/excanvas.js</JavaScript>
-                    <JavaScript>thirdparty/flot-0.8.3/jquery.flot.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-1.6.1/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/d3js/d3.v3.min.js</JavaScript>
-                    <JavaScript>thirdparty/d3js/nv.d3.min.js</JavaScript>
-                    <JavaScript>thirdparty/d3js/models/OTRSmultiBarChart.js</JavaScript>
-                    <JavaScript>thirdparty/d3js/models/OTRSstackedAreaChart.js</JavaScript>
-                    <JavaScript>Core.UI.Chart.js</JavaScript>
+                    <CSS>thirdparty/fullcalendar-2.3.1/fullcalendar.css</CSS>
+                    <CSS>thirdparty/nvd3-1.7.1/nv.d3.css</CSS>
+                    <JavaScript>thirdparty/momentjs-2.10.3/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.3.1/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/d3-3.5.5/d3.min.js</JavaScript>
+                    <JavaScript>thirdparty/nvd3-1.7.1/nvd3.min.js</JavaScript>
+                    <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSMultiBarChart.js</JavaScript>
+                    <JavaScript>thirdparty/nvd3-1.7.1/models/OTRSStackedAreaChart.js</JavaScript>
                     <JavaScript>Core.UI.AdvancedChart.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
@@ -4431,9 +4429,6 @@ via the Preferences button after logging in.
                 </NavBar>
                 <Loader>
                     <CSS>Core.AllocationList.css</CSS>
-                    <JavaScript>thirdparty/flot-0.8.3/excanvas.js</JavaScript>
-                    <JavaScript>thirdparty/flot-0.8.3/jquery.flot.js</JavaScript>
-                    <JavaScript>Core.UI.Chart.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.Dashboard.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
@@ -6398,11 +6393,11 @@ via the Preferences button after logging in.
         <SubGroup>Core::Web</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/jquery-1.11.1/jquery.js</Item>
+                <Item>thirdparty/jquery-2.1.4/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
-                <Item>thirdparty/jquery-ui-1.11.1/jquery-ui.js</Item>
-                <Item>thirdparty/jquery-validate-1.13.0/jquery.validate.js</Item>
-                <Item>thirdparty/stacktrace-0.6.2/stacktrace.js</Item>
+                <Item>thirdparty/jquery-ui-1.11.4/jquery-ui.js</Item>
+                <Item>thirdparty/jquery-validate-1.13.1/jquery.validate.js</Item>
+                <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.1.1/jquery.jstree.js</Item>
                 <Item>Core.JavaScriptEnhancements.js</Item>
@@ -6471,11 +6466,11 @@ via the Preferences button after logging in.
         <SubGroup>Core::Web</SubGroup>
         <Setting>
             <Array>
-                <Item>thirdparty/jquery-1.11.1/jquery.js</Item>
+                <Item>thirdparty/jquery-2.1.4/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
-                <Item>thirdparty/jquery-validate-1.13.0/jquery.validate.js</Item>
-                <Item>thirdparty/jquery-ui-1.11.1/jquery-ui.js</Item>
-                <Item>thirdparty/stacktrace-0.6.2/stacktrace.js</Item>
+                <Item>thirdparty/jquery-validate-1.13.1/jquery.validate.js</Item>
+                <Item>thirdparty/jquery-ui-1.11.4/jquery-ui.js</Item>
+                <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
                 <Item>thirdparty/jquery-jstree-3.1.1/jquery.jstree.js</Item>
                 <Item>Core.Debug.js</Item>
