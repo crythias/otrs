@@ -63,7 +63,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # click 'add system address'
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add')]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminSystemAddress;Subaction=Add')]")->click();
 
         # check add new SystemAddress screen
         for my $ID (
@@ -141,6 +141,14 @@ $Selenium->RunTest(
 
         # wait for SystemAddress create
         $Selenium->WaitFor( JavaScript => "return \$('.MasterAction').length" );
+
+        # check class of invalid SystemAddress in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($SysAddRandom)').length"
+            ),
+            "There is a class 'Invalid' for test SystemAddress",
+        );
 
         # check edited test SystemAddress values
         $Selenium->find_element( $SysAddRandom, 'link_text' )->click();

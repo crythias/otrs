@@ -33,7 +33,6 @@ $Selenium->RunTest(
         );
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
-
         $Selenium->get("${ScriptAlias}index.pl?Action=AdminMailAccount");
 
         # check AdminMailAccount screen
@@ -42,7 +41,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # check "Add mail account" link
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=AddNew' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminMailAccount;Subaction=AddNew' )]")->click();
 
         for my $ID (
             qw(TypeAdd LoginAdd PasswordAdd HostAdd IMAPFolder Trusted DispatchingBy ValidID Comment)
@@ -54,8 +53,7 @@ $Selenium->RunTest(
         }
 
         # add real test mail account
-        my $RandomID = $Helper->GetRandomID();
-
+        my $RandomID = "EmailAccount" . $Helper->GetRandomID();
         $Selenium->find_element( "#TypeAdd option[value='IMAP']",        'css' )->click();
         $Selenium->find_element( "#LoginAdd",                            'css' )->send_keys($RandomID);
         $Selenium->find_element( "#PasswordAdd",                         'css' )->send_keys("SomePassword");
@@ -80,6 +78,14 @@ $Selenium->RunTest(
         $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
         $Selenium->find_element( "#LoginEdit",                 'css' )->submit();
 
+        # check class of invalid EmailAccount in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($RandomID)').length"
+            ),
+            "There is a class 'Invalid' for test EmailAccount",
+        );
+
         # check for edited mail account
         my $TestMailHostEdit = "pop3edit.example.com / $RandomID";
         $Self->True(
@@ -101,7 +107,7 @@ $Selenium->RunTest(
             $Selenium->find_element("//a[contains(\@href, \'Subaction=Delete;ID=$MailAccountID' )]")->click();
         }
 
-        }
+    }
 
 );
 

@@ -39,7 +39,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "table tbody tr td", 'css' );
 
         # click 'add new type' link
-        $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Action=AdminType;Subaction=Add' )]")->click();
 
         # check add page
         my $Element = $Selenium->find_element( "#Name", 'css' );
@@ -59,7 +59,7 @@ $Selenium->RunTest(
         );
 
         # create a real test type
-        my $RandomID = $Helper->GetRandomID();
+        my $RandomID = "Type" . $Helper->GetRandomID();
 
         $Selenium->find_element( "#Name",                      'css' )->send_keys($RandomID);
         $Selenium->find_element( "#ValidID option[value='1']", 'css' )->click();
@@ -91,6 +91,14 @@ $Selenium->RunTest(
         # set test type to invalid
         $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
         $Selenium->find_element( "#Name",                      'css' )->submit();
+
+        # check class of invalid Type in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td a:contains($RandomID)').length"
+            ),
+            "There is a class 'Invalid' for test Type",
+        );
 
         # check overview page
         $Self->True(
@@ -136,7 +144,7 @@ $Selenium->RunTest(
             Type => 'Type',
         );
 
-        }
+    }
 );
 
 1;

@@ -44,7 +44,7 @@ $Selenium->RunTest(
         for my $File (qw(xls txt doc png pdf)) {
 
             # click 'add new attachment' link
-            $Selenium->find_element("//a[contains(\@href, \'Subaction=Add' )]")->click();
+            $Selenium->find_element("//a[contains(\@href, \'Action=AdminAttachment;Subaction=Add' )]")->click();
 
             # file checks
             my $Location = $ConfigObject->Get('Home')
@@ -94,7 +94,9 @@ $Selenium->RunTest(
 
             # chack class of invalid Attachment in the overview table
             $Self->True(
-                $Selenium->find_element( "tr.Invalid", 'css' ),
+                $Selenium->execute_script(
+                    "return \$('tr.Invalid td a:contains($RandomID)').length"
+                ),
                 "There is a class 'Invalid' for test Attachment",
             );
 

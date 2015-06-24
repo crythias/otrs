@@ -56,6 +56,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityNew' )]")->click();
 
         # switch to pop up window
+        $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -85,6 +86,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name", 'css' )->submit();
 
         # switch back to main window
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for created test activity using filter on AdminProcessManagement screen
@@ -113,6 +115,7 @@ $Selenium->RunTest(
 
         # check for stored value and edit test Activity
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityEdit;ID=$ActivityID' )]")->click();
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -125,12 +128,30 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name", 'css' )->send_keys("edit");
         $Selenium->find_element( "#Name", 'css' )->submit();
 
-        # return to main window
-        $Selenium->close();
+        # Return to main window after the popup closed, as the popup sends commands to the main window.
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # get process id
         my $ProcessID = $Selenium->execute_script('return $("#ProcessDelete").data("id")') || undef;
+
+        # set process to inactive
+        $Selenium->get("${ScriptAlias}index.pl?Action=AdminProcessManagement");
+        $Selenium->find_element( $ProcessRandom,                      'link_text' )->click();
+        $Selenium->find_element( "#StateEntityID option[value='S2']", 'css' )->click();
+        $Selenium->find_element( "#Submit",                           'css' )->click();
+
+        # test search filter
+        $Selenium->find_element( "#Filter", 'css' )->clear();
+        $Selenium->find_element( "#Filter", 'css' )->send_keys($ProcessRandom);
+
+        # check class of invalid Process in the overview table
+        $Self->True(
+            $Selenium->execute_script(
+                "return \$('tr.Invalid td:contains($ProcessRandom)').length"
+            ),
+            "There is a class 'Invalid' for test Process",
+        );
 
         # delete test activity
         my $Success = $Kernel::OM->Get('Kernel::System::ProcessManagement::DB::Activity')->ActivityDelete(
@@ -155,7 +176,6 @@ $Selenium->RunTest(
         );
 
         # synchronize process after deleting test process
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminProcessManagement");
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ProcessSync' )]")->click();
 
         # make sure cache is correct
