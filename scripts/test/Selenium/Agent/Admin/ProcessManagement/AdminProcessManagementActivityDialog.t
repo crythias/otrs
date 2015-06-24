@@ -59,6 +59,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityDialogNew' )]")->click();
 
         # switch to pop up window
+        $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -92,6 +93,7 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name",                                     'css' )->submit();
 
         # switch back to main window
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for created test activity dialog using filter on AdminProcessManagement screen
@@ -122,6 +124,7 @@ $Selenium->RunTest(
         # go to edit test ActivityDialog screen
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityDialogEdit;ID=$ActivityDialogID' )]")
             ->click();
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -154,14 +157,17 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Permission option[value='ro']",            'css' )->click();
         $Selenium->find_element( "#Name",                                     'css' )->submit();
 
-        # return to main window
+        # Return to main window after the popup closed, as the popup sends commands to the main window.
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for edited test ActivityDialog using filter on AdminProcessManagement screen
         my $ActivityDialogRandomEdit = $ActivityDialogRandom . "edit";
         my $DescriptionShortEdit     = $DescriptionShort . " Edit";
 
-        $Selenium->WaitFor( JavaScript => "return \$('ul#ActivityDialogs li:contains($ActivityDialogRandomEdit)').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return \$('ul#ActivityDialogs li:contains($ActivityDialogRandomEdit)').length"
+        );
         $Selenium->find_element( "Activity Dialogs",      'link_text' )->click();
         $Selenium->find_element( "#ActivityDialogFilter", 'css' )->send_keys($ActivityDialogRandomEdit);
 
@@ -173,6 +179,7 @@ $Selenium->RunTest(
         # go to edit test ActivityDialog screen again
         $Selenium->find_element("//a[contains(\@href, \'Subaction=ActivityDialogEdit;ID=$ActivityDialogID' )]")
             ->click();
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -199,7 +206,6 @@ $Selenium->RunTest(
         );
 
         # return to main window
-        $Selenium->close();
         $Selenium->switch_to_window( $Handles->[0] );
 
         # get process id and return to overview afterwards

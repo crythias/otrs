@@ -25,7 +25,7 @@ use base qw(Kernel::System::EventHandler);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
-    'Kernel::System::CloudService',
+    'Kernel::System::CloudService::Backend::Run',
     'Kernel::System::DB',
     'Kernel::System::Encode',
     'Kernel::System::JSON',
@@ -1588,6 +1588,7 @@ check if package (files) is deployed, returns true if it's ok
     $PackageObject->DeployCheck(
         Name    => 'Application A',
         Version => '1.0',
+        Log     => 1, # Default: 1
     );
 
 =cut
@@ -1606,6 +1607,10 @@ sub DeployCheck {
         }
     }
 
+    if ( !defined $Param{Log} ) {
+        $Param{Log} = 1;
+    }
+
     my $Package = $Self->RepositoryGet( %Param, Result => 'SCALAR' );
     my %Structure = $Self->PackageParse( String => $Package );
 
@@ -1621,10 +1626,12 @@ sub DeployCheck {
 
         if ( !-e $LocalFile ) {
 
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "$Param{Name}-$Param{Version}: No such file: $LocalFile!",
-            );
+            if ( $Param{Log} ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "$Param{Name}-$Param{Version}: No such file: $LocalFile!",
+                );
+            }
 
             $Self->{DeployCheckInfo}->{File}->{ $File->{Location} } = 'No file installed!';
             $Hit = 1;
@@ -1640,10 +1647,12 @@ sub DeployCheck {
 
                 if ( ${$Content} ne $File->{Content} ) {
 
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message  => "$Param{Name}-$Param{Version}: $LocalFile is different!",
-                    );
+                    if ( $Param{Log} ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => "$Param{Name}-$Param{Version}: $LocalFile is different!",
+                        );
+                    }
 
                     $Hit = 1;
                     $Self->{DeployCheckInfo}->{File}->{ $File->{Location} } = 'File is different!';
@@ -1651,10 +1660,12 @@ sub DeployCheck {
             }
             else {
 
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => "Can't read $LocalFile!",
-                );
+                if ( $Param{Log} ) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => "Can't read $LocalFile!",
+                    );
+                }
 
                 $Self->{DeployCheckInfo}->{File}->{ $File->{Location} } = 'Can\' read File!';
             }
@@ -1775,7 +1786,7 @@ sub PackageVerify {
     );
 
     # get cloud service object
-    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService');
+    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
 
     # dispatch the cloud service request
     my $RequestResult = $CloudServiceObject->Request(%RequestParams);
@@ -1914,7 +1925,7 @@ sub PackageVerifyAll {
     );
 
     # get cloud service object
-    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService');
+    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
 
     # dispatch the cloud service request
     my $RequestResult = $CloudServiceObject->Request(%RequestParams);
@@ -4011,7 +4022,7 @@ sub CloudFileGet {
     );
 
     # get cloud service object
-    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService');
+    my $CloudServiceObject = $Kernel::OM->Get('Kernel::System::CloudService::Backend::Run');
 
     # dispatch the cloud service request
     my $RequestResult = $CloudServiceObject->Request(%RequestParams);

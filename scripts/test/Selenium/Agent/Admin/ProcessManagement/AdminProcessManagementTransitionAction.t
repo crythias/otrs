@@ -59,6 +59,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionNew' )]")->click();
 
         # switch to pop up window
+        $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -98,10 +99,13 @@ $Selenium->RunTest(
         $Selenium->find_element( "#Name", 'css' )->submit();
 
         # switch back to main window
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for created test TransitionAction using filter on AdminProcessManagement screen
-        $Selenium->WaitFor( JavaScript => "return \$('ul#TransitionActions li:contains($TransitionActionRandom)').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return \$('ul#TransitionActions li:contains($TransitionActionRandom)').length"
+        );
         $Selenium->find_element( "Transition Actions",      'link_text' )->click();
         $Selenium->find_element( "#TransitionActionFilter", 'css' )->send_keys($TransitionActionRandom);
 
@@ -129,6 +133,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionEdit;ID=$TransitionActionID' )]")
             ->click();
 
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -167,7 +172,8 @@ $Selenium->RunTest(
         $Selenium->find_element(".//*[\@id='ConfigValue[1]']")->send_keys($TransitionActionValueEdit);
         $Selenium->find_element( "#Name", 'css' )->submit();
 
-        # return to main window
+        # Return to main window after the popup closed, as the popup sends commands to the main window.
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
 
         # check for edited test TransitionAction using filter on AdminProcessManagement screen
@@ -189,6 +195,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Subaction=TransitionActionEdit;ID=$TransitionActionID' )]")
             ->click();
 
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -213,7 +220,6 @@ $Selenium->RunTest(
         );
 
         # return to main window
-        $Selenium->close();
         $Selenium->switch_to_window( $Handles->[0] );
 
         # get process id and return to overview afterwards

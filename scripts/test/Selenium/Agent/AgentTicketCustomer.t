@@ -126,6 +126,7 @@ $Selenium->RunTest(
         $Selenium->find_element("//a[contains(\@href, \'Action=AgentTicketCustomer' )]")->click();
 
         # switch to another window
+        $Selenium->WaitFor( WindowCount => 2 );
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -151,17 +152,18 @@ $Selenium->RunTest(
 
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
 
-        # wait until customer data is loading
-        $Selenium->WaitFor( JavaScript => 'return $("#CustomerAutoComplete").length' );
+        # wait until customer data is loading (CustomerID is filled after CustomerAutoComplete)
+        $Selenium->WaitFor( JavaScript => 'return $("#CustomerID").val().length' );
         $Selenium->find_element( "#CustomerAutoComplete", 'css' )->submit();
 
-        $Selenium->close();
+        $Selenium->WaitFor( WindowCount => 1 );
         $Selenium->switch_to_window( $Handles->[0] );
         $Selenium->WaitFor( JavaScript => 'return $("div.MainBox").length' );
 
         # click on history link and switch window
         $Selenium->find_element("//*[text()='History']")->click();
 
+        $Selenium->WaitFor( WindowCount => 2 );
         $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
@@ -204,7 +206,7 @@ $Selenium->RunTest(
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'CustomerUser' );
 
-        }
+    }
 );
 
 1;
