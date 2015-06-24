@@ -1,5 +1,6 @@
 .project
 grabupstream.sh
+.sublimelinterrc
 .externalToolBuilders
 .gnupg
 .settings
