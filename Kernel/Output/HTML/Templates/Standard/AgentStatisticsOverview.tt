@@ -47,7 +47,7 @@
 
                 <table class="Sortable DataTable">
                     <thead>
-                        <tr>
+                        <tr [% IF !Data.Valid %]class="Invalid"[% END %]>
                             <th class="[% Data.CSSSortID | html %]">
                                 <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Overview;Direction=[% Data.LinkSortID | uri %];OrderBy=ID;StartHit=[% Data.StartHit | uri %]">
                                     [% Config("Stats::StatsHook") | html %]
@@ -125,7 +125,7 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 $('.StatDelete').bind('click', function (Event) {
-    var ConfirmText = '"' + $(this).data('stat-title') + '"\n\n' + [% Translate("Do you really want to delete statistic?") | JSON %];
+    var ConfirmText = '"' + $(this).data('stat-title') + '"\n\n' + [% Translate("Do you really want to delete this statistic?") | JSON %];
     if (!window.confirm( ConfirmText ) ) {
         Event.stopPropagation();
         Event.preventDefault();
