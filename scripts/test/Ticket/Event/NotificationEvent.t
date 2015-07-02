@@ -825,6 +825,13 @@ my $SetOutOfOffice = sub {
             "User set Not OutOfOffice",
         );
     }
+
+    my %UserPreferences = $UserObject->GetPreferences(
+        UserID => $Param{UserID},
+    );
+
+    return $UserPreferences{OutOfOffice};
+
 };
 
 my $SetTicketHistory = sub {
@@ -910,13 +917,6 @@ for my $Test (@Tests) {
         );
     }
 
-    if ( $Test->{SetOutOfOffice} ) {
-        $SetOutOfOffice->(
-            UserID      => $UserID,
-            OutOfOffice => 1,
-        );
-    }
-
     if ( $Test->{SetTicketHistory} ) {
         $SetTicketHistory->(
             UserID           => $UserID,
@@ -931,6 +931,16 @@ for my $Test (@Tests) {
             NotificationID => $NotificationID,
             %{ $Test->{SetUserNotificationPreference} },
         );
+    }
+
+    if ( $Test->{SetOutOfOffice} ) {
+        my $SuccessOOO = $SetOutOfOffice->(
+            UserID      => $UserID,
+            OutOfOffice => 1,
+        );
+
+        # set out of office should always be true
+        next TEST if !$SuccessOOO;
     }
 
     my $Result = $EventNotificationEventObject->Run( %{ $Test->{Config} } );
