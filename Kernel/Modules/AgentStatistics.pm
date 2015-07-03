@@ -392,14 +392,6 @@ sub EditAction {
         }
     }
 
-    for my $Key (qw(GraphSize)) {
-        $Data{$Key} = [ $ParamObject->GetArray( Param => $Key ) ];
-
-        #if ( !@{ $Data{$Key} } ) {
-        #    $Data{$Key} = '';
-        #}
-    }
-
     #
     # X Axis
     #
@@ -540,7 +532,7 @@ sub EditAction {
     # Restrictions
     #
     if ( $Stat->{StatType} eq 'dynamic' ) {
-        my $Index            = 0;
+        my $Index = 0;
         $Data{StatType} = $Stat->{StatType};
 
         OBJECTATTRIBUTE:
@@ -642,7 +634,7 @@ sub EditAction {
         Hash   => \%Data,
     );
 
-    if ( $ParamObject->GetParam(Param => 'SaveAndFinish') ) {
+    if ( $ParamObject->GetParam( Param => 'SaveAndFinish' ) ) {
         return $LayoutObject->Redirect( OP => 'Action=AgentStatistics;Subaction=Overview' );
     }
 
@@ -660,7 +652,7 @@ sub ViewScreen {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     my @Errors;
-    if (ref $Param{Errors} eq 'ARRAY') {
+    if ( ref $Param{Errors} eq 'ARRAY' ) {
         @Errors = @{ $Param{Errors} || [] };
     }
 
@@ -812,14 +804,6 @@ sub AddAction {
         }
     }
 
-    for my $Key (qw(GraphSize)) {
-        $Data{$Key} = [ $ParamObject->GetArray( Param => $Key ) ];
-
-        #if ( !@{ $Data{$Key} } ) {
-        #    $Data{$Key} = '';
-        #}
-    }
-
     # my @Notify = $Self->{StatsObject}->CompletenessCheck(
     #     StatData => \%Data,
     #     Section  => 'Specification'
@@ -862,7 +846,7 @@ sub RunAction {
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # get params
-    for (qw(Format GraphSize StatID ExchangeAxis Name Cached)) {
+    for (qw(Format StatID ExchangeAxis Name Cached)) {
         $Param{$_} = $ParamObject->GetParam( Param => $_ );
     }
     my @RequiredParams = (qw(Format StatID));
@@ -872,21 +856,6 @@ sub RunAction {
     for my $Required (@RequiredParams) {
         if ( !$Param{$Required} ) {
             return $LayoutObject->ErrorScreen( Message => "Run: Get no $Required!" );
-        }
-    }
-
-    if ( $Param{Format} =~ m{^GD::Graph\.*}x ) {
-
-        # check installed packages
-        for my $Module ( 'GD', 'GD::Graph' ) {
-            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require($Module) ) {
-                return $LayoutObject->ErrorScreen(
-                    Message => "Run: Please install $Module module!"
-                );
-            }
-        }
-        if ( !$Param{GraphSize} ) {
-            return $LayoutObject->ErrorScreen( Message => 'Run: Need GraphSize!' );
         }
     }
 
