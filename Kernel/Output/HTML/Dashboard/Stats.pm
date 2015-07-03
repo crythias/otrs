@@ -98,7 +98,6 @@ sub Preferences {
     my $StatsParamsWidget = $Self->{StatsViewObject}->StatsParamsWidget(
         Stat         => $Stat,
         UserGetParam => $StatsSettings,
-        IsCacheable  => 1,
         Formats      => \%FilteredFormats,
     );
 
@@ -112,9 +111,9 @@ sub Preferences {
         TemplateFile => 'AgentDashboardStatsSettings',
         Data         => {
             %{$Stat},
-            Errors                   => \@Errors,
-            JSONFieldName            => $Self->{PrefKeyStatsConfiguration},
-            NamePref                 => $Self->{Name},
+            Errors            => \@Errors,
+            JSONFieldName     => $Self->{PrefKeyStatsConfiguration},
+            NamePref          => $Self->{Name},
             StatsParamsWidget => $StatsParamsWidget,
         },
     );

@@ -292,41 +292,6 @@ my @NeededModules = (
         },
     },
     {
-        Module    => 'GD',
-        Required  => 0,
-        Comment   => 'Required for stats.',
-        InstTypes => {
-            aptget => 'libgd-gd2-perl',
-            emerge => 'dev-perl/GD',
-            ppm    => 'GD',
-            zypper => 'perl-GD',
-        },
-        Depends => [
-            {
-                Module    => 'GD::Text',
-                Required  => 0,
-                Comment   => 'Required for stats.',
-                InstTypes => {
-                    aptget => 'libgd-text-perl',
-                    emerge => 'dev-perl/GDTextUtil',
-                    ppm    => 'GDTextUtil',
-                    zypper => 'perl-GDTextUtil',
-                },
-            },
-            {
-                Module    => 'GD::Graph',
-                Required  => 0,
-                Comment   => 'Required for stats.',
-                InstTypes => {
-                    aptget => 'libgd-graph-perl',
-                    emerge => 'dev-perl/GDGraph',
-                    ppm    => 'GDGraph',
-                    zypper => 'perl-GDGraph',
-                },
-            },
-        ],
-    },
-    {
         Module    => 'IO::Socket::SSL',
         Required  => 0,
         Comment   => 'Required for SSL connections to web and mail servers.',
@@ -431,40 +396,6 @@ my @NeededModules = (
             emerge => 'dev-perl/perl-ldap',
             ppm    => 'Net-LDAP',
             zypper => 'perl-ldap',
-        },
-    },
-    {
-        Module       => 'PDF::API2',
-        Version      => '0.57',
-        Required     => 0,
-        Comment      => 'Required for PDF output.',
-        NotSupported => [
-            {
-                Version => '0.71.001',
-                Comment =>
-                    'This version is broken and not useable! Please upgrade to a higher version.',
-            },
-            {
-                Version => '0.72.001',
-                Comment =>
-                    'This version is broken and not useable! Please upgrade to a higher version.',
-            },
-            {
-                Version => '0.72.002',
-                Comment =>
-                    'This version is broken and not useable! Please upgrade to a higher version.',
-            },
-            {
-                Version => '0.72.003',
-                Comment =>
-                    'This version is broken and not useable! Please upgrade to a higher version.',
-            },
-        ],
-        InstTypes => {
-            aptget => 'libpdf-api2-perl',
-            emerge => 'dev-perl/PDF-API2',
-            ppm    => 'PDF-API2',
-            zypper => 'perl-PDF-API2',
         },
     },
     {
