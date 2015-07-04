@@ -3070,17 +3070,6 @@
             </Option>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="PDF" Required="1" Valid="1">
-        <Description Translatable="1">Enables PDF output. The CPAN module PDF::API2 is required, if not installed, PDF output will be disabled.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Core::PDF</SubGroup>
-        <Setting>
-            <Option SelectedID="1">
-                <Item Key="0" Translatable="1">No</Item>
-                <Item Key="1" Translatable="1">Yes</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="PDF::LogoFile" Required="1" Valid="1">
         <Description Translatable="1">Specifies the path of the file for the logo in the page header (gif|jpg|png, 700 x 100 pixel).</Description>
         <Group>Framework</Group>
@@ -5528,17 +5517,6 @@ via the Preferences button after logging in.
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Stats::TimeType" Required="1" Valid="1">
-        <Description Translatable="1">Sets the time type which should be shown.</Description>
-        <Group>Framework</Group>
-        <SubGroup>Frontend::Agent::Stats</SubGroup>
-        <Setting>
-            <Option SelectedID="Extended">
-                <Item Key="Normal">normal</Item>
-                <Item Key="Extended">extended</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="Stats::ExchangeAxis" Required="1" Valid="1">
         <Description Translatable="1">Allows agents to exchange the axis of a stat if they generate one.</Description>
         <Group>Framework</Group>
@@ -6156,6 +6134,16 @@ via the Preferences button after logging in.
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Loader::Agent::ResponsiveCSS###000-Framework" Required="1" Valid="1">
+        <Description Translatable="1">List of responsive CSS files to always be loaded for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <Array>
+                <Item>Core.Responsive.css</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Loader::Agent::CommonJS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the agent interface.</Description>
         <Group>Framework</Group>
@@ -6165,6 +6153,7 @@ via the Preferences button after logging in.
                 <Item>thirdparty/jquery-2.1.4/jquery.js</Item>
                 <Item>thirdparty/jquery-browser-detection/jquery-browser-detection.js</Item>
                 <Item>thirdparty/jquery-ui-1.11.4/jquery-ui.js</Item>
+                <Item>thirdparty/jquery-ui-touch-punch-0.2.3/jquery.ui.touch-punch.js</Item>
                 <Item>thirdparty/jquery-validate-1.13.1/jquery.validate.js</Item>
                 <Item>thirdparty/stacktrace-0.6.4/stacktrace.js</Item>
                 <Item>thirdparty/jquery-pubsub/pubsub.js</Item>
@@ -6177,6 +6166,7 @@ via the Preferences button after logging in.
                 <Item>Core.JSON.js</Item>
                 <Item>Core.AJAX.js</Item>
                 <Item>Core.App.js</Item>
+                <Item>Core.App.Responsive.js</Item>
                 <Item>Core.UI.js</Item>
                 <Item>Core.UI.Accordion.js</Item>
                 <Item>Core.UI.Datepicker.js</Item>
@@ -6196,6 +6186,7 @@ via the Preferences button after logging in.
                 <Item>Core.Agent.js</Item>
                 <Item>Core.Agent.Search.js</Item>
                 <Item>Core.Agent.CustomerInformationCenterSearch.js</Item>
+                <Item>Core.Agent.Responsive.js</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -6229,6 +6220,16 @@ via the Preferences button after logging in.
             </Array>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Loader::Customer::ResponsiveCSS###000-Framework" Required="1" Valid="1">
+        <Description Translatable="1">List of responsive CSS files to always be loaded for the customer interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Core::Web</SubGroup>
+        <Setting>
+            <Array>
+                <Item>Core.Responsive.css</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Loader::Customer::CommonJS###000-Framework" Required="1" Valid="1">
         <Description Translatable="1">List of JS files to always be loaded for the customer interface.</Description>
         <Group>Framework</Group>
@@ -6250,6 +6251,7 @@ via the Preferences button after logging in.
                 <Item>Core.Config.js</Item>
                 <Item>Core.AJAX.js</Item>
                 <Item>Core.App.js</Item>
+                <Item>Core.App.Responsive.js</Item>
                 <Item>Core.UI.js</Item>
                 <Item>Core.UI.Accessibility.js</Item>
                 <Item>Core.UI.Dialog.js</Item>
@@ -6262,6 +6264,7 @@ via the Preferences button after logging in.
                 <Item>Core.Form.ErrorTooltips.js</Item>
                 <Item>Core.Form.Validate.js</Item>
                 <Item>Core.Customer.js</Item>
+                <Item>Core.Customer.Responsive.js</Item>
             </Array>
         </Setting>
     </ConfigItem>

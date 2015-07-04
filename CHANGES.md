@@ -1,5 +1,5 @@
 #5.0.0.beta1 20??-??-??
- - 2015-07-02 Removed external dependency to PDF::API2 by bundling it.
+ - 2015-07-02 Removed external dependency to PDF::API2 by bundling it. Dropped HTML print view in favor of PDF.
  - 2015-06-30 Added OTRS Scheduler daemon task handlers for: generic agent, cron, and asynchronous executor tasks.
  - 2015-06-30 Ported OTRS Scheduler to the OTRS Daemon architecture.
  - 2015-06-30 Added OTRS Daemon sub-framework.
@@ -53,6 +53,7 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.10 2015-??-??
+ - 2015-07-03 Fixed bug#[11337](http://bugs.otrs.org/show_bug.cgi?id=11337) - Customer Information Center does not show CustomerUsers.
  - 2015-06-30 Fixed bug#[11325](http://bugs.otrs.org/show_bug.cgi?id=11325) - Dashboard TicketList: Queuefilter in an empty list shows inactive queues, too.
 
 #4.0.9 2015-06-23
