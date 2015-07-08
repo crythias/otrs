@@ -98,12 +98,14 @@ Core.UI.AdvancedChart = (function (TargetNS) {
         }
 
         $.each(RawData, function(DataIndex, DataElement) {
+            var ResultLine;
+
             // Ignore sum row
             if (DataElement[0] === 'Sum') {
                 return;
             }
 
-            var ResultLine = {
+            ResultLine = {
                 key: DataElement[0],
                 color: Colors[Counter % Colors.length],
                 disabled: (PreferencesData && PreferencesData.Filter && $.inArray(DataElement[0], PreferencesData.Filter) === -1) ? true : false,
@@ -122,9 +124,9 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                     return;
                 }
 
-                Value = parseFloat( DataElement[HeadingIndex] );
+                Value = parseFloat(DataElement[HeadingIndex]);
 
-                if ( isNaN(Value) ) {
+                if (isNaN(Value)) {
                     return;
                 }
 
@@ -178,7 +180,7 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                         return Control;
                     }
 
-                    if ( typeof state.disabled !== 'undefined' ) {
+                    if (typeof state.disabled !== 'undefined') {
                         TargetNS.UpdatePreferences(PreferencesKey, {'Line': { 'Filter': getControlSelection(ResultData) }});
                     }
 
@@ -230,12 +232,14 @@ Core.UI.AdvancedChart = (function (TargetNS) {
         Headings = RawData.shift();
 
         $.each(RawData, function(DataIndex, DataElement) {
+            var ResultLine;
+
             // Ignore sum row
             if (DataElement[0] === 'Sum') {
                 return;
             }
 
-            var ResultLine = {
+            ResultLine = {
                 key: DataElement[0],
                 color: Colors[Counter % Colors.length],
                 disabled: false,
@@ -250,9 +254,9 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                     return;
                 }
 
-                Value = parseFloat( DataElement[HeadingIndex] );
+                Value = parseFloat(DataElement[HeadingIndex]);
 
-                if ( isNaN(Value) ) {
+                if (isNaN(Value)) {
                     return;
                 }
 
@@ -351,18 +355,20 @@ Core.UI.AdvancedChart = (function (TargetNS) {
         }
 
         $.each(RawData, function(DataIndex, DataElement) {
+            var Counter = 0,
+                ResultLine;
+
             // Ignore sum row
             if (DataElement[0] === 'Sum') {
                 return;
             }
 
-            var Counter = 0,
-                ResultLine = {
-                    key: DataElement[0],
-                    color: Colors[Counter % Colors.length],
-                    disabled: (PreferencesData && PreferencesData.Filter && $.inArray(DataElement[0], PreferencesData.Filter) === -1) ? true : false,
-                    values: []
-                };
+            ResultLine = {
+                key: DataElement[0],
+                color: Colors[Counter % Colors.length],
+                disabled: (PreferencesData && PreferencesData.Filter && $.inArray(DataElement[0], PreferencesData.Filter) === -1) ? true : false,
+                values: []
+            };
 
             $.each(Headings, function(HeadingIndex, HeadingElement){
                 var Value;
@@ -378,9 +384,9 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                     return;
                 }
 
-                Value = parseFloat( DataElement[HeadingIndex] );
+                Value = parseFloat(DataElement[HeadingIndex]);
 
-                if ( isNaN(Value) ) {
+                if (isNaN(Value)) {
                     return;
                 }
 
@@ -441,10 +447,10 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                         return Control;
                     }
 
-                    if ( typeof state.stacked !== 'undefined' ) {
-                        TargetNS.UpdatePreferences(PreferencesKey, { 'Bar': { 'State': { 'Style': (state.stacked) ? 'stacked' : '' } } } );
+                    if (typeof state.stacked !== 'undefined') {
+                        TargetNS.UpdatePreferences(PreferencesKey, { 'Bar': { 'State': { 'Style': (state.stacked) ? 'stacked' : '' } } });
                     }
-                    if ( typeof state.disabled !== 'undefined' ) {
+                    if (typeof state.disabled !== 'undefined') {
                         TargetNS.UpdatePreferences(PreferencesKey, { 'Bar': { 'Filter': getControlSelection(ResultData)}});
                     }
 
@@ -505,12 +511,14 @@ Core.UI.AdvancedChart = (function (TargetNS) {
 
         $.each(RawData, function(DataIndex, DataElement) {
 
+            var ResultLine;
+
             // Ignore sum row
             if (DataElement[0] === 'Sum') {
                 return;
             }
 
-            var ResultLine = {
+            ResultLine = {
                 key: DataElement[0],
                 color: Colors[Counter % Colors.length],
                 disabled: (PreferencesData && PreferencesData.Filter && $.inArray(DataElement[0], PreferencesData.Filter) === -1) ? true : false,
@@ -528,9 +536,9 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                     return;
                 }
 
-                Value = parseFloat( DataElement[HeadingIndex] );
+                Value = parseFloat(DataElement[HeadingIndex]);
 
-                if ( isNaN(Value) ) {
+                if (isNaN(Value)) {
                     return;
                 }
 
@@ -578,7 +586,7 @@ Core.UI.AdvancedChart = (function (TargetNS) {
                         return Control;
                     }
 
-                    if ( typeof state.style !== 'undefined' || typeof state.disabled !== 'undefined' ) {
+                    if (typeof state.style !== 'undefined' || typeof state.disabled !== 'undefined') {
                         TargetNS.UpdatePreferences(PreferencesKey, { 'StackedArea': { 'State': { 'Style': state.style }, 'Filter': getControlSelection(ResultData)}});
                     }
 
