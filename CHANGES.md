@@ -52,7 +52,11 @@
  - 2015-01-07 Fixed ticket# 2015010142053495 - Unable to change password in customer interface.
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
-#4.0.10 2015-??-??
+#4.0.11 2015-??-??
+ - 2015-07-09 Fixed bug#[11191](http://bugs.otrs.org/show_bug.cgi?id=11191) - Dashboard ticket filter TYPE.
+
+#4.0.10 2015-07-14
+ - 2015-07-08 Updated translations, thanks to all translators.
  - 2015-07-07 Fixed bug#[11367](http://bugs.otrs.org/show_bug.cgi?id=11367) - timezone in time stamps of outgoing mails is always UTC.
  - 2015-07-03 Fixed bug#[11337](http://bugs.otrs.org/show_bug.cgi?id=11337) - Customer Information Center does not show CustomerUsers.
  - 2015-06-30 Fixed bug#[11325](http://bugs.otrs.org/show_bug.cgi?id=11325) - Dashboard TicketList: Queuefilter in an empty list shows inactive queues, too.

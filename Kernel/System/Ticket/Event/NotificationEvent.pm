@@ -18,6 +18,7 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::CustomerUser',
+    'Kernel::System::DB',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
     'Kernel::System::Email',
@@ -199,6 +200,9 @@ sub Run {
         # get notification transport config
         my %TransportConfig = %{ $ConfigObject->Get('Notification::Transport') || {} };
 
+        # remember already sent agent notifications
+        my %AlreadySent;
+
         # loop over transports for each notification
         TRANSPORT:
         for my $Transport ( sort keys %TransportConfig ) {
@@ -266,6 +270,10 @@ sub Run {
                     TransportObject       => $TransportObject,
                     UserID                => $Param{UserID},
                 );
+
+                # remember to have sent
+                $AlreadySent{ $Bundle->{Recipient}->{UserID} } = 1;
+
             }
 
             # get special recipients specific for each transport
@@ -300,6 +308,26 @@ sub Run {
                 );
             }
         }
+
+        if ( %AlreadySent && $Param{Data}->{ArticleID} && $Param{Data}->{ArticleType} ) {
+
+            # update to field
+            my $UpdateToSuccess = $Self->_ArticleToUpdate(
+                ArticleID   => $Param{Data}->{ArticleID},
+                ArticleType => $Param{Data}->{ArticleType},
+                UserIDs     => \%AlreadySent,
+                UserID      => $Param{UserID},
+            );
+
+            # check for errors
+            if ( !$UpdateToSuccess ) {
+
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Could not update To field for Article: $Param{Data}->{ArticleID}.",
+                );
+            }
+        }
     }
 
     return 1;
@@ -328,7 +356,6 @@ sub _NotificationFilter {
         next KEY if $Key eq 'RecipientAgents';
         next KEY if $Key eq 'RecipientGroups';
         next KEY if $Key eq 'RecipientRoles';
-        next KEY if $Key eq 'RecipientEmail';
         next KEY if $Key eq 'TransportEmailTemplate';
         next KEY if $Key eq 'Events';
         next KEY if $Key eq 'ArticleTypeID';
@@ -343,6 +370,11 @@ sub _NotificationFilter {
         next KEY if $Key eq 'VisibleForAgentTooltip';
         next KEY if $Key eq 'LanguageID';
         next KEY if $Key eq 'SendOnOutOfOffice';
+
+        # check recipient fields from transport methods
+        if ( $Key =~ m{\A Recipient}xms ) {
+            next KEY;
+        }
 
         # check ticket attributes
         next KEY if !$Notification{Data}->{$Key};
@@ -927,6 +959,44 @@ sub _SendRecipientNotification {
     );
 
     return 1;
+}
+
+sub _ArticleToUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed params
+    for my $Needed (qw(ArticleID ArticleType UserIDs UserID)) {
+        return if !$Param{$Needed};
+    }
+
+    # not update for User 1
+    return 1 if $Param{UserID} eq 1;
+
+    # get needed objects
+    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+    if ( $Param{ArticleType} =~ /^note\-/ && $Param{UserID} ne 1 ) {
+        my $NewTo = $Param{To} || '';
+        for my $UserID ( sort keys %{ $Param{UserIDs} } ) {
+            my %UserData = $UserObject->GetUserData(
+                UserID => $UserID,
+                Valid  => 1,
+            );
+            if ($NewTo) {
+                $NewTo .= ', ';
+            }
+            $NewTo .= "$UserData{UserFirstname} $UserData{UserLastname} <$UserData{UserEmail}>";
+        }
+
+        if ($NewTo) {
+            $DBObject->Do(
+                SQL  => 'UPDATE article SET a_to = ? WHERE id = ?',
+                Bind => [ \$NewTo, \$Param{ArticleID} ],
+            );
+        }
+    }
+
 }
 
 1;
