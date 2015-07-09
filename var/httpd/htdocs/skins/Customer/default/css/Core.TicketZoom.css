@@ -145,6 +145,11 @@
     overflow: hidden;
 }
 
+.RTL #TicketOptions {
+    right: auto;
+    left: 0px;
+}
+
 #TicketOptions li {
     float: left;
     margin-left: 5px;
@@ -235,10 +240,6 @@
     width: 90%;
 }
 
-.RTL .MessageHeader h3 {
-    padding-left: 100px;
-}
-
 .MessageHeader h3 span {
     font-weight: normal;
 }
@@ -251,6 +252,7 @@
 
 .RTL .MessageHeader .Age {
     left: 8px;
+    right: auto;
 }
 
 .MessageBody {
