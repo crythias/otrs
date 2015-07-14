@@ -127,7 +127,10 @@ Core.UI.Popup = (function (TargetNS) {
      */
     function GetWindowParentObject() {
         // we have a normal popup, opener is defined
-        if (window.opener !== null) {
+        // In Chrome/Webkit/Android window.opener is null instead of undefined
+        // In IE (Win Phone) window.opener is undefined
+        // typeof null === object
+        if (window.opener !== null && typeof window.opener !== 'undefined') {
             return window.opener;
         }
         else {
@@ -153,6 +156,18 @@ Core.UI.Popup = (function (TargetNS) {
 
         return PopupType;
     }
+
+    /**
+     * @name CurrentIsPopupWindow
+     * @memberof Core.UI.Popup
+     * @function
+     * @returns {String} Returns the type of popup if one, undefined otherwise.
+     * @description
+     *      Checks if current window is an OTRS popup.
+     */
+    TargetNS.CurrentIsPopupWindow = function () {
+        return CurrentIsPopupWindow();
+    };
 
     /**
      * @name ProfileAdd
@@ -457,13 +472,13 @@ Core.UI.Popup = (function (TargetNS) {
                     }
                 }
                 else if (WindowMode === 'Iframe') {
-                    // jump to the top  and remove window scrollbar
+                    // jump to the top
                     window.scrollTo(0, 0);
-                    $('body').css({
-                        'overflow': 'hidden'
-                    });
                     // add iframe overlay
                     $('body').append('<iframe data-popuptype="' + Type + '" name="' + WindowName + '" class="PopupIframe" src="' + URL + '"></iframe>');
+                    if ($(document).height() > $('iframe.PopupIframe').height()) {
+                        $('iframe.PopupIframe').height($(document).height());
+                    }
                 }
             }
         }
@@ -566,13 +581,44 @@ Core.UI.Popup = (function (TargetNS) {
             // closing the Iframe is a little bit more complicated
             else if (LocalWindowMode === 'Iframe') {
                 $('iframe.PopupIframe[data-popuptype=' + PopupType + ']', ParentObject.document).remove();
-                $('body', ParentObject.document).css({
-                    'overflow': 'auto'
-                });
             }
         }
 
         CheckOpenPopups();
+    };
+
+    /**
+     * @name ExecuteInParentWindow
+     * @memberof Core.UI.Popup
+     * @function
+     * @param {Function} FunctionToExecute - The callback function to execute in the parent window.
+     * @param {Array} [FunctionParameters] - Optional function parameters as array.
+     * @description
+     *      Takes a callback function and hands it over to the parent window (to be executed there).
+     *      This is needed to call a function in the parent window from the popup window. The popup window
+     *      can be a real popup or an iframe, so it is not as easy as calling window.opener.
+     *      IMPORTANT: The FunctionToExecute always needs the ParentWindowObject as first Parameter,
+     *      which is used inside this function.
+     */
+    TargetNS.ExecuteInParentWindow = function (FunctionToExecute, FunctionParameters) {
+        var ParentWindow = GetWindowParentObject();
+
+        if (typeof ParentWindow === 'undefined' || ParentWindow === null) {
+            return;
+        }
+
+        if (typeof FunctionParameters === 'undefined') {
+            FunctionParameters = [ParentWindow];
+        }
+        else {
+            FunctionParameters.unshift(ParentWindow);
+        }
+
+        if (typeof FunctionToExecute !== 'undefined' && $.isFunction(FunctionToExecute)) {
+            // call the function with a new this context (first param)
+            // and additional params where the first one is also the parent window object (for use within the function)
+            FunctionToExecute.apply(ParentWindow, FunctionParameters);
+        }
     };
 
     /**

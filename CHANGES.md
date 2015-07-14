@@ -1,4 +1,28 @@
 #5.0.0.beta1 20??-??-??
+ - 2015-07-13 Added possibility to define a time difference for pending states during ticket create or update, using the  generic ticket connector (GenericInterface), thanks to Frederic Van Espen.
+ - 2015-07-13 Updated CPAN module parent to version 0.234.
+ - 2015-07-13 Updated CPAN module YAML to version 1.15.
+ - 2015-07-13 Updated CPAN module XML::Parser::Lite to version 0.721.
+ - 2015-07-13 Updated CPAN module XML::TreePP to version 0.43.
+ - 2015-07-13 Updated CPAN module URI to version 1.68.
+ - 2015-07-13 Updated CPAN module Text::CSV to version 1.33.
+ - 2015-07-13 Updated CPAN module Selenium::Remote::Driver to version 0.26.
+ - 2015-07-13 Updated CPAN module SOAP::Lite to version 1.14.
+ - 2015-07-13 Updated CPAN module REST::Client to version 272.
+ - 2015-07-13 Updated CPAN module Net::IMAP::Simple to version 1.2206.
+ - 2015-07-13 Updated CPAN module Net::SSLGlue to version 1.054.
+ - 2015-07-13 Updated CPAN module Net::HTTP to version 6.09.
+ - 2015-07-13 Updated CPAN module Mozilla::CA to version 20141217.
+ - 2015-07-13 Updated CPAN module MailTools to version 2.14.
+ - 2015-07-13 Updated CPAN module MIME::Tools to version 5.506.
+ - 2015-07-13 Updated CPAN module Locale::Codes to version 3.35.
+ - 2015-07-13 Updated CPAN module Linux::Distribution to version 0.23.
+ - 2015-07-13 Updated CPAN module libwww-perl to version 6.13.
+ - 2015-07-13 Updated CPAN module JavaScript::Minifier to version 1.14.
+ - 2015-07-13 Updated CPAN module Excel::Writer::XLSX to version 0.84.
+ - 2015-07-13 Updated CPAN module Encode::Locale to version 1.05.
+ - 2015-07-13 Updated CPAN module Email::Valid to version 1.196.
+ - 2015-07-13 Updated CPAN module Algorithm::Diff to version 1.19_03.
  - 2015-07-10 Updated CPAN module CGI to version 4.21.
  - 2015-07-09 Added support for SOAP requests with chunked Transfer-Encoding, thanks to Frederic Van Espen.
  - 2015-07-09 Added possibility to add or change auto-increment columns during 'TABLE ALTER' SQL statements for PostgreSQL.
@@ -56,8 +80,10 @@
  - 2015-01-06 Added ACLs handling for Owner and Responsible on screen load for AgentTicketOwner and AgentTicketResponsible.
 
 #4.0.11 2015-??-??
+ - 2015-07-13 Fixed bug#[11386](http://bugs.otrs.org/show_bug.cgi?id=11386) - Wrong behavior for the relative period 'the last week(s)' in the stats time field.
  - 2015-07-10 Fixed bug#[11295](http://bugs.otrs.org/show_bug.cgi?id=11295) - 'No such user' notification while otrs automatically responses to client ticket.
  - 2015-07-09 Fixed bug#[11191](http://bugs.otrs.org/show_bug.cgi?id=11191) - Dashboard ticket filter TYPE.
+ - 2015-07-09 Fixed syntax error in generated SQL of Kernel::System::Group::GroupGroupMemberList when called with parameter UserIDs.
 
 #4.0.10 2015-07-14
  - 2015-07-08 Updated translations, thanks to all translators.
