@@ -158,11 +158,7 @@ function CreateRPM() {
 
     specfile=$PACKAGE_TMP_SPEC
     # replace version and release
-    cat $ARCHIVE_DIR/scripts/auto_build/spec/$SpecfileName | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile.tmp
-    # replace sourced files
-    perl -e "open(SPEC, '< $specfile.tmp');while(<SPEC>){\$spec.=\$_;};open(IN, '< $FILES');while(<IN>){\$i.=\$_;}\$spec=~s/<FILES>/\$i/g;print \$spec;" > $specfile.tmp1
-    # replace package description
-    perl -e "open(SPEC, '< $specfile.tmp1');while(<SPEC>){\$spec.=\$_;};open(IN, '< $DESCRIPTION');while(<IN>){\$i.=\$_;}\$spec=~s/<DESCRIPTION>/\$i/g;print \$spec;" > $specfile
+    cat $ARCHIVE_DIR/scripts/auto_build/spec/$SpecfileName | sed "s/^Version:.*/Version:      $VERSION/" | sed "s/^Release:.*/Release:      $RELEASE/" > $specfile
     $RPM_BUILD -ba --clean $specfile || exit 1;
     rm $specfile || exit 1;
 
@@ -177,8 +173,8 @@ CreateRPM "SuSE 10.0" "suse-otrs-10.0.spec" "suse/10.0/"
 CreateRPM "Fedora 20" "fedora-otrs-20.spec" "fedora/20/"
 CreateRPM "Fedora 21" "fedora-otrs-21.spec" "fedora/21/"
 CreateRPM "Fedora 22" "fedora-otrs-22.spec" "fedora/22/"
-CreateRPM "RHEL6"     "rhel6-otrs.spec"     "rhel/6"
-CreateRPM "RHEL7"     "rhel7-otrs.spec"     "rhel/7"
+CreateRPM "RHEL 6"    "rhel6-otrs.spec"     "rhel/6"
+CreateRPM "RHEL 7"    "rhel7-otrs.spec"     "rhel/7"
 
 echo "-----------------------------------------------------------------";
 echo "You will find your tar.gz, RPMs and SRPMs in $PACKAGE_DEST_DIR";

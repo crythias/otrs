@@ -9,8 +9,8 @@ CREATE INDEX link_relation_list_target ON link_relation (target_object_id, targe
 CREATE TABLE scheduler_task (
     id BIGINT NOT NULL IDENTITY(1,1) ,
     ident BIGINT NOT NULL,
-    name NVARCHAR (200) NULL,
-    task_type NVARCHAR (200) NOT NULL,
+    name NVARCHAR (150) NULL,
+    task_type NVARCHAR (150) NOT NULL,
     task_data NVARCHAR (MAX) NOT NULL,
     attempts SMALLINT NOT NULL,
     lock_key BIGINT NOT NULL,
@@ -29,8 +29,8 @@ CREATE TABLE scheduler_future_task (
     id BIGINT NOT NULL IDENTITY(1,1) ,
     ident BIGINT NOT NULL,
     execution_time DATETIME NOT NULL,
-    name NVARCHAR (200) NULL,
-    task_type NVARCHAR (200) NOT NULL,
+    name NVARCHAR (150) NULL,
+    task_type NVARCHAR (150) NOT NULL,
     task_data NVARCHAR (MAX) NOT NULL,
     attempts SMALLINT NOT NULL,
     lock_key BIGINT NOT NULL,
@@ -46,8 +46,8 @@ CREATE INDEX scheduler_future_task_lock_key_id ON scheduler_future_task (lock_ke
 -- ----------------------------------------------------------
 CREATE TABLE scheduler_recurrent_task (
     id BIGINT NOT NULL IDENTITY(1,1) ,
-    name NVARCHAR (200) NOT NULL,
-    task_type NVARCHAR (200) NOT NULL,
+    name NVARCHAR (150) NOT NULL,
+    task_type NVARCHAR (150) NOT NULL,
     last_execution_time DATETIME NOT NULL,
     last_worker_task_id BIGINT NULL,
     last_worker_status SMALLINT NULL,
@@ -103,4 +103,24 @@ CREATE TABLE notification_event_message (
 );
 CREATE INDEX notification_event_message_language ON notification_event_message (language);
 CREATE INDEX notification_event_message_notification_id ON notification_event_message (notification_id);
+-- ----------------------------------------------------------
+--  create table cloud_service_config
+-- ----------------------------------------------------------
+CREATE TABLE cloud_service_config (
+    id INTEGER NOT NULL IDENTITY(1,1) ,
+    name NVARCHAR (200) NOT NULL,
+    config NVARCHAR (MAX) NOT NULL,
+    config_md5 NVARCHAR (32) NOT NULL,
+    valid_id SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT cloud_service_config_config_md5 UNIQUE (config_md5),
+    CONSTRAINT cloud_service_config_name UNIQUE (name)
+);
 ALTER TABLE notification_event_message ADD CONSTRAINT FK_notification_event_message_notification_id_id FOREIGN KEY (notification_id) REFERENCES notification_event (id);
+ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_create_by_id FOREIGN KEY (create_by) REFERENCES users (id);
+ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_change_by_id FOREIGN KEY (change_by) REFERENCES users (id);
+ALTER TABLE cloud_service_config ADD CONSTRAINT FK_cloud_service_config_valid_id_id FOREIGN KEY (valid_id) REFERENCES valid (id);
