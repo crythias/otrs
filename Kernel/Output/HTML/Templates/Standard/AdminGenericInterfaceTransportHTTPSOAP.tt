@@ -45,7 +45,7 @@
             </div>
             <div class="Content">
                 <h3>[% Translate("Properties") | html %]</h3>
-                <form action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
+                <form id="TransportConfigForm" action="[% Env("CGIHandle") %]" method="post" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="[% Data.Action | html %]Action"/>
                     <input type="hidden" name="WebserviceID" value="[% Data.WebserviceID | html %]" id="WebserviceID"/>
@@ -87,6 +87,98 @@
                             </div>
                             <div class="Clear"></div>
 
+                            <label class="Mandatory" for="RequestNameScheme"><span class="Marker">*</span>[% Translate("Request name scheme") | html %]:</label>
+                            <div class="Field">
+                                [% Data.RequestNameSchemeStrg %]
+                                <p class="FieldExplanation">
+                                    [% Translate("Select how SOAP request function wrapper should be constructed.") | html %]
+                                    <br />
+                                    [% Translate("'FunctionName' is used as example for actual invoker/operation name.") | html %]
+                                    <br />
+                                    [% Translate("'FreeText' is used as example for actual configured value.") | html %]
+                                </p>
+                            </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+$('#RequestNameScheme').on('change', function(){
+    if ( $(this).val() === 'Append' || $(this).val() === 'Replace' ) {
+        $('.RequestNameFreeTextField').removeClass('Hidden');
+        $('#RequestNameFreeText').addClass('Validate_Required');
+    }
+    else {
+        $('.RequestNameFreeTextField').addClass('Hidden');
+        $('#RequestNameFreeText').removeClass('Validate_Required');
+    }
+});
+//]]></script>
+[% END %]
+                            <div class="Clear"></div>
+
+                            <div class="RequestNameFreeTextField [% Data.RequestNameFreeTextHidden | html %]">
+                                <fieldset class="TableLike">
+
+                                    <label class="Mandatory" for="RequestNameFreeText"><span class="Marker">*</span>[% Translate("Response name free text") | html %]:</label>
+                                    <div class="Field">
+                                        <input id="RequestNameFreeText" class="W50pc [% Data.RequestNameFreeTextServerError | html %] [% Data.RequestNameFreeTextMandatory | html %]" type="text" maxlength="250" value="[% Data.RequestNameFreeText | html %]" name="RequestNameFreeText"/>
+                                        <div id="RequestNameFreeTextError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                                        <div id="RequestNameFreeTextServerError" class="TooltipErrorMessage"><p>[% Translate(Data.EndpointServerErrorMessage) | html %]</p></div>
+                                        <p class="FieldExplanation">
+                                            [% Translate("Text to be used to as function wrapper name suffix or replacement.") | html %]
+                                            <br />
+                                            [% Translate("Please consider XML element naming restrictions (e.g. don't use '<' and '&').") | html %]
+                                        </p>
+                                    </div>
+                                    <div class="Clear"></div>
+
+                                </fieldset>
+                            </div>
+
+                            <label class="Mandatory" for="ResponseNameScheme"><span class="Marker">*</span>[% Translate("Response name scheme") | html %]:</label>
+                            <div class="Field">
+                                [% Data.ResponseNameSchemeStrg %]
+                                <p class="FieldExplanation">
+                                    [% Translate("Select how SOAP response function wrapper should be constructed.") | html %]
+                                    <br />
+                                    [% Translate("'FunctionName' is used as example for actual invoker/operation name.") | html %]
+                                    <br />
+                                    [% Translate("'FreeText' is used as example for actual configured value.") | html %]
+                                </p>
+                            </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+$('#ResponseNameScheme').on('change', function(){
+    if ( $(this).val() === 'Append' || $(this).val() === 'Replace' ) {
+        $('.ResponseNameFreeTextField').removeClass('Hidden');
+        $('#ResponseNameFreeText').addClass('Validate_Required');
+    }
+    else {
+        $('.ResponseNameFreeTextField').addClass('Hidden')
+        $('#ResponseNameFreeText').removeClass('Validate_Required');
+    }
+});
+//]]></script>
+[% END %]
+                            <div class="Clear"></div>
+
+                            <div class="ResponseNameFreeTextField [% Data.ResponseNameFreeTextHidden | html %]">
+                                <fieldset class="TableLike">
+
+                                    <label class="Mandatory" for="ResponseNameFreeText"><span class="Marker">*</span>[% Translate("Response name free text") | html %]:</label>
+                                    <div class="Field">
+                                        <input id="ResponseNameFreeText" class="W50pc [% Data.ResponseNameFreeTextServerError | html %] [% Data.ResponseNameFreeTextMandatory | html %]" type="text" maxlength="250" value="[% Data.ResponseNameFreeText | html %]" name="ResponseNameFreeText"/>
+                                        <div id="ResponseNameFreeTextError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                                        <div id="ResponseNameFreeTextServerError" class="TooltipErrorMessage"><p>[% Translate(Data.EndpointServerErrorMessage) | html %]</p></div>
+                                        <p class="FieldExplanation">
+                                            [% Translate("Text to be used to as function wrapper name suffix or replacement.") | html %]
+                                            <br />
+                                            [% Translate("Please consider XML element naming restrictions (e.g. don't use '<' and '&').") | html %]
+                                        </p>
+                                    </div>
+                                    <div class="Clear"></div>
+
+                                </fieldset>
+                            </div>
+
 [% RenderBlockStart("TransportProvider") %]
                             <label class="Mandatory" for="MaxLength"><span class="Marker">*</span>[% Translate("Maximum message length") | html %]:</label>
                             <div class="Field">
@@ -123,7 +215,7 @@
                             </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-$('#SOAPAction').bind('change', function(){
+$('#SOAPAction').on('change', function(){
     if ( $(this).val() === 'Yes') {
         $('.SOAPActionField').removeClass('Hidden');
     }
@@ -163,7 +255,7 @@ $('#SOAPAction').bind('change', function(){
                             </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-$('#Authentication').bind('change', function(){
+$('#Authentication').on('change', function(){
     if ( $(this).val() === 'BasicAuth') {
         $('.BasicAuthField').removeClass('Hidden');
         $('.BasicAuthField').find('#UserName').each(function(){
@@ -206,6 +298,34 @@ $('#Authentication').bind('change', function(){
                                 </fieldset>
                             </div>
 
+                            <label for="SSLProxy">[% Translate("Proxy Server") | html %]:</label>
+                            <div class="Field">
+                                <input id="SSLProxy" class="W50pc " type="text" maxlength="250" value="[% Data.SSLProxy | html %]" name="SSLProxy"/>
+                                <p class="FieldExplanation">
+                                    [% Translate("URI of a proxy server to be used (if needed).") | html %]
+                                    <br/>
+                                    [% Translate("e.g. http://proxy_hostname:8080") | html %]
+                                </p>
+                            </div>
+                            <div class="Clear"></div>
+                            <label for="SSLProxyUser">[% Translate("Proxy User") | html %]:</label>
+                            <div class="Field">
+                                <input id="SSLProxyUser" class="W50pc" type="text" maxlength="250" value="[% Data.SSLProxyUser | html %]" name="SSLProxyUser"/>
+                                <p class="FieldExplanation">
+                                    [% Translate("The user name to be used to access the proxy server.") | html %]
+                                </p>
+                            </div>
+                            <div class="Clear"></div>
+
+                            <label for="SSLProxyPassword">[% Translate("Proxy Password") | html %]:</label>
+                            <div class="Field">
+                                <input id="SSLProxyPassword" class="W50pc " type="password" maxlength="250" value="[% Data.SSLProxyPassword | html %]" name="SSLProxyPassword"/>
+                                <p class="FieldExplanation">
+                                    [% Translate("The password for the proxy user.") | html %]
+                                </p>
+                            </div>
+                            <div class="Clear"></div>
+
                             <label  for="UseSSL">[% Translate("Use SSL Options") | html %]:</label>
                             <div class="Field">
                                 [% Data.UseSSLStrg %]
@@ -215,7 +335,7 @@ $('#Authentication').bind('change', function(){
                             </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-$('#UseSSL').bind('change', function(){
+$('#UseSSL').on('change', function(){
     if ( $(this).val() === 'Yes') {
         $('.SSLField').removeClass('Hidden');
         $('.SSLField').find('#SSLP12Certificate').each(function(){
@@ -287,38 +407,33 @@ $('#UseSSL').bind('change', function(){
                                         </p>
                                     </div>
                                     <div class="Clear"></div>
-
-                                    <label for="SSLProxy">[% Translate("Proxy Server") | html %]:</label>
-                                    <div class="Field">
-                                        <input id="SSLProxy" class="W50pc " type="text" maxlength="250" value="[% Data.SSLProxy | html %]" name="SSLProxy"/>
-                                        <p class="FieldExplanation">
-                                            [% Translate("URI of a proxy server to be used (if needed).") | html %]
-                                            <br/>
-                                            [% Translate("e.g. http://proxy_hostname:8080") | html %]
-                                        </p>
-                                    </div>
-                                    <div class="Clear"></div>
-                                    <label for="SSLProxyUser">[% Translate("Proxy User") | html %]:</label>
-                                    <div class="Field">
-                                        <input id="SSLProxyUser" class="W50pc" type="text" maxlength="250" value="[% Data.SSLProxyUser | html %]" name="SSLProxyUser"/>
-                                        <p class="FieldExplanation">
-                                            [% Translate("The user name to be used to access the proxy server.") | html %]
-                                        </p>
-                                    </div>
-                                    <div class="Clear"></div>
-
-                                    <label for="SSLProxyPassword">[% Translate("Proxy Password") | html %]:</label>
-                                    <div class="Field">
-                                        <input id="SSLProxyPassword" class="W50pc " type="password" maxlength="250" value="[% Data.SSLProxyPassword | html %]" name="SSLProxyPassword"/>
-                                        <p class="FieldExplanation">
-                                            [% Translate("The password for the proxy user.") | html %]
-                                        </p>
-                                    </div>
-                                    <div class="Clear"></div>
                                 </fieldset>
                             </div>
 
 [% RenderBlockEnd("TransportRequester") %]
+
+                            <label for="Sort">[% Translate("Sort options") | html %]:</label>
+                            <div class="Field">
+                                <ul class="SortableList">
+                                    <li class="ElementTemplate">
+                                        <span><i class="fa fa-ellipsis-v"></i><input type="text" class="Element" class="Element" value="ElementName" /><strong>x</strong><span class="Icon Add"><i class="fa fa-plus-square-o"></i></span></span>
+                                    </li>
+                                </ul>
+                                <div class="AddElement">
+                                    [% Translate("Add new first level element") | html %]:
+                                    <input type="text" name="Element" title="Element" />
+                                    <button>[% Translate("Add") | html %]</button>
+                                </div>
+                                <p class="FieldExplanation">
+                                    [% Translate("Outbound sort order for xml fields (structure starting below function name wrapper) - see documentation for SOAP transport.") | html %]
+                                </p>
+                                <input type="hidden" name="Sort" id="Sort" value="" />
+                            </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.Agent.SortedTree.Init( $('.SortableList'), $('#TransportConfigForm'), $('#Sort'), [% Data.Sort | JSON %] );
+//]]></script>
+[% END %]
 
                             <div class="Field SpacingTop">
                                 <button type="submit" class="Primary CallForAction" value="[% Translate("Save and continue") | html %]"><span>[% Translate("Save") | html %]</span></button>
@@ -328,7 +443,7 @@ $('#UseSSL').bind('change', function(){
                                 <input type="hidden" name="ReturnToWebservice" id="ReturnToWebservice" value="" />
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-$('#SaveAndFinishButton').bind('click', function(){
+$('#SaveAndFinishButton').on('click', function(){
     $('#ReturnToWebservice').val(1);
 });
 //]]></script>

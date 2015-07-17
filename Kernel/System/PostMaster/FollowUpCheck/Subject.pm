@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::PostMaster::Filter::CheckFollowUpInSubject;
+package Kernel::System::PostMaster::FollowUpCheck::Subject;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ sub Run {
 
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    my $Subject = $Param{Subject} || '';
+    my $Subject = $Param{GetParam}->{Subject} || '';
 
     my $Tn = $TicketObject->GetTNByString($Subject);
     return if !$Tn;

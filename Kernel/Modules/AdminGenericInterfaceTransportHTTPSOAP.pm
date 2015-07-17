@@ -163,9 +163,6 @@ sub Run {
                 $TransportConfig->{SSL}->{SSLP12Password}    = $GetParam->{SSLP12Password};
                 $TransportConfig->{SSL}->{SSLCAFile}         = $GetParam->{SSLCAFile};
                 $TransportConfig->{SSL}->{SSLCADir}          = $GetParam->{SSLCADir};
-                $TransportConfig->{SSL}->{SSLProxy}          = $GetParam->{SSLProxy};
-                $TransportConfig->{SSL}->{SSLProxyUser}      = $GetParam->{SSLProxyUser};
-                $TransportConfig->{SSL}->{SSLProxyPassword}  = $GetParam->{SSLProxyPassword};
 
                 if ( !$GetParam->{SSLP12Certificate} ) {
 
@@ -179,6 +176,11 @@ sub Run {
                     $Error{'SSLP12PasswordServerError'} = 'ServerError';
                 }
             }
+
+            # get proxy options
+            $TransportConfig->{SSL}->{SSLProxy}         = $GetParam->{SSLProxy};
+            $TransportConfig->{SSL}->{SSLProxyUser}     = $GetParam->{SSLProxyUser};
+            $TransportConfig->{SSL}->{SSLProxyPassword} = $GetParam->{SSLProxyPassword};
         }
 
         # otherwise is provider
@@ -194,6 +196,17 @@ sub Run {
                 $Error{MaxLengthServerError}        = 'ServerError';
                 $Error{MaxLengthServerErrorMessage} = 'This field should be an integer number.';
             }
+        }
+
+        # add scheme options
+        for my $Param (qw(RequestNameFreeText ResponseNameFreeText RequestNameScheme ResponseNameScheme)) {
+            $TransportConfig->{$Param} = $GetParam->{$Param};
+        }
+
+        # add sorting structure
+        if ( $GetParam->{Sort} ) {
+            my $SortStructure = $Kernel::OM->Get('Kernel::System::JSON')->Decode( Data => $GetParam->{Sort} );
+            $TransportConfig->{Sort} = $Self->_PackStructure( Structure => $SortStructure );
         }
 
         # set new configuration
@@ -255,23 +268,31 @@ sub _ShowEdit {
     my $TransportConfig = $Param{WebserviceData}->{Config}->{ $Param{CommunicationType} }->{Transport}->{Config};
 
     # extract display parameters from transport config
-    $Param{Endpoint}            = $TransportConfig->{Endpoint};
-    $Param{NameSpace}           = $TransportConfig->{NameSpace};
-    $Param{Encoding}            = $TransportConfig->{Encoding};
-    $Param{MaxLength}           = $TransportConfig->{MaxLength};
-    $Param{SOAPAction}          = $TransportConfig->{SOAPAction};
-    $Param{SOAPActionSeparator} = $TransportConfig->{SOAPActionSeparator};
-    $Param{Authentication}      = $TransportConfig->{Authentication}->{Type};
-    $Param{User}                = $TransportConfig->{Authentication}->{User};
-    $Param{Password}            = $TransportConfig->{Authentication}->{Password};
-    $Param{UseSSL}              = $TransportConfig->{SSL}->{UseSSL};
-    $Param{SSLP12Certificate}   = $TransportConfig->{SSL}->{SSLP12Certificate};
-    $Param{SSLP12Password}      = $TransportConfig->{SSL}->{SSLP12Password};
-    $Param{SSLCAFile}           = $TransportConfig->{SSL}->{SSLCAFile};
-    $Param{SSLCADir}            = $TransportConfig->{SSL}->{SSLCADir};
-    $Param{SSLProxy}            = $TransportConfig->{SSL}->{SSLProxy};
-    $Param{SSLProxyUser}        = $TransportConfig->{SSL}->{SSLProxyUser};
-    $Param{SSLProxyPassword}    = $TransportConfig->{SSL}->{SSLProxyPassword};
+    $Param{Endpoint}             = $TransportConfig->{Endpoint};
+    $Param{NameSpace}            = $TransportConfig->{NameSpace};
+    $Param{Encoding}             = $TransportConfig->{Encoding};
+    $Param{RequestNameFreeText}  = $TransportConfig->{RequestNameFreeText};
+    $Param{ResponseNameFreeText} = $TransportConfig->{ResponseNameFreeText};
+    $Param{MaxLength}            = $TransportConfig->{MaxLength};
+    $Param{SOAPAction}           = $TransportConfig->{SOAPAction};
+    $Param{SOAPActionSeparator}  = $TransportConfig->{SOAPActionSeparator};
+    $Param{Authentication}       = $TransportConfig->{Authentication}->{Type};
+    $Param{User}                 = $TransportConfig->{Authentication}->{User};
+    $Param{Password}             = $TransportConfig->{Authentication}->{Password};
+    $Param{UseSSL}               = $TransportConfig->{SSL}->{UseSSL};
+    $Param{SSLP12Certificate}    = $TransportConfig->{SSL}->{SSLP12Certificate};
+    $Param{SSLP12Password}       = $TransportConfig->{SSL}->{SSLP12Password};
+    $Param{SSLCAFile}            = $TransportConfig->{SSL}->{SSLCAFile};
+    $Param{SSLCADir}             = $TransportConfig->{SSL}->{SSLCADir};
+    $Param{SSLProxy}             = $TransportConfig->{SSL}->{SSLProxy};
+    $Param{SSLProxyUser}         = $TransportConfig->{SSL}->{SSLProxyUser};
+    $Param{SSLProxyPassword}     = $TransportConfig->{SSL}->{SSLProxyPassword};
+
+    # get sorting structure
+    if ( $TransportConfig->{Sort} ) {
+        my $SortStructure = $Self->_UnpackStructure( Structure => $TransportConfig->{Sort} );
+        $Param{Sort} = $Kernel::OM->Get('Kernel::System::JSON')->Encode( Data => $SortStructure );
+    }
 
     # call bread crumbs blocks
     $LayoutObject->Block(
@@ -302,6 +323,35 @@ sub _ShowEdit {
             Nav => '',
         },
     );
+
+    # create options for request and response name schemes
+    for my $Type (qw(Request Response)) {
+        my $TypeDefault = $Type eq 'Request' ? '' : 'Response';
+        my $SelectedID = $TransportConfig->{ $Type . 'NameScheme' } || $TypeDefault;
+        my %Data = (
+            ''        => "<FunctionName>DATA</FunctionName>",
+            $Type     => "<FunctionName${Type}>DATA</FunctionName${Type}>",
+            'Append'  => "<FunctionNameFreeText>DATA</FunctionNameFreeText>",
+            'Replace' => '<FreeText>DATA</FreeText>',
+        );
+        if ( $Type eq 'Request' ) {
+            delete $Data{'Replace'};
+        }
+        $Param{ $Type . 'NameSchemeStrg' } = $LayoutObject->BuildSelection(
+            Data       => \%Data,
+            Name       => $Type . 'NameScheme',
+            SelectedID => $SelectedID,
+            Sort       => 'AlphaNumericValue',
+        );
+
+        # treat depending free text field based on current value
+        if ( $SelectedID ne 'Append' && $SelectedID ne 'Replace' ) {
+            $Param{"${Type}NameFreeTextHidden"} = 'Hidden';
+        }
+        else {
+            $Param{"${Type}NameFreeTextMandatory"} = 'Validate_Required';
+        }
+    }
 
     # check if communication type is not provider (requester)
     if ( $Param{CommunicationType} ne 'Provider' ) {
@@ -409,9 +459,10 @@ sub _GetParams {
     # get parameters from web browser
     for my $ParamName (
         qw(
-        Endpoint NameSpace Encoding SOAPAction MaxLength Authentication User Password
+        Endpoint NameSpace Encoding  SOAPAction MaxLength Authentication User Password
         SOAPAction SOAPActionSeparator UseSSL SSLP12Certificate SSLP12Password SSLCAFile SSLCADir
-        SSLProxy SSLProxyUser SSLProxyPassword
+        SSLProxy SSLProxyUser SSLProxyPassword Sort
+        RequestNameFreeText ResponseNameFreeText RequestNameScheme ResponseNameScheme
         )
         )
     {
@@ -419,4 +470,58 @@ sub _GetParams {
     }
     return $GetParam;
 }
+
+sub _UnpackStructure {
+    my ( $Self, %Param ) = @_;
+
+    if ( !defined $Param{Structure} ) {
+        return [];
+    }
+
+    # compatibility workaround
+    if ( ref $Param{Structure}->[0] eq 'ARRAY' ) {
+        $Param{Structure} = $Param{Structure}->[0];
+    }
+
+    my @Structure;
+    ARRAYELEMENT:
+    for my $ArrayElement ( @{ $Param{Structure} } ) {
+        my ($Key) = sort keys %{$ArrayElement};
+        push @Structure, $Key;
+        next ARRAYELEMENT if !defined $ArrayElement->{$Key};
+
+        push @Structure, $Self->_UnpackStructure( Structure => $ArrayElement->{$Key} );
+    }
+
+    return \@Structure;
+}
+
+sub _PackStructure {
+    my ( $Self, %Param ) = @_;
+
+    if ( !defined $Param{Structure} ) {
+        return [];
+    }
+
+    my @Structure;
+    ARRAYCOUNT:
+    for my $ArrayCount ( 0 .. scalar @{ $Param{Structure} } - 1 ) {
+        my $Key     = $Param{Structure}->[$ArrayCount];
+        my $NextKey = $Param{Structure}->[ $ArrayCount + 1 ];
+        my $Value   = undef;
+
+        # already processed previously
+        next ARRAYCOUNT if ref $Key eq 'ARRAY';
+
+        # check for substructure
+        if ( ref $NextKey eq 'ARRAY' ) {
+            $Value = $Self->_PackStructure( Structure => $NextKey );
+        }
+
+        push @Structure, { $Key => $Value };
+    }
+
+    return \@Structure;
+}
+
 1;
