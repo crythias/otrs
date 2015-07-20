@@ -90,9 +90,10 @@ for my $Group ( sort { $a cmp $b } keys %List ) {
             my %Item = $CommonObject{SysConfigObject}->ConfigItemGet( Name => $Name );
             my $Link = $Name;
             $Link =~ s/###/_/g;
+            $Link =~ s/[ ]/_/g;
             $Link =~ s/\///g;
             print <<EOF;
-<sect3 id=\"$Group:$SubGroup:$Link\"><title>$Name</title>
+<sect3 id=\"ConfigReference_$Group:$SubGroup:$Link\"><title>$Name</title>
 <informaltable>
     <tgroup cols=\"2\">
         <colspec colwidth=\"1*\"/>
