@@ -57,6 +57,18 @@
         font-size: 13px;
     }
 
+    div#Logo ~ h1.CompanyName {
+        display: none;
+    }
+
+    div#Logo {
+        margin: auto;
+        width: 100%;
+        left: 0;
+        right: 0;
+        background-position: center;
+    }
+
     .ResponsiveSidebarContainer {
         background: rgba(22, 22, 22, 0.7);
         height: 100%;
@@ -195,6 +207,7 @@
 
     .TicketHeader,
     #Messages,
+    #NoArticles,
     #FollowUp {
         float: none;
         width: auto;
@@ -211,8 +224,8 @@
         min-width: 0px;
     }
 
-    .TicketCompose .Content, 
-    .Preferences .Content, 
+    .TicketCompose .Content,
+    .Preferences .Content,
     .Search .Content {
         padding: 5px 10px;
     }
@@ -271,15 +284,15 @@
 
 /*  ~ Tablet portrait */
 @media only screen and (min-width: 480px) and (max-width: 767px) {
-   
+
 }
 
 /*  ~ Smartphone landscape */
 @media only screen and (min-width: 320px) and (max-width: 479px) {
-    
+
 }
 
 /*  ~ Smartphone portrait */
 @media only screen and (max-width: 319px) {
-   
+
 }

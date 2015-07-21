@@ -65,7 +65,7 @@ sub Run {
         @SearchAddress = Mail::Address->parse($Recipient);
     }
 
-    my $Class;
+    my $Class = '';
 
     # backend currently only supports one recipient
     if ( $#SearchAddress > 0 && $Param{CryptKeyID} ) {
@@ -81,7 +81,7 @@ sub Run {
         Data       => \%KeyList,
         Name       => 'CryptKeyID',
         SelectedID => $Param{CryptKeyID} || '',
-        Class      => $Class,
+        Class      => "$Class Modernize",
         Max        => 150,
     );
     $LayoutObject->Block(
