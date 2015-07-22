@@ -44,11 +44,11 @@ local $Kernel::OM = Kernel::System::ObjectManager->new(
 
 # Don't allow to run these scripts as root.
 if ( $> == 0 ) {    # $EFFECTIVE_USER_ID
-    print STDERR "Error: You cannot run otrs.Damon.pl as root. Please run it as the 'otrs' user or with the help of su:\n";
+    print STDERR
+        "Error: You cannot run otrs.Damon.pl as root. Please run it as the 'otrs' user or with the help of su:\n";
     print STDERR "  su -c \"bin/otrs.Daemon.pl ...\" -s /bin/bash otrs\n";
     exit 1;
 }
-
 
 # get config object
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -145,8 +145,8 @@ sub Start {
     my $LockSuccess = _PIDLock();
 
     if ( !$LockSuccess ) {
-        print STDERR "Daemon already running!\n";
-        exit 1;
+        print "Daemon already running!\n";
+        exit 0;
     }
 
     # get daemon modules from sysconfig
@@ -266,7 +266,9 @@ sub Start {
             }
             else {
 
-                print STDOUT "Registered Daemon $Module with PID $ChildPID\n";
+                if ($Debug) {
+                    print STDOUT "Registered Daemon $Module with PID $ChildPID\n";
+                }
 
                 $DaemonModules{$Module}->{PID} = $ChildPID;
             }
@@ -284,7 +286,9 @@ sub Start {
         next MODULE if !$Module;
         next MODULE if !$DaemonModules{$Module}->{PID};
 
-        print STDOUT "Send stop signal to $Module with PID $DaemonModules{$Module}->{PID}\n";
+        if ($Debug) {
+            print STDOUT "Send stop signal to $Module with PID $DaemonModules{$Module}->{PID}\n";
+        }
 
         kill 2, $DaemonModules{$Module}->{PID};
     }
@@ -310,7 +314,9 @@ sub Start {
 
                 $ProcessesStillRunning = 1;
 
-                print STDOUT "Waiting to stop $Module with PID $DaemonModules{$Module}->{PID}\n";
+                if ($Debug) {
+                    print STDOUT "Waiting to stop $Module with PID $DaemonModules{$Module}->{PID}\n";
+                }
             }
         }
 
@@ -392,7 +398,7 @@ sub _PIDLock {
                 Message  => "Can't create directory '$PIDDir': $!",
             );
 
-            return;
+            exit 1;
         }
     }
 
