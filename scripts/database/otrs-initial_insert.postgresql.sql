@@ -218,19 +218,19 @@ INSERT INTO system_address (value0, value1, comments, valid_id, queue_id, create
 -- ----------------------------------------------------------
 INSERT INTO follow_up_possible (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('possible', 'Follow ups after closed(+|-) possible. Ticket will be reopen.', 1, 1, current_timestamp, 1, current_timestamp);
+    ('possible', 'Follow-ups for closed tickets are possible. Ticket will be reopened.', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table follow_up_possible
 -- ----------------------------------------------------------
 INSERT INTO follow_up_possible (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('reject', 'Follow ups after closed(+|-) not possible. No new ticket will be created.', 1, 1, current_timestamp, 1, current_timestamp);
+    ('reject', 'Follow-ups for closed tickets are not possible. No new ticket will be created.', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table follow_up_possible
 -- ----------------------------------------------------------
 INSERT INTO follow_up_possible (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('new ticket', 'Follow ups after closed(+|-) not possible. A new ticket will be created..', 1, 1, current_timestamp, 1, current_timestamp);
+    ('new ticket', 'Follow-ups for closed tickets are not possible. A new ticket will be created..', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table queue
 -- ----------------------------------------------------------
@@ -296,25 +296,25 @@ INSERT INTO queue_standard_template (queue_id, standard_template_id, create_by, 
 -- ----------------------------------------------------------
 INSERT INTO auto_response_type (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('auto reply', 'Auto reply which will be sent out after a new ticket has been created.', 1, 1, current_timestamp, 1, current_timestamp);
+    ('auto reply', 'Automatic reply which will be sent out after a new ticket has been created.', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response_type
 -- ----------------------------------------------------------
 INSERT INTO auto_response_type (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('auto reject', 'Auto reject which will be sent out after a follow up has been rejected (in case queue follow up option is "reject").', 1, 1, current_timestamp, 1, current_timestamp);
+    ('auto reject', 'Automatic reject which will be sent out after a follow-up has been rejected (in case queue follow-up option is "reject").', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response_type
 -- ----------------------------------------------------------
 INSERT INTO auto_response_type (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('auto follow up', 'Auto follow up is sent out after a follow up has been received for a ticket (in case queue follow up option is "possible").', 1, 1, current_timestamp, 1, current_timestamp);
+    ('auto follow up', 'Automatic confirmation which is sent out after a follow-up has been received for a ticket (in case queue follow-up option is "possible").', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response_type
 -- ----------------------------------------------------------
 INSERT INTO auto_response_type (name, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    ('auto reply/new ticket', 'Auto reply/new ticket which will be sent out after a follow up has been rejected and a new ticket has been created (in case queue follow up option is "new ticket").', 1, 1, current_timestamp, 1, current_timestamp);
+    ('auto reply/new ticket', 'Automatic response which will be sent out after a follow-up has been rejected and a new ticket has been created (in case queue follow-up option is "new ticket").', 1, 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table auto_response_type
 -- ----------------------------------------------------------
@@ -345,9 +345,9 @@ Your OTRS Team
 -- ----------------------------------------------------------
 INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, content_type, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (2, 1, 'default reject (after follow up and rejected of a closed ticket)', 'Your previous ticket is closed.
+    (2, 1, 'default reject (after follow-up and rejected of a closed ticket)', 'Your previous ticket is closed.
 
--- Your follow up has been rejected. --
+-- Your follow-up has been rejected. --
 
 Please create a new ticket.
 
@@ -358,7 +358,7 @@ Your OTRS Team
 -- ----------------------------------------------------------
 INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, content_type, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (3, 1, 'default follow up (after a ticket follow up has been added)', 'Thanks for your follow up email
+    (3, 1, 'default follow-up (after a ticket follow-up has been added)', 'Thanks for your follow-up email
 
 You wrote:
 <OTRS_CUSTOMER_EMAIL[6]>
@@ -374,7 +374,7 @@ Your OTRS Team
 -- ----------------------------------------------------------
 INSERT INTO auto_response (type_id, system_address_id, name, text0, text1, content_type, comments, valid_id, create_by, create_time, change_by, change_time)
     VALUES
-    (4, 1, 'default reject/new ticket created (after closed follow up with new ticket creation)', 'Your previous ticket is closed.
+    (4, 1, 'default reject/new ticket created (after closed follow-up with new ticket creation)', 'Your previous ticket is closed.
 
 -- A new ticket has been created for you. --
 
@@ -950,7 +950,7 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event (name, valid_id, comments, create_by, create_time, change_by, change_time)
     VALUES
-    ('Ticket follow up notification (unlocked)', 1, '', 1, current_timestamp, 1, current_timestamp);
+    ('Ticket follow-up notification (unlocked)', 1, '', 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table notification_event_item
 -- ----------------------------------------------------------
@@ -962,7 +962,7 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event_item (notification_id, event_key, event_value)
     VALUES
-    (2, 'VisibleForAgentTooltip', 'You will receive a notification if a customer sends a follow up to an unlocked ticket which is in your "My Queues" or "My Services".');
+    (2, 'VisibleForAgentTooltip', 'You will receive a notification if a customer sends a follow-up to an unlocked ticket which is in your "My Queues" or "My Services".');
 -- ----------------------------------------------------------
 --  insert into table notification_event_item
 -- ----------------------------------------------------------
@@ -1010,7 +1010,7 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event (name, valid_id, comments, create_by, create_time, change_by, change_time)
     VALUES
-    ('Ticket follow up notification (locked)', 1, '', 1, current_timestamp, 1, current_timestamp);
+    ('Ticket follow-up notification (locked)', 1, '', 1, current_timestamp, 1, current_timestamp);
 -- ----------------------------------------------------------
 --  insert into table notification_event_item
 -- ----------------------------------------------------------
@@ -1022,7 +1022,7 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event_item (notification_id, event_key, event_value)
     VALUES
-    (3, 'VisibleForAgentTooltip', 'You will receive a notification if a customer sends a follow up to a locked ticket of which you are the ticket owner or responsible.');
+    (3, 'VisibleForAgentTooltip', 'You will receive a notification if a customer sends a follow-up to a locked ticket of which you are the ticket owner or responsible.');
 -- ----------------------------------------------------------
 --  insert into table notification_event_item
 -- ----------------------------------------------------------
@@ -1053,6 +1053,12 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 INSERT INTO notification_event_item (notification_id, event_key, event_value)
     VALUES
     (3, 'LockID', '2');
+-- ----------------------------------------------------------
+--  insert into table notification_event_item
+-- ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
+    (3, 'LockID', '3');
 -- ----------------------------------------------------------
 --  insert into table notification_event_item
 -- ----------------------------------------------------------
@@ -1256,6 +1262,12 @@ INSERT INTO notification_event_item (notification_id, event_key, event_value)
 -- ----------------------------------------------------------
 INSERT INTO notification_event_item (notification_id, event_key, event_value)
     VALUES
+    (9, 'LockID', '3');
+-- ----------------------------------------------------------
+--  insert into table notification_event_item
+-- ----------------------------------------------------------
+INSERT INTO notification_event_item (notification_id, event_key, event_value)
+    VALUES
     (9, 'Transports', 'Email');
 -- ----------------------------------------------------------
 --  insert into table notification_event
@@ -1433,9 +1445,9 @@ ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been created in 
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'en', 'Ticket Follow Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (2, 'text/plain', 'en', 'Unlocked Ticket Follow-Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] received a follow up and is now unlocked.
+the unlocked ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] received a follow-up.
 
 <OTRS_CUSTOMER_REALNAME> wrote:
 <OTRS_CUSTOMER_Body[30]>
@@ -1448,9 +1460,9 @@ ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] received a follow up
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'en', 'Ticket Follow Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (3, 'text/plain', 'en', 'Locked Ticket Follow-Up: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] received a follow up and is now locked.
+the locked ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] received a follow-up.
 
 <OTRS_CUSTOMER_REALNAME> wrote:
 <OTRS_CUSTOMER_Body[30]>
@@ -1475,9 +1487,9 @@ ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has reached its lock
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'en', 'Ticket Owner Update to You: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (5, 'text/plain', 'en', 'Ticket Owner Update to <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the owner of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] is updated to <OTRS_TICKET_OWNER_UserFullname> by <OTRS_CURRENT_UserFullname>.
+the owner of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been updated to <OTRS_TICKET_OWNER_UserFullname> by <OTRS_CURRENT_UserFullname>.
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
@@ -1487,7 +1499,7 @@ the owner of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] is upda
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (6, 'text/plain', 'en', 'Ticket Responsible Update to You: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (6, 'text/plain', 'en', 'Ticket Responsible Update to <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
 the responsible agent of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been updated to <OTRS_TICKET_RESPONSIBLE_UserFullname> by <OTRS_CURRENT_UserFullname>.
 
@@ -1524,9 +1536,9 @@ ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been updated to 
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'en', 'Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (9, 'text/plain', 'en', 'Locked Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the pending reminder time of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been reached and it is now locked.
+the pending reminder time of the locked ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been reached.
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
@@ -1536,9 +1548,9 @@ the pending reminder time of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_Ticket
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'en', 'Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
+    (10, 'text/plain', 'en', 'Unlocked Ticket Pending Reminder Time Reached: <OTRS_TICKET_Title>', 'Hi <OTRS_NOTIFICATION_RECIPIENT_UserFirstname>,
 
-the pending reminder time of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been reached and it is now unlocked.
+the pending reminder time of the unlocked ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has been reached.
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
@@ -1591,7 +1603,7 @@ the service of ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] has b
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (1, 'text/plain', 'de', 'Ticket erstellt!: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (1, 'text/plain', 'de', 'Ticket erstellt: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde in der Queue <OTRS_TICKET_Queue> erstellt.
 
@@ -1606,7 +1618,7 @@ das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde in der Que
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (2, 'text/plain', 'de', 'Nachfrage! (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (2, 'text/plain', 'de', 'Nachfrage zum freigegebenen Ticket: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 zum freigegebenen Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
@@ -1621,7 +1633,7 @@ zum freigegebenen Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] gi
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (3, 'text/plain', 'de', 'Nachfrage! (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (3, 'text/plain', 'de', 'Nachfrage zum gesperrten Ticket: <OTRS_CUSTOMER_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 zum gesperrten Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] gibt es eine Nachfrage.
 
@@ -1636,7 +1648,7 @@ zum gesperrten Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] gibt 
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (4, 'text/plain', 'de', 'Ticketsperre aufgehoben! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (4, 'text/plain', 'de', 'Ticketsperre aufgehoben: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 die Sperrzeit des Tickets [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] ist abgelaufen. Es ist jetzt entsperrt.
 
@@ -1648,21 +1660,9 @@ die Sperrzeit des Tickets [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] i
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (5, 'text/plain', 'de', 'Aenderung des Ticket-Besitzers auf Sie! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (5, 'text/plain', 'de', 'Änderung des Ticket-Besitzers auf <OTRS_OWNER_UserFullname>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
-der Besitzer des Tickets [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde geaendert auf <OTRS_TICKET_OWNER_UserFullname> von <OTRS_CURRENT_UserFullname>.
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-
--- <OTRS_CONFIG_NotificationSenderName>');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (6, 'text/plain', 'de', 'Aenderung des Ticket-Verantwortlichen auf Sie! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
-
-der Verantwortliche für das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde geändert auf <OTRS_TICKET_RESPONSIBLE_UserFullname> von <OTRS_CURRENT_UserFullname>.
+der Besitzer des Tickets [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde von <OTRS_CURRENT_UserFullname> geändert auf <OTRS_TICKET_OWNER_UserFullname>.
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
@@ -1672,7 +1672,19 @@ der Verantwortliche für das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_Ticket
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (7, 'text/plain', 'de', 'Neue Notiz! (<OTRS_AGENT_SUBJECT[24]>)', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (6, 'text/plain', 'de', 'Änderung des Ticket-Verantwortlichen auf <OTRS_RESPONSIBLE_UserFullname>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+
+der Verantwortliche für das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde von <OTRS_CURRENT_UserFullname> geändert auf <OTRS_TICKET_RESPONSIBLE_UserFullname>.
+
+<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
+
+-- <OTRS_CONFIG_NotificationSenderName>');
+-- ----------------------------------------------------------
+--  insert into table notification_event_message
+-- ----------------------------------------------------------
+INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
+    VALUES
+    (7, 'text/plain', 'de', 'Ticket-Notiz: <OTRS_AGENT_SUBJECT[24]>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 <OTRS_CURRENT_UserFullname> schrieb:
 <OTRS_AGENT_BODY[30]>
@@ -1685,7 +1697,7 @@ INSERT INTO notification_event_message (notification_id, content_type, language,
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (8, 'text/plain', 'de', 'Ticket Queue Aenderung <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (8, 'text/plain', 'de', 'Ticket-Queue geändert zu <OTRS_TICKET_Queue>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde in die Queue <OTRS_TICKET_Queue> verschoben.
 
@@ -1697,7 +1709,7 @@ das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde in die Que
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (9, 'text/plain', 'de', 'Erinnerungszeit erreicht! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (9, 'text/plain', 'de', 'Erinnerungszeit des gesperrten Tickets erreicht: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 die Erinnerungszeit für das gesperrte Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde erreicht.
 
@@ -1709,7 +1721,7 @@ die Erinnerungszeit für das gesperrte Ticket [<OTRS_CONFIG_TicketHook><OTRS_TIC
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (10, 'text/plain', 'de', 'Erinnerungszeit erreicht! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (10, 'text/plain', 'de', 'Erinnerungszeit des freigegebenen Tickets erreicht: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 die Erinnerungszeit für das freigegebene Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde erreicht.
 
@@ -1721,7 +1733,7 @@ die Erinnerungszeit für das freigegebene Ticket [<OTRS_CONFIG_TicketHook><OTRS_
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (11, 'text/plain', 'de', 'Ticket Eskalation! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (11, 'text/plain', 'de', 'Ticket-Eskalation! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] ist eskaliert!
 
@@ -1736,10 +1748,9 @@ Eskaliert seit: <OTRS_TICKET_EscalationDestinationIn>
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (12, 'text/plain', 'de', 'Ticket Eskalations-Warnung! (<OTRS_TICKET_Title>)', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (12, 'text/plain', 'de', 'Ticket-Eskalations-Warnung! <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
 das Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wird bald eskalieren!
-
 
 Eskalation um: <OTRS_TICKET_EscalationDestinationDate>
 Eskalation in: <OTRS_TICKET_EscalationDestinationIn>
@@ -1753,204 +1764,13 @@ Eskalation in: <OTRS_TICKET_EscalationDestinationIn>
 -- ----------------------------------------------------------
 INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
     VALUES
-    (13, 'text/plain', 'de', 'Ticket Service aktualisiert zu <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
+    (13, 'text/plain', 'de', 'Ticket-Service aktualisiert zu <OTRS_TICKET_Service>: <OTRS_TICKET_Title>', 'Hallo <OTRS_NOTIFICATION_RECIPIENT_UserFirstname> <OTRS_NOTIFICATION_RECIPIENT_UserLastname>,
 
-der Service von Ticket [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde geaendert zu <OTRS_TICKET_Service>.
+der Service des Tickets [<OTRS_CONFIG_TicketHook><OTRS_TICKET_TicketNumber>] wurde geändert zu <OTRS_TICKET_Service>.
 
 <OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
 
 -- <OTRS_CONFIG_NotificationSenderName>');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (1, 'text/plain', 'nl', 'Nieuw ticket (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Er is een nieuw ticket aangemaakt in <OTRS_TICKET_Queue>!
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (2, 'text/plain', 'nl', 'Reactie ontvangen (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Er is een reactie ontvangen op onderstaand ticket.
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (3, 'text/plain', 'nl', 'Reactie ontvangen (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Er is een reactie ontvangen op onderstaand ticket.
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (4, 'text/plain', 'nl', 'Ticket ontgrendeld (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-De bewerkingstijd van ticket [<OTRS_TICKET_TicketNumber>] is overschreden, het ticket is nu ontgrendeld.
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (5, 'text/plain', 'nl', 'Ticket toegewezen (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Ticket [<OTRS_TICKET_TicketNumber>] is aan jou toegewezen door <OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname>.
-
-Opmerking:
-
-<OTRS_COMMENT>
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (6, 'text/plain', 'nl', 'Verantwoordelijkheid bijgewerkt (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_RESPONSIBLE_UserFirstname>,
-
-<OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname> heeft je geregistreerd als verantwoordelijke voor ticket [<OTRS_TICKET_TicketNumber>].
-
-Opmerking:
-
-<OTRS_COMMENT>
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (7, 'text/plain', 'nl', 'Nieuwe notitie (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-<OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname> heeft een nieuwe notitie toegevoegd aan [<OTRS_TICKET_TicketNumber>].
-
-Notitie:
-<OTRS_CUSTOMER_BODY>
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (8, 'text/plain', 'nl', 'Ticket verplaatst naar <OTRS_CUSTOMER_QUEUE> (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-<OTRS_CURRENT_UserFirstname> <OTRS_CURRENT_UserLastname> heeft [<OTRS_TICKET_TicketNumber>] verplaatst naar <OTRS_CUSTOMER_QUEUE>.
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (9, 'text/plain', 'nl', 'Herinnering (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Het herinnermoment voor ticket [<OTRS_TICKET_TicketNumber>] is bereikt.
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (10, 'text/plain', 'nl', 'Herinnering (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Het herinnermoment voor ticket [<OTRS_TICKET_TicketNumber>] is bereikt.
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (11, 'text/plain', 'nl', 'Escalatie (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Het ticket [<OTRS_TICKET_TicketNumber>] is geëscaleerd!
-
-Geëscaleerd op:    <OTRS_TICKET_EscalationDestinationDate>
-Geëscaleerd sinds: <OTRS_TICKET_EscalationDestinationIn>
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
--- ----------------------------------------------------------
---  insert into table notification_event_message
--- ----------------------------------------------------------
-INSERT INTO notification_event_message (notification_id, content_type, language, subject, text)
-    VALUES
-    (12, 'text/plain', 'nl', 'Ticket gaat escaleren (<OTRS_CUSTOMER_SUBJECT[24]>)', 'Beste <OTRS_UserFirstname>,
-
-Het ticket [<OTRS_TICKET_TicketNumber>] gaat escaleren!
-
-Escalatie op:   <OTRS_TICKET_EscalationDestinationDate>
-Escalatie over: <OTRS_TICKET_EscalationDestinationIn>
-
-<OTRS_CUSTOMER_FROM> schreef:
-
-<OTRS_CUSTOMER_EMAIL[30]>
-(eerste 30 regels zijn weergegeven)
-
-<OTRS_CONFIG_HttpType>://<OTRS_CONFIG_FQDN>/<OTRS_CONFIG_ScriptAlias>index.pl?Action=AgentTicketZoom;TicketID=<OTRS_TICKET_TicketID>
-        ');
 -- ----------------------------------------------------------
 --  insert into table dynamic_field
 -- ----------------------------------------------------------

@@ -4,8 +4,9 @@
 /*  All devices with a smaller resolution than the current OTRS minimum solution */
 @media only screen and (min-width: 0px) and (max-width: 1024px) {
 
-    body {
+    body, html {
         font-size: 1em;
+        overflow-x: hidden;
     }
 
     .ArticleBody {
@@ -723,6 +724,10 @@
         margin-bottom: -4px;
     }
 
+    .TicketZoom .Actions form select {
+        max-width: 200px;
+    }
+
     .TicketZoom .Actions li:after {
         display: inline-block;
         float: none;
@@ -963,6 +968,10 @@
     .LayoutPopup fieldset.TableLike.FixedLabel > label,
     .LayoutPopup fieldset.TableLike.FixedLabel > .Row > label {
         width: auto;
+    }
+
+    .LayoutPopup > .Header h1 {
+        white-space: normal;
     }
 
     .LayoutPopup fieldset.TableLike.FixedLabel > .Field,
