@@ -12,7 +12,7 @@ Version:      0.0
 Copyright:    GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Group:        Applications/Mail
 Provides:     otrs
-Requires:     cronie httpd perl perl(Archive::Zip) perl(Crypt::SSLeay) perl(Date::Format) perl(DBI) perl(IO::Socket::SSL) perl(LWP::UserAgent) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(URI) perl(XML::LibXML) perl(XML::LibXSLT) perl(XML::Parser) perl-core procmail
+Requires:     bash-completion cronie httpd perl perl(Archive::Zip) perl(Crypt::SSLeay) perl(Date::Format) perl(DBI) perl(IO::Socket::SSL) perl(LWP::UserAgent) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(URI) perl(XML::LibXML) perl(XML::LibXSLT) perl(XML::Parser) perl-core procmail
 Autoreqprov:  no
 Release:      01
 Source0:      otrs-%{version}.tar.bz2
@@ -65,6 +65,8 @@ export OTRSUSER=otrs
 echo -n "Check OTRS user ... "
 if id $OTRSUSER >/dev/null 2>&1; then
     echo "$OTRSUSER exists."
+    # update groups
+    usermod -g apache $OTRSUSER
     # update home dir
     usermod -d /opt/otrs $OTRSUSER
 else
@@ -111,6 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir /opt/otrs/
 /opt/otrs/RELEASE
 /opt/otrs/ARCHIVE
+/opt/otrs/.bash_completion
 /opt/otrs/.procmailrc.dist
 /opt/otrs/.fetchmailrc.dist
 /opt/otrs/.mailfilter.dist
