@@ -1,6 +1,4 @@
-#!/bin/sh
 # --
-# bash-completion.sh - bash completion for otrs.Console.pl
 # Copyright (C) 2001-2012 OTRS AG, http://otrs.org/
 # --
 # This program is free software; you can redistribute it and/or modify
@@ -19,8 +17,19 @@
 # or see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-OTRS_CONSOLE_PATH=$(cd $(dirname $BASH_SOURCE); pwd);
+# This file will be automatically found and used for the 'otrs' user if you have the
+#   'bash-completion' package installed. Otherwise you can source it in your ~/.bashrc like this:
+#
+# source /opt/otrs/.bash_completion
+
+# Get path to current file, follow symlinks
+THIS_FILE=$BASH_SOURCE
+if [ -L $THIS_FILE ]; then
+    THIS_FILE=`readlink $THIS_FILE`;
+fi
+
 # Remove : from wordbreak delimiter because OTRS uses it in the command names
 COMP_WORDBREAKS=${COMP_WORDBREAKS//:/}
+
 # Configure bash completion
-complete -C "$OTRS_CONSOLE_PATH/otrs.Console.pl" otrs.Console.pl
+complete -C "$(dirname $THIS_FILE)/bin/otrs.Console.pl" otrs.Console.pl
