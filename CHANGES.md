@@ -1,4 +1,5 @@
 #5.0.0.beta3 2015-??-??
+ - 2015-08-17 Added AgentTicketBulk screen capability load plugin modules.
  - 2015-08-13 Added switchable display of sender and recipients (realname or full field incl. email address) in ticket zoom for agent and customer interface.
 
 #5.0.0.beta2 2015-08-18
@@ -60,7 +61,7 @@
  - 2015-06-29 Redesigned statistics GUI.
  - 2015-06-11 Added possibility to define read only SysConfig settings.
  - 2015-06-11 Added possibility to disable a Date/Time field (created with Layout object BuildDateSelection()).
- - 2015-06-10 Added possibility to show tickets from subqueues in AgenTicketZoom.
+ - 2015-06-10 Added possibility to show tickets from subqueues in AgenTicketQueue.
    Default on initial view is configurable (show or hide subqueue tickets).
  - 2015-06-08 Updated 7 day stats dashboard widget to use d3 instead of flot and removed flot completely.
  - 2015-06-08 Updated jQuery to 2.1.4; jQuery UI to 1.11.4; FontAwesome to 4.3.0; FullCalendar to 2.3.1, StackTrace to 0.6.4.

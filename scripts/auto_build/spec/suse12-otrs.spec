@@ -13,7 +13,7 @@ Copyright:    GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Group:        Applications/Mail
 Provides:     otrs
 Requires:     bash-completion cronie apache2 apache2-mod_perl perl perl(Archive::Zip) perl(Crypt::SSLeay) perl(DBI) perl(Encode::HanExtra) perl(IO::Socket::SSL) perl(JSON::XS) perl(LWP::UserAgent) perl(Net::DNS) perl(Net::LDAP) perl(Template) perl(Text::CSV) perl(Text::CSV_XS) perl(URI) perl(XML::LibXML) perl(XML::LibXSLT) perl(XML::Parser) perl(YAML::XS) procmail
-Autoreqprov:  on
+AutoReqProv:  no
 Release:      01
 Source0:      otrs-%{version}.tar.bz2
 BuildArch:    noarch
@@ -74,7 +74,16 @@ if id $OTRSUSER >/dev/null 2>&1; then
 else
     useradd $OTRSUSER -d /opt/otrs/ -s /bin/bash -g www -c 'OTRS System User' && echo "$OTRSUSER added."
 fi
-
+echo "Enable apache module mod_perl..."
+a2enmod perl
+echo "Enable apache module mod_version..."
+a2enmod version
+echo "Enable apache module mod_deflate..."
+a2enmod deflate
+echo "Enable apache module mod_filter..."
+a2enmod filter
+echo "Enable apache module mod_headers..."
+a2enmod headers
 
 %post
 export OTRSUSER=otrs
