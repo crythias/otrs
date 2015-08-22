@@ -63,14 +63,14 @@ $Selenium->RunTest(
                 my $ObjectType = $Type . "DynamicField";
                 my $Element = $Selenium->find_element( "#$ObjectType option[value=$ID]", 'css' );
                 $Element->is_enabled();
-                $Element->is_displayed();
 
                 # create a real test DynamicField
                 my $RandomID = $Helper->GetRandomID();
-                $Element->click();
+                $Selenium->execute_script("\$('#$ObjectType').val('$ID').trigger('redraw.InputField').trigger('change');");
+                $Selenium->WaitFor( JavaScript => 'return $("#Name").length' );
                 $Selenium->find_element( "#Name",                      'css' )->send_keys($RandomID);
                 $Selenium->find_element( "#Label",                     'css' )->send_keys($RandomID);
-                $Selenium->find_element( "#ValidID option[value='1']", 'css' )->click();
+                $Selenium->execute_script("\$('#ValidID').val('1').trigger('redraw.InputField').trigger('change');");
                 $Selenium->find_element( "#Name",                      'css' )->submit();
 
                 # check if test DynamicField show on AdminDynamicField screen
@@ -85,7 +85,7 @@ $Selenium->RunTest(
                 $Selenium->WaitFor( JavaScript => "return \$('#Label').length" );
                 $Selenium->find_element( "#Label",                     'css' )->clear();
                 $Selenium->find_element( "#Label",                     'css' )->send_keys( $RandomID . "-update" );
-                $Selenium->find_element( "#ValidID option[value='2']", 'css' )->click();
+                $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
                 $Selenium->find_element( "#Name",                      'css' )->submit();
 
                 # wait to load overview screen
