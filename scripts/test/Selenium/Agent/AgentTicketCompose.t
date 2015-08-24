@@ -90,9 +90,9 @@ $Selenium->RunTest(
 
         $Selenium->find_element("//*[text()='$AutoCompleteString']")->click();
         $Selenium->execute_script("\$('#Dest').val('2||Raw').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Subject",                     'css' )->send_keys($TicketSubject);
-        $Selenium->find_element( "#RichText",                    'css' )->send_keys($TicketBody);
-        $Selenium->find_element( "#Subject",                     'css' )->submit();
+        $Selenium->find_element( "#Subject",  'css' )->send_keys($TicketSubject);
+        $Selenium->find_element( "#RichText", 'css' )->send_keys($TicketBody);
+        $Selenium->find_element( "#Subject",  'css' )->submit();
 
         $Selenium->WaitFor( JavaScript => 'return $("form").length' );
 
@@ -117,6 +117,9 @@ $Selenium->RunTest(
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
+        # Wait without jQuery because it might not be loaded yet.
+        $Selenium->WaitFor( JavaScript => 'return document.getElementById("ToCustomer");' );
+
         # check AgentTicketCompose page
         for my $ID (
             qw(ToCustomer CcCustomer BccCustomer Subject RichText
@@ -125,7 +128,6 @@ $Selenium->RunTest(
         {
             my $Element = $Selenium->find_element( "#$ID", 'css' );
             $Element->is_enabled();
-            $Element->is_displayed();
         }
 
         # add test text to body
@@ -133,40 +135,20 @@ $Selenium->RunTest(
         $Selenium->find_element( "#RichText",       'css' )->send_keys($ComposeText);
         $Selenium->find_element( "#submitRichText", 'css' )->click();
 
-        # if Core::Sendmail setting aren't set up for sending mail, check for error message and exit test
-        my $Success;
-        eval {
-            $Success = index( $Selenium->get_page_source(), 'Impossible to send message to:' );
-        };
+        $Selenium->switch_to_window( $Handles->[0] );
+        $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketHistory;TicketID=$TicketID");
 
-        if ( $Success > -1 ) {
-            $Kernel::OM->Get('Kernel::System::Console::BaseCommand')->Print(
-                "<yellow>WARNING:Selenium Test prematurely Completed. Please configure Core::Sendmail to send email from system!</yellow>\n"
-            );
-        }
-        else {
+        # verify that compose worked as expected
+        my $CustomerEmail = "\"$TestCustomer\@localhost.com\"";
+        my $HistoryText   = "Email sent to $CustomerEmail.";
 
-            # return back to AgentTicketZoom
-            $Selenium->switch_to_window( $Handles->[0] );
-
-            # click on history link and switch window
-            $Selenium->find_element("//*[text()='History']")->click();
-            $Handles = $Selenium->get_window_handles();
-            $Selenium->switch_to_window( $Handles->[1] );
-
-            # verify that compose worked as expected
-            my $CustomerEmail = "\"$TestCustomer\@localhost.com\"";
-            my $HistoryText   = "Email sent to $CustomerEmail.";
-
-            $Self->True(
-                index( $Selenium->get_page_source(), $HistoryText ) > -1,
-                "Compose executed correctly",
-            );
-
-        }
+        $Self->True(
+            index( $Selenium->get_page_source(), $HistoryText ) > -1,
+            "Compose executed correctly",
+        );
 
         # delete created test ticket
-        $Success = $TicketObject->TicketDelete(
+        my $Success = $TicketObject->TicketDelete(
             TicketID => $TicketID,
             UserID   => 1,
         );
