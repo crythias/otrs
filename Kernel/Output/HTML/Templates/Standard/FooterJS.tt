@@ -45,6 +45,9 @@ Core.App.Ready(function () {
 [% RenderBlockStart("AutoCompleteConfig") %]
         Autocomplete: [% Data.AutocompleteConfig %],
 [% RenderBlockEnd("AutoCompleteConfig") %]
+[% RenderBlockStart("SearchFrontendConfig") %]
+        SearchFrontend: [% Data.SearchFrontendConfig | JSON %],
+[% RenderBlockEnd("SearchFrontendConfig") %]
         CheckSearchStringsForStopWords: [% Config("Ticket::SearchIndex::WarnOnStopWordUsage") and Config("Ticket::SearchIndexModule") == 'Kernel::System::Ticket::ArticleSearchIndex::StaticDB' ? 1 : 0 %],
         // translations
         ValidateServerErrorTitle: [% Translate("Error") | JSON %],
@@ -82,7 +85,6 @@ Core.App.Ready(function () {
         InputFieldsClearAll: [% Translate("Clear all") | JSON %],
         InputFieldsClearSearch: [% Translate("Clear search") | JSON %],
         InputFieldsRemoveSelection: [% Translate("Remove selection") | JSON %],
-        InputFieldsSelection: [% Translate("%s selection(s)...") | JSON %],
         InputFieldsMore: [% Translate("and %s more...") | JSON %],
         InputFieldsFilters: [% Translate("Filters") | JSON %],
         InputFieldsConfirm: [% Translate("Confirm") | JSON %],
