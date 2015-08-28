@@ -83,14 +83,14 @@ $Selenium->RunTest(
 
         # input fields and create ticket
         $Selenium->execute_script("\$('#Dest').val('2||Raw').trigger('redraw.InputField').trigger('change');");
-        $Selenium->find_element( "#Subject",                     'css' )->send_keys($SubjectRandom);
-        $Selenium->find_element( "#RichText",                    'css' )->send_keys($TextRandom);
-        $Selenium->find_element( "#Attachment",                  'css' )->send_keys($Location);
-        $Selenium->WaitFor( JavaScript => "return \$('.Attachment').length" );
+        $Selenium->find_element( "#Subject",    'css' )->send_keys($SubjectRandom);
+        $Selenium->find_element( "#RichText",   'css' )->send_keys($TextRandom);
+        $Selenium->find_element( "#Attachment", 'css' )->send_keys($Location);
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".Attachment").length' );
         $Selenium->find_element( "#submitRichText", 'css' )->click();
 
         # Wait until form has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => 'return $("div#MainBox").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("div#MainBox").length' );
 
         # obtain ticket number
         my @User = $CustomerUserObject->CustomerIDs(
