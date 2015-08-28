@@ -35,19 +35,17 @@ $Selenium->RunTest(
 
         $Selenium->get("${ScriptAlias}index.pl?Action=AdminDynamicField");
 
-        # create and edit Ticket and Article DynamicFieldDropdown
+        # create and edit Ticket and Article DynamicFieldText
         for my $Type (qw(Ticket Article)) {
 
             my $ObjectType = $Type . "DynamicField";
-
-            # add dynamic field of type Dropdown
-            $Selenium->execute_script("\$('#$ObjectType').val('Dropdown').trigger('change');");
+            $Selenium->execute_script("\$('#$ObjectType').val('Text').trigger('redraw.InputField').trigger('change');");
 
             # wait until page has finished loading
-            $Selenium->WaitFor( JavaScript => "return \$('#Name').length;" );
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Name").length' );
 
             for my $ID (
-                qw(Name Label FieldOrder ValidID DefaultValue AddValue PossibleNone TreeView TranslatableValues Link)
+                qw(Name Label FieldOrder DefaultValue Link AddRegEx ValidID)
                 )
             {
                 my $Element = $Selenium->find_element( "#$ID", 'css' );
@@ -68,54 +66,32 @@ $Selenium->RunTest(
                 'Client side validation correctly detected missing input value',
             );
 
-            # create real text DynamicFieldDropdown
-            my $RandomID = $Helper->GetRandomID();
+            # create real text DynamicFieldText
+            my $RandomID      = $Helper->GetRandomID();
+            my $RegEx         = '^[0-9]$';
+            my $RegExErrorTxt = "Please remove this entry and enter a new one with the correct value.";
 
-            $Selenium->find_element( "#Name",     'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#Label",    'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#AddValue", 'css' )->click();
-            $Selenium->find_element( "#Key_1",    'css' )->send_keys("Key1");
-            $Selenium->find_element( "#Value_1",  'css' )->send_keys("Value1");
+            $Selenium->find_element( "#Name",                        'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#Label",                       'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#AddRegEx",                    'css' )->click();
+            $Selenium->find_element( "#RegEx_1",                     'css' )->send_keys($RegEx);
+            $Selenium->find_element( "#CustomerRegExErrorMessage_1", 'css' )->send_keys($RegExErrorTxt);
+            $Selenium->find_element( "#Name",                        'css' )->submit();
 
-            # check default value
-            $Self->Is(
-                $Selenium->find_element( "#DefaultValue option[value='Key1']", 'css' )->is_enabled(),
-                1,
-                "Key1 is possible #DefaultValue",
-            );
-
-            # add another possible value
-            $Selenium->find_element( "#AddValue", 'css' )->click();
-            $Selenium->find_element( "#Key_2",    'css' )->send_keys("Key2");
-            $Selenium->find_element( "#Value_2",  'css' )->send_keys("Value2");
-
-            # check default value
-            $Self->Is(
-                $Selenium->find_element( "#DefaultValue option[value='Key2']", 'css' )->is_enabled(),
-                1,
-                "Key2 is possible #DefaultValue",
-            );
-
-            $Selenium->find_element( "#Name", 'css' )->submit();
-
-            # check for test DynamicFieldDropdown on AdminDynamicField screen
+            # check for test DynamicFieldText on AdminDynamicField screen
             $Self->True(
                 index( $Selenium->get_page_source(), $RandomID ) > -1,
-                "DynamicFieldDropdown $RandomID found on table"
+                "DynamicFieldText $RandomID found on table"
             );
 
-            # edit test DynamicFieldDropdown possiblenone, treeview, default value and set it to invalid
+            # edit test DynamicFieldText default value and set it to invalid
             $Selenium->find_element( $RandomID, 'link_text' )->click();
 
-            $Selenium->execute_script(
-                "\$('#DefaultValue').val('Key1').trigger('redraw.InputField').trigger('change');"
-            );
-            $Selenium->execute_script("\$('#PossibleNone').val('1').trigger('redraw.InputField').trigger('change');");
-            $Selenium->execute_script("\$('#TreeView').val('1').trigger('redraw.InputField').trigger('change');");
+            $Selenium->find_element( "#DefaultValue", 'css' )->send_keys("Default");
             $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
             $Selenium->find_element( "#Name", 'css' )->submit();
 
-            # check new and edited DynamicFieldDropdown values
+            # check new and edited DynamicFieldText values
             $Selenium->find_element( $RandomID, 'link_text' )->click();
 
             $Self->Is(
@@ -129,39 +105,19 @@ $Selenium->RunTest(
                 "#Label updated value",
             );
             $Self->Is(
-                $Selenium->find_element( '#Key_1', 'css' )->get_value(),
-                "Key1",
-                "#Key_1 possible updated value",
-            );
-            $Self->Is(
-                $Selenium->find_element( '#Value_1', 'css' )->get_value(),
-                "Value1",
-                "#Value_1 possible updated value",
-            );
-            $Self->Is(
-                $Selenium->find_element( '#Key_2', 'css' )->get_value(),
-                "Key2",
-                "#Key_2 possible updated value",
-            );
-            $Self->Is(
-                $Selenium->find_element( '#Value_2', 'css' )->get_value(),
-                "Value2",
-                "#Value_2 possible updated value",
-            );
-            $Self->Is(
                 $Selenium->find_element( '#DefaultValue', 'css' )->get_value(),
-                "Key1",
+                "Default",
                 "#DefaultValue updated value",
             );
             $Self->Is(
-                $Selenium->find_element( '#PossibleNone', 'css' )->get_value(),
-                1,
-                "#PossibleNone updated value",
+                $Selenium->find_element( '#RegEx_1', 'css' )->get_value(),
+                $RegEx,
+                "#RegEx_1 updated value",
             );
             $Self->Is(
-                $Selenium->find_element( '#TreeView', 'css' )->get_value(),
-                1,
-                "#TreeView updated value",
+                $Selenium->find_element( '#CustomerRegExErrorMessage_1', 'css' )->get_value(),
+                $RegExErrorTxt,
+                "#CustomerRegExErrorMessage_1 updated value",
             );
             $Self->Is(
                 $Selenium->find_element( '#ValidID', 'css' )->get_value(),
@@ -193,7 +149,7 @@ $Selenium->RunTest(
         # make sure cache is correct
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => "DynamicField" );
 
-        }
+    }
 
 );
 

@@ -35,14 +35,18 @@ $Selenium->RunTest(
 
         $Selenium->get("${ScriptAlias}index.pl?Action=AdminDynamicField");
 
-        # create and edit Ticket and Article DynamicFieldText
+        # create and edit Ticket and Article DynamicFieldCheckbox
         for my $Type (qw(Ticket Article)) {
 
             my $ObjectType = $Type . "DynamicField";
-            $Selenium->execute_script("\$('#$ObjectType').val('Text').trigger('redraw.InputField').trigger('change');");
+            $Selenium->execute_script(
+                "\$('#$ObjectType').val('Checkbox').trigger('redraw.InputField').trigger('change');");
+
+            # wait until page has finished loading
+            $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#Name").length' );
 
             for my $ID (
-                qw(Name Label FieldOrder DefaultValue Link AddRegEx ValidID)
+                qw(Name Label FieldOrder ValidID)
                 )
             {
                 my $Element = $Selenium->find_element( "#$ID", 'css' );
@@ -51,9 +55,9 @@ $Selenium->RunTest(
             }
 
             # check client side validation
-            my $Element = $Selenium->find_element( "#Name", 'css' );
-            $Element->send_keys("");
-            $Element->submit();
+            my $Element2 = $Selenium->find_element( "#Name", 'css' );
+            $Element2->send_keys("");
+            $Element2->submit();
 
             $Self->Is(
                 $Selenium->execute_script(
@@ -63,32 +67,27 @@ $Selenium->RunTest(
                 'Client side validation correctly detected missing input value',
             );
 
-            # create real text DynamicFieldText
-            my $RandomID      = $Helper->GetRandomID();
-            my $RegEx         = '^[0-9]$';
-            my $RegExErrorTxt = "Please remove this entry and enter a new one with the correct value.";
+            # create real text DynamicFieldCheckbox
+            my $RandomID = $Helper->GetRandomID();
 
-            $Selenium->find_element( "#Name",                        'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#Label",                       'css' )->send_keys($RandomID);
-            $Selenium->find_element( "#AddRegEx",                    'css' )->click();
-            $Selenium->find_element( "#RegEx_1",                     'css' )->send_keys($RegEx);
-            $Selenium->find_element( "#CustomerRegExErrorMessage_1", 'css' )->send_keys($RegExErrorTxt);
-            $Selenium->find_element( "#Name",                        'css' )->submit();
+            $Selenium->find_element( "#Name",  'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#Label", 'css' )->send_keys($RandomID);
+            $Selenium->find_element( "#Name",  'css' )->submit();
 
-            # check for test DynamicFieldText on AdminDynamicField screen
+            # check for test DynamicFieldCheckbox on AdminDynamicField screen
             $Self->True(
                 index( $Selenium->get_page_source(), $RandomID ) > -1,
-                "DynamicFieldText $RandomID found on table"
+                "DynamicFieldCheckbox $RandomID found on table"
             );
 
-            # edit test DynamicFieldText default value and set it to invalid
+            # edit test DynamicFieldCheckbox default value and set it to invalid
             $Selenium->find_element( $RandomID, 'link_text' )->click();
 
-            $Selenium->find_element( "#DefaultValue",              'css' )->send_keys("Default");
+            $Selenium->execute_script("\$('#DefaultValue').val('1').trigger('redraw.InputField').trigger('change');");
             $Selenium->execute_script("\$('#ValidID').val('2').trigger('redraw.InputField').trigger('change');");
-            $Selenium->find_element( "#Name",                      'css' )->submit();
+            $Selenium->find_element( "#Name", 'css' )->submit();
 
-            # check new and edited DynamicFieldText values
+            # check new and edited DynamicFieldCheckbox values
             $Selenium->find_element( $RandomID, 'link_text' )->click();
 
             $Self->Is(
@@ -102,24 +101,19 @@ $Selenium->RunTest(
                 "#Label updated value",
             );
             $Self->Is(
-                $Selenium->find_element( '#DefaultValue', 'css' )->get_value(),
-                "Default",
-                "#DefaultValue updated value",
-            );
-            $Self->Is(
-                $Selenium->find_element( '#RegEx_1', 'css' )->get_value(),
-                $RegEx,
-                "#RegEx_1 updated value",
-            );
-            $Self->Is(
-                $Selenium->find_element( '#CustomerRegExErrorMessage_1', 'css' )->get_value(),
-                $RegExErrorTxt,
-                "#CustomerRegExErrorMessage_1 updated value",
-            );
-            $Self->Is(
                 $Selenium->find_element( '#ValidID', 'css' )->get_value(),
                 2,
                 "#ValidID updated value",
+            );
+            $Self->Is(
+                $Selenium->find_element( '#FieldTypeName', 'css' )->get_value(),
+                "Checkbox",
+                "#FieldTypeName updated value",
+            );
+            $Self->Is(
+                $Selenium->find_element( '#DefaultValue', 'css' )->get_value(),
+                1,
+                "#DefaultValue updated value",
             );
 
             # go back to AdminDynamicField screen
@@ -143,7 +137,7 @@ $Selenium->RunTest(
 
         }
 
-        # make sure cache is correct
+        # delete cache
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => "DynamicField" );
 
     }
