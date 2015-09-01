@@ -18,6 +18,9 @@ my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 $Selenium->RunTest(
     sub {
 
+        # Ok, first we delete all pre-existing sessions.
+        $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Session::DeleteAll')->Execute();
+
         # get helper object
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
@@ -86,7 +89,7 @@ $Selenium->RunTest(
         # Wait for AJAX
         my $ExpectedCustomer = "$TestCustomerUserLogin";
         $Selenium->WaitFor(
-            JavaScript => "return \$('table.DashboardUserOnline a:contains(\"$ExpectedCustomer\")').length;"
+            JavaScript => "return typeof(\$) === 'function' && \$('table.DashboardUserOnline a:contains(\"$ExpectedCustomer\")').length;"
         );
 
         $Self->Is(
@@ -94,7 +97,7 @@ $Selenium->RunTest(
                 "return \$('table.DashboardUserOnline a:contains(\"$ExpectedCustomer\")').length;"),
             1,
             "$TestCustomerUserLogin - found on UserOnline plugin"
-        );
+        ) || die;
     }
 );
 
