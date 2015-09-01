@@ -76,7 +76,7 @@ $Selenium->RunTest(
         $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
         $Selenium->WaitFor(
-            JavaScript => 'return $("#nav-Miscellaneous ul").css({ "height": "auto", "opacity": "100" });'
+            JavaScript => 'return typeof($) === "function" && $("#nav-Miscellaneous ul").css({ "height": "auto", "opacity": "100" });'
         );
 
         # click on 'Free Fields' and switch window
@@ -95,20 +95,8 @@ $Selenium->RunTest(
             $Element->is_displayed();
         }
 
-        $Selenium->find_element( "#Title", 'css' )->clear();
-        my $Element = $Selenium->find_element( "#Title", 'css' );
-        $Element->send_keys("");
-        $Element->submit();
-
-        $Self->Is(
-            $Selenium->execute_script(
-                "return \$('#Title').hasClass('Error')"
-            ),
-            '1',
-            'Client side validation correctly detected missing input value',
-        );
-
         # change ticket title
+        $Selenium->find_element( "#Title",          'css' )->clear();
         $Selenium->find_element( "#Title",          'css' )->send_keys('FreeText');
         $Selenium->find_element( "#submitRichText", 'css' )->click();
 

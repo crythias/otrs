@@ -76,7 +76,7 @@ $Selenium->RunTest(
         $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=$TicketID");
 
         $Selenium->WaitFor(
-            JavaScript => 'return $("#nav-Communication ul").css({ "height": "auto", "opacity": "100" });'
+            JavaScript => 'return typeof($) === "function" && $("#nav-Communication ul").css({ "height": "auto", "opacity": "100" });'
         );
 
         # click on 'Note' and switch window
@@ -94,19 +94,6 @@ $Selenium->RunTest(
             $Element->is_enabled();
             $Element->is_displayed();
         }
-
-        # check client side validation
-        my $Element = $Selenium->find_element( "#RichText", 'css' );
-        $Element->send_keys("");
-        $Element->submit();
-
-        $Self->Is(
-            $Selenium->execute_script(
-                "return \$('#RichText').hasClass('Error')"
-            ),
-            '1',
-            'Client side validation correctly detected missing input value',
-        );
 
         # add note
         $Selenium->find_element( "#Subject",        'css' )->send_keys('Test');
