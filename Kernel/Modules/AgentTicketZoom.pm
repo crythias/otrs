@@ -797,9 +797,9 @@ sub MaskAgentZoom {
 
         $Article->{Count} = $Count;
 
-        next if !$Self->{ArticleID};
-        next if !$Article->{ArticleID};
-        next if $Self->{ArticleID} ne $Article->{ArticleID};
+        next ARTICLE if !$Self->{ArticleID};
+        next ARTICLE if !$Article->{ArticleID};
+        next ARTICLE if $Self->{ArticleID} ne $Article->{ArticleID};
 
         $ArticleIDFound = 1;
     }
@@ -1722,6 +1722,7 @@ sub MaskAgentZoom {
                 Multiple    => 1,
                 Sort        => 'AlphanumericValue',
                 Name        => 'EventTypeFilter',
+                Class       => 'Modernize',
             );
 
             $LayoutObject->Block(
@@ -1744,6 +1745,7 @@ sub MaskAgentZoom {
                 Multiple    => 1,
                 Sort        => 'AlphanumericValue',
                 Name        => 'ArticleTypeFilter',
+                Class       => 'Modernize',
             );
 
             # get sender types
@@ -1759,6 +1761,7 @@ sub MaskAgentZoom {
                 Multiple    => 1,
                 Sort        => 'AlphanumericValue',
                 Name        => 'ArticleSenderTypeFilter',
+                Class       => 'Modernize',
             );
 
             # Ticket ID
