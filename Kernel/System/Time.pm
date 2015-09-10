@@ -360,6 +360,27 @@ sub Date2SystemTime {
     return $SystemTime;
 }
 
+=item ServerLocalTimeOffsetSeconds()
+
+returns the computed difference in seconds between UTC time and local time.
+
+    my $ServerLocalTimeOffsetSeconds = $TimeObject->ServerLocalTimeOffsetSeconds(
+        SystemTime => $SystemTime,  # optional, otherwise call time()
+    );
+
+=cut
+
+sub ServerLocalTimeOffsetSeconds {
+    my ( $Self, %Param ) = @_;
+
+    my $ServerTime = $Param{SystemTime} || time();
+    my $ServerLocalTime = Time::Local::timegm_nocheck( localtime($ServerTime) );
+
+    # Check if local time and UTC time are different
+    return $ServerLocalTime - $ServerTime;
+
+}
+
 =item MailTimeStamp()
 
 returns the current time stamp in RFC 2822 format to be used in email headers:
@@ -401,9 +422,8 @@ sub MailTimeStamp {
     #   Therefore OTRS cannot generate the correct offset for the mail timestamp.
     #   So we need to use the real time configuration of the server to determine this properly.
 
-    my $ServerGMTime    = time();
-    my $ServerLocalTime = Time::Local::timegm_nocheck( localtime( $ServerGMTime ) );
-    my $ServerTimeDiff  = $ServerLocalTime - $ServerGMTime;
+    my $ServerTime = time();
+    my $ServerTimeDiff = $Self->ServerLocalTimeOffsetSeconds( SystemTime => $ServerTime );
 
     # calculate offset - should be '+0200', '-0600', '+0545' or '+0000'
     my $Direction   = $ServerTimeDiff < 0 ? '-' : '+';
@@ -411,7 +431,7 @@ sub MailTimeStamp {
     my $DiffMinutes = abs int( ( $ServerTimeDiff % 3600 ) / 60 );
 
     my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $Self->SystemTime2Date(
-        SystemTime => $ServerLocalTime,
+        SystemTime => $ServerTime,
     );
 
     my $TimeString = sprintf "%s, %d %s %d %02d:%02d:%02d %s%02d%02d",
