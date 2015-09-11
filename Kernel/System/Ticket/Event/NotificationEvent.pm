@@ -530,8 +530,9 @@ sub _RecipientsGet {
     # get recipients by Recipients
     if ( $Notification{Data}->{Recipients} ) {
 
-        # get queue object
-        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+        # get needed objects
+        my $QueueObject        = $Kernel::OM->Get('Kernel::System::Queue');
+        my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
         RECIPIENT:
         for my $Recipient ( @{ $Notification{Data}->{Recipients} } ) {
@@ -633,7 +634,10 @@ sub _RecipientsGet {
                     push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
                 }
             }
-            else {
+
+            # Other OTRS packages might add other kind of recipients that are normally handled by
+            #   other modules then an elsif condition here is useful.
+            elsif ( $Recipient eq 'Customer' ) {
 
                 # get old article for quoting
                 my %Article = $TicketObject->ArticleLastCustomerArticle(
@@ -648,9 +652,6 @@ sub _RecipientsGet {
                         DynamicFields => 0,
                     );
                 }
-
-                # get needed objects
-                my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
 
                 my %Recipient;
 
