@@ -1,4 +1,10 @@
 #5.0.0.beta5 2015-??-??
+ - 2015-09-18 Fixed bug#[11112](http://bugs.otrs.org/show_bug.cgi?id=11112) - Number of affected tickets of GenericAgent job via web interface is limited hardcoded.
+ - 2015-09-18 Fixed bug#[11307](http://bugs.otrs.org/show_bug.cgi?id=11307) - Reference to uninitialized value at change of sort order of search result in AgentTicketSearch.
+ - 2015-09-18 Fixed bug#[11330](http://bugs.otrs.org/show_bug.cgi?id=11330) - LogModule::LogFile::Date creates log files ending in single digit.
+ - 2015-09-17 Added the time zone support in the statistics for systems which use UTC as system time and with active TimeZoneUser feature.
+ - 2015-09-17 Fixed bug#[11387](http://bugs.otrs.org/show_bug.cgi?id=11387) - TimeZoneUser setting not working within stats.
+ - 2015-09-17 Fixed bug#[9744](http://bugs.otrs.org/show_bug.cgi?id=9744) - In 7 Day Stats, stats displayed in GMT.
  - 2015-09-16 Fixed a nasty JSON::XS crash on some platforms.
  - 2015-09-11 Fixed bug#[11462](http://bugs.otrs.org/show_bug.cgi?id=11462) - Article sort order not respected in Print.
 
