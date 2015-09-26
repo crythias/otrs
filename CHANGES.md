@@ -1,4 +1,25 @@
-#5.0.0.beta5 2015-??-??
+#5.0.0.rc1 2015-??-??
+ - 2015-09-25 Stats::Dynamic::TicketList: Add 'NumberOfArticles' ticket attribute. Thanks to Elias Probst.
+ - 2015-09-25 Fixed bug#[11078](http://bugs.otrs.org/show_bug.cgi?id=11078) - Extra newline is inserted in the text wrapping.
+ - 2015-09-25 Fixed bug#[8220](http://bugs.otrs.org/show_bug.cgi?id=8220) - OutOfOffice does not check if end date is before start date.
+ - 2015-09-25 Fixed bug#[11317](http://bugs.otrs.org/show_bug.cgi?id=11317) - When service is mandatory in customerfrontend -  error occurred!.
+ - 2015-09-25 Fixed bug#[11196](http://bugs.otrs.org/show_bug.cgi?id=11196) - "Created by" detail missing in PDF print.
+ - 2015-09-25 Fixed bug#[11352](http://bugs.otrs.org/show_bug.cgi?id=11352) - Wrong behaviour of AdminCustomerUser::RunInitialWildcardSearch.
+ - 2015-09-25 Fixed bug#[11496](http://bugs.otrs.org/show_bug.cgi?id=11496) - Search field shown even if type and service disabled.
+ - 2015-09-25 Fixed bug#[11152](http://bugs.otrs.org/show_bug.cgi?id=11152) - Ending of daylight saving time caused system collapse.
+ - 2015-09-25 Fixed bug#[11315](http://bugs.otrs.org/show_bug.cgi?id=11315) - subservice not apparent in overview when many services are in the list.
+ - 2015-09-25 Fixed bug#[4661](http://bugs.otrs.org/show_bug.cgi?id=4661) - stored searches are lost after changing the username of an agent or customer.
+ - 2015-09-25 Fixed bug#[11457](http://bugs.otrs.org/show_bug.cgi?id=11457) - Agent language preference select field is not translated.
+ - 2015-09-24 Fixed bug#[11502](http://bugs.otrs.org/show_bug.cgi?id=11502) - DynamicField based ACLs does not work in AgentTicketPhoneCommon.
+
+#5.0.0.beta5 2015-09-29
+ - 2015-09-24 Updated translations, thanks to all translators.
+ - 2015-09-23 Added SysConfig settings (Daemon::Log::STDOUT, Daemon::Log::STDERR) to control the redirection of standard streams to log files.
+ - 2015-09-23 Added missing SysConfig setting (Daemon::Log::DaysToKeep) to customize the number of days to keep the otrs.Daemon.pl log files, default to 1 day.
+ - 2015-09-23 Fixed otrs.Daemon.pl old log files delete, added mechanism to also delete current log files if they have no content.
+ - 2015-09-23 Added '--force' option to otrs.Daemon.pl 'stop' action to reduce the time the main daemon waits for its child processes to stop (from 30 secs to 5 secs).
+ - 2015-09-23 Added default values for statistic time field selections instead of max/min values.
+ - 2015-09-23 Fixed bug#[10530](http://bugs.otrs.org/show_bug.cgi?id=10530) - HTML emails not properly displayed (parts missing).
  - 2015-09-22 Fixed bug#[11495](http://bugs.otrs.org/show_bug.cgi?id=11495) - AdminCustomerUser only shows the first 250 CustomerIDs in dropdown.
  - 2015-09-21 Fixed bug#[11470](http://bugs.otrs.org/show_bug.cgi?id=11470) - AgentPreferences shows "My Services" even when Ticket::Service is disabled.
  - 2015-09-21 Fixed bug#[11481](http://bugs.otrs.org/show_bug.cgi?id=11481) - AutoResponse will be sent altough it is set to invalid.

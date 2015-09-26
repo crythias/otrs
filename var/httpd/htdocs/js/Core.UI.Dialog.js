@@ -267,6 +267,8 @@ Core.UI.Dialog = (function (TargetNS) {
             return (Position + 'px');
         }
 
+        Core.App.Publish('Event.UI.Dialog.ShowDialog.BeforeOpen');
+
         // Close all opened dialogs
         if ($('.Dialog:visible').length) {
             TargetNS.CloseDialog($('.Dialog:visible'));
@@ -334,7 +336,7 @@ Core.UI.Dialog = (function (TargetNS) {
             $Dialog.addClass('Alert');
             $Dialog.attr("role", "alertdialog");
             $Content = $Dialog.find('.Content').append('<div class="InnerContent"></div>').find('.InnerContent');
-            $Content.append('<span class="Icon"></span>');
+            $Content.append('<i class="fa fa-warning"></i>');
             if (Params.Headline) {
                 $Content.append('<h2>' + Params.Headline + '</h2>');
             }
@@ -443,11 +445,18 @@ Core.UI.Dialog = (function (TargetNS) {
                 containment: 'body',
                 handle: '.Header',
                 start: function() {
+                    // Fire PubSub event for dragstart
+                    // (to handle more dependencies in their own namespaces)
+                    Core.App.Publish('Event.UI.Dialog.ShowDialog.DragStart', $Dialog);
+
                     // Hide any possibly existing tooltips as they will not be moved
                     //  with this dialog.
                     if (Core.Form && Core.Form.ErrorTooltips) {
                         Core.Form.ErrorTooltips.HideTooltip();
                     }
+                },
+                stop: function() {
+                    Core.App.Publish('Event.UI.Dialog.ShowDialog.DragStop', $Dialog);
                 }
             });
         }

@@ -201,12 +201,12 @@ sub Run {
 
     # convert dynamic field values into a structure for ACLs
     my %DynamicFieldACLParameters;
-    DYNAMICFIELD:
-    for my $DynamicFieldItem ( sort keys %DynamicFieldValues ) {
-        next DYNAMICFIELD if !$DynamicFieldItem;
-        next DYNAMICFIELD if !$DynamicFieldValues{$DynamicField};
+    DYNAMICFIELDNAME:
+    for my $DynamicFieldName ( sort keys %DynamicFieldValues ) {
+        next DYNAMICFIELDNAME if !$DynamicFieldName;
+        next DYNAMICFIELDNAME if !$DynamicFieldValues{$DynamicFieldName};
 
-        $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldItem } = $DynamicFieldValues{$DynamicFieldItem};
+        $DynamicFieldACLParameters{ 'DynamicField_' . $DynamicFieldName } = $DynamicFieldValues{$DynamicFieldName};
     }
     $GetParam{DynamicField} = \%DynamicFieldACLParameters;
 

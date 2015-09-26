@@ -282,7 +282,11 @@ sub CreateConfig {
                 $Name =~ s/'/\'/g;
                 $Name =~ s/###/'}->{'/g;
 
-                if ( $Config{Valid} ) {
+                if (
+                    $Config{Valid}
+                    || ( $Config{ReadOnly} && $ConfigDefault{Valid} && $ConfigDefault{Required} )
+                    )
+                {
 
                     my $C = $Self->_XML2Perl( Data => \%Config );
                     my $D = $Self->_XML2Perl( Data => \%ConfigDefault );
@@ -293,6 +297,10 @@ sub CreateConfig {
                     if ( !defined $A1 && !defined $A2 ) {
 
                         # do nothing
+                    }
+                    elsif ( $Config{ReadOnly} ) {
+
+                        # do nothing (= reset to readonly value)
                     }
                     elsif (
                         ( defined $A1 && !defined $A2 )
