@@ -802,6 +802,12 @@ sub _RecipientsGet {
     my %TempRecipientUserIDs = map { $_ => 1 } @RecipientUserIDs;
     @RecipientUserIDs = sort keys %TempRecipientUserIDs;
 
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # get current time-stamp
+    my $Time = $TimeObject->SystemTime();
+
     # get all data for recipients as they should be needed by all notification transports
     RECIPIENT:
     for my $UserID (@RecipientUserIDs) {
@@ -823,7 +829,24 @@ sub _RecipientsGet {
 
         # skip users out of the office if configured
         if ( !$Notification{Data}->{SendOnOutOfOffice} && $User{OutOfOffice} ) {
-            next RECIPIENT;
+            my $Start = sprintf(
+                "%04d-%02d-%02d 00:00:00",
+                $User{OutOfOfficeStartYear}, $User{OutOfOfficeStartMonth},
+                $User{OutOfOfficeStartDay}
+            );
+            my $TimeStart = $TimeObject->TimeStamp2SystemTime(
+                String => $Start,
+            );
+            my $End = sprintf(
+                "%04d-%02d-%02d 23:59:59",
+                $User{OutOfOfficeEndYear}, $User{OutOfOfficeEndMonth},
+                $User{OutOfOfficeEndDay}
+            );
+            my $TimeEnd = $TimeObject->TimeStamp2SystemTime(
+                String => $End,
+            );
+
+            next RECIPIENT if $TimeStart < $Time && $TimeEnd > $Time;
         }
 
         # skip users with out ro permissions
@@ -912,6 +935,9 @@ sub _SendRecipientNotification {
 
     my $TransportObject = $Param{TransportObject};
 
+    # get attachments
+    my @Attachments = @{ $Param{Attachments} };
+
     # send notification to each recipient
     my $Success = $TransportObject->SendNotification(
         TicketID              => $Param{TicketID},
@@ -920,7 +946,7 @@ sub _SendRecipientNotification {
         CustomerMessageParams => $Param{CustomerMessageParams},
         Recipient             => $Param{Recipient},
         Event                 => $Param{Event},
-        Attachments           => $Param{Attachments},
+        Attachments           => \@Attachments,
     );
 
     return if !$Success;
