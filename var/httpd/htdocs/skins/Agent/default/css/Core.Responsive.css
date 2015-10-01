@@ -76,6 +76,26 @@
         color: #aaa;
     }
 
+    #ToolBar li.Extended {
+        background: none;
+        display: inline-block;
+        margin: -25px 0px 0px 5px;
+        padding: 0;
+        vertical-align: middle;
+    }
+
+    #ToolBar li.Extended input {
+        padding: 10px;
+    }
+
+    #ToolBar li.Extended .InputField_InputContainer input {
+        padding: 8px;
+    }
+
+    #ToolBar li.Extended form {
+        display: inline;
+    }
+
     #Header #Logo {
         width: 208px !important;
         background-size: 100%;
@@ -367,6 +387,10 @@
         position: static;
     }
 
+    form .FieldExplanation {
+        font-size: 0.8em;
+    }
+
     .AJAXLoader {
         position: relative;
         top: -10px;
@@ -415,7 +439,7 @@
         float: none;
         width: auto;
         text-align: left;
-        font-size: 1.2em;
+        font-size: 0.9em;
     }
 
     .RTL fieldset.TableLike > label,
