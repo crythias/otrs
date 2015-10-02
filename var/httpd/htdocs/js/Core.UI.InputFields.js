@@ -369,12 +369,17 @@ Core.UI.InputFields = (function (TargetNS) {
             PossibleNone = false,
             MoreString = Core.Config.Get('InputFieldsMore'),
             MaxWidth,
+            $SearchObj = $InputContainerObj.find('.InputField_Search'),
             $TempMoreObj;
+
+        // Give up if field is expanded
+        if ($SearchObj.attr('aria-expanded')) return;
 
         // Remove any existing boxes in supplied container
         $InputContainerObj.find('.InputField_Selection').remove();
         $InputContainerObj.find('.InputField_More').remove();
 
+        // Check for empty values (allow field clearing).
         $SelectObj.find('option').each(function (Index, Option) {
             if ($(Option).attr('value') === '' || $(Option).attr('value') === '||-') {
                 PossibleNone = true;
@@ -382,11 +387,17 @@ Core.UI.InputFields = (function (TargetNS) {
             }
         });
 
+        // Also allow field clearing if the select has a size attribute > 1. In this case
+        //  most browsers allow unselecting options.
+        if ($SelectObj.attr('size') && parseInt($SelectObj.attr('size'), 10) > 1) {
+            PossibleNone = true;
+        }
+
         // Check if we have a selection at all
         if ($SelectObj.val()) {
 
             // Maximum available width for boxes
-            MaxWidth = $InputContainerObj.find('.InputField_Search').width();
+            MaxWidth = $SearchObj.width();
 
             // Check which kind of selection we are dealing with
             if ($.isArray($SelectObj.val())) {
@@ -434,8 +445,7 @@ Core.UI.InputFields = (function (TargetNS) {
                 $TextObj.addClass('Text')
                     .text(Text)
                     .off('click.InputField').on('click.InputField', function () {
-                        $InputContainerObj.find('.InputField_Search')
-                            .trigger('focus');
+                        $SearchObj.trigger('focus');
                     });
 
                 // Remove button
@@ -526,8 +536,7 @@ Core.UI.InputFields = (function (TargetNS) {
                                     MoreString.replace(/%s/, SelectionLength - i)
                                 )
                                 .on('click.InputField', function () {
-                                    $InputContainerObj.find('.InputField_Search')
-                                        .trigger('focus');
+                                    $SearchObj.trigger('focus');
                                 })
                             );
                             MoreBox = true;
@@ -867,6 +876,27 @@ Core.UI.InputFields = (function (TargetNS) {
         // Advance index for one element and trigger focus
         setTimeout(function () {
             $TabbableElements.eq($TabbableElements.index($Element) + 1)
+                .focus();
+        }, 0);
+    }
+
+    /**
+     * @private
+     * @name FocusPreviousElement
+     * @memberof Core.UI.InputFields
+     * @param {jQueryObject} $Element - Form element
+     * @description
+     *      Focus previous element in form.
+     */
+    function FocusPreviousElement($Element) {
+
+        // Get all tabbable and visible elements in the same form
+        var $TabbableElements = $Element.closest('form')
+            .find(':tabbable:visible');
+
+        // Advance index for one element and trigger focus
+        setTimeout(function () {
+            $TabbableElements.eq($TabbableElements.index($Element) - 1)
                 .focus();
         }, 0);
     }
@@ -1449,6 +1479,28 @@ Core.UI.InputFields = (function (TargetNS) {
 
                         switch (Event.which) {
 
+                            // Tab
+                            // Find correct input, if element is selected in dropdown and tab key is used
+                            case $.ui.keyCode.TAB:
+                                $HoveredNode = $TreeObj.find('.jstree-hovered');
+                                if ($HoveredNode.hasClass('jstree-clicked')) {
+                                    $TreeObj.jstree('deselect_node', $HoveredNode.get(0));
+                                }
+                                else {
+                                    if (!Multiple) {
+                                        $TreeObj.jstree('deselect_all');
+                                    }
+                                    $TreeObj.jstree('select_node', $HoveredNode.get(0));
+                                }
+
+                                if (Event.shiftKey) {
+                                    FocusPreviousElement($SearchObj);
+                                }
+                                else {
+                                    FocusNextElement($SearchObj);
+                                }
+                                break;
+
                             // Enter
                             case $.ui.keyCode.ENTER:
                                 Event.preventDefault();
@@ -1905,7 +1957,13 @@ Core.UI.InputFields = (function (TargetNS) {
                 $SelectObj.off('redraw.InputField').on('redraw.InputField', function () {
                     if (Filterable) {
                         $SelectObj.data('original', $SelectObj.children());
-                        ApplyFilter($SelectObj, $ToolbarContainerObj, true);
+                        if (
+                            $SelectObj.data('filtered')
+                            && $SelectObj.data('filtered') !== '0'
+                            )
+                        {
+                            ApplyFilter($SelectObj, $ToolbarContainerObj);
+                        }
                     }
                     CheckAvailability($SelectObj, $SearchObj, $InputContainerObj);
                     $SearchObj.width($SelectObj.outerWidth());

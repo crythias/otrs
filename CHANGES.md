@@ -1,4 +1,7 @@
 #5.0.0.rc1 2015-??-??
+ - 2015-10-02 Fixed bug#[11471](http://bugs.otrs.org/show_bug.cgi?id=11471) - Generic Agent: Select fields can not be unset.
+ - 2015-10-01 Fixed bug#[11525](http://bugs.otrs.org/show_bug.cgi?id=11525) - Wrong HTML quoted on notification for ticket created from plain text email.
+ - 2015-10-01 Fixed bug#[11486](http://bugs.otrs.org/show_bug.cgi?id=11486) - endless recursion if sub module of Layout is buggy.
  - 2015-09-30 Fixed bug#[11514](http://bugs.otrs.org/show_bug.cgi?id=11514) - Unable to use bulk action in mobile mode.
  - 2015-09-29 Fixed bug#[11516](http://bugs.otrs.org/show_bug.cgi?id=11516) - Pending time will be ignored in the console command for the pending auto close check.
  - 2015-09-29 Fixed bug#[11515](http://bugs.otrs.org/show_bug.cgi?id=11515) - Ticket notifications sends the content of the previous notification on the same event.
