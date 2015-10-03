@@ -1,4 +1,10 @@
 #5.0.0.rc1 2015-??-??
+ - 2015-10-03 Updated CPAN module Mozilla::CA to version 20150826.
+ - 2015-10-03 Updated CPAN module MIME::Tools to version 5.507.
+ - 2015-10-03 Updated CPAN module Locale::Codes to version 3.36.
+ - 2015-10-02 Fixed bug#[11524](http://bugs.otrs.org/show_bug.cgi?id=11524) - HTMLUtils::Truncate() dies if string contains an utf8 character that needs more than 2 bytes.
+ - 2015-10-02 Updated CPAN module HTTP::Headers to version 6.11.
+ - 2015-10-02 Updated CPAN module Excel::Writer::XLSX to version 0.85.
  - 2015-10-02 Fixed bug#[11471](http://bugs.otrs.org/show_bug.cgi?id=11471) - Generic Agent: Select fields can not be unset.
  - 2015-10-01 Fixed bug#[11525](http://bugs.otrs.org/show_bug.cgi?id=11525) - Wrong HTML quoted on notification for ticket created from plain text email.
  - 2015-10-01 Fixed bug#[11486](http://bugs.otrs.org/show_bug.cgi?id=11486) - endless recursion if sub module of Layout is buggy.
