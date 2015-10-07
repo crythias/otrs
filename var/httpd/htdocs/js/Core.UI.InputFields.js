@@ -1140,6 +1140,11 @@ Core.UI.InputFields = (function (TargetNS) {
                     CloseOpenSelections();
                 });
 
+                // Handle RTE focus
+                Core.App.Subscribe('Event.UI.RichTextEditor.Focus', function() {
+                    CloseOpenSelections();
+                });
+
                 // Register handler for on focus event
                 $SearchObj.off('focus.InputField')
                     .on('focus.InputField', function () {
@@ -1231,6 +1236,9 @@ Core.UI.InputFields = (function (TargetNS) {
                     if ($SearchObj.attr('aria-expanded')) {
                         return false;
                     }
+
+                    // close all other selections
+                    CloseOpenSelections();
 
                     // Set ARIA flag if expanded
                     $SearchObj.attr('aria-expanded', true);
@@ -2122,16 +2130,17 @@ Core.UI.InputFields = (function (TargetNS) {
         });
 
         // Workaround to close dropdown after blur event by clicking the mouse out of the search field
-        $('body').off('click.InputField').on('click.InputField', function (Event) {
-            Event.preventDefault();
-            Event.stopPropagation();
+        $('body').off('click.InputField').on('click.InputField', function () {
             if (
                 $('.InputField_ListContainer').length
-                && !$(document.activeElement).parents('.InputField_Container').length
-                && document.activeElement.tagName.toUpperCase() !== 'INPUT') {
+                &&
+                    (
+                    !$(document.activeElement).parents('.InputField_Container').length
+                    || document.activeElement.tagName.toUpperCase() !== 'INPUT'
+                    )
+                ) {
                 CloseOpenSelections();
             }
-            return false;
         });
 
         return true;
