@@ -1,9 +1,10 @@
-#5.0.0.rc1 2015-??-??
+#5.0.1 2015-??-??
+
+#5.0.0.rc1 2015-10-13
+ - 2015-10-08 Updated translations, thanks to all translators.
  - 2015-10-07 Fixed bug#[11541](http://bugs.otrs.org/show_bug.cgi?id=11541) - Wrong HTML quoted on text sending 2 or more notifications.
- - 2015-10-07 Updated translations, thanks to all translators.
  - 2015-10-06 Updated CKEditor to version 4.5.3.
  - 2015-10-06 Updated qUnit to version 1.19.0.
- - 2015-10-06 Updated nvd3 to version 1.8.1.
  - 2015-10-06 Updated MomentJS to version 2.10.6.
  - 2015-10-06 Updated jQuery Validate to version 1.14.0.
  - 2015-10-06 Updated jQuery jsTree to version 3.2.1.
