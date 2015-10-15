@@ -1,4 +1,11 @@
-#5.0.1 2015-??-??
+#5.0.2 2015-??-??
+
+#5.0.1 2015-10-20
+ - 2015-10-14 Updated CPAN module URI to version 1.69.
+ - 2015-10-14 Updated CPAN module Text::Diff to version 1.43.
+ - 2015-10-14 Updated CPAN module SOAP::Lite to version 1.19.
+ - 2015-10-14 Updated CPAN module REST::Client to version 273.
+ - 2015-10-14 Updated CPAN module PDF::API2 to version 2.025.
  - 2015-10-13 Updated translations, thanks to all translators.
  - 2015-10-13 Fix missing ticket cache clear after ticket merge, fixes Ticket#2015092442000716.
  - 2015-10-13 Updated CKEditor to version 4.5.4.
