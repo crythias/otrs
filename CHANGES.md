@@ -1,6 +1,8 @@
 #5.0.2 2015-??-??
 
 #5.0.1 2015-10-20
+ - 2015-10-15 Added new 'Unformatted' template for email notification method.
+ - 2015-10-15 Fixed bug#[11556](http://bugs.otrs.org/show_bug.cgi?id=11556) - Searching in inputfields does not hide non-matching entries.
  - 2015-10-14 Updated CPAN module URI to version 1.69.
  - 2015-10-14 Updated CPAN module Text::Diff to version 1.43.
  - 2015-10-14 Updated CPAN module SOAP::Lite to version 1.19.
@@ -26,7 +28,6 @@
  - 2015-10-06 Updated qUnit to version 1.19.0.
  - 2015-10-06 Updated MomentJS to version 2.10.6.
  - 2015-10-06 Updated jQuery Validate to version 1.14.0.
- - 2015-10-06 Updated jQuery jsTree to version 3.2.1.
  - 2015-10-06 Updated FullCalendar to version 2.4.0.
  - 2015-10-06 Updated d3 to verion 3.5.6.
  - 2015-10-06 Updated CanVG to version 1.4.
