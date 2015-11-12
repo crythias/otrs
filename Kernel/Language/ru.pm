@@ -35,7 +35,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%D.%M.%Y';
     $Self->{DateInputFormat}     = '%D.%M.%Y';
     $Self->{DateInputFormatLong} = '%D.%M.%Y - %T';
-    $Self->{Completeness}        = 0.982160312805474;
+    $Self->{Completeness}        = 0.972901040406484;
 
     # csv separator
     $Self->{Separator} = ';';
@@ -279,7 +279,7 @@ sub Data {
         'Take this User' => 'Выбрать этого пользователя',
         'possible' => 'возможно',
         'reject' => 'отвергнуть',
-        'reverse' => 'вернуть',
+        'reverse' => 'обратный',
         'Facility' => 'Объект',
         'Time Zone' => 'Часовой пояс',
         'Pending till' => 'В ожидании еще',
@@ -313,7 +313,7 @@ sub Data {
         'Queue added!' => 'Очередь добавлена!',
         'Queue updated!' => 'Очередь обновлена!',
         'State added!' => 'Состояние добавлено!',
-        'State updated!' => 'Состояние обновлено',
+        'State updated!' => 'Состояние обновлено!',
         'Type added!' => 'Тип добавлен!',
         'Type updated!' => 'Тип обновлен!',
         'Customer updated!' => 'Клиент обновлен!',
@@ -372,16 +372,16 @@ sub Data {
         'Dear %s,' => 'Уважаемый/-ая %s,',
         'Hello %s,' => 'Здравствуйте, %s.',
         'This email address is not allowed to register. Please contact support staff.' =>
-            'Этот адрес почты не разрешен для регистрации. Обратитесь к персоналу поддержки',
+            'Этот адрес почты не разрешен для регистрации. Обратитесь к персоналу поддержки.',
         'New account created. Sent login information to %s. Please check your email.' =>
-            'Новая учетная запись создана. Информация о логине отправлена на %s. Проверьте свою почту.',
-        'Please press Back and try again.' => 'Нажмите «Назад» и попробуйте еще раз',
+            'Новая учетная запись создана. Данные для входа направлены на %s. Проверьте свою почту.',
+        'Please press Back and try again.' => 'Нажмите «Назад» и попробуйте еще раз.',
         'Sent password reset instructions. Please check your email.' => 'Отправлены инструкции по сбросу пароля. Проверьте свою почту.',
         'Sent new password to %s. Please check your email.' => 'Новый пароль выслан на %s. Проверьте свою почту.',
         'Upcoming Events' => 'Ближайшие события',
         'Event' => 'Событие',
         'Events' => 'События',
-        'Invalid Token!' => 'Неверный токен !',
+        'Invalid Token!' => 'Неверный токен!',
         'more' => 'далее',
         'Collapse' => 'Свернуть',
         'Shown' => 'Показано',
@@ -393,7 +393,7 @@ sub Data {
         'Process Management information from database is not in sync with the system configuration, please synchronize all processes.' =>
             'Управление Процесами. Информация из базы данных не синхронизирована с системой, выполните синхронизацию всех процессов.',
         'Package not verified by the OTRS Group! It is recommended not to use this package.' =>
-            'Пакет не верифицирован OTRS Group! Не рекомендуем его использовать',
+            'Пакет не верифицирован OTRS Group! Его использование не рекомендуется.',
         '<br>If you continue to install this package, the following issues may occur!<br><br>&nbsp;-Security problems<br>&nbsp;-Stability problems<br>&nbsp;-Performance problems<br><br>Please note that issues that are caused by working with this package are not covered by OTRS service contracts!<br><br>' =>
             '<br>Если вы продолжите установку этого пакета, могут возникнуть следующие проблемы!<br><br>&nbsp;-Проблемы безопасности<br>&nbsp;-Стабильности<br>&nbsp;-Производительности<br><br>Помните, что возникшие при работе с таким пакетом проблемы не решаются в рамках сервисного контракта OTRS!<br><br>',
         'Mark' => 'Пометить',
@@ -494,7 +494,7 @@ sub Data {
         'Verify password' => 'Подтвердите пароль',
         'Spelling Dictionary' => 'Словарь правописания',
         'Default spelling dictionary' => 'Словарь по умолчанию',
-        'Max. shown Tickets a page in Overview.' => 'Максимальное количество заявок при показе очереди',
+        'Max. shown Tickets a page in Overview.' => 'Максимальное количество заявок при показе очереди.',
         'The current password is not correct. Please try again!' => 'Пароль не верен. Пожалуйста, попробуйте снова!',
         'Can\'t update password, your new passwords do not match. Please try again!' =>
             'Невозможно обновить пароль. Новые пароли не совпадают. Пожалуйста, попробуйте снова!',
@@ -614,12 +614,12 @@ sub Data {
         'email-internal' => 'внутренний email',
         'note-external' => 'внешняя заметка',
         'note-internal' => 'внутренняя заметка',
-        'note-report' => 'Заметка-отчет',
+        'note-report' => 'заметка-отчет',
         'phone' => 'звонок',
         'sms' => 'SMS',
         'webrequest' => 'веб-заявка',
-        'lock' => 'блокировать',
-        'unlock' => 'разблокировать',
+        'lock' => 'заблокировано',
+        'unlock' => 'разблокировано',
         'very low' => 'самый низкий',
         'low' => 'низкий',
         'normal' => 'обычный',
@@ -683,7 +683,7 @@ sub Data {
         'Unlock to give it back to the queue' => 'Разблокировать, чтобы вернуть в очередь',
         'Show the ticket history' => 'Показать историю заявки',
         'Print this ticket' => 'Напечатать эту заявку',
-        'Print this article' => 'Напечтаать это сообщение',
+        'Print this article' => 'Напечатать это сообщение',
         'Split' => 'Разделить',
         'Split this article' => 'Разделить это сообщение',
         'Forward article via mail' => 'Переслать сообщение почтой',
@@ -724,7 +724,7 @@ sub Data {
         'Send ticket follow up notifications' => 'Отправлять уведомления об откликах в заявках',
         'Ticket lock timeout notification' => 'Уведомление об истечении срока блокировки заявки системой',
         'Send me a notification if a ticket is unlocked by the system.' =>
-            'Прислать мне уведомление, если заявка освобождена системой.',
+            'Прислать мне уведомление, если заявка разблокирована системой.',
         'Send ticket lock timeout notifications' => 'Отправлять уведомления об истечении блокировок',
         'Ticket move notification' => 'Уведомление о перемещении заявки',
         'Send me a notification if a ticket is moved into one of "My Queues".' =>
@@ -900,8 +900,8 @@ sub Data {
         # Template: AdminCloudServices
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             'Регистрация системы - это сервис от OTRS Group, который предоставляет много преимуществ!',
-        'Please note that you using OTRS cloud services requires the system to be registered.' =>
-            'Обращаем внимание, что использование облачных сервисов OTRS требует регистрации системы.',
+        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
+            '',
         'Register this system' => 'Зарегистрировать эту систему',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             'Здесь вы можете настроить доступные облачные сервисы, которые будут безопасно взаимодействовать с %s.',
@@ -1243,13 +1243,13 @@ sub Data {
         'Invoker backend' => '',
         'This OTRS invoker backend module will be called to prepare the data to be sent to the remote system, and to process its response data.' =>
             'Этот модуль OTRS invoker будет вызываться для подготовки данных, отправляемых в удаленную систему и для обработки ответных данных.',
-        'Mapping for outgoing request data' => '',
+        'Mapping for outgoing request data' => 'Соответствие исходящему запросу данных',
         'Configure' => 'Конфигурировать',
         'The data from the invoker of OTRS will be processed by this mapping, to transform it to the kind of data the remote system expects.' =>
             '',
         'Mapping for incoming response data' => '',
         'The response data will be processed by this mapping, to transform it to the kind of data the invoker of OTRS expects.' =>
-            '',
+            'Запрашиваемые данные будут обработаны, преобразованы в формат поддерживаемый OTRS',
         'Asynchronous' => 'Асинхронный',
         'This invoker will be triggered by the configured events.' => 'Этот invoker будет вызван при наступлении заданных событий.',
         'Asynchronous event triggers are handled by the OTRS Scheduler Daemon in background (recommended).' =>
@@ -1667,6 +1667,7 @@ sub Data {
         'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
             'Вы собираетесь выполнить откат к базовой OTRS и потеряете следующие возможности и данные с ними связанные:',
         'Chat' => 'Чат',
+        'Report Generator' => '',
         'Timeline view in ticket zoom' => 'Хронологический вид при подробном просмотре заявки',
         'DynamicField ContactWithData' => 'Динамическое поле ContactWithData',
         'DynamicField Database' => 'База данных Динамических полей',
@@ -2644,6 +2645,8 @@ sub Data {
 
         # Template: AgentTicketCompose
         'Compose Answer for %s%s' => 'Создать ответ для %s%s',
+        'This address is registered as system address and cannot be used: %s' =>
+            '',
         'Please include at least one recipient' => 'Пожалуйста, включите хотя бы одного получателя.',
         'Remove Ticket Customer' => 'Удалить клиента-инициатора заявки',
         'Please remove this entry and enter a new one with the correct value.' =>
@@ -2872,8 +2875,8 @@ sub Data {
         'Your user name' => 'Ваше имя пользователя',
         'Your password' => 'Ваш пароль',
         'Forgot password?' => 'Забыли пароль?',
-        '2 Factor Token' => '',
-        'Your 2 Factor Token' => '',
+        '2 Factor Token' => '2-факторный токен',
+        'Your 2 Factor Token' => 'Ваш 2-факторный токен',
         'Log In' => 'Войти',
         'Not yet registered?' => 'Хотите зарегистрироваться?',
         'Request new password' => 'Прислать новый пароль',
@@ -3133,8 +3136,82 @@ sub Data {
         'Receive messages for notification \'%s\' by transport method \'%s\'.' =>
             'Получить сообщения для уведомления \'%s\'  с помощью метода доставки \'%s\'.',
 
+        # Template: ActivityDialogHeader
+        'Process Information' => 'Информация о процессе',
+        'Dialog' => '',
+
+        # Template: Article
+        'Inform Agent' => '',
+
         # Template: PublicDefault
         'Welcome' => 'Добро пожаловать',
+
+        # Template: GeneralSpecificationsWidget
+        'Permissions' => '',
+        'You can select one or more groups to define access for different agents.' =>
+            '',
+        'Result formats' => '',
+        'The selected time periods in the statistic are time zone neutral.' =>
+            '',
+        'Create summation row' => '',
+        'Generate an additional row containing sums for all data columns.' =>
+            '',
+        'Create summation column' => '',
+        'Generate an additional column containing sums for all data rows.' =>
+            '',
+        'Cache results' => '',
+        'Stores statistics result data in a cache to be used in subsequent views with the same configuration.' =>
+            '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note that enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'If set to invalid end users can not generate the stat.' => '',
+
+        # Template: PreviewWidget
+        'There are problems in the configuration of this statistic:' => '',
+        'You may now configure the X-axis of your statistic.' => '',
+        'This statistic does not provide preview data.' => '',
+        'Preview format:' => '',
+        'Please note that the preview uses random data and does not consider data restrictions.' =>
+            '',
+        'Configure X-Axis' => '',
+        'X-axis' => 'Ось X',
+        'Configure Y-Axis' => '',
+        'Y-axis' => 'Ось Y',
+        'Configure Filter' => '',
+
+        # Template: RestrictionsWidget
+        'Please select only one element or turn off the button \'Fixed\'.' =>
+            '',
+        'Absolute period' => '',
+        'Between' => '',
+        'Relative period' => '',
+        'The past complete %s and the current+upcoming complete %s %s' =>
+            '',
+        'Do not allow changes to this element when the statistic is generated.' =>
+            '',
+
+        # Template: StatsParamsWidget
+        'Format' => '',
+        'Exchange Axis' => '',
+        'Configurable params of static stat' => '',
+        'No element selected.' => '',
+        'Scale' => '',
+
+        # Template: D3
+        'Download SVG' => '',
+        'Download PNG' => '',
+
+        # Template: XAxisWidget
+        'The selected time period defines the default time frame for this statistic to collect data from.' =>
+            '',
+        'Defines the time unit that will be used to split the selected time period into reporting data points.' =>
+            '',
+
+        # Template: YAxisWidget
+        'Please remember that the scale for value series has to be larger than the scale for the X-axis (e.g. X-Axis => Month, ValueSeries => Year).' =>
+            '',
 
         # Template: Test
         'OTRS Test Page' => 'Тестовая страница OTRS',
@@ -3257,8 +3334,6 @@ sub Data {
         'Please supply your new password!' => 'Пожалуйста, укажите ваш новый пароль!',
 
         # Perl Module: Kernel/Output/HTML/Statistics/View.pm
-        'X-axis' => 'Ось X',
-        'Y-axis' => 'Ось Y',
         'No past complete or the current+upcoming complete relative time value selected.' =>
             'Ни прошлого, ни текущего + наступающее относительного времени завершения не выбрано.',
         'The selected time period is larger than the allowed time period.' =>
@@ -3661,7 +3736,7 @@ Thanks for your help!
         'Activates the available themes on the system. Value 1 means active, 0 means inactive.' =>
             'Включить доступные темы системы. Значение 1 - включена, 0 - отключена',
         'Activates the ticket archive system search in the customer interface.' =>
-            'Включить возможность поиска заявок в архиве в интерфейсе клиента',
+            'Включить возможность поиска заявок в архиве в интерфейсе клиента.',
         'Activates the ticket archive system to have a faster system by moving some tickets out of the daily scope. To search for these tickets, the archive flag has to be enabled in the ticket search.' =>
             'Включить функцию архивирования заявок для ускорения работы, путем перемещения некоторых заявок из ежедневного объема. Для поиска таких заявок необходимо включить архивный флажок при создании поискового запроса',
         'Activates time accounting.' => 'Включить учет времени выполнения',
@@ -3815,7 +3890,7 @@ Thanks for your help!
         'Checks if an E-Mail is a followup to an existing ticket by searching the subject for a valid ticket number.' =>
             'Проверяет, является ли письмо дополнением к существующей заявке путем поиска в теме письма правильного номера заявки.',
         'Checks the SystemID in ticket number detection for follow-ups (use "No" if SystemID has been changed after using the system).' =>
-            'Проверяет SystemID в номере заявки при обнаружении ответа коиента(follow-ups)(Используйте "Нет" если SystemID был изменен до получения ответа).',
+            'Проверяет SystemID в номере заявки при обнаружении ответа клиента (follow-ups) (Используйте "Нет", если SystemID был изменен до получения ответа).',
         'Checks the availability of OTRS Business Solution™ for this system.' =>
             'Проверьте доступность OTRS Business Solution™ для этой системы.',
         'Checks the entitlement status of OTRS Business Solution™.' => 'Проверить состояние прав доступа к OTRS Business Solution™.',
@@ -5053,7 +5128,8 @@ Thanks for your help!
             'Максимальный размер (в строках) списка информируемых агентов, в агентском интерфейсе.',
         'Max size (in rows) of the involved agents box in the agent interface.' =>
             'Максимальный размер (в строках) списка привлекаемых агентов, в агентском интерфейсе.',
-        'Max size of the subjects in an email reply.' => 'Максимальная длина Темы в почтовом ответе.',
+        'Max size of the subjects in an email reply and in some overview screens.' =>
+            '',
         'Maximal auto email responses to own email-address a day (Loop-Protection).' =>
             'Максимальное количество почтовых автоответов на собственный почтовый адрес в день (Loop-Protection).',
         'Maximal size in KBytes for mails that can be fetched via POP3/POP3S/IMAP/IMAPS (KBytes).' =>
@@ -5190,7 +5266,7 @@ Thanks for your help!
         'Parameters of the example service attribute Comment2.' => 'Параметры для дополнительного атрибута Сервиса Комментарий2(Comment2).',
         'Path for the log file (it only applies if "FS" was selected for LoopProtectionModule and it is mandatory).' =>
             'Путь к лог файлу (применяется только если выбран атрибут "FS" для LoopProtectionModule и он обязателен).',
-        'People' => 'Исполнители',
+        'People' => 'Агенты',
         'Performs the configured action for each event (as an Invoker) for each configured Webservice.' =>
             'Выполняет заданное действие для каждого события (как Invoker) для каждого настроенного Webservice.',
         'Permitted width for compose email windows.' => 'Ширина окна для текста ответа.',
@@ -5202,7 +5278,6 @@ Thanks for your help!
         'Portuguese (Brasil)' => 'Португальский (Бразилия)',
         'PostMaster Filters' => 'Фильтры PostMaster (входящей почты)',
         'PostMaster Mail Accounts' => 'Учетные записи почты для PostMaster',
-        'Process Information' => 'Информация о процессе',
         'Process Management Activity Dialog GUI' => 'Управление процессами Интерфейс Диалоги Активности',
         'Process Management Activity GUI' => 'Управление процессами Интерфейс Активности',
         'Process Management Path GUI' => 'Управление процессами Интерфейс Схема',
@@ -5280,8 +5355,7 @@ Thanks for your help!
         'SMS' => 'SMS',
         'Sample command output' => 'Простейший пример результата выполнения',
         'Saves the attachments of articles. "DB" stores all data in the database (not recommended for storing big attachments). "FS" stores the data on the filesystem; this is faster but the webserver should run under the OTRS user. You can switch between the modules even on a system that is already in production without any loss of data. Note: Searching for attachment names is not supported when "FS" is used.' =>
-            'Сохраняет вложения из сообщений/заметок. "DB" - сохраняет их в БД (не рекомендуется для больших вложений). "FS" - сохраняет данные в файловой системе; это быстрее, но веб-сервер должен запускаться от имени пользователя OTRS. Вы можете переключать это значение в процессе работы без потери данных.
-Примечание: Поиск по именам вложений не поддерживается при использовании "FS".',
+            'Сохраняет вложения из сообщений/заметок. "DB" - сохраняет их в БД (не рекомендуется для больших вложений). "FS" - сохраняет данные в файловой системе; это быстрее, но веб-сервер должен запускаться от имени пользователя OTRS. Вы можете переключать это значение в процессе работы без потери данных. Примечание: Поиск по именам вложений не поддерживается при использовании "FS".',
         'Schedule a maintenance period.' => 'Управлять периодом обслуживания.',
         'Screen' => 'Экран',
         'Search Customer' => 'Искать клиента',
@@ -5720,7 +5794,7 @@ Thanks for your help!
         'Specifies the different note types that will be used in the system.' =>
             'Задает различные типы сообщений/заметок для использования в системе.',
         'Specifies the directory to store the data in, if "FS" was selected for TicketStorageModule.' =>
-            'Задает каталог для хранения данных если "FS" выбрано в TicketStorageModule.',
+            'Задает каталог для хранения данных, если "FS" выбрано в TicketStorageModule.',
         'Specifies the directory where SSL certificates are stored.' => 'Задает каталог для хранения SSL сертификатов.',
         'Specifies the directory where private SSL certificates are stored.' =>
             'Задает каталог для хранения частных SSL сертификатов.',

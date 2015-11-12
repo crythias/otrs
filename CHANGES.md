@@ -1,4 +1,12 @@
-#5.0.3 2015-??-??
+#5.0.4 2015-??-??
+ - 2015-11-11 Added translation strings form Kernel/Output/HTML/Templates/Standard sub-directories.
+ - 2015-11-11 Fixed bug#[11642](http://bugs.otrs.org/show_bug.cgi?id=11642) - Console Command Dev::Tools::TranslationsUpdate skips nested .tt files when gather translation strings.
+ - 2015-11-11 Fixed bug#[11641](http://bugs.otrs.org/show_bug.cgi?id=11641) - SchedulerDB TaskUnlockExpired() Need String! message..
+ - 2015-11-11 Set all OTRS Daemon cron tasks SysConfig settings to "Expert" ConfigLevel.
+
+#5.0.3 2015-11-17
+ - 2014-11-11 Updated translations, thanks to all translators.
+ - 2015-11-11 Fixed bug#[11601](http://bugs.otrs.org/show_bug.cgi?id=11601) - OTRS 5 - 2fa and password change - error.
  - 2015-11-09 Fixed bug#[11511](http://bugs.otrs.org/show_bug.cgi?id=11511) - Text length for title is cut off after 50 characters.
  - 2015-11-09 Fixed bug#[11630](http://bugs.otrs.org/show_bug.cgi?id=11630) - Localization French (Français).
  - 2015-11-09 Fixed bug#[11320](http://bugs.otrs.org/show_bug.cgi?id=11320) - Invalid customer user can update password.

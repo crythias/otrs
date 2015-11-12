@@ -29,7 +29,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%Y.%M.%D';
     $Self->{DateInputFormat}     = '%Y.%M.%D';
     $Self->{DateInputFormatLong} = '%Y.%M.%D - %T';
-    $Self->{Completeness}        = 0.999755620723363;
+    $Self->{Completeness}        = 0.989595935156061;
 
     # csv separator
     $Self->{Separator} = ';';
@@ -571,16 +571,16 @@ sub Data {
         'merged' => 'egyesített',
         'closed successful' => 'sikeresen lezárva',
         'closed unsuccessful' => 'sikertelenül lezárva',
-        'Locked Tickets Total' => 'Zárolt jegyek összesen',
-        'Locked Tickets Reminder Reached' => 'Zárolt jegyek emlékeztető elérve',
-        'Locked Tickets New' => 'Zárolt jegyek új',
-        'Responsible Tickets Total' => 'Felelős jegyek összesen',
-        'Responsible Tickets New' => 'Felelős jegyek új',
-        'Responsible Tickets Reminder Reached' => 'Felelős jegyek emlékeztető elérve',
-        'Watched Tickets Total' => 'Megfigyelt jegyek összesen',
-        'Watched Tickets New' => 'Megfigyelt jegyek új',
-        'Watched Tickets Reminder Reached' => 'Megfigyelt jegyek emlékeztető elérve',
-        'All tickets' => 'Minden jegy',
+        'Locked Tickets Total' => 'Zárolt jegyek (összes)',
+        'Locked Tickets Reminder Reached' => 'Zárolt jegyek (emlékeztető elérve)',
+        'Locked Tickets New' => 'Zárolt jegyek (új)',
+        'Responsible Tickets Total' => 'Felelős jegyek (összes)',
+        'Responsible Tickets New' => 'Felelős jegyek (új)',
+        'Responsible Tickets Reminder Reached' => 'Felelős jegyek (emlékeztető elérve)',
+        'Watched Tickets Total' => 'Megfigyelt jegyek (összes)',
+        'Watched Tickets New' => 'Megfigyelt jegyek (új)',
+        'Watched Tickets Reminder Reached' => 'Megfigyelt jegyek (emlékeztető elérve)',
+        'All tickets' => 'Összes jegy',
         'Available tickets' => 'Elérhető jegyek',
         'Escalation' => 'Eszkaláció',
         'last-search' => 'utolsó-keresés',
@@ -894,8 +894,8 @@ sub Data {
         # Template: AdminCloudServices
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             'A rendszer regisztráció az OTRS csoport szolgáltatása, amely számos előnyt biztosít!',
-        'Please note that you using OTRS cloud services requires the system to be registered.' =>
-            'Ne feledje, hogy az OTRS felhőszolgáltatás használatához a rendszer regisztrációja szükséges.',
+        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
+            '',
         'Register this system' => 'A rendszer regisztrálása',
         'Here you can configure available cloud services that communicate securely with %s.' =>
             'Itt tudja beállítani azokat az elérhető felhőszolgáltatásokat, amelyek biztonságosan kommunikálnak a következővel: %s.',
@@ -956,9 +956,9 @@ sub Data {
         'Toggle %s permission for %s' => 'A(z) %s jogosultság ki- vagy bekapcsolása ehhez: %s',
         'Customer Default Groups:' => 'Alapértelmezett ügyfélcsoportok',
         'No changes can be made to these groups.' => 'Nem lehet változtatni ezeken a csoportokon.',
-        'ro' => 'csak olvasható',
+        'ro' => 'csak olvasás',
         'Read only access to the ticket in this group/queue.' => 'Csak olvasható hozzáférés ebben a csoportban/várólistában lévő jegyekhez.',
-        'rw' => 'írható, olvasható',
+        'rw' => 'írás, olvasás',
         'Full read and write access to the tickets in this group/queue.' =>
             'Teljes írási és olvasási hozzáférés ebben a csoportban/várólistában lévő jegyekhez.',
 
@@ -1661,6 +1661,7 @@ sub Data {
         'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
             'Arra készül, hogy visszavált az ingyenes OTRS-re, és el fogja veszíteni a következő szolgáltatásokat és minden ezekhez kapcsolódó adatot:',
         'Chat' => 'Csevegés',
+        'Report Generator' => '',
         'Timeline view in ticket zoom' => 'Idővonal nézet a jegynagyításban',
         'DynamicField ContactWithData' => 'Dinamikus mező ContactWithData',
         'DynamicField Database' => 'Dinamikus mező adatbázis',
@@ -2581,9 +2582,9 @@ sub Data {
 
         # Template: AgentStatisticsView
         'Statistics » View %s%s — %s' => 'Statisztikák » %s%s megtekintése — %s',
-        'Statistic Information' => '',
-        'Sum rows' => 'Összegző sorok',
-        'Sum columns' => 'Összegző oszlopok',
+        'Statistic Information' => 'Statisztika információk',
+        'Sum rows' => 'Sorok összegzése',
+        'Sum columns' => 'Oszlopok összegzése',
         'Show as dashboard widget' => 'Megjelenítés vezérlőpult felületi elemként',
         'Cache' => 'Gyorsítótár',
         'This statistic contains configuration errors and can currently not be used.' =>
@@ -2638,6 +2639,8 @@ sub Data {
 
         # Template: AgentTicketCompose
         'Compose Answer for %s%s' => 'Válasz írása ehhez: %s%s',
+        'This address is registered as system address and cannot be used: %s' =>
+            '',
         'Please include at least one recipient' => 'Vegyen fel legalább egy címzettet',
         'Remove Ticket Customer' => 'Jegy ügyfél eltávolítása',
         'Please remove this entry and enter a new one with the correct value.' =>
@@ -3106,7 +3109,7 @@ sub Data {
         'Message of the Day' => 'A nap üzenete',
 
         # Template: NoPermission
-        'Insufficient Rights' => 'Elégtelen jogok',
+        'Insufficient Rights' => 'Nincs elegendő joga',
         'Back to the previous page' => 'Vissza az előző oldalra',
 
         # Template: Pagination
@@ -3127,8 +3130,82 @@ sub Data {
         'Receive messages for notification \'%s\' by transport method \'%s\'.' =>
             'Üzenetek fogadása a(z) „%s” értesítéshez a(z) „%s” átviteli módszerrel.',
 
+        # Template: ActivityDialogHeader
+        'Process Information' => 'Folyamat-információk',
+        'Dialog' => '',
+
+        # Template: Article
+        'Inform Agent' => '',
+
         # Template: PublicDefault
         'Welcome' => 'Üdvözöljük',
+
+        # Template: GeneralSpecificationsWidget
+        'Permissions' => '',
+        'You can select one or more groups to define access for different agents.' =>
+            '',
+        'Result formats' => '',
+        'The selected time periods in the statistic are time zone neutral.' =>
+            '',
+        'Create summation row' => '',
+        'Generate an additional row containing sums for all data columns.' =>
+            '',
+        'Create summation column' => '',
+        'Generate an additional column containing sums for all data rows.' =>
+            '',
+        'Cache results' => '',
+        'Stores statistics result data in a cache to be used in subsequent views with the same configuration.' =>
+            '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note that enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'If set to invalid end users can not generate the stat.' => '',
+
+        # Template: PreviewWidget
+        'There are problems in the configuration of this statistic:' => '',
+        'You may now configure the X-axis of your statistic.' => '',
+        'This statistic does not provide preview data.' => '',
+        'Preview format:' => '',
+        'Please note that the preview uses random data and does not consider data restrictions.' =>
+            '',
+        'Configure X-Axis' => '',
+        'X-axis' => 'X-tengely',
+        'Configure Y-Axis' => '',
+        'Y-axis' => 'Y-tengely',
+        'Configure Filter' => '',
+
+        # Template: RestrictionsWidget
+        'Please select only one element or turn off the button \'Fixed\'.' =>
+            '',
+        'Absolute period' => '',
+        'Between' => '',
+        'Relative period' => '',
+        'The past complete %s and the current+upcoming complete %s %s' =>
+            '',
+        'Do not allow changes to this element when the statistic is generated.' =>
+            '',
+
+        # Template: StatsParamsWidget
+        'Format' => '',
+        'Exchange Axis' => '',
+        'Configurable params of static stat' => '',
+        'No element selected.' => '',
+        'Scale' => '',
+
+        # Template: D3
+        'Download SVG' => '',
+        'Download PNG' => '',
+
+        # Template: XAxisWidget
+        'The selected time period defines the default time frame for this statistic to collect data from.' =>
+            '',
+        'Defines the time unit that will be used to split the selected time period into reporting data points.' =>
+            '',
+
+        # Template: YAxisWidget
+        'Please remember that the scale for value series has to be larger than the scale for the X-axis (e.g. X-Axis => Month, ValueSeries => Year).' =>
+            '',
 
         # Template: Test
         'OTRS Test Page' => 'OTRS tesztoldal',
@@ -3251,8 +3328,6 @@ sub Data {
         'Please supply your new password!' => 'Adja meg az új jelszavát!',
 
         # Perl Module: Kernel/Output/HTML/Statistics/View.pm
-        'X-axis' => 'X-tengely',
-        'Y-axis' => 'Y-tengely',
         'No past complete or the current+upcoming complete relative time value selected.' =>
             'Nincs már teljes vagy a jelenlegi+közelgő teljes relatív időérték kiválasztva.',
         'The selected time period is larger than the allowed time period.' =>
@@ -3601,9 +3676,9 @@ sub Data {
         'default reject/new ticket created (after closed follow-up with new ticket creation)' =>
             'alapértelmezett elutasítás/új jegy létrehozva (új jegy létrehozásával történő lezárt követés után)',
         'Unclassified' => 'Osztályozatlan',
-        'tmp_lock' => 'tmp_lock',
-        'email-notification-ext' => 'email-notification-ext',
-        'email-notification-int' => 'email-notification-int',
+        'tmp_lock' => 'átmenetileg zárolt',
+        'email-notification-ext' => 'külső e-mail értesítés',
+        'email-notification-int' => 'belső e-mail értesítés',
         'fax' => 'fax',
 
         # SysConfig
@@ -5047,7 +5122,8 @@ Az Ön segélyszolgálat csapata
             'A tájékoztatott ügyintézők doboz legnagyobb mérete (sorokban) az ügyintézői felületen.',
         'Max size (in rows) of the involved agents box in the agent interface.' =>
             'A részt vevő ügyintézők doboz legnagyobb mérete (sorokban) az ügyintézői felületen.',
-        'Max size of the subjects in an email reply.' => 'A tárgyak legnagyobb mérete egy e-mail válasznál.',
+        'Max size of the subjects in an email reply and in some overview screens.' =>
+            '',
         'Maximal auto email responses to own email-address a day (Loop-Protection).' =>
             'Automatikus válaszok maximalizálása a saját e-mail címre naponta (hurok védelem).',
         'Maximal size in KBytes for mails that can be fetched via POP3/POP3S/IMAP/IMAPS (KBytes).' =>
@@ -5196,7 +5272,6 @@ Az Ön segélyszolgálat csapata
         'Portuguese (Brasil)' => 'Portugál (Brazil)',
         'PostMaster Filters' => 'Levelezési szűrők',
         'PostMaster Mail Accounts' => 'Levelezési levélfiókok',
-        'Process Information' => 'Folyamat-információk',
         'Process Management Activity Dialog GUI' => 'Folyamatkezelés tevékenység párbeszéd grafikus felület',
         'Process Management Activity GUI' => 'Folyamatkezelés tevékenység grafikus felület',
         'Process Management Path GUI' => 'Folyamatkezelés útvonal grafikus felület',

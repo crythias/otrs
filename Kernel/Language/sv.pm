@@ -26,7 +26,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%Y.%M.%D';
     $Self->{DateInputFormat}     = '%Y.%M.%D';
     $Self->{DateInputFormatLong} = '%Y.%M.%D - %T';
-    $Self->{Completeness}        = 0.380009775171065;
+    $Self->{Completeness}        = 0.382530849262037;
 
     # csv separator
     $Self->{Separator} = ';';
@@ -478,7 +478,7 @@ sub Data {
         'User Profile' => 'Användarprofil',
         'Email Settings' => 'E-postinställningar',
         'Other Settings' => 'Övriga inställningar',
-        'Notification Settings' => '',
+        'Notification Settings' => 'Inställningar för meddelanden',
         'Change Password' => 'Byt lösenord',
         'Current password' => 'Nuvarande lösenord',
         'New password' => 'Nytt lösenord',
@@ -501,7 +501,7 @@ sub Data {
             'Kan inte uppdatera lösenordet för det har redan använts tidigare. Ange ett nytt lösenord!',
         'Select the separator character used in CSV files (stats and searches). If you don\'t select a separator here, the default separator for your language will be used.' =>
             '',
-        'CSV Separator' => '',
+        'CSV Separator' => 'CSV-separator',
 
         # Template: AAATicket
         'Status View' => 'Statusvy',
@@ -580,7 +580,7 @@ sub Data {
         'All tickets' => 'Alla ärenden',
         'Available tickets' => 'Tillgängliga ärenden',
         'Escalation' => 'Eskalering',
-        'last-search' => '',
+        'last-search' => 'senaste sökningen',
         'QueueView' => 'Köer',
         'Ticket Escalation View' => 'Ärendeeskaleringsvy',
         'Message from' => 'Meddelande från',
@@ -650,7 +650,7 @@ sub Data {
         'Create new Email Ticket' => 'Skapa nytt e-postärende',
         'Phone-Ticket' => 'Telefonärende',
         'Search Tickets' => 'Sök ärenden',
-        'Customer Realname' => '',
+        'Customer Realname' => 'Kundens riktiga namn',
         'Customer History' => 'Kundhistorik',
         'Edit Customer Users' => 'Redigera Kundanvändare',
         'Edit Customer' => 'Redigera kund',
@@ -716,7 +716,7 @@ sub Data {
         'Ticket lock timeout notification' => 'Meddela mig då tiden gått ut för ett ärende-lås',
         'Send me a notification if a ticket is unlocked by the system.' =>
             'Skicka mig ett meddelande ifall systemet tar bort låset på ett ärende.',
-        'Send ticket lock timeout notifications' => '',
+        'Send ticket lock timeout notifications' => 'Skicka meddelanden om tiden går ut för ärende-lås',
         'Ticket move notification' => 'Skica notifiering om flyttade ärenden',
         'Send me a notification if a ticket is moved into one of "My Queues".' =>
             'Skicka mig ett meddelande ifall ett ärende flyttas till en av "Mina köer"',
@@ -726,10 +726,10 @@ sub Data {
         'Custom Queue' => 'Anpassad kö',
         'QueueView refresh time' => 'Automatisk uppdateringsintervall för kövy',
         'If enabled, the QueueView will automatically refresh after the specified time.' =>
-            '',
+            'Om detta är aktiverat kommer kövisningen automatiskt att uppdateras efter angiven tid.',
         'Refresh QueueView after' => 'Uppdatera kövy efter',
-        'Screen after new ticket' => 'Skärm efter inmatning av nytt ärende',
-        'Show this screen after I created a new ticket' => 'Visa denna skärm efter att jag skapat ett nytt ärende',
+        'Screen after new ticket' => 'Vy efter inmatning av nytt ärende',
+        'Show this screen after I created a new ticket' => 'Visa denna vy efter att jag skapat ett nytt ärende',
         'Closed Tickets' => 'Låsta ärenden',
         'Show closed tickets.' => 'Visa låsta ärenden.',
         'Max. shown Tickets a page in QueueView.' => 'Max. antal ärenden per sida i kövy.',
@@ -891,7 +891,7 @@ sub Data {
         # Template: AdminCloudServices
         'System registration is a service of OTRS Group, which provides a lot of advantages!' =>
             '',
-        'Please note that you using OTRS cloud services requires the system to be registered.' =>
+        'Please note that the use of OTRS cloud services requires the system to be registered.' =>
             '',
         'Register this system' => '',
         'Here you can configure available cloud services that communicate securely with %s.' =>
@@ -1127,7 +1127,7 @@ sub Data {
         'Last changed times' => '',
         'No last changed time settings.' => '',
         'Ticket last changed' => '',
-        'Ticket last changed between' => '',
+        'Ticket last changed between' => 'Ärende senast ändrat mellan',
         'Change times' => '',
         'No change time settings.' => 'Inga Ändringstider',
         'Ticket changed' => 'Ärende ändrat',
@@ -1658,6 +1658,7 @@ sub Data {
         'You are about to downgrade to OTRS Free and will lose the following features and all data related to these:' =>
             '',
         'Chat' => 'Chat',
+        'Report Generator' => '',
         'Timeline view in ticket zoom' => '',
         'DynamicField ContactWithData' => '',
         'DynamicField Database' => '',
@@ -2392,7 +2393,7 @@ sub Data {
         'Agents will be needed to handle tickets.' => '',
         'Don\'t forget to add a new agent to groups and/or roles!' => '',
         'Please enter a search term to look for agents.' => '',
-        'Last login' => '',
+        'Last login' => 'Senaste inloggning',
         'Switch to agent' => '',
         'Add Agent' => '',
         'Edit Agent' => '',
@@ -2533,7 +2534,7 @@ sub Data {
 
         # Template: AgentPreferences
         'Edit your preferences' => 'Ändra dina inställningar',
-        'Did you know? You can help translating OTRS at %s.' => 'Visste du att du kan hjälpa till att översätta OTRS at %s.',
+        'Did you know? You can help translating OTRS at %s.' => 'Visste du att du kan hjälpa till att översätta OTRS på %s.',
 
         # Template: AgentSpelling
         'Spell Checker' => 'Stavningskontroll',
@@ -2635,6 +2636,8 @@ sub Data {
 
         # Template: AgentTicketCompose
         'Compose Answer for %s%s' => '',
+        'This address is registered as system address and cannot be used: %s' =>
+            '',
         'Please include at least one recipient' => 'Vänligen ange minst en mottagare',
         'Remove Ticket Customer' => '',
         'Please remove this entry and enter a new one with the correct value.' =>
@@ -2744,25 +2747,25 @@ sub Data {
         'Fulltext' => 'Fritext',
         'Remove' => 'Ta bort',
         'Searches in the attributes From, To, Cc, Subject and the article body, overriding other attributes with the same name.' =>
-            '',
+            'Söker efter attribut Från, Till, CC, Ämne och brödtext i artiklar, överskrider andra attribut med samma namn.',
         'Customer User Login' => 'kundanvändare loginnamn',
         'Attachment Name' => '',
         '(e. g. m*file or myfi*)' => '',
         'Created in Queue' => 'Skapad i Kö',
         'Lock state' => '',
         'Watcher' => 'Bevakare',
-        'Article Create Time (before/after)' => '',
-        'Article Create Time (between)' => '',
-        'Ticket Create Time (before/after)' => '',
-        'Ticket Create Time (between)' => '',
-        'Ticket Change Time (before/after)' => '',
-        'Ticket Change Time (between)' => '',
-        'Ticket Last Change Time (before/after)' => '',
-        'Ticket Last Change Time (between)' => '',
-        'Ticket Close Time (before/after)' => '',
-        'Ticket Close Time (between)' => '',
-        'Ticket Escalation Time (before/after)' => '',
-        'Ticket Escalation Time (between)' => '',
+        'Article Create Time (before/after)' => 'Tid när artikel skapades (före/efter)',
+        'Article Create Time (between)' => 'Tid när artikel skapades (mellan)',
+        'Ticket Create Time (before/after)' => 'Tid när äremde skapades (före/efter)',
+        'Ticket Create Time (between)' => 'Tid när ärendet skapades (mellan)',
+        'Ticket Change Time (before/after)' => 'Tid när ärende ändrades (före/efter)',
+        'Ticket Change Time (between)' => 'Tid när ärendet ändrades (mellan)',
+        'Ticket Last Change Time (before/after)' => 'Tid när ärende senast ändrades (före/efter)',
+        'Ticket Last Change Time (between)' => 'Tid när ärendet senast ändrades (mellan)',
+        'Ticket Close Time (before/after)' => 'Tid när äremde stängdes (före/efter)',
+        'Ticket Close Time (between)' => 'Tid när äremdet stängdes (mellan)',
+        'Ticket Escalation Time (before/after)' => 'Tid när äremde eskalerades (före/efter)',
+        'Ticket Escalation Time (between)' => 'Tid när äremdet eskalerades (fmellan)',
         'Archive Search' => '',
         'Run search' => 'Kör sökning',
 
@@ -2846,7 +2849,7 @@ sub Data {
         'Switch to desktop mode' => '',
         'Not available' => '',
         'Clear all' => '',
-        'Clear search' => '',
+        'Clear search' => 'Rensa sökning',
         '%s selection(s)...' => '',
         'and %s more...' => '',
         'Filters' => '',
@@ -2917,8 +2920,8 @@ sub Data {
 
         # Template: CustomerTicketSearchResultShort
         'of' => 'av',
-        'Search Results for' => '',
-        'Remove this Search Term.' => '',
+        'Search Results for' => 'Sökresultat för',
+        'Remove this Search Term.' => 'Ta bort sökterm',
 
         # Template: CustomerTicketZoom
         'Start a chat from this ticket' => 'Starta en chatt från detta ärendet',
@@ -3124,8 +3127,82 @@ sub Data {
         'Receive messages for notification \'%s\' by transport method \'%s\'.' =>
             '',
 
+        # Template: ActivityDialogHeader
+        'Process Information' => '',
+        'Dialog' => '',
+
+        # Template: Article
+        'Inform Agent' => '',
+
         # Template: PublicDefault
         'Welcome' => '',
+
+        # Template: GeneralSpecificationsWidget
+        'Permissions' => '',
+        'You can select one or more groups to define access for different agents.' =>
+            '',
+        'Result formats' => '',
+        'The selected time periods in the statistic are time zone neutral.' =>
+            '',
+        'Create summation row' => '',
+        'Generate an additional row containing sums for all data columns.' =>
+            '',
+        'Create summation column' => '',
+        'Generate an additional column containing sums for all data rows.' =>
+            '',
+        'Cache results' => '',
+        'Stores statistics result data in a cache to be used in subsequent views with the same configuration.' =>
+            '',
+        'Provide the statistic as a widget that agents can activate in their dashboard.' =>
+            '',
+        'Please note that enabling the dashboard widget will activate caching for this statistic in the dashboard.' =>
+            '',
+        'If set to invalid end users can not generate the stat.' => '',
+
+        # Template: PreviewWidget
+        'There are problems in the configuration of this statistic:' => '',
+        'You may now configure the X-axis of your statistic.' => '',
+        'This statistic does not provide preview data.' => '',
+        'Preview format:' => '',
+        'Please note that the preview uses random data and does not consider data restrictions.' =>
+            '',
+        'Configure X-Axis' => '',
+        'X-axis' => 'X-axel',
+        'Configure Y-Axis' => '',
+        'Y-axis' => '',
+        'Configure Filter' => '',
+
+        # Template: RestrictionsWidget
+        'Please select only one element or turn off the button \'Fixed\'.' =>
+            '',
+        'Absolute period' => '',
+        'Between' => '',
+        'Relative period' => '',
+        'The past complete %s and the current+upcoming complete %s %s' =>
+            '',
+        'Do not allow changes to this element when the statistic is generated.' =>
+            '',
+
+        # Template: StatsParamsWidget
+        'Format' => '',
+        'Exchange Axis' => '',
+        'Configurable params of static stat' => '',
+        'No element selected.' => '',
+        'Scale' => '',
+
+        # Template: D3
+        'Download SVG' => '',
+        'Download PNG' => '',
+
+        # Template: XAxisWidget
+        'The selected time period defines the default time frame for this statistic to collect data from.' =>
+            '',
+        'Defines the time unit that will be used to split the selected time period into reporting data points.' =>
+            '',
+
+        # Template: YAxisWidget
+        'Please remember that the scale for value series has to be larger than the scale for the X-axis (e.g. X-Axis => Month, ValueSeries => Year).' =>
+            '',
 
         # Template: Test
         'OTRS Test Page' => 'OTRS Test-sida',
@@ -3248,8 +3325,6 @@ sub Data {
         'Please supply your new password!' => '',
 
         # Perl Module: Kernel/Output/HTML/Statistics/View.pm
-        'X-axis' => 'X-axel',
-        'Y-axis' => '',
         'No past complete or the current+upcoming complete relative time value selected.' =>
             '',
         'The selected time period is larger than the allowed time period.' =>
@@ -3257,7 +3332,7 @@ sub Data {
         'No time scale value available for the current selected time scale value on the X axis.' =>
             '',
         'The selected date is not valid.' => '',
-        'The selected end time is before the start time.' => '',
+        'The selected end time is before the start time.' => 'Vald sluttid är före starttiden!',
         'There is something wrong with your time selection.' => '',
         'Please select only one element or allow modification at stat generation time.' =>
             '',
@@ -3840,7 +3915,7 @@ Thanks for your help!
         'Configure sending of support data to OTRS Group for improved support.' =>
             '',
         'Configure which screen should be shown after a new ticket has been created.' =>
-            'Ställ in vilken skärm som skall visas efter att ett nytt ärende har skapats.',
+            'Ställ in vilken vy som skall visas efter att ett nytt ärende har skapats.',
         'Configure your own log text for PGP.' => '',
         'Configures a default TicketDynamicField setting. "Name" defines the dynamic field which should be used, "Value" is the data that will be set, and "Event" defines the trigger event. Please check the developer manual (http://otrs.github.io/doc/), chapter "Ticket Event Module".' =>
             '',
@@ -4933,7 +5008,7 @@ Thanks for your help!
         'If enabled, the customer can search for tickets in all services (regardless what services are assigned to the customer).' =>
             '',
         'If enabled, the different overviews (Dashboard, LockedView, QueueView) will automatically refresh after the specified time.' =>
-            '',
+            'Om detta är aktiverat kommer överblicksvyer (Dashboard, Lås-vy, Kö-vy) automatiskt att uppdateras efter angiven tid.',
         'If enabled, the first level of the main menu opens on mouse hover (instead of click only).' =>
             '',
         'If set, this address is used as envelope sender header in outgoing notifications. If no address is specified, the envelope sender header is empty.' =>
@@ -5033,7 +5108,8 @@ Thanks for your help!
             '',
         'Max size (in rows) of the involved agents box in the agent interface.' =>
             '',
-        'Max size of the subjects in an email reply.' => '',
+        'Max size of the subjects in an email reply and in some overview screens.' =>
+            '',
         'Maximal auto email responses to own email-address a day (Loop-Protection).' =>
             '',
         'Maximal size in KBytes for mails that can be fetched via POP3/POP3S/IMAP/IMAPS (KBytes).' =>
@@ -5182,7 +5258,6 @@ Thanks for your help!
         'Portuguese (Brasil)' => '',
         'PostMaster Filters' => '',
         'PostMaster Mail Accounts' => '',
-        'Process Information' => '',
         'Process Management Activity Dialog GUI' => '',
         'Process Management Activity GUI' => '',
         'Process Management Path GUI' => '',
