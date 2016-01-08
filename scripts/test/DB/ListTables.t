@@ -6,7 +6,17 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-[% Translate("OTRS as requester") | html %]
-[% Translate("OTRS as provider") | html %]
-[% Translate("Webservice \"%s\" created!") | html %]
-[% Translate("Webservice \"%s\" updated!") | html %]
+use strict;
+use warnings;
+use utf8;
+
+use vars (qw($Self));
+
+my @Tables = $Kernel::OM->Get('Kernel::System::DB')->ListTables();
+
+$Self->True(
+    scalar( grep { $_ eq 'valid' } @Tables ),
+    "Valid table found.",
+);
+
+1;

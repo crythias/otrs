@@ -13,7 +13,7 @@ use utf8;
 use vars (qw($Self));
 
 # get needed objects
-my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $HelperObject = Kernel::System::UnitTest::Helper->new(
     RestoreDatabase => 1,
 );
@@ -344,6 +344,24 @@ my @Tests = (
         RichText => 0,
         Template => 'Test <OTRS_CONFIG_DefaultTheme>',
         Result   => 'Test Standard',
+    },
+    {
+        Name => 'OTRS secret config value',                       # <OTRS_CONFIG_DatabasePw>
+        Data => {
+            From => 'test@home.com',
+        },
+        RichText => 0,
+        Template => 'Test <OTRS_CONFIG_DatabasePw>',
+        Result   => 'Test xxx',
+    },
+    {
+        Name => 'OTRS secret config value and normal config value',
+        Data => {
+            From => 'test@home.com',
+        },
+        RichText => 0,
+        Template => 'Test <OTRS_CONFIG_DatabasePw> and <OTRS_CONFIG_DefaultTheme>',
+        Result   => 'Test xxx and Standard',
     },
     {
         Name => 'mailto-Links',

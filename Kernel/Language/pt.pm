@@ -25,7 +25,7 @@ sub Data {
     $Self->{DateFormatShort}     = '%Y-%M-%D';
     $Self->{DateInputFormat}     = '%Y-%M-%D';
     $Self->{DateInputFormatLong} = '%Y-%M-%D - %T';
-    $Self->{Completeness}        = 0.374697629414611;
+    $Self->{Completeness}        = 0.379500720115218;
 
     # csv separator
     $Self->{Separator} = ';';
@@ -477,7 +477,7 @@ sub Data {
         'User Profile' => 'Perfil de utilizador',
         'Email Settings' => 'Definições de email',
         'Other Settings' => 'Outras definições',
-        'Notification Settings' => '',
+        'Notification Settings' => 'Configuração de Notificações',
         'Change Password' => 'Mudar a Palavra-passe',
         'Current password' => 'Senha atual',
         'New password' => 'Nova palavra-passe',
@@ -620,7 +620,7 @@ sub Data {
         '3 normal' => '3 normal',
         '4 high' => '4 alta',
         '5 very high' => '5 muito alta',
-        'auto follow up' => '',
+        'auto follow up' => 'acompanhamento automático',
         'auto reject' => 'rejeição automática',
         'auto remove' => 'remoção automática',
         'auto reply' => 'resposta automática',
@@ -649,8 +649,8 @@ sub Data {
         'Create new Email Ticket' => 'Criar novo Ticket via email',
         'Phone-Ticket' => 'Telefonema',
         'Search Tickets' => 'Procurar Tickets',
-        'Customer Realname' => '',
-        'Customer History' => '',
+        'Customer Realname' => 'Nome Real do Cliente',
+        'Customer History' => 'História do Cliente',
         'Edit Customer Users' => 'Editar Utilizadores de cliente',
         'Edit Customer' => 'Editar cliente',
         'Bulk Action' => 'Em bloco',
@@ -658,8 +658,8 @@ sub Data {
         'Send Email and create a new Ticket' => 'Enviar mensagem e criar novo Ticket',
         'Create new Email Ticket and send this out (Outbound)' => 'Criar novo Email Ticket e enviar para fora',
         'Create new Phone Ticket (Inbound)' => 'Criar novo Ticket por telefone',
-        'Address %s replaced with registered customer address.' => '',
-        'Customer user automatically added in Cc.' => '',
+        'Address %s replaced with registered customer address.' => 'Endereço %s substituído por um endereço de cliente registado ',
+        'Customer user automatically added in Cc.' => 'Utilizador de Cliente adicionado automaticamente em Cc (Com Conhecimento)',
         'Overview of all open Tickets' => 'Vista de todos os tickets abertos',
         'Locked Tickets' => 'Tickets bloqueados',
         'My Locked Tickets' => 'Os meus tickets bloqueados',
@@ -669,22 +669,22 @@ sub Data {
         'Watched' => 'Vigiado',
         'Watch' => 'Vigiar',
         'Unwatch' => '',
-        'Lock it to work on it' => '',
-        'Unlock to give it back to the queue' => '',
-        'Show the ticket history' => '',
+        'Lock it to work on it' => 'Bloqueá-lo para trabalhar com ele',
+        'Unlock to give it back to the queue' => 'Destranca para voltar à fila',
+        'Show the ticket history' => 'Mostra a história do pedido',
         'Print this ticket' => 'Imprimir este ticket',
         'Print this article' => 'Imprimir este artigo',
-        'Split' => '',
-        'Split this article' => '',
-        'Forward article via mail' => '',
-        'Change the ticket priority' => '',
+        'Split' => 'Divide',
+        'Split this article' => 'Divide este artigo',
+        'Forward article via mail' => 'Envia o artigo via e-mail',
+        'Change the ticket priority' => 'Altera a prioridade do pedido',
         'Change the ticket free fields!' => 'Alterar os campos livres do ticket!',
-        'Link this ticket to other objects' => '',
-        'Change the owner for this ticket' => '',
-        'Change the  customer for this ticket' => '',
-        'Add a note to this ticket' => '',
-        'Merge into a different ticket' => '',
-        'Set this ticket to pending' => '',
+        'Link this ticket to other objects' => 'Liga este pedido a outros objetos',
+        'Change the owner for this ticket' => 'Altera o dono deste pedido',
+        'Change the  customer for this ticket' => 'Altera o cliente deste pedido',
+        'Add a note to this ticket' => 'Adiciona uma nota a este pedido',
+        'Merge into a different ticket' => 'Junta-se a um pedido diferente',
+        'Set this ticket to pending' => 'Coloca este pedido pendente',
         'Close this ticket' => 'Fechar este ticket',
         'Look into a ticket!' => 'Ver detalhe do ticket!',
         'Delete this ticket' => 'Apagar este ticket',
@@ -710,8 +710,8 @@ sub Data {
         'Send new ticket notifications' => 'Enviar notificações em novos tickets',
         'Ticket follow up notification' => 'Enviar notificações em atualizações de tickets',
         'Send me a notification if a customer sends a follow up and I\'m the owner of the ticket or the ticket is unlocked and is in one of my subscribed queues.' =>
-            '',
-        'Send ticket follow up notifications' => '',
+            'Envia-me uma notificação se um cliente dá seguimento e eu sou o dono deste pedido ou o pedido destá desbloqueado e é um das minhas filas subcritas',
+        'Send ticket follow up notifications' => 'Envia o pedido seguido de notificações',
         'Ticket lock timeout notification' => 'Notificação por expiração de tempo de bloqueio',
         'Send me a notification if a ticket is unlocked by the system.' =>
             'Enviar notificação se um ticket for desbloqueado pelo sistema.',
@@ -763,8 +763,8 @@ sub Data {
         'Archived tickets' => 'Tickets arquivados',
         'Unarchived tickets' => 'Tickets não arquivados',
         'Ticket Information' => 'Informação do ticket',
-        'including subqueues' => '',
-        'excluding subqueues' => '',
+        'including subqueues' => 'incluindo sub-filas',
+        'excluding subqueues' => 'excluindo sub-filas',
 
         # Template: AAAWeekDay
         'Sun' => 'Domingo',
@@ -786,20 +786,20 @@ sub Data {
         'Export ACLs' => 'Exportar ACLs',
         'Configuration import' => 'Importar configuração',
         'Here you can upload a configuration file to import ACLs to your system. The file needs to be in .yml format as exported by the ACL editor module.' =>
-            '',
+            'Aqui podes carregar o ficheiro de configuração para importar a Lista de Controle de Acesso (ACL) para o teu sistema. O ficheiro deve estar no formato .yml como exportado pelo módulo de edição Lista de Controle de Acesso (ACL).',
         'This field is required.' => 'Campo obrigatório',
         'Overwrite existing ACLs?' => 'Substituir ACLs existentes?',
-        'Upload ACL configuration' => '',
-        'Import ACL configuration(s)' => '',
+        'Upload ACL configuration' => 'Envio de Configuração Lista de Controle de Acesso (ACL)',
+        'Import ACL configuration(s)' => 'Importar configuração(ões) Lista de Controle de Acesso (ACL)',
         'To create a new ACL you can either import ACLs which were exported from another system or create a complete new one.' =>
-            '',
+            'Para criar uma nova Lista de Controle de Acesso (ACL) podes importar uma lista exportada de outro programa ou criar uma nova completa.',
         'Changes to the ACLs here only affect the behavior of the system, if you deploy the ACL data afterwards. By deploying the ACL data, the newly made changes will be written to the configuration.' =>
-            '',
+            'As alterações na Lista de Controle de Acesso (ACL) aqui só afectam o comportamento do sistema, se instalar os dados Lista de Controle de Acesso (ACL) depois. Ao instalar os dados da Lista de Controle de Acesso (ACL), as alterações mais recentes serão gravadas na configuração.',
         'ACLs' => 'ACLs',
         'Please note: This table represents the execution order of the ACLs. If you need to change the order in which ACLs are executed, please change the names of the affected ACLs.' =>
-            '',
+            'Atenção: Esta tabela representa a ordem de execução das Listas de Controle de Acesso (ACLs). Se precisar de alterar a ordem em que as Listas de Controle de Acesso (ACL) são executadas, por favor, altere os nomes das Lista de Controle de Acesso (ACL).',
         'ACL name' => 'Nome da ACL',
-        'Validity' => '',
+        'Validity' => 'Validade',
         'Copy' => 'Copiar',
         'No data found.' => 'não há resultados',
 
@@ -808,7 +808,7 @@ sub Data {
         'Go to overview' => 'Vista geral',
         'Delete ACL' => 'Eliminar ACL',
         'Delete Invalid ACL' => 'Eliminar ACL inválida',
-        'Match settings' => '',
+        'Match settings' => 'Configurações correspondentes',
         'Set up matching criteria for this ACL. Use \'Properties\' to match the current screen or \'PropertiesDatabase\' to match attributes of the current ticket that are in the database.' =>
             '',
         'Change settings' => 'Alterar definições',
@@ -822,7 +822,7 @@ sub Data {
         'Edit ACL structure' => '',
         'Save' => 'Guardar',
         'or' => 'ou',
-        'Save and finish' => '',
+        'Save and finish' => 'Grava e termina',
         'Do you really want to delete this ACL?' => '',
         'This item still contains sub items. Are you sure you want to remove this item including its sub items?' =>
             '',
@@ -1584,8 +1584,8 @@ sub Data {
         'To get the first 5 lines of the body (of the latest customer article).' =>
             'Para obter as últimas 5 linhas do corpo do email (do último artigo do cliente)',
         'Attributes of the current customer user data' => '',
-        'Attibutes of the current ticket owner\'s user data' => '',
-        'Attibutes of the current ticket responsible\'s user data' => '',
+        'Attributes of the current ticket owner user data' => '',
+        'Attributes of the current ticket responsible user data' => '',
         'Attributes of the current agent user who requested this action' =>
             '',
         'Attributes of the recipient user for the notification' => '',
@@ -1840,7 +1840,6 @@ sub Data {
         'Filter available fields' => '',
         'Available Fields' => '',
         'Assigned Fields' => '',
-        'Edit Details for Field' => '',
         'ArticleType' => '',
         'Display' => '',
         'Edit Field Details' => '',
@@ -1948,9 +1947,9 @@ sub Data {
         'Type of Linking between Conditions' => '',
         'Remove this Condition' => '',
         'Type of Linking' => '',
+        'Add a new Field' => '',
         'Remove this Field' => '',
         'And can\'t be repeated on the same condition.' => '',
-        'Add a new Field' => '',
         'Add New Condition' => '',
 
         # Template: AdminProcessManagementTransitionAction
@@ -1960,8 +1959,8 @@ sub Data {
         'Transition Action Name' => '',
         'Transition Action Module' => '',
         'Config Parameters' => '',
-        'Remove this Parameter' => '',
         'Add a new Parameter' => '',
+        'Remove this Parameter' => '',
 
         # Template: AdminQueue
         'Manage Queues' => 'Gerir filas',
@@ -3125,6 +3124,12 @@ sub Data {
         'No user configurable notifications found.' => '',
         'Receive messages for notification \'%s\' by transport method \'%s\'.' =>
             '',
+        'Please note that you can\'t completely disable notifications marked as mandatory.' =>
+            '',
+        'Sorry, but you can\'t disable all methods for notifications marked as mandatory.' =>
+            '',
+        'Sorry, but you can\'t disable all methods for this notification.' =>
+            '',
 
         # Template: ActivityDialogHeader
         'Process Information' => '',
@@ -3237,6 +3242,7 @@ sub Data {
         'All agents subscribed to both the ticket\'s queue and service' =>
             '',
         'Customer of the ticket' => '',
+        'Yes, but require at least one active notification method' => '',
 
         # Perl Module: Kernel/Modules/AdminPackageManager.pm
         'Package not verified due a communication issue with verification server!' =>
@@ -3305,6 +3311,9 @@ sub Data {
             '',
         ' You can take one of the next actions:' => '',
 
+        # Perl Module: Kernel/Output/HTML/Layout/LinkObject.pm
+        'Linked as' => '',
+
         # Perl Module: Kernel/Output/HTML/Notification/AgentOTRSBusiness.pm
         '%s Upgrade to %s now! %s' => '',
 
@@ -3316,6 +3325,10 @@ sub Data {
 
         # Perl Module: Kernel/Output/HTML/Preferences/Language.pm
         '(in process)' => '',
+
+        # Perl Module: Kernel/Output/HTML/Preferences/NotificationEvent.pm
+        'Please make sure you\'ve chosen at least one transport method for mandatory notifications.' =>
+            '',
 
         # Perl Module: Kernel/Output/HTML/Preferences/OutOfOffice.pm
         'Please specify an end date that is after the start date.' => '',
@@ -3351,6 +3364,12 @@ sub Data {
 
         # Perl Module: Kernel/Output/HTML/TicketOverviewMenu/Sort.pm
         'Order by' => 'Ordenado por',
+
+        # Perl Module: Kernel/System/Console/Command/Dev/Tools/Config2Docbook.pm
+        'Configuration Options Reference' => '',
+        'This setting can not be changed.' => '',
+        'This setting is not active by default.' => '',
+        'This setting can not be deactivated.' => '',
 
         # Perl Module: Kernel/System/Stats/Dynamic/Ticket.pm
         'State Type' => '',
@@ -3676,6 +3695,18 @@ sub Data {
         'email-notification-ext' => '',
         'email-notification-int' => '',
         'fax' => '',
+        'Ticket create notification' => '',
+        'Ticket follow-up notification (unlocked)' => '',
+        'Ticket follow-up notification (locked)' => '',
+        'Ticket owner update notification' => '',
+        'Ticket responsible update notification' => '',
+        'Ticket new note notification' => '',
+        'Ticket queue update notification' => '',
+        'Ticket pending reminder notification (locked)' => '',
+        'Ticket pending reminder notification (unlocked)' => '',
+        'Ticket escalation notification' => '',
+        'Ticket escalation warning notification' => '',
+        'Ticket service update notification' => '',
 
         # SysConfig
         '
@@ -4549,9 +4580,9 @@ Thanks for your help!
         'Defines the postmaster default queue.' => '',
         'Defines the priority in which the information is logged and presented.' =>
             '',
-        'Defines the receipent target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.' =>
+        'Defines the recipient target of the phone ticket and the sender of the email ticket ("Queue" shows all queues, "System address" displays all system addresses) in the agent interface.' =>
             '',
-        'Defines the receipent target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.' =>
+        'Defines the recipient target of the tickets ("Queue" shows all queues, "SystemAddress" displays all system addresses) in the customer interface.' =>
             '',
         'Defines the required permission to show a ticket in the escalation view of the agent interface.' =>
             '',
@@ -4647,9 +4678,9 @@ Thanks for your help!
             '',
         'Determines the possible states for pending tickets that changed state after reaching time limit.' =>
             '',
-        'Determines the strings that will be shown as receipent (To:) of the ticket in the customer interface. For Queue as CustomerPanelSelectionType, "<Queue>" shows the names of the queues, and for SystemAddress, "<Realname> <<Email>>" shows the name and email of the receipent.' =>
+        'Determines the strings that will be shown as recipient (To:) of the phone ticket and as sender (From:) of the email ticket in the agent interface. For Queue as NewQueueSelectionType "<Queue>" shows the names of the queues and for SystemAddress "<Realname> <<Email>>" shows the name and email of the recipient.' =>
             '',
-        'Determines the strings that will be shown as recipient (To:) of the phone ticket and as sender (From:) of the email ticket in the agent interface. For Queue as NewQueueSelectionType "<Queue>" shows the names of the queues and for SystemAddress "<Realname> <<Email>>" shows the name and email of the receipent.' =>
+        'Determines the strings that will be shown as recipient (To:) of the ticket in the customer interface. For Queue as CustomerPanelSelectionType, "<Queue>" shows the names of the queues, and for SystemAddress, "<Realname> <<Email>>" shows the name and email of the recipient.' =>
             '',
         'Determines the way the linked objects are displayed in each zoom mask.' =>
             '',
@@ -4775,6 +4806,8 @@ Thanks for your help!
         'English (Canada)' => '',
         'English (United Kingdom)' => '',
         'English (United States)' => '',
+        'English stop words for fulltext index. These words will be removed from the search index.' =>
+            '',
         'Enroll process for this ticket' => '',
         'Enter your shared secret to enable two factor authentication.' =>
             '',
@@ -4892,8 +4925,6 @@ Thanks for your help!
             '',
         'Go back' => '',
         'Google Authenticator' => '',
-        'Grants access, if the customer ID of the ticket matches the customer user\'s ID and the customer user has group permissions on the queue the ticket is in.' =>
-            '',
         'Greek' => '',
         'Hebrew' => '',
         'Helps to extend your articles full-text search (From, To, Cc, Subject and Body search). Runtime will do full-text searches on live data (it works fine for up to 50.000 tickets). StaticDB will strip all articles and will build an index after article creation, increasing fulltext searches about 50%. To create an initial index use "bin/otrs.Console.pl Maint::Ticket::FulltextIndexRebuild".' =>
@@ -5132,16 +5163,12 @@ Thanks for your help!
         'Miscellaneous' => '',
         'Module for To-selection in new ticket screen in the customer interface.' =>
             '',
-        'Module to check customer permissions.' => '',
-        'Module to check if a user is in a special group. Access is granted, if the user is in the specified group and has ro and rw permissions.' =>
-            '',
         'Module to check if arrived emails should be marked as email-internal (because of original forwarded internal email). ArticleType and SenderType define the values for the arrived email/article.' =>
             '',
-        'Module to check the agent responsible of a ticket.' => '',
-        'Module to check the group permissions for the access to customer tickets.' =>
+        'Module to check the group permissions for customer access to tickets.' =>
             '',
-        'Module to check the owner of a ticket.' => '',
-        'Module to check the watcher agents of a ticket.' => '',
+        'Module to check the group permissions for the access to tickets.' =>
+            '',
         'Module to compose signed messages (PGP or S/MIME).' => '',
         'Module to crypt composed messages (PGP or S/MIME).' => '',
         'Module to filter and manipulate incoming messages. Block/ignore all spam email with From: noreply@ address.' =>
@@ -5156,6 +5183,17 @@ Thanks for your help!
         'Module to generate ticket solution and response time statistics.' =>
             '',
         'Module to generate ticket statistics.' => '',
+        'Module to grant access if the CustomerID of the ticket matches the CustomerID of the customer.' =>
+            '',
+        'Module to grant access if the CustomerUserID of the ticket matches the CustomerUserID of the customer.' =>
+            '',
+        'Module to grant access to any agent that has been involved in a ticket in the past (based on ticket history entries).' =>
+            '',
+        'Module to grant access to the agent responsible of a ticket.' =>
+            '',
+        'Module to grant access to the creator of a ticket.' => '',
+        'Module to grant access to the owner of a ticket.' => '',
+        'Module to grant access to the watcher agents of a ticket.' => '',
         'Module to show notifications and escalations (ShownMax: max. shown escalations, EscalationInMinutes: Show ticket which will escalation in, CacheTime: Cache of calculated escalations in seconds).' =>
             '',
         'Module to use database filter storage.' => '',
@@ -5193,6 +5231,14 @@ Thanks for your help!
         'Online' => 'Online',
         'Open tickets (customer user)' => '',
         'Open tickets (customer)' => '',
+        'Optional queue limitation for the CreatorCheck permission module. If set, permission is only granted for tickets in the specified queues.' =>
+            '',
+        'Optional queue limitation for the InvolvedCheck permission module. If set, permission is only granted for tickets in the specified queues.' =>
+            '',
+        'Optional queue limitation for the OwnerCheck permission module. If set, permission is only granted for tickets in the specified queues.' =>
+            '',
+        'Optional queue limitation for the ResponsibleCheck permission module. If set, permission is only granted for tickets in the specified queues.' =>
+            '',
         'Out Of Office' => '',
         'Overloads (redefines) existing functions in Kernel::System::Ticket. Used to easily add customizations.' =>
             '',
@@ -5891,7 +5937,7 @@ Thanks for your help!
             '',
         'This setting allows you to override the built-in country list with your own list of countries. This is particularly handy if you just want to use a small select group of countries.' =>
             '',
-        'This will allow the system to send SMS messages.' => '',
+        'This will allow the system to send text messages via SMS.' => '',
         'Ticket Notifications' => '',
         'Ticket Queue Overview' => '',
         'Ticket event module that triggers the escalation stop events.' =>
@@ -5908,6 +5954,8 @@ Thanks for your help!
         'Toolbar Item for a shortcut.' => '',
         'Transport selection for ticket notifications.' => '',
         'Tree view' => '',
+        'Triggers ticket escalation events and notification events for escalation.' =>
+            '',
         'Turkish' => '',
         'Turns off SSL certificate validation, for example if you use a transparent HTTPS proxy. Use at your own risk!' =>
             '',
@@ -5947,6 +5995,11 @@ Thanks for your help!
         'View performance benchmark results.' => '',
         'View system log messages.' => '',
         'Watch this ticket' => '',
+        'We are performing scheduled maintenance.' => '',
+        'We are performing scheduled maintenance. Login is temporarily not available.' =>
+            '',
+        'We are performing scheduled maintenance. We should be back online shortly.' =>
+            '',
         'When tickets are merged, a note will be added automatically to the ticket which is no longer active. Here you can define the body of this note (this text cannot be changed by the agent).' =>
             '',
         'When tickets are merged, a note will be added automatically to the ticket which is no longer active. Here you can define the subject of this note (this subject cannot be changed by the agent).' =>

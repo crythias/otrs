@@ -83,8 +83,10 @@ sub new {
             Description => 'Do not perform ANSI terminal output coloring.',
         },
         {
-            Name        => 'allow-root',
-            Description => 'Allow root user to execute the command.',
+            Name => 'allow-root',
+            Description =>
+                'Allow root user to execute the command. This might damage your system; use at your own risk.',
+            Invisible => 1,    # hide from usage screen
         },
     ];
 
@@ -404,13 +406,6 @@ sub Execute {
         $Self->ANSI(0);
     }
 
-    # Show warning if command is executed as root
-    if ( $ParsedGlobalOptions->{'allow-root'} && $> == 0 ) {    # $EFFECTIVE_USER_ID
-        $Self->Print(
-            "\n<red>You are running otrs.Console.pl as root. This could potentially damage your system, continue at your own risk.</red>\n\n"
-            )
-    }
-
     if ( $ParsedGlobalOptions->{help} ) {
         print "\n" . $Self->GetUsageHelp();
         return $Self->ExitCodeOk();
@@ -527,6 +522,7 @@ sub GetUsageHelp {
     #   they don't actually belong to the current command (only).
     GLOBALOPTION:
     for my $Option ( @{ $Self->{_GlobalOptions} // [] } ) {
+        next GLOBALOPTION if $Option->{Invisible};
         my $OptionShort = "[--$Option->{Name}]";
         $OptionsText .= sprintf " <green>%-30s</green> - %s", $OptionShort, $Option->{Description} . "\n";
     }

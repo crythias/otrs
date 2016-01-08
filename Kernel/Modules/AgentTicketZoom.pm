@@ -16,6 +16,7 @@ our $ObjectManagerDisabled = 1;
 use POSIX qw/ceil/;
 use Kernel::System::EmailParser;
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 sub new {
     my ( $Type, %Param ) = @_;
@@ -36,52 +37,54 @@ sub new {
     $Self->{ArticleID}      = $ParamObject->GetParam( Param => 'ArticleID' );
     $Self->{ZoomExpand}     = $ParamObject->GetParam( Param => 'ZoomExpand' );
     $Self->{ZoomExpandSort} = $ParamObject->GetParam( Param => 'ZoomExpandSort' );
-
-    # Please note: ZoomTimeline is an OTRSBusiness feature
-    $Self->{ZoomTimeline} = $ParamObject->GetParam( Param => 'ZoomTimeline' );
-    if ( !$ConfigObject->Get('TimelineViewEnabled') ) {
-        $Self->{ZoomTimeline} = 0;
-    }
+    $Self->{ZoomTimeline}   = $ParamObject->GetParam( Param => 'ZoomTimeline' );
 
     my %UserPreferences = $UserObject->GetPreferences(
         UserID => $Self->{UserID},
     );
 
-    if ( !defined $Self->{ZoomExpand} && !defined $Self->{ZoomTimeline} ) {
-        $Self->{ZoomExpand} = $ConfigObject->Get('Ticket::Frontend::ZoomExpand');
-        if ( $UserPreferences{UserLastUsedZoomViewType} ) {
-            if ( $UserPreferences{UserLastUsedZoomViewType} eq 'Expand' ) {
-                $Self->{ZoomExpand} = 1;
-            }
-            elsif ( $UserPreferences{UserLastUsedZoomViewType} eq 'Collapse' ) {
-                $Self->{ZoomExpand} = 0;
-            }
-            elsif ( $UserPreferences{UserLastUsedZoomViewType} eq 'Timeline' ) {
-                $Self->{ZoomTimeline} = 1;
-            }
-        }
-    }
-
     # save last used view type in preferences
-    if ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
+    if ( !$Self->{Subaction} ) {
 
-        my $LastUsedZoomViewType = '';
-        if ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 1 ) {
-            $LastUsedZoomViewType = 'Expand';
+        if ( !defined $Self->{ZoomExpand} && !defined $Self->{ZoomTimeline} ) {
+            $Self->{ZoomExpand} = $ConfigObject->Get('Ticket::Frontend::ZoomExpand');
+            if ( $UserPreferences{UserLastUsedZoomViewType} ) {
+                if ( $UserPreferences{UserLastUsedZoomViewType} eq 'Expand' ) {
+                    $Self->{ZoomExpand} = 1;
+                }
+                elsif ( $UserPreferences{UserLastUsedZoomViewType} eq 'Collapse' ) {
+                    $Self->{ZoomExpand} = 0;
+                }
+                elsif ( $UserPreferences{UserLastUsedZoomViewType} eq 'Timeline' ) {
+                    $Self->{ZoomTimeline} = 1;
+                }
+            }
         }
-        elsif ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 0 ) {
-            $LastUsedZoomViewType = 'Collapse';
+
+        if ( defined $Self->{ZoomExpand} || defined $Self->{ZoomTimeline} ) {
+
+            my $LastUsedZoomViewType = '';
+            if ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 1 ) {
+                $LastUsedZoomViewType = 'Expand';
+            }
+            elsif ( defined $Self->{ZoomExpand} && $Self->{ZoomExpand} == 0 ) {
+                $LastUsedZoomViewType = 'Collapse';
+            }
+            elsif ( defined $Self->{ZoomTimeline} && $Self->{ZoomTimeline} == 1 ) {
+                $LastUsedZoomViewType = 'Timeline';
+            }
+            $UserObject->SetPreferences(
+                UserID => $Self->{UserID},
+                Key    => 'UserLastUsedZoomViewType',
+                Value  => $LastUsedZoomViewType,
+            );
         }
-        elsif ( defined $Self->{ZoomTimeline} && $Self->{ZoomTimeline} == 1 ) {
-            $LastUsedZoomViewType = 'Timeline';
-        }
-        $UserObject->SetPreferences(
-            UserID => $Self->{UserID},
-            Key    => 'UserLastUsedZoomViewType',
-            Value  => $LastUsedZoomViewType,
-        );
     }
 
+    # Please note: ZoomTimeline is an OTRSBusiness feature
+    if ( !$ConfigObject->Get('TimelineViewEnabled') ) {
+        $Self->{ZoomTimeline} = 0;
+    }
 
     if ( !defined $Self->{DoNotShowBrowserLinkMessage} ) {
         if ( $UserPreferences{UserAgentDoNotShowBrowserLinkMessage} ) {
@@ -103,10 +106,10 @@ sub new {
         || $LayoutObject->{BrowserRichText}
         || 0;
 
-    # strip html and ascii attachments of content
+    # strip HTML and ASCII attachments of content
     $Self->{StripPlainBodyAsAttachment} = 1;
 
-    # check if rich text is enabled, if not only strip ascii attachments
+    # check if rich text is enabled, if not only strip ASCII attachments
     if ( !$Self->{RichText} ) {
         $Self->{StripPlainBodyAsAttachment} = 2;
     }
@@ -128,43 +131,43 @@ sub new {
     # this is a mapping of history types which is being used
     # for the timeline view and its event type filter
     $Self->{HistoryTypeMapping} = {
-        NewTicket                       => 'Ticket Created',
-        AddNote                         => 'Note Added',
-        AddNoteCustomer                 => 'Note Added (Customer)',
-        EmailAgent                      => 'Outgoing Email',
-        EmailAgentInternal              => 'Outgoing Email (internal)',
-        EmailCustomer                   => 'Incoming Customer Email',
-        TicketDynamicFieldUpdate        => 'Dynamic Field Updated',
-        PhoneCallAgent                  => 'Outgoing Phone Call',
-        PhoneCallCustomer               => 'Incoming Phone Call',
-        SendAnswer                      => 'Outgoing Answer',
-        ResponsibleUpdate               => 'New Responsible',
-        OwnerUpdate                     => 'New Owner',
-        SLAUpdate                       => 'SLA Updated',
-        ServiceUpdate                   => 'Service Updated',
-        CustomerUpdate                  => 'Customer Updated',
-        StateUpdate                     => 'State Updated',
-        FollowUp                        => 'Incoming Follow-Up',
-        EscalationUpdateTimeStop        => 'Escalation Update Time Stopped',
-        EscalationSolutionTimeStop      => 'Escalation Solution Time Stopped',
-        EscalationFirstResponseTimeStop => 'Escalation First Response Time Stopped',
-        EscalationResponseTimeStop      => 'Escalation Response Time Stopped',
-        TicketLinkAdd                   => 'Link Added',
-        TicketLinkDelete                => 'Link Deleted',
-        Merged                          => 'Ticket Merged',
-        SetPendingTime                  => 'Pending Time Set',
-        Lock                            => 'Ticket Locked',
-        Unlock                          => 'Ticket Unlocked',
-        Move                            => 'Queue Updated',
-        PriorityUpdate                  => 'Priority Updated',
-        TitleUpdate                     => 'Title Updated',
-        TypeUpdate                      => 'Type Updated',
-        WebRequestCustomer              => 'Incoming Web Request',
-        SendAutoFollowUp                => 'Automatic Follow-Up Sent',
-        SendAutoReply                   => 'Automatic Reply Sent',
-        TimeAccounting                  => 'Time Accounted',
-        ChatExternal                    => 'External Chat',
-        ChatInternal                    => 'Internal Chat',
+        NewTicket                       => Translatable('Ticket Created'),
+        AddNote                         => Translatable('Note Added'),
+        AddNoteCustomer                 => Translatable('Note Added (Customer)'),
+        EmailAgent                      => Translatable('Outgoing Email'),
+        EmailAgentInternal              => Translatable('Outgoing Email (internal)'),
+        EmailCustomer                   => Translatable('Incoming Customer Email'),
+        TicketDynamicFieldUpdate        => Translatable('Dynamic Field Updated'),
+        PhoneCallAgent                  => Translatable('Outgoing Phone Call'),
+        PhoneCallCustomer               => Translatable('Incoming Phone Call'),
+        SendAnswer                      => Translatable('Outgoing Answer'),
+        ResponsibleUpdate               => Translatable('New Responsible'),
+        OwnerUpdate                     => Translatable('New Owner'),
+        SLAUpdate                       => Translatable('SLA Updated'),
+        ServiceUpdate                   => Translatable('Service Updated'),
+        CustomerUpdate                  => Translatable('Customer Updated'),
+        StateUpdate                     => Translatable('State Updated'),
+        FollowUp                        => Translatable('Incoming Follow-Up'),
+        EscalationUpdateTimeStop        => Translatable('Escalation Update Time Stopped'),
+        EscalationSolutionTimeStop      => Translatable('Escalation Solution Time Stopped'),
+        EscalationFirstResponseTimeStop => Translatable('Escalation First Response Time Stopped'),
+        EscalationResponseTimeStop      => Translatable('Escalation Response Time Stopped'),
+        TicketLinkAdd                   => Translatable('Link Added'),
+        TicketLinkDelete                => Translatable('Link Deleted'),
+        Merged                          => Translatable('Ticket Merged'),
+        SetPendingTime                  => Translatable('Pending Time Set'),
+        Lock                            => Translatable('Ticket Locked'),
+        Unlock                          => Translatable('Ticket Unlocked'),
+        Move                            => Translatable('Queue Updated'),
+        PriorityUpdate                  => Translatable('Priority Updated'),
+        TitleUpdate                     => Translatable('Title Updated'),
+        TypeUpdate                      => Translatable('Type Updated'),
+        WebRequestCustomer              => Translatable('Incoming Web Request'),
+        SendAutoFollowUp                => Translatable('Automatic Follow-Up Sent'),
+        SendAutoReply                   => Translatable('Automatic Reply Sent'),
+        TimeAccounting                  => Translatable('Time Accounted'),
+        ChatExternal                    => Translatable('External Chat'),
+        ChatInternal                    => Translatable('Internal Chat'),
     };
 
     # Add custom files to the zoom's frontend module registration on the fly
@@ -193,8 +196,8 @@ sub Run {
     # check needed stuff
     if ( !$Self->{TicketID} ) {
         return $LayoutObject->ErrorScreen(
-            Message => 'No TicketID is given!',
-            Comment => 'Please contact the admin.',
+            Message => Translatable('No TicketID is given!'),
+            Comment => Translatable('Please contact the admin.'),
         );
     }
 
@@ -209,16 +212,12 @@ sub Run {
     );
 
     # error screen, don't show ticket
-    if ( !$Access ) {
-        my $TranslatableMessage = $LayoutObject->{LanguageObject}->Translate(
-            "We are sorry, you do not have permissions anymore to access this ticket in its current state. "
-        );
-
-        return $LayoutObject->NoPermission(
-            Message    => $TranslatableMessage,
-            WithHeader => 'yes',
-        );
-    }
+    return $LayoutObject->NoPermission(
+        Message => Translatable(
+            "We are sorry, you do not have permissions anymore to access this ticket in its current state."
+        ),
+        WithHeader => 'yes',
+    ) if !$Access;
 
     # get ticket attributes
     my %Ticket = $TicketObject->TicketGet(
@@ -600,7 +599,7 @@ sub Run {
 
         # check needed ArticleID
         if ( !$Self->{ArticleID} ) {
-            return $LayoutObject->ErrorScreen( Message => 'Need ArticleID!' );
+            return $LayoutObject->ErrorScreen( Message => Translatable('Need ArticleID!') );
         }
 
         # get article data
@@ -611,10 +610,10 @@ sub Run {
 
         # check if article data exists
         if ( !%Article ) {
-            return $LayoutObject->ErrorScreen( Message => 'Invalid ArticleID!' );
+            return $LayoutObject->ErrorScreen( Message => Translatable('Invalid ArticleID!') );
         }
 
-        # if it is a html email, return here
+        # if it is a HTML email, return here
         return $LayoutObject->Attachment(
             Filename => $ConfigObject->Get('Ticket::Hook')
                 . "-$Article{TicketNumber}-$Article{TicketID}-$Article{ArticleID}",
@@ -871,7 +870,7 @@ sub MaskAgentZoom {
     }
 
     # set display options
-    $Param{WidgetTitle} = 'Ticket Information';
+    $Param{WidgetTitle} = Translatable('Ticket Information');
     $Param{Hook} = $ConfigObject->Get('Ticket::Hook') || 'Ticket#';
 
     # check if ticket is normal or process ticket
@@ -1106,9 +1105,18 @@ sub MaskAgentZoom {
 
     # ticket type
     if ( $ConfigObject->Get('Ticket::Type') ) {
+
+        my %Type = $Kernel::OM->Get('Kernel::System::Type')->TypeGet(
+            ID => $Ticket{TypeID},
+        );
+
         $LayoutObject->Block(
             Name => 'Type',
-            Data => { %Ticket, %AclAction },
+            Data => {
+                Valid => $Type{ValidID},
+                %Ticket,
+                %AclAction
+            },
         );
     }
 
@@ -2281,7 +2289,7 @@ sub _ArticleTree {
                         Class               => 'NewTicket',
                         Name                => '',
                         ArticleID           => '',
-                        HistoryTypeReadable => 'Ticket Created',
+                        HistoryTypeReadable => Translatable('Ticket Created'),
                         Orientation         => 'Right',
                     };
                 }
@@ -2466,7 +2474,7 @@ sub _ArticleTree {
             );
 
             # if we have two events that happened 'nearly' the same time, treat
-            # them as if they happened exactly on the same time (treshold 5 seconds)
+            # them as if they happened exactly on the same time (threshold 5 seconds)
             if (
                 $LastCreateSystemTime
                 && $Item->{CreateSystemTime} <= $LastCreateSystemTime
@@ -2963,10 +2971,10 @@ sub _ArticleItem {
         return 1;
     }
 
-    # show body as html or plain text
+    # show body as HTML or plain text
     my $ViewMode = 'BodyHTML';
 
-    # in case show plain article body (if no html body as attachment exists of if rich
+    # in case show plain article body (if no HTML body as attachment exists of if rich
     # text is not enabled)
     if ( !$Self->{RichText} || !$Article{AttachmentIDOfHTMLBody} ) {
         $ViewMode = 'BodyPlain';
@@ -2974,7 +2982,7 @@ sub _ArticleItem {
         # remember plain body for further processing by ArticleViewModules
         $Article{BodyPlain} = $Article{Body};
 
-        # html quoting
+        # HTML quoting
         $Article{Body} = $LayoutObject->Ascii2Html(
             NewLine        => $ConfigObject->Get('DefaultViewNewLine'),
             Text           => $Article{Body},
@@ -3099,7 +3107,7 @@ sub _ArticleMenu {
                     }
                 );
 
-                # build html string
+                # build HTML string
                 my $StandardResponsesStrg = $LayoutObject->BuildSelection(
                     Name => 'ResponseID',
                     ID   => 'ResponseID',
@@ -3110,7 +3118,7 @@ sub _ArticleMenu {
                     ItemType              => 'Dropdown',
                     DropdownType          => 'Reply',
                     StandardResponsesStrg => $StandardResponsesStrg,
-                    Name                  => 'Reply',
+                    Name                  => Translatable('Reply'),
                     Class                 => 'AsPopup PopupType_TicketAction',
                     Action                => 'AgentTicketCompose',
                     FormID                => 'Reply' . $Article{ArticleID},
@@ -3167,7 +3175,7 @@ sub _ArticleMenu {
                         ItemType              => 'Dropdown',
                         DropdownType          => 'Reply',
                         StandardResponsesStrg => $StandardResponsesStrg,
-                        Name                  => 'Reply All',
+                        Name                  => Translatable('Reply All'),
                         Class                 => 'AsPopup PopupType_TicketAction',
                         Action                => 'AgentTicketCompose',
                         FormID                => 'ReplyAll' . $Article{ArticleID},
@@ -3241,7 +3249,7 @@ sub _ArticleMenu {
                         }
                     );
 
-                    # build html string
+                    # build HTML string
                     my $StandardForwardsStrg = $LayoutObject->BuildSelection(
                         Name => 'ForwardTemplateID',
                         ID   => 'ForwardTemplateID',
@@ -3265,8 +3273,8 @@ sub _ArticleMenu {
 
                     push @MenuItems, {
                         ItemType    => 'Link',
-                        Description => 'Forward article via mail',
-                        Name        => 'Forward',
+                        Description => Translatable('Forward article via mail'),
+                        Name        => Translatable('Forward'),
                         Class       => 'AsPopup PopupType_TicketAction',
                         Link =>
                             "Action=AgentTicketForward;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID}"
@@ -3312,8 +3320,8 @@ sub _ArticleMenu {
 
                 push @MenuItems, {
                     ItemType    => 'Link',
-                    Description => 'Bounce Article to a different mail address',
-                    Name        => 'Bounce',
+                    Description => Translatable('Bounce Article to a different mail address'),
+                    Name        => Translatable('Bounce'),
                     Class       => 'AsPopup PopupType_TicketAction',
                     Link =>
                         "Action=AgentTicketBounce;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID}"
@@ -3332,8 +3340,8 @@ sub _ArticleMenu {
 
         push @MenuItems, {
             ItemType    => 'Link',
-            Description => 'Split this article',
-            Name        => 'Split',
+            Description => Translatable('Split this article'),
+            Name        => Translatable('Split'),
             Link =>
                 "Action=AgentTicketPhone;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID};LinkTicketID=$Ticket{TicketID}"
         };
@@ -3355,8 +3363,8 @@ sub _ArticleMenu {
 
             push @MenuItems, {
                 ItemType    => 'Link',
-                Description => 'Print this article',
-                Name        => 'Print',
+                Description => Translatable('Print this article'),
+                Name        => Translatable('Print'),
                 Class       => 'AsPopup PopupType_TicketAction',
                 Link =>
                     "Action=AgentTicketPrint;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID};ArticleNumber=$Article{Count}"
@@ -3382,8 +3390,8 @@ sub _ArticleMenu {
 
             push @MenuItems, {
                 ItemType    => 'Link',
-                Description => 'View the source for this Article',
-                Name        => 'Plain Format',
+                Description => Translatable('View the source for this Article'),
+                Name        => Translatable('Plain Format'),
                 Class       => 'AsPopup PopupType_TicketAction',
                 Link =>
                     "Action=AgentTicketPlain;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID}",
@@ -3411,9 +3419,9 @@ sub _ArticleMenu {
 
         my $Link
             = "Action=AgentTicketZoom;Subaction=MarkAsImportant;TicketID=$Ticket{TicketID};ArticleID=$Article{ArticleID}";
-        my $Description = 'Mark';
+        my $Description = Translatable('Mark');
         if ($ArticleIsImportant) {
-            $Description = 'Unmark';
+            $Description = Translatable('Unmark');
         }
 
         # set important menu item
@@ -3434,7 +3442,7 @@ sub _ArticleMenu {
     {
 
         my $Link        = "Action=AgentTicketNote;TicketID=$Ticket{TicketID};ReplyToArticle=$Article{ArticleID}";
-        my $Description = 'Reply to note';
+        my $Description = Translatable('Reply to note');
 
         # set important menu item
         push @MenuItems, {

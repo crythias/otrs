@@ -55,12 +55,14 @@ sub LoadPreferences {
     $Self->{'DB::Version'}
         = "SELECT CONCAT( IF (INSTR( VERSION(),'MariaDB'),'MariaDB ','MySQL '), SUBSTRING_INDEX(VERSION(),'-',1))";
 
-    # DBI/DBD::mysql attributes
-    # disable automatic reconnects as they do not execute DB::Connect, which will
-    # cause charset problems
-    $Self->{'DB::Attribute'} = {
+    $Self->{'DB::ListTables'} = 'SHOW TABLES',
+
+        # DBI/DBD::mysql attributes
+        # disable automatic reconnects as they do not execute DB::Connect, which will
+        # cause charset problems
+        $Self->{'DB::Attribute'} = {
         mysql_auto_reconnect => 0,
-    };
+        };
 
     # set current time stamp if different to "current_timestamp"
     $Self->{'DB::CurrentTimestamp'} = '';

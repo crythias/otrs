@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -352,7 +353,7 @@ sub Preferences {
 
     my @Params = (
         {
-            Desc  => 'Shown Tickets',
+            Desc  => Translatable('Shown Tickets'),
             Name  => $Self->{PrefKeyShown},
             Block => 'Option',
             Data  => {
@@ -366,7 +367,7 @@ sub Preferences {
             Translation => 0,
         },
         {
-            Desc             => 'Shown Columns',
+            Desc             => Translatable('Shown Columns'),
             Name             => $Self->{PrefKeyColumns},
             Block            => 'AllocationList',
             Columns          => $JSONObject->Encode( Data => \%Columns ),
@@ -701,7 +702,7 @@ sub Run {
         );
     }
 
-    # show only myqueues if we have the filter
+    # show only my queues if we have the filter
     if ( $TicketSearchSummary{MyQueues} ) {
         $LayoutObject->Block(
             Name => 'ContentLargeTicketGenericFilterMyQueues',
@@ -714,7 +715,7 @@ sub Run {
         );
     }
 
-    # show only myservices if we have the filter
+    # show only my services if we have the filter
     if ( $TicketSearchSummary{MyServices} ) {
         $LayoutObject->Block(
             Name => 'ContentLargeTicketGenericFilterMyServices',
@@ -730,7 +731,7 @@ sub Run {
     # show only locked if we have the filter
     if ( $TicketSearchSummary{Locked} ) {
         $LayoutObject->Block(
-            Name => 'ContentLargeTicketGenericFilterMyServices',
+            Name => 'ContentLargeTicketGenericFilterLocked',
             Data => {
                 %Param,
                 %{ $Self->{Config} },
@@ -803,15 +804,15 @@ sub Run {
         if ( $Self->{SortBy} && ( $Self->{SortBy} eq $Item ) ) {
             if ( $Self->{OrderBy} && ( $Self->{OrderBy} eq 'Up' ) ) {
                 $OrderBy = 'Down';
-                $CSS .= ' SortDescendingLarge';
+                $CSS .= ' SortAscendingLarge';
             }
             else {
                 $OrderBy = 'Up';
-                $CSS .= ' SortAscendingLarge';
+                $CSS .= ' SortDescendingLarge';
             }
 
             # set title description
-            my $TitleDesc = $OrderBy eq 'Down' ? 'sorted descending' : 'sorted ascending';
+            my $TitleDesc = $OrderBy eq 'Down' ? 'sorted ascending' : 'sorted descending';
             $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
             $Title .= ', ' . $TitleDesc;
         }
@@ -871,15 +872,15 @@ sub Run {
             if ( $Self->{SortBy} && ( $Self->{SortBy} eq $HeaderColumn ) ) {
                 if ( $Self->{OrderBy} && ( $Self->{OrderBy} eq 'Up' ) ) {
                     $OrderBy = 'Down';
-                    $CSS .= ' SortDescendingLarge';
+                    $CSS .= ' SortAscendingLarge';
                 }
                 else {
                     $OrderBy = 'Up';
-                    $CSS .= ' SortAscendingLarge';
+                    $CSS .= ' SortDescendingLarge';
                 }
 
                 # add title description
-                my $TitleDesc = $OrderBy eq 'Down' ? 'sorted descending' : 'sorted ascending';
+                my $TitleDesc = $OrderBy eq 'Down' ? 'sorted ascending' : 'sorted descending';
                 $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                 $Title .= ', ' . $TitleDesc;
             }
@@ -930,11 +931,11 @@ sub Run {
             }
 
             my $FilterTitle     = $HeaderColumn;
-            my $FilterTitleDesc = 'filter not active';
+            my $FilterTitleDesc = Translatable('filter not active');
             if ( $Self->{GetColumnFilterSelect} && $Self->{GetColumnFilterSelect}->{$HeaderColumn} )
             {
                 $CSS .= ' FilterActive';
-                $FilterTitleDesc = 'filter active';
+                $FilterTitleDesc = Translatable('filter active');
             }
             $FilterTitleDesc = $LayoutObject->{LanguageObject}->Translate($FilterTitleDesc);
             $FilterTitle .= ', ' . $FilterTitleDesc;
@@ -965,7 +966,7 @@ sub Run {
                     $Css = 'Hidden';
                 }
 
-                # variable to save the filter's html code
+                # variable to save the filter's HTML code
                 my $ColumnFilterHTML = $Self->_InitialColumnFilter(
                     ColumnName => $HeaderColumn,
                     Css        => $Css,
@@ -1019,7 +1020,7 @@ sub Run {
                     $Css = 'Hidden';
                 }
 
-                # variable to save the filter's html code
+                # variable to save the filter's HTML code
                 my $ColumnFilterHTML = $Self->_InitialColumnFilter(
                     ColumnName => $HeaderColumn,
                     Css        => $Css,
@@ -1105,14 +1106,14 @@ sub Run {
 
             my $CSS             = '';
             my $FilterTitle     = $Label;
-            my $FilterTitleDesc = 'filter not active';
+            my $FilterTitleDesc = Translatable('filter not active');
             if (
                 $Self->{GetColumnFilterSelect}
                 && defined $Self->{GetColumnFilterSelect}->{$DynamicFieldName}
                 )
             {
                 $CSS .= 'FilterActive ';
-                $FilterTitleDesc = 'filter active';
+                $FilterTitleDesc = Translatable('filter active');
             }
             $FilterTitleDesc = $LayoutObject->{LanguageObject}->Translate($FilterTitleDesc);
             $FilterTitle .= ', ' . $FilterTitleDesc;
@@ -1144,15 +1145,16 @@ sub Run {
                 {
                     if ( $Self->{OrderBy} && ( $Self->{OrderBy} eq 'Up' ) ) {
                         $OrderBy = 'Down';
-                        $CSS .= ' SortDescendingLarge';
+                        $CSS .= ' SortAscendingLarge';
                     }
                     else {
                         $OrderBy = 'Up';
-                        $CSS .= ' SortAscendingLarge';
+                        $CSS .= ' SortDescendingLarge';
                     }
 
                     # add title description
-                    my $TitleDesc = $OrderBy eq 'Down' ? 'sorted descending' : 'sorted ascending';
+                    my $TitleDesc
+                        = $OrderBy eq 'Down' ? Translatable('sorted ascending') : Translatable('sorted descending');
                     $TitleDesc = $LayoutObject->{LanguageObject}->Translate($TitleDesc);
                     $Title .= ', ' . $TitleDesc;
                 }
@@ -1232,7 +1234,7 @@ sub Run {
                     Label      => $Label,
                 );
 
-                # output filtrable (not sortable) dynamic field
+                # output filterable (not sortable) dynamic field
                 $LayoutObject->Block(
                     Name => 'ContentLargeTicketGenericHeaderColumnFilter',
                     Data => {
@@ -2133,6 +2135,7 @@ sub _SearchParamsGet {
 
     if ( defined $TicketSearch{QueueIDs} || defined $TicketSearch{Queues} ) {
         delete $TicketSearchSummary{MyQueues};
+        delete $TicketSearchSummary{MyServices}->{QueueIDs};
     }
 
     if ( !$Self->{UseTicketService} ) {

@@ -171,10 +171,8 @@ for my $Test (@Tests) {
         HistoryComment   => 'Some free text!',
         UserID           => 1,
         UnlockOnAway     => 1,
-        AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
-        ? $Test->{AutoResponseType}
-        : '',
-        OrigHeader => {
+        AutoResponseType => $Test->{AutoResponseType},
+        OrigHeader       => {
             From    => '"test" <test@localunittest.com>',
             To      => $QueueName,
             Subject => 'UnitTest article one',
@@ -260,10 +258,8 @@ for my $Test (@Tests) {
         HistoryComment   => 'Some free text!',
         UserID           => 1,
         UnlockOnAway     => 1,
-        AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
-        ? $Test->{AutoResponseType}
-        : '',
-        OrigHeader => {
+        AutoResponseType => $Test->{AutoResponseType},
+        OrigHeader       => {
             From    => '"test" <test@localunittest.com>',
             To      => $QueueName,
             Subject => 'UnitTest article two',

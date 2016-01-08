@@ -12,6 +12,8 @@ use utf8;
 
 use vars (qw($Self));
 
+use Kernel::Language;
+
 # get needed objects
 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 my $Selenium     = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
@@ -49,7 +51,7 @@ $Selenium->RunTest(
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
 
-        $Selenium->get("${ScriptAlias}index.pl?Action=AdminEmail");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AdminEmail");
 
         # check page
         for my $ID (
@@ -98,14 +100,14 @@ $Selenium->RunTest(
         $Selenium->execute_script("\$('#UserIDs').val('$UserID').trigger('redraw.InputField').trigger('change');");
         $Selenium->find_element( "#Subject",  'css' )->send_keys($RandomID);
         $Selenium->find_element( "#RichText", 'css' )->send_keys($Text);
-        $Selenium->find_element( "#Subject",  'css' )->submit();
+        $Selenium->find_element( "#Subject",  'css' )->VerifiedSubmit();
 
         # check if test admin notification is success
         my $LanguageObject = Kernel::Language->new(
             UserLanguage => $Language,
         );
 
-        my $Expected = $LanguageObject->Get(
+        my $Expected = $LanguageObject->Translate(
             "Your message was sent to"
         ) . ": $TestUserLogin\@localunittest.com";
 

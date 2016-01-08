@@ -37,14 +37,43 @@ $Selenium->RunTest(
             Value => 1,
         );
 
+        my $Language = "en";
+
         my $TestUserLogin = $Helper->TestUserCreate(
-            Groups => ['users'],
+            Groups   => [ 'users', 'admin' ],
+            Language => $Language,
         ) || die "Did not get test user";
 
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
+        );
+
+        # add a test notification
+        my $RandomID                = $Helper->GetRandomID();
+        my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
+        my $NotificationID          = $NotificationEventObject->NotificationAdd(
+            Name => 'NotificationTest' . $RandomID,
+            Data => {
+                Events          => ['TicketQueueUpdate'],
+                VisibleForAgent => ['2'],
+                Transports      => ['Email'],
+            },
+            Message => {
+                en => {
+                    Subject     => 'Subject',
+                    Body        => 'Body',
+                    ContentType => 'text/html',
+                },
+            },
+            ValidID => 1,
+            UserID  => 1,
+        );
+
+        $Self->True(
+            $NotificationID,
+            "Created test notification",
         );
 
         my $ScriptAlias = $ConfigObject->Get('ScriptAlias');
@@ -61,6 +90,69 @@ $Selenium->RunTest(
             $Element->is_enabled();
             $Element->is_displayed();
         }
+
+        $Self->True(
+            index( $Selenium->get_page_source(), '<span class="Mandatory">* NotificationTest' . $RandomID . '</span>' )
+                > -1,
+            "Notification correctly marked as mandatory in preferences."
+        );
+
+        my $CheckAlertJS = <<"JAVASCRIPT";
+(function () {
+    var lastAlert = undefined;
+    window.alert = function (message) {
+        lastAlert = message;
+    };
+    window.getLastAlert = function () {
+        var result = lastAlert;
+        lastAlert = undefined;
+        return result;
+    };
+}());
+JAVASCRIPT
+
+        $Selenium->execute_script($CheckAlertJS);
+
+        # we should not be able to submit the form without an alert
+        $Selenium->find_element("//button[\@id='NotificationEventTransportUpdate'][\@type='submit']")->click();
+
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
+
+        $Self->Is(
+            $Selenium->execute_script("return window.getLastAlert()"),
+            $LanguageObject->Translate(
+                "Sorry, but you can't disable all methods for notifications marked as mandatory."
+            ),
+            'Alert message shows up correctly',
+        );
+
+        # now enable the checkbox and try to submit again, it should work this time
+        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )->click();
+        $Selenium->find_element("//button[\@id='NotificationEventTransportUpdate'][\@type='submit']")->click();
+
+        $Selenium->execute_script($CheckAlertJS);
+
+        # now that the checkbox is checked, it should not be possible to disable it again
+        $Selenium->find_element( "//input[\@id='Notification-" . $NotificationID . "-Email-checkbox']" )->click();
+
+        $Self->Is(
+            $Selenium->execute_script("return window.getLastAlert()"),
+            $LanguageObject->Translate("Sorry, but you can't disable all methods for this notification."),
+            'Alert message shows up correctly',
+        );
+
+        # delete notificatio entry again
+        my $SuccesDelete = $NotificationEventObject->NotificationDelete(
+            ID     => $NotificationID,
+            UserID => 1,
+        );
+
+        $Self->True(
+            $SuccesDelete,
+            "Delete test notification - $NotificationID",
+        );
 
         # check some of AgentPreferences default values
         $Self->Is(
@@ -122,7 +214,6 @@ $Selenium->RunTest(
                 "Test widget 'Other Settings' found on screen"
             );
         }
-
     }
 
 );
