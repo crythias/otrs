@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -716,6 +716,12 @@ sub NotificationEvent {
 
     my %Notification = %{ $Param{Notification} };
 
+    # exchanging original reference prevent it to grow up
+    if ( ref $Param{CustomerMessageParams} && ref $Param{CustomerMessageParams} eq 'HASH' ) {
+        my %LocalCustomerMessageParams = %{ $Param{CustomerMessageParams} };
+        $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
+    }
+
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
@@ -754,6 +760,9 @@ sub NotificationEvent {
     my $CustomerArticleID = $Article{ArticleID}      || '';
     my $AgentArticleID    = $ArticleAgent{ArticleID} || '';
 
+    # flag to see if an HTMLBody for Customer is present
+    my $CustomerHTMLBodyPresent = 0;
+
     # get articles for later use
     my @ArticleBox = $TicketObject->ArticleContentIndex(
         TicketID                   => $Param{TicketID},
@@ -762,64 +771,69 @@ sub NotificationEvent {
         StripPlainBodyAsAttachment => 2,
     );
 
-    ARTICLEBOX:
-    for my $ArticleItem ( reverse @ArticleBox ) {
+    if ( $Self->{RichText} ) {
+        ARTICLEBOX:
+        for my $ArticleItem ( reverse @ArticleBox ) {
 
-        if ( $CustomerArticleID ne $ArticleItem->{ArticleID} && $AgentArticleID ne $ArticleItem->{ArticleID} ) {
-            next ARTICLEBOX;
-        }
-
-        if ( $ArticleItem->{AttachmentIDOfHTMLBody} ) {
-
-            # get a attachment
-            my %Data = $TicketObject->ArticleAttachment(
-                ArticleID => $ArticleItem->{ArticleID},
-                FileID    => $ArticleItem->{AttachmentIDOfHTMLBody},
-                UserID    => $Param{UserID},
-            );
-
-            # get charset and convert content to internal charset
-            my $Charset;
-            if ( $Data{ContentType} =~ m/.+?charset=("|'|)(.+)/ig ) {
-                $Charset = $2;
-                $Charset =~ s/"|'//g;
-            }
-            if ( !$Charset ) {
-                $Charset = 'us-ascii';
-                $Data{ContentType} .= '; charset="us-ascii"';
+            if ( $CustomerArticleID ne $ArticleItem->{ArticleID} && $AgentArticleID ne $ArticleItem->{ArticleID} ) {
+                next ARTICLEBOX;
             }
 
-            # convert charset
-            if ($Charset) {
-                $Data{Content} = $Kernel::OM->Get('Kernel::System::Encode')->Convert(
-                    Text => $Data{Content},
-                    From => $Charset,
-                    To   => 'utf-8',
+            if ( $ArticleItem->{AttachmentIDOfHTMLBody} ) {
+
+                # get a attachment
+                my %Data = $TicketObject->ArticleAttachment(
+                    ArticleID => $ArticleItem->{ArticleID},
+                    FileID    => $ArticleItem->{AttachmentIDOfHTMLBody},
+                    UserID    => $Param{UserID},
                 );
 
-                # replace charset in content
-                $Data{ContentType} =~ s/\Q$Charset\E/utf-8/gi;
-                $Data{Content} =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
-            }
+                # get charset and convert content to internal charset
+                my $Charset;
+                if ( $Data{ContentType} =~ m/.+?charset=("|'|)(.+)/ig ) {
+                    $Charset = $2;
+                    $Charset =~ s/"|'//g;
+                }
+                if ( !$Charset ) {
+                    $Charset = 'us-ascii';
+                    $Data{ContentType} .= '; charset="us-ascii"';
+                }
 
-            $Data{Content} =~ s/&amp;/&/g;
-            $Data{Content} =~ s/&lt;/</g;
-            $Data{Content} =~ s/&gt;/>/g;
-            $Data{Content} =~ s/&quot;/"/g;
+                # convert charset
+                if ($Charset) {
+                    $Data{Content} = $Kernel::OM->Get('Kernel::System::Encode')->Convert(
+                        Text => $Data{Content},
+                        From => $Charset,
+                        To   => 'utf-8',
+                    );
 
-            # strip head, body and meta elements
-            my $HTMLBody = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentStrip(
-                String => $Data{Content},
-            );
+                    # replace charset in content
+                    $Data{ContentType} =~ s/\Q$Charset\E/utf-8/gi;
+                    $Data{Content} =~ s/(charset=("|'|))\Q$Charset\E/$1utf-8/gi;
+                }
 
-            # set HTML body for customer article
-            if ( $CustomerArticleID eq $ArticleItem->{ArticleID} ) {
-                $Param{CustomerMessageParams}->{HTMLBody} = $HTMLBody;
-            }
+                $Data{Content} =~ s/&amp;/&/g;
+                $Data{Content} =~ s/&lt;/</g;
+                $Data{Content} =~ s/&gt;/>/g;
+                $Data{Content} =~ s/&quot;/"/g;
 
-            # set HTML body for agent article
-            if ( $AgentArticleID eq $ArticleItem->{ArticleID} ) {
-                $ArticleAgent{HTMLBody} = $HTMLBody;
+                # strip head, body and meta elements
+                my $HTMLBody = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentStrip(
+                    String => $Data{Content},
+                );
+
+                # set HTML body for customer article
+                if ( $CustomerArticleID eq $ArticleItem->{ArticleID} ) {
+                    $Param{CustomerMessageParams}->{HTMLBody} = $HTMLBody;
+
+                    # set flag for customer HTML body
+                    $CustomerHTMLBodyPresent = 1;
+                }
+
+                # set HTML body for agent article
+                if ( $AgentArticleID eq $ArticleItem->{ArticleID} ) {
+                    $ArticleAgent{HTMLBody} = $HTMLBody;
+                }
             }
         }
     }
@@ -844,20 +858,23 @@ sub NotificationEvent {
     # get system default language
     my $DefaultLanguage = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
-    # get user language
-    my $Language = $Param{Recipient}->{UserLanguage} || $DefaultLanguage;
+    my $Languages = [ $Param{Recipient}->{UserLanguage}, $DefaultLanguage, 'en' ];
 
-    # make sure a message in the user language exists
-    if ( !$Notification{Message}->{$Language} ) {
+    my $Language;
+    LANGUAGE:
+    for my $Item ( @{$Languages} ) {
+        next LANGUAGE if !$Item;
+        next LANGUAGE if !$Notification{Message}->{$Item};
 
-        # otherwise use default language
-        $Language = $DefaultLanguage;
+        # set language
+        $Language = $Item;
+        last LANGUAGE;
+    }
 
-        # if no message exists in default language, then take the first available language
-        if ( !$Notification{Message}->{$Language} ) {
-            my @Languages = sort keys %{ $Notification{Message} };
-            $Language = $Languages[0];
-        }
+    # if no language, then take the first one available
+    if ( !$Language ) {
+        my @NotificationLanguages = sort keys %{ $Notification{Message} };
+        $Language = $NotificationLanguages[0];
     }
 
     # copy the correct language message attributes to a flat structure
@@ -866,7 +883,7 @@ sub NotificationEvent {
     }
 
     # convert values to HTML to get correct line breaks etc.
-    if ( $Notification{ContentType} =~ m{text\/html} ) {
+    if ( $Notification{ContentType} =~ m{text\/html} && $CustomerHTMLBodyPresent ) {
         KEY:
         for my $Key ( sort keys %{ $Param{CustomerMessageParams} || {} } ) {
             next KEY if !$Param{CustomerMessageParams}->{$Key};
@@ -1082,9 +1099,29 @@ sub _Replace {
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
+    # special replace from secret config options
+    my @SecretConfigOptions = qw(
+        DatabasePw
+        SearchUserPw
+        UserPw
+        SendmailModule::AuthPassword
+        AuthModule::Radius::Password
+        PGP::Key::Password
+        Customer::AuthModule::DB::CustomerPassword
+        Customer::AuthModule::Radius::Password
+        PublicFrontend::AuthPassword
+    );
+
+    # replace the secret config options before the normal config options
+    for my $SecretConfigOption (@SecretConfigOptions) {
+
+        my $Tag = $Start . 'OTRS_CONFIG_' . $SecretConfigOption . $End;
+        $Param{Text} =~ s{$Tag}{xxx}gx;
+    }
+
     # replace config options
     my $Tag = $Start . 'OTRS_CONFIG_';
-    $Param{Text} =~ s{$Tag(.+?)$End}{$ConfigObject->Get($1)}egx;
+    $Param{Text} =~ s{$Tag(.+?)$End}{$ConfigObject->Get($1) // ''}egx;
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;

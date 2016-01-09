@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -82,7 +82,7 @@ $Selenium->RunTest(
 
             $Self->True(
                 $ServiceID,
-                "Service $ServiceID has been created."
+                "Service $ServiceID has been created.",
             );
 
             # add service as defalut service for all customers
@@ -104,7 +104,7 @@ $Selenium->RunTest(
 
             $Self->True(
                 $SLAID,
-                "SLA $SLAID has been created."
+                "SLA $SLAID has been created.",
             );
 
             push @SLAIDs, $SLAID;
@@ -177,7 +177,7 @@ $Selenium->RunTest(
 
         );
 
-        my @StatsFormat = (
+        my @StatsFormatDynamicMatrix = (
             {
                 Format         => 'Print',
                 PreviewContent => 'PreviewContentPrint',
@@ -195,7 +195,13 @@ $Selenium->RunTest(
                 Format         => 'D3::BarChart',
                 PreviewContent => 'PreviewContentD3BarChart',
             },
+        );
 
+        my @StatsFormatDynamicList = (
+            {
+                Format         => 'Print',
+                PreviewContent => 'PreviewContentPrint',
+            },
         );
 
         # add new statistics
@@ -203,8 +209,6 @@ $Selenium->RunTest(
 
             # go to add statsistics screen
             $Selenium->get("${ScriptAlias}index.pl?Action=AgentStatistics;Subaction=Add");
-
-            #$Selenium->find_element("//a[contains(\@href, \'Action=AgentStatistics;Subaction=Add\' )]")->click();
 
             # add new statistics
             $Selenium->find_element("//a[contains(\@data-statistic-preselection, \'$StatsData->{Type}\' )]")->click();
@@ -254,7 +258,7 @@ $Selenium->RunTest(
             # check Restrictions configuration dialog
             $Selenium->find_element( ".EditRestrictions", 'css' )->click();
             $Selenium->execute_script(
-                "\$('#EditDialog select').val('$StatsData->{RestrictionID}').trigger('redraw.InputField').trigger('change');"
+                "\$('#EditDialog select option[value=\"$StatsData->{RestrictionID}\"]').prop('selected', true).trigger('redraw.InputField').trigger('change');"
             );
 
             # wait for load selected Restriction
@@ -264,7 +268,7 @@ $Selenium->RunTest(
 
             # add restriction
             $Selenium->execute_script(
-                "\$('#EditDialog #$StatsData->{RestrictionID}').val('$StatsData->{RestrictionValue}').trigger('redraw.InputField').trigger('change');"
+                "\$('#EditDialog #$StatsData->{RestrictionID} option[value=\"$StatsData->{Restrictionvalue}\"]').prop('selected', true).trigger('redraw.InputField').trigger('change');"
             );
             $Selenium->find_element( "#DialogButton1", 'css' )->click();
 
@@ -274,6 +278,12 @@ $Selenium->RunTest(
                 $Selenium->execute_script("return \$('#PreviewContentPrint').css('display')") eq 'block',
                 "Print format is displayed",
             );
+
+            my @StatsFormat = @StatsFormatDynamicMatrix;
+
+            if ( $StatsData->{Type} eq 'DynamicList' ) {
+                @StatsFormat = @StatsFormatDynamicList;
+            }
 
             for my $StatsFormat (@StatsFormat) {
 
@@ -298,7 +308,7 @@ JAVASCRIPT
 
             # sort decreasing by StatsID
             $Selenium->get(
-                "${ScriptAlias}index.pl?Action=AgentStatistics;Subaction=Overview;Direction=DESC;OrderBy=ID;StartHit=1\' )]"
+                "${ScriptAlias}index.pl?Action=AgentStatistics;Subaction=Overview;Direction=DESC;OrderBy=ID;StartHit=1"
             );
 
             my $StatsObject = $Kernel::OM->Get('Kernel::System::Stats');

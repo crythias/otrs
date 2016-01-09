@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -13,8 +13,10 @@ use utf8;
 use vars (qw($Self));
 
 # get needed objects
-my $ConfigObject       = $Kernel::OM->Get('Kernel::Config');
-my $HelperObject       = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+my $HelperObject = Kernel::System::UnitTest::Helper->new(
+    RestoreDatabase => 1,
+);
 my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 my $BackendObject      = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
 my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -344,6 +346,24 @@ my @Tests = (
         Result   => 'Test Standard',
     },
     {
+        Name => 'OTRS secret config value',                       # <OTRS_CONFIG_DatabasePw>
+        Data => {
+            From => 'test@home.com',
+        },
+        RichText => 0,
+        Template => 'Test <OTRS_CONFIG_DatabasePw>',
+        Result   => 'Test xxx',
+    },
+    {
+        Name => 'OTRS secret config value and normal config value',
+        Data => {
+            From => 'test@home.com',
+        },
+        RichText => 0,
+        Template => 'Test <OTRS_CONFIG_DatabasePw> and <OTRS_CONFIG_DefaultTheme>',
+        Result   => 'Test xxx and Standard',
+    },
+    {
         Name => 'mailto-Links',
         Data => {
             From => 'test@home.com',
@@ -481,31 +501,6 @@ for my $Test (@Tests) {
     );
 }
 
-# cleanup the system
-for my $DynamicFieldID ( sort keys %AddedDynamicFieldIds ) {
-
-    my $DynamicFieldConfig = $DynamicFieldObject->DynamicFieldGet(
-        Name => $AddedDynamicFieldIds{$DynamicFieldID},
-    );
-
-    my $Success = $BackendObject->AllValuesDelete(
-        DynamicFieldConfig => $DynamicFieldConfig,
-        UserID             => 1,
-    );
-    $Self->True(
-        $Success,
-        "DynamicField AllValuesDelete() - for DynamicFieldID '$DynamicFieldID' with true",
-    );
-}
-
-# the ticket is no longer needed
-$Success = $TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => 1,
-);
-$Self->True(
-    $Success,
-    "TicketDelete() - fort TicketID '$TicketID' with true",
-);
+# Cleanup is done by RestoreDatabase.
 
 1;

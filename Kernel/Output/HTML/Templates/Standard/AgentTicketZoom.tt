@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -160,7 +160,9 @@
 [% RenderBlockEnd("ArchiveFlag") %]
 [% RenderBlockStart("Type") %]
                         <label>[% Translate("Type") | html %]:</label>
-                        <p class="Value" title="[% Data.Type | html %]">[% Data.Type | html %]</p>
+                        <p class="Value FixedValueSmall" title="[% Data.Type | html %]">[% Data.Type | html %]
+                            [% IF Data.Valid != 1 %] <em class="Error">[% Translate("Note: Type is invalid!") | html %]</em> [% END %]
+                        </p>
                         <div class="Clear"></div>
 [% RenderBlockEnd("Type") %]
 
@@ -461,7 +463,14 @@ if ( WidgetWidth < 400 ) {
 }
 
 // determine the needed field width and resize the fields
-FieldWidth = parseInt(WidgetWidth / FieldsPerRow - FieldMargin - 1, 10);
+
+if (FieldsPerRow === 1) {
+    FieldWidth = '100%';
+}
+else {
+    FieldWidth = parseInt(WidgetWidth / FieldsPerRow - FieldMargin - 1, 10);
+}
+
 $('.DynamicFieldAutoResize').width(FieldWidth);
 
 $('.ShowFieldInfoOverlay').bind('click', function() {
@@ -624,21 +633,21 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
                 <a class="OneArticle Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0;ArticlePage=[% Data.Page | uri %]" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
                 <a class="AllArticles" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1;ArticlePage=[% Data.Page | uri %]" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
             [% IF Config("TimelineViewEnabled") == 1 %]
-                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
             [% END %]
 [% RenderBlockEnd("Expand") %]
 [% RenderBlockStart("Collapse") %]
                 <a class="OneArticle" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
                 <a class="AllArticles Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
             [% IF Config("TimelineViewEnabled") == 1 %]
-                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+                <a class="Timeline [% Data.Class | html %]" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
             [% END %]
 [% RenderBlockEnd("Collapse") %]
 [% IF Config("TimelineViewEnabled") == 1 %]
 [% RenderBlockStart("Timeline") %]
                 <a class="OneArticle" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=0" title="[% Translate("Show one article") | html %]"><i class="fa fa-minus"></i><span>[% Translate("Show one article") | html %]</span></a>
                 <a class="AllArticles" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomExpand=1" title="[% Translate("Show all articles") | html %]"><i class="fa fa-bars"></i><span>[% Translate("Show all articles") | html %]</span></a>
-                <a class="Timeline Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
+                <a class="Timeline Active" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID | uri %];ArticleID=[% Data.ArticleID | uri %];ZoomTimeline=1" title="[% Translate("Show Ticket Timeline View") | html %]"><i class="fa fa-clock-o"></i><span>[% Translate("Show Ticket Timeline View") | html %]</span></a>
 [% RenderBlockEnd("Timeline") %]
 [% END %]
             </div>
@@ -832,6 +841,7 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
 
 [% IF Config("TimelineViewEnabled") == 1 %]
 var TicketID    = [% Data.TicketID | JSON %],
+    ArticleID   = [% Data.ArticleID | JSON %],
     ListObjects = [
 [% FOREACH Item IN Data.Items %]
     {
@@ -855,7 +865,7 @@ var TicketID    = [% Data.TicketID | JSON %],
             'is_important' : [% Item.ArticleData.ArticleIsImportant | JSON %],
             'is_seen' : [% Item.ArticleData.ArticleIsSeen | JSON %],
             'text'   : [% IF Item.IsChatArticle %][% Item.ArticleData.BodyChat | JSON %][% ELSE %][% Item.ArticleData.Body | truncate(650) | JSON %][% END %],
-            'text_long' : [% IF Item.IsChatArticle %][% Item.ArticleData.Body %][% ELSE %][% IF !Item.ArticleData.AttachmentIDOfHTMLBody %][% Item.ArticleData.Body | JSON %][% ELSE %]""[% END %][% END %],
+            'text_long' : [% IF Item.IsChatArticle %][% JSON(Item.ArticleData.ChatMessages) %][% ELSE %][% IF !Item.ArticleData.AttachmentIDOfHTMLBody %][% Item.ArticleData.Body | JSON %][% ELSE %]""[% END %][% END %],
             'attachment_id' : [% Item.ArticleData.AttachmentIDOfHTMLBody | JSON %],
             'iframe_html' : '<iframe sandbox="allow-same-origin allow-popups" data-url="[% Env("Baselink") %]Action=AgentTicketAttachment;Subaction=HTMLView;ArticleID=[% Item.ArticleID | html %];FileID=[% Item.ArticleData.AttachmentIDOfHTMLBody | html %];[% Env("SessionName") | html %]=[% Env("SessionID") | html %]" [% Data.MSSecurityRestricted %] width="100%" frameborder="0" id="Iframe[% Item.ArticleID | html %]" class="TimelineArticleiFrame" src=""></iframe>'
         [% END %]
@@ -864,15 +874,9 @@ var TicketID    = [% Data.TicketID | JSON %],
 [% END %]
 ];
 
-Core.Agent.TicketZoom.TimelineView.Init(TicketID, ListObjects);
+Core.Agent.TicketZoom.TimelineView.Init(TicketID, ListObjects, ArticleID);
 
 [% END %]
-
-[% RenderBlockStart("ShowSelectedArticle") %]
-if ($('#Article_[% Data.ArticleID %]').length) {
-    $('html, body').animate({ scrollTop: ($('#Article_[% Data.ArticleID %]').offset().top)}, 0);
-}
-[% RenderBlockEnd("ShowSelectedArticle") %]
 //]]></script>
 [% END %]
 
@@ -957,7 +961,7 @@ if ($('#Article_[% Data.ArticleID %]').length) {
 # show article options like signed, crypted, ...
 [% RenderBlockStart("ArticleOption") %]
                     <label>[% Translate(Data.Key) | html %]:</label>
-                    <div title="[% Data.Value | html %]" class="[% Data.Result | html %] Value">[% Data.Value | html %]</div>
+                    <div title="[% Data.Value | html %]" class="[% Data.Result | html %] Value">[% Translate(Data.Value) | html %]</div>
                     <div class="Clear"></div>
 [% RenderBlockEnd("ArticleOption") %]
 

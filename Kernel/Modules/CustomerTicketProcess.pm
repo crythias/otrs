@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -343,14 +343,14 @@ sub Run {
         );
     }
     return $LayoutObject->CustomerErrorScreen(
-        Message => 'Subacion is invalid!',
+        Message => 'Subaction is invalid!',
         Comment => 'Please contact the admin.',
     );
 }
 
 sub _RenderAjax {
 
-    # FatalError is safe because a JSON strcuture is expecting, then it will result into a
+    # FatalError is safe because a JSON structure is expecting, then it will result into a
     # communications error
 
     my ( $Self, %Param ) = @_;
@@ -836,18 +836,18 @@ sub _GetParam {
             my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
 
             if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                my $Message = "DynamicFieldConfig missing for field: $DynamicFieldName!";
 
-                # does not show header and footer again
-                if ( $Self->{IsMainWindow} ) {
-                    return $LayoutObject->CustomerError(
-                        Message => $Message,
-                    );
-                }
+                my $Message
+                    = "DynamicFieldConfig missing for field: $Param{FieldName}, or is not a Ticket Dynamic Field!";
 
-                $LayoutObject->CustomerFatalError(
-                    Message => $Message,
+                # log error but does not stop the execution as it could be an old Article
+                # DynamicField, see bug#11666
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => $Message,
                 );
+
+                next DIALOGFIELD;
             }
 
             # Get DynamicField Values
@@ -1792,6 +1792,23 @@ sub _RenderDynamicField {
 
     my $DynamicFieldConfig = ( grep { $_->{Name} eq $Param{FieldName} } @{$DynamicField} )[0];
 
+    if ( !IsHashRefWithData($DynamicFieldConfig) ) {
+
+        my $Message = "DynamicFieldConfig missing for field: $Param{FieldName}, or is not a Ticket Dynamic Field!";
+
+        # log error but does not stop the execution as it could be an old Article
+        # DynamicField, see bug#11666
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $Message,
+        );
+
+        return {
+            Success => 1,
+            HTML    => '',
+        };
+    }
+
     my $PossibleValuesFilter;
 
     my $IsACLReducible = $BackendObject->HasBehavior(
@@ -1874,7 +1891,7 @@ sub _RenderDynamicField {
     );
 
     my %Data = (
-        Name    => $DynamicFieldHTML->{Name},
+        Name    => $DynamicFieldConfig->{Name},
         Label   => $DynamicFieldHTML->{Label},
         Content => $DynamicFieldHTML->{Field},
     );
@@ -3268,9 +3285,18 @@ sub _StoreActivityDialog {
                 my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
 
                 if ( !IsHashRefWithData($DynamicFieldConfig) ) {
-                    $LayoutObject->CustomerFatalError(
-                        Message => "DynamicFieldConfig missing for field: $DynamicFieldName!",
+
+                    my $Message
+                        = "DynamicFieldConfig missing for field: $Param{FieldName}, or is not a Ticket Dynamic Field!";
+
+                    # log error but does not stop the execution as it could be an old Article
+                    # DynamicField, see bug#11666
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => $Message,
                     );
+
+                    next DIALOGFIELD;
                 }
 
                 # Will be extended lateron for ACL Checking:
@@ -3625,6 +3651,21 @@ sub _StoreActivityDialog {
         if ( $CurrentField =~ m{^DynamicField_(.*)}xms ) {
             my $DynamicFieldName = $1;
             my $DynamicFieldConfig = ( grep { $_->{Name} eq $DynamicFieldName } @{$DynamicField} )[0];
+
+            if ( !IsHashRefWithData($DynamicFieldConfig) ) {
+
+                my $Message
+                    = "DynamicFieldConfig missing for field: $Param{FieldName}, or is not a Ticket Dynamic Field!";
+
+                # log error but does not stop the execution as it could be an old Article
+                # DynamicField, see bug#11666
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => $Message,
+                );
+
+                next DIALOGFIELD;
+            }
 
             my $Success = $BackendObject->ValueSet(
                 DynamicFieldConfig => $DynamicFieldConfig,

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -33,6 +33,16 @@ $Success = $ConfigObject->Set(
 $Self->True(
     $Success,
     "Set NoSendMail backend with true",
+);
+
+# set Default Language
+$Success = $ConfigObject->Set(
+    Key   => 'DefaultLanguage',
+    Value => 'en',
+);
+$Self->True(
+    $Success,
+    "Set default language to English",
 );
 
 # get helper object

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -381,9 +381,7 @@ sub DESTROY {
     # Restore system configuration if needed
     #
     if ( $Self->{SysConfigBackup} ) {
-
         $Self->{SysConfigObject}->Upload( Content => $Self->{SysConfigBackup} );
-
         $Self->{UnitTestObject}->True( 1, 'Restored the system configuration' );
     }
 
@@ -402,7 +400,8 @@ sub DESTROY {
     # Restore database, clean caches
     if ( $Self->{RestoreDatabase} ) {
         $Self->Rollback();
-        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp()
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
+        $Self->{UnitTestObject}->True( 1, 'Rolled back all database changes and cleaned up the cache.' );
     }
 
     # disable email checks to create new user
@@ -439,11 +438,20 @@ sub DESTROY {
 
     # invalidate test customer users
     if ( ref $Self->{TestCustomerUsers} eq 'ARRAY' && @{ $Self->{TestCustomerUsers} } ) {
+        TESTCUSTOMERUSERS:
         for my $TestCustomerUser ( @{ $Self->{TestCustomerUsers} } ) {
 
             my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
                 User => $TestCustomerUser,
             );
+
+            if ( !$CustomerUser{UserLogin} ) {
+
+                # if no such customer user exists, there is no need to set it to invalid;
+                # happens when the test customer user is created inside a transaction
+                # that is later rolled back.
+                next TESTCUSTOMERUSERS;
+            }
 
             my $Success = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserUpdate(
                 %CustomerUser,

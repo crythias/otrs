@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -109,8 +109,8 @@ sub GeneratePDF {
     $PageParam{MarginBottom}    = 40;
     $PageParam{MarginLeft}      = 40;
 
-    $PageParam{HeaderRight}     = $ConfigObject->Get('Stats::StatsHook') . $Stat->{StatNumber};
-    $PageParam{HeadlineLeft}    = $Title;
+    $PageParam{HeaderRight}  = $ConfigObject->Get('Stats::StatsHook') . $Stat->{StatNumber};
+    $PageParam{HeadlineLeft} = $Title;
 
     # table params
     my %TableParam;

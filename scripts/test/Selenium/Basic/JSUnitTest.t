@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -38,7 +38,10 @@ $Selenium->RunTest(
             $JSModuleName =~ s{\.UnitTest\.html}{}xms;
 
             # Wait for the tests to complete.
-            $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('span.module-name:contains($JSModuleName)').length;" );
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('span.module-name:contains($JSModuleName)').length;"
+            );
             $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("p.result span.total").length;' );
 
             $Selenium->find_element( "p.result span.failed", 'css' );

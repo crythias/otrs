@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -377,7 +377,7 @@ sub CustomerSearch {
         base      => $Self->{BaseDN},
         scope     => $Self->{SScope},
         filter    => $Filter,
-        sizelimit => $Self->{UserSearchListLimit},
+        sizelimit => $Param{Limit} || $Self->{UserSearchListLimit},
         attrs     => \@Attributes,
     );
 
@@ -422,7 +422,7 @@ sub CustomerSearch {
                 base      => $Self->{GroupDN},
                 scope     => $Self->{SScope},
                 filter    => 'memberUid=' . $Filter2,
-                sizelimit => $Self->{UserSearchListLimit},
+                sizelimit => $Param{Limit} || $Self->{UserSearchListLimit},
                 attrs     => ['1.1'],
             );
 

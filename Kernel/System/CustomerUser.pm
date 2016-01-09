@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -134,25 +134,26 @@ to search users
     # text search
     my %List = $CustomerUserObject->CustomerSearch(
         Search => '*some*', # also 'hans+huber' possible
-        Valid  => 1, # not required, default 1
+        Valid  => 1,        # (optional) default 1
+        Limit  => 100,      # (optional) overrides limit of the config
     );
 
     # username search
     my %List = $CustomerUserObject->CustomerSearch(
         UserLogin => '*some*',
-        Valid     => 1, # not required, default 1
+        Valid     => 1,         # (optional) default 1
     );
 
     # email search
     my %List = $CustomerUserObject->CustomerSearch(
         PostMasterSearch => 'email@example.com',
-        Valid            => 1, # not required, default 1
+        Valid            => 1,                    # (optional) default 1
     );
 
     # search by CustomerID
     my %List = $CustomerUserObject->CustomerSearch(
         CustomerID       => 'CustomerID123',
-        Valid            => 1, # not required, default 1
+        Valid            => 1,                # (optional) default 1
     );
 
 =cut

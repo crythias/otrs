@@ -1,5 +1,5 @@
 // --
-// Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+// Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 // --
 // This software comes with ABSOLUTELY NO WARRANTY. For details, see
 // the enclosed file COPYING for license information (AGPL). If you
@@ -183,6 +183,22 @@ Core.Agent = (function (TargetNS) {
                     return true;
                 }
 
+                if (!Core.Config.Get('OTRSBusinessIsInstalled') && $Target.hasClass('OTRSBusinessRequired')) {
+                    return true;
+                }
+
+                // Workaround for Windows Phone IE
+                // In Windows Phone IE the event does not bubble up like in other browsers
+                // That means that a subnavigation in mobile mode is still collapsed/expanded,
+                // although the link to the new page is clicked
+                // we force the redirect with this workaround
+                if ($Target.closest('ul').attr('id') !== 'Navigation') {
+                    window.location.href = $Target.closest('a').attr('href');
+                    Event.stopPropagation();
+                    Event.preventDefault();
+                    return true;
+                }
+
                 if ($Element.hasClass('Active')) {
                     $Element.removeClass('Active').attr('aria-expanded', false);
 
@@ -203,9 +219,11 @@ Core.Agent = (function (TargetNS) {
                         ClearSubnavCloseTimeout($Element);
                     }
                 }
+
                 // If element has subnavigation, prevent the link
                 if ($Target.closest('li').find('ul').length) {
                     Event.preventDefault();
+                    Event.stopPropagation();
                     return false;
                 }
             })
@@ -481,7 +499,7 @@ Core.Agent = (function (TargetNS) {
             NewContainerWidth;
 
         // navigation resizing only possible in ScreenXL mode
-        if (!$('body').hasClass('Visible-ScreenXL')) {
+        if (RealResizeEvent && !$('body').hasClass('Visible-ScreenXL')) {
             return;
         }
 
@@ -513,7 +531,7 @@ Core.Agent = (function (TargetNS) {
         $('#Navigation > li').each(function() {
             NavigationBarWidth += parseInt($(this).outerWidth(true), 10);
         });
-        $('#Navigation').css('width', (NavigationBarWidth + 2) + 'px');
+        $('#Navigation').css('width', (NavigationBarWidth + 3) + 'px');
 
         if (NavigationBarWidth > $('#NavigationContainer').outerWidth()) {
             NavigationBarShowSlideButton('Right', parseInt($('#NavigationContainer').outerWidth(true) - NavigationBarWidth, 10));

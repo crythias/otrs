@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::Language qw(Translatable);
 use Mail::Address;
 
 our $ObjectManagerDisabled = 1;
@@ -193,9 +194,8 @@ sub Form {
                     BodyClass => 'Popup',
                 );
                 $Output .= $LayoutObject->Warning(
-                    Message => $LayoutObject->{LanguageObject}
-                        ->Get('Sorry, you need to be the ticket owner to perform this action.'),
-                    Comment => $LayoutObject->{LanguageObject}->Get('Please change the owner first.'),
+                    Message => Translatable('Sorry, you need to be the ticket owner to perform this action.'),
+                    Comment => Translatable('Please change the owner first.'),
                 );
                 $Output .= $LayoutObject->Footer(
                     Type => 'Small',
@@ -366,6 +366,10 @@ sub Form {
         $Data{Body} = "\n---- $ForwardedMessageFrom $Data{From} ---\n\n" . $Data{Body};
         $Data{Body} .= "\n---- $EndForwardedMessage ---\n";
         $Data{Body} = $Data{Signature} . $Data{Body};
+
+        if ( $GetParam{ForwardTemplateID} ) {
+            $Data{Body} = $Data{StdTemplate} . "\n" . $Data{Body};
+        }
     }
 
     # get std. attachment object
@@ -804,13 +808,14 @@ sub SendEmail {
         for my $Email ( Mail::Address->parse( $GetParam{$Line} ) ) {
             if ( !$CheckItemObject->CheckEmail( Address => $Email->address() ) ) {
                 $Error{ $Line . 'ErrorType' } = $Line . $CheckItemObject->CheckErrorType() . 'ServerErrorMsg';
-                $Error{ "$Line" . "Invalid" } = 'ServerError';
+                $Error{ $Line . 'Invalid' }   = 'ServerError';
             }
             my $IsLocal = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressIsLocalAddress(
                 Address => $Email->address()
             );
+
             if ($IsLocal) {
-                $Error{ "$Line" . "Invalid" } = 'ServerError';
+                $Error{ $Line . 'IsLocalAddress' } = 'ServerError';
             }
         }
     }
@@ -1338,6 +1343,7 @@ sub _Mask {
     $Param{NextStatesStrg} = $LayoutObject->BuildSelection(
         Data         => $Param{NextStates},
         Name         => 'ComposeStateID',
+        Class        => 'Modernize',
         PossibleNone => 1,
         %State,
     );
@@ -1369,8 +1375,9 @@ sub _Mask {
         }
 
         $Param{ArticleTypesStrg} = $LayoutObject->BuildSelection(
-            Data => \%ArticleTypeList,
-            Name => 'ArticleTypeID',
+            Data  => \%ArticleTypeList,
+            Name  => 'ArticleTypeID',
+            Class => 'Modernize',
             %Selected,
         );
 
@@ -1519,15 +1526,36 @@ sub _Mask {
         );
     }
 
+    if ( $Param{ToIsLocalAddress} && $Param{Errors} && !$Param{Errors}->{ToErrorType} ) {
+        $LayoutObject->Block(
+            Name => 'ToIsLocalAddressServerErrorMsg',
+            Data => \%Param,
+        );
+    }
+
     if ( $Param{CcInvalid} && $Param{Errors} && !$Param{Errors}->{CcErrorType} ) {
         $LayoutObject->Block(
             Name => 'CcServerErrorMsg',
         );
     }
 
+    if ( $Param{CcIsLocalAddress} && $Param{Errors} && !$Param{Errors}->{CcErrorType} ) {
+        $LayoutObject->Block(
+            Name => 'CcIsLocalAddressServerErrorMsg',
+            Data => \%Param,
+        );
+    }
+
     if ( $Param{BccInvalid} && $Param{Errors} && !$Param{Errors}->{BccErrorType} ) {
         $LayoutObject->Block(
             Name => 'BccServerErrorMsg',
+        );
+    }
+
+    if ( $Param{BccIsLocalAddress} && $Param{Errors} && !$Param{Errors}->{BccErrorType} ) {
+        $LayoutObject->Block(
+            Name => 'BccIsLocalAddressServerErrorMsg',
+            Data => \%Param,
         );
     }
 

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -142,7 +142,7 @@ $Selenium->RunTest(
 
         $Self->True(
             index( $Selenium->get_page_source(), $TicketNumber ) > -1,
-            "Ticket with ticket id $TicketID is created"
+            "Ticket with ticket id $TicketID is created",
         );
 
         # go to ticket zoom page of created test ticket
@@ -169,7 +169,7 @@ $Selenium->RunTest(
         );
         $Self->True(
             $Success,
-            "Ticket with ticket id $TicketID is deleted"
+            "Ticket with ticket id $TicketID is deleted",
         );
 
         # delete created test customer user

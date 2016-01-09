@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -171,10 +171,8 @@ for my $Test (@Tests) {
         HistoryComment   => 'Some free text!',
         UserID           => 1,
         UnlockOnAway     => 1,
-        AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
-        ? $Test->{AutoResponseType}
-        : '',
-        OrigHeader => {
+        AutoResponseType => $Test->{AutoResponseType},
+        OrigHeader       => {
             From    => '"test" <test@localunittest.com>',
             To      => $QueueName,
             Subject => 'UnitTest article one',
@@ -260,10 +258,8 @@ for my $Test (@Tests) {
         HistoryComment   => 'Some free text!',
         UserID           => 1,
         UnlockOnAway     => 1,
-        AutoResponseType => ( $ConfigObject->Get('AutoResponseForWebTickets') )
-        ? $Test->{AutoResponseType}
-        : '',
-        OrigHeader => {
+        AutoResponseType => $Test->{AutoResponseType},
+        OrigHeader       => {
             From    => '"test" <test@localunittest.com>',
             To      => $QueueName,
             Subject => 'UnitTest article two',

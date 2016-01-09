@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -11,6 +11,8 @@ package Kernel::Modules::AdminQueue;
 
 use strict;
 use warnings;
+
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -222,7 +224,7 @@ sub Run {
 
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Queue updated!' );
+                $Output .= $LayoutObject->Notify( Info => Translatable('Queue updated!') );
                 $Output .= $LayoutObject->Output(
                     TemplateFile => 'AdminQueue',
                     Data         => \%Param,
@@ -505,14 +507,10 @@ sub _Edit {
     my %Data = $QueueObject->QueueList( Valid => 0 );
 
     my $QueueName = '';
-    KEY:
-    for my $Key ( sort keys %Data ) {
-
-        if ( $Param{QueueID} && $Param{QueueID} eq $Key ) {
-            $QueueName = $Data{ $Param{QueueID} };
-            last KEY;
-        }
+    if ( $Param{QueueID} ) {
+        $QueueName = $Data{ $Param{QueueID} } // '';
     }
+
     my %CleanHash = %Data;
     for my $Key ( sort keys %Data ) {
         if ( $CleanHash{$Key} eq $QueueName || $CleanHash{$Key} =~ /^\Q$QueueName\E\:\:/ ) {
@@ -618,7 +616,7 @@ sub _Edit {
     $Param{FollowUpLockYesNoOption} = $LayoutObject->BuildSelection(
         Data       => $ConfigObject->Get('YesNoOptions'),
         Name       => 'FollowUpLock',
-        SelectedID => $Param{FollowUpLock} || 0,
+        SelectedID => $Param{FollowUpLock} // 1,
         Class      => 'Modernize',
     );
 
@@ -640,7 +638,7 @@ sub _Edit {
     }
     $Param{DefaultSignKeyOption} = $LayoutObject->BuildSelection(
         Data => {
-            '' => '-none-',
+            '' => Translatable('-none-'),
             %DefaultSignKeyList
         },
         Name       => 'DefaultSignKey',

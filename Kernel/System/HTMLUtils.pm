@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1025,7 +1025,7 @@ sub Safety {
             }egsxim;
         }
 
-        # remove HTTP refirects
+        # remove HTTP redirects
         $Replaced += ${$String} =~ s{
             $TagStart meta [^>]+? http-equiv=('|"|)refresh [^>]+? $TagEnd
         }
@@ -1083,7 +1083,7 @@ sub Safety {
 
                 # remove on action attributes
                 $Replaced += $Tag =~ s{
-                    (?:\s|/) on[^"']+=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
+                    (?:\s|/) on[a-z]+\s*=("[^"]+"|'[^']+'|.+?)($TagEnd|\s)
                 }
                 {$2}sgxim;
 
@@ -1293,7 +1293,16 @@ sub HTMLTruncate {
     );
 
     # truncate the HTML input string
-    my $Result = $HTMLTruncateObject->truncate( $Safe{String} );
+    my $Result;
+    if ( !eval { $Result = $HTMLTruncateObject->truncate( $Safe{String} ) } ) {
+
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Truncating string failed: ' . $@,
+        );
+
+        return;
+    }
 
     return $Result;
 }

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -68,9 +68,9 @@ $Selenium->RunTest(
         );
 
         # create service for test
-        my $SrviceName = 'Service' . $Helper->GetRandomID();
-        my $ServiceID  = $Kernel::OM->Get('Kernel::System::Service')->ServiceAdd(
-            Name    => $SrviceName,
+        my $ServiceName = 'Service' . $Helper->GetRandomID();
+        my $ServiceID   = $Kernel::OM->Get('Kernel::System::Service')->ServiceAdd(
+            Name    => $ServiceName,
             ValidID => 1,
             Comment => 'Selenium Test',
             UserID  => $TestUserID,
@@ -85,7 +85,7 @@ $Selenium->RunTest(
 
         # create test tickets
         my @TicketIDs;
-        for my $Lock (qw( lock unlock)) {
+        for my $Lock (qw(lock unlock)) {
             my $TicketID = $TicketObject->TicketCreate(
                 Title         => 'Selenium Test Ticket',
                 Queue         => 'Raw',

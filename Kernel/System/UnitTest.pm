@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -126,6 +126,9 @@ sub Run {
     my $Product   = $Param{Product}
         || $Kernel::OM->Get('Kernel::Config')->Get('Product') . " "
         . $Kernel::OM->Get('Kernel::Config')->Get('Version');
+
+    $Self->{Product} = $Product;    # we need this in the Selenium object
+
     my @Names = split( /:/, $Param{Name} || '' );
 
     $Self->{TestCountOk}    = 0;
@@ -816,7 +819,7 @@ sub _Print {
                 .= "<tr><td width='70' bgcolor='green'>ok $Self->{TestCount}</td><td>$Name</td></tr>\n";
         }
         elsif ( $Self->{Output} eq 'ASCII' ) {
-            print " " . $Self->_Color('green', "ok") . " $Self->{TestCount} - $PrintName\n";
+            print " " . $Self->_Color( 'green', "ok" ) . " $Self->{TestCount} - $PrintName\n";
         }
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Result} = 'ok';
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Name}   = $Name;
@@ -829,7 +832,7 @@ sub _Print {
                 .= "<tr><td width='70' bgcolor='red'>not ok $Self->{TestCount}</td><td>$Name</td></tr>\n";
         }
         elsif ( $Self->{Output} eq 'ASCII' ) {
-            print " " . $Self->_Color('red', "not ok") . " $Self->{TestCount} - $PrintName\n";
+            print " " . $Self->_Color( 'red', "not ok" ) . " $Self->{TestCount} - $PrintName\n";
         }
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Result} = 'not ok';
         $Self->{XML}->{Test}->{ $Self->{XMLUnit} }->{ $Self->{TestCount} }->{Name}   = $Name;

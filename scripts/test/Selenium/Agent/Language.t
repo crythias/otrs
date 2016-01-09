@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -40,7 +40,6 @@ $Selenium->RunTest(
 
         my @Languages = sort keys %{ $ConfigObject->Get('DefaultUsedLanguages') };
 
-        Language:
         for my $Language (@Languages) {
 
             # check for the language selection box
@@ -57,14 +56,14 @@ $Selenium->RunTest(
             my $Element = $Selenium->find_element( 'Label[for=UserLanguage]', 'css' );
             $Self->Is(
                 substr( $Element->get_text(), 0, -1 ),
-                $LanguageObject->Get('Language'),
+                $LanguageObject->Translate('Language'),
                 "String 'Language' in $Language",
             );
 
             $Self->True(
                 index(
                     $Selenium->get_page_source(),
-                    $LanguageObject->Get('Preferences updated successfully!')
+                    $LanguageObject->Translate('Preferences updated successfully!')
                     ) > -1,
                 "Success notification in $Language",
             );
