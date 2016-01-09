@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -2413,6 +2413,11 @@ sub _ArticleTree {
                     my $ChatMessages = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
                         Data => $Item->{ArticleData}->{Body},
                     );
+
+                    for my $ChatMessage (@{ $ChatMessages // [] }) {
+                        $ChatMessage->{CreateTime} = $LayoutObject->{LanguageObject}->FormatTimeString( $ChatMessage->{CreateTime}, 'DateFormat' );
+                    }
+                    $Item->{ArticleData}->{ChatMessages} = $ChatMessages;
 
                     my $ItemCounter = 0;
 

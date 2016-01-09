@@ -177,6 +177,7 @@
                 <Item Key="sk_SK" Translatable="1">Slovak</Item>
                 <Item Key="sv" Translatable="1">Swedish</Item>
                 <Item Key="sw" Translatable="1">Swahili</Item>
+                <Item Key="th_TH" Translatable="1">Thai</Item>
                 <Item Key="tr" Translatable="1">Turkish</Item>
                 <Item Key="uk" Translatable="1">Ukrainian</Item>
                 <Item Key="vi_VN" Translatable="1">Vietnam</Item>
@@ -231,6 +232,7 @@
                 <Item Key="sk_SK">Slovenčina</Item>
                 <Item Key="sv">Svenska</Item>
                 <Item Key="sw">Kiswahili</Item>
+                <Item Key="th_TH">ภาษาไทย</Item>
                 <Item Key="tr">Türkçe</Item>
                 <Item Key="uk">Українська</Item>
                 <Item Key="vi_VN">ViɆt Nam</Item>
@@ -6464,6 +6466,11 @@ via the Preferences button after logging in.
                 <Item Key="3" Translatable="1">Lastname, Firstname (UserLogin)</Item>
                 <Item Key="4" Translatable="1">(UserLogin) Firstname Lastname</Item>
                 <Item Key="5" Translatable="1">(UserLogin) Lastname, Firstname</Item>
+                <!-- Hungarian -->
+                <Item Key="6" Translatable="1">Lastname Firstname</Item>
+                <Item Key="7" Translatable="1">Lastname Firstname (UserLogin)</Item>
+                <Item Key="8" Translatable="1">(UserLogin) Lastname Firstname</Item>
+                <!-- End Hungarian -->
             </Option>
         </Setting>
     </ConfigItem>

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -73,9 +73,11 @@ $Selenium->RunTest(
             push @Tickets, \%Ticket;
         }
 
-        # navigate to AgentTicketStatusView
+        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
-        $Selenium->get("${ScriptAlias}index.pl?Action=AgentTicketStatusView");
+
+        # navigate to AgentTicketStatusView
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketStatusView");
 
         # verify that both tickets are in open state
         $Self->True(
@@ -96,7 +98,7 @@ $Selenium->RunTest(
         my $Handles = $Selenium->get_window_handles();
         $Selenium->switch_to_window( $Handles->[1] );
 
-        # wait until page has loaded, if neccessary
+        # wait until page has loaded, if necessary
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("#StateID").length' );
 
         # check ticket bulk page
@@ -119,7 +121,7 @@ $Selenium->RunTest(
         $Selenium->switch_to_window( $Handles->[0] );
 
         # select closed view to verify ticket bulk functionality
-        $Selenium->find_element("//a[contains(\@href, \'Filter=Closed' )]")->click();
+        $Selenium->find_element("//a[contains(\@href, \'Filter=Closed' )]")->VerifiedClick();
 
         # verify that both tickets are shown in ticket closed view
         $Self->True(
@@ -139,12 +141,12 @@ $Selenium->RunTest(
             );
             $Self->True(
                 $Success,
-                "Ticket is deleted - $Ticket->{TicketNumber} "
+                "Ticket is deleted - $Ticket->{TicketNumber}"
             );
 
         }
 
-        # make sure the cache is correct.
+        # make sure the cache is correct
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
 
     }

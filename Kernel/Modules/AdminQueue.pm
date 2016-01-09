@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -224,7 +224,7 @@ sub Run {
 
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Queue updated!' );
+                $Output .= $LayoutObject->Notify( Info => Translatable('Queue updated!') );
                 $Output .= $LayoutObject->Output(
                     TemplateFile => 'AdminQueue',
                     Data         => \%Param,

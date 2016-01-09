@@ -6,6 +6,15 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.6 2016-??-??
+ - 2016-01-08 Fixed a bug where chat message times would not include user time zone information.
+ - 2016-01-07 Fixed bug#[11755](http://bugs.otrs.org/show_bug.cgi?id=11755) - PGP MIME signed email with long lines does not verify signature correctly.
+ - 2016-01-07 Slightly improved fatal error screen.
+ - 2016-01-04 Added new Thai translation.
+ - 2015-12-22 Fixed bug#[10969](http://bugs.otrs.org/show_bug.cgi?id=10969) - Problem whith SMIME-Cert that is valid for more than one E-Mail-Address.
+ - 2015-12-22 Fixed bug#[11764](http://bugs.otrs.org/show_bug.cgi?id=11764) - Wrong Ticket::Frontend::AgentTicketService###DefaultColumns subgroup.
+ - 2015-12-22 Fixed bug#[11765](http://bugs.otrs.org/show_bug.cgi?id=11765) - Wrong Sysconfig descriptions in Kernel/Config/Files/Ticket.xml.
+ - 2015-12-22 Improved support for Hungarian, thanks to Balazs Ur.
+ - 2015-12-17 Fixed bug#[11759](http://bugs.otrs.org/show_bug.cgi?id=11759) - AgentStats does not work if you try to configure the x-axis of an ITSMConfigItem statistic.
  - 2015-12-16 Fixed bug#[11628](http://bugs.otrs.org/show_bug.cgi?id=11628) - DynamicField - BaseSelect.pm - missing check of DF in parameter Template in method "EditFieldValueGet".
  - 2015-12-16 Fixed bug#[11696](http://bugs.otrs.org/show_bug.cgi?id=11696) - Queue overview displays Queues with no avaible tickets.
  - 2015-12-16 Fixed bug#[9038](http://bugs.otrs.org/show_bug.cgi?id=9038) - Default Ticket Type in Emails.....

@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -1025,7 +1025,7 @@ sub Error {
     if ( !$Param{Message} ) {
         $Param{Message} = $Param{BackendMessage};
     }
-    $Param{Message} =~ s/^(.{80}).*$/$1\[\.\.\]/gs;
+    $Param{Message} =~ s/^(.{200}).*$/${1}[...]/gs;
 
     if ( $Param{BackendTraceback} ) {
         $Self->Block(
@@ -3836,7 +3836,7 @@ sub CustomerNavigationBar {
             if (
                 !$SelectedFlag
                 && $NavBarModule{$Item}->{Link} =~ /Action=$Self->{Action}/
-                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/       # Subaction can be empty
+                && $NavBarModule{$Item}->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                 )
             {
                 $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -3868,7 +3868,7 @@ sub CustomerNavigationBar {
                 if (
                     !$SelectedFlag
                     && $ItemSub->{Link} =~ /Action=$Self->{Action}/
-                    && $ItemSub->{Link} =~ /$Self->{Subaction}/       # Subaction can be empty
+                    && $ItemSub->{Link} =~ /$Self->{Subaction}/    # Subaction can be empty
                     )
                 {
                     $NavBarModule{$Item}->{Class} .= ' Selected';
@@ -4043,11 +4043,11 @@ sub CustomerNoPermission {
     my ( $Self, %Param ) = @_;
 
     my $WithHeader = $Param{WithHeader} || 'yes';
-    $Param{Message} ||= 'No Permission!';
+    $Param{Message} ||= Translatable('No Permission!');
 
     # create output
     my $Output;
-    $Output = $Self->CustomerHeader( Title => 'No Permission' ) if ( $WithHeader eq 'yes' );
+    $Output = $Self->CustomerHeader( Title => Translatable('No Permission') ) if ( $WithHeader eq 'yes' );
     $Output .= $Self->Output(
         TemplateFile => 'NoPermission',
         Data         => \%Param
@@ -4273,7 +4273,7 @@ sub RichTextDocumentServe {
 
         # replace charset in content
         $Param{Data}->{ContentType} =~ s/\Q$Charset\E/utf-8/gi;
-        $Param{Data}->{Content}     =~ s/(<meta[^>]+charset=("|'|))\Q$Charset\E/$1utf-8/gi;
+        $Param{Data}->{Content} =~ s/(<meta[^>]+charset=("|'|))\Q$Charset\E/$1utf-8/gi;
     }
 
     # add html links
