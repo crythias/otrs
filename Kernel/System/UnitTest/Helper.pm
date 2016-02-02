@@ -119,17 +119,22 @@ to create test data.
 
 =cut
 
+# Use package variables here (instead of attributes in $Self)
+# to make it work across several unit tests that run during the same second.
+my $GetRandomNumberPreviousEpoch = 0;
+my $GetRandomNumberCounter       = 0;
+
 sub GetRandomNumber {
     my ( $Self, %Param ) = @_;
 
     my $Epoch = time();
-    $Self->{_GetRandomNumberPreviousEpoch} //= 0;
-    if ($Self->{_GetRandomNumberPreviousEpoch} != $Epoch) {
-        $Self->{_GetRandomNumberPreviousEpoch} = $Epoch;
-        $Self->{_GetRandomNumberCounter} = 0;
+    $GetRandomNumberPreviousEpoch //= 0;
+    if ( $GetRandomNumberPreviousEpoch != $Epoch ) {
+        $GetRandomNumberPreviousEpoch = $Epoch;
+        $GetRandomNumberCounter       = 0;
     }
 
-    return $Epoch . $Self->{_GetRandomIDCounter}++;
+    return $Epoch . $GetRandomNumberCounter++;
 }
 
 =item TestUserCreate()
