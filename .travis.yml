@@ -1,6 +1,7 @@
 language: perl
 perl:
   - "5.14"
+  - "5.18"
 
 services:
   - mysql
@@ -29,3 +30,10 @@ script:
   - perl bin/otrs.Console.pl Maint::Config::Rebuild
   - perl bin/otrs.Console.pl Dev::UnitTest::Run
 
+
+notifications:
+  email:
+    recipients:
+      - martin.gruner@otrs.com
+    on_success: change
+    on_failure: always
