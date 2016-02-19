@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-02-18 Drop deprecated unused ObjectLockState package and gi_object_lock_state table.
  - 2016-02-16 Added possibility to create non-singleton objects to the ObjectManager via Create().
  - 2016-02-16 Add support for JSON pretty print, thanks to Renée Bäcker.
  - 2016-02-05 Removed deprecated methods CustomerUserList() and GetTableData() (S7).
@@ -10,6 +11,7 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.8 2016-??-??
+ - 2016-02-18 Deprecated unused ObjectLockState package and gi_object_lock_state table.
  - 2016-02-15 Fixed bug#[11870](http://bugs.otrs.org/show_bug.cgi?id=11870) - Missing quoting in Layout::AgentQueueListOption().
 
 #5.0.7 2016-02-16
