@@ -1,4 +1,7 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-03-03 Fixed bug#[8631](http://bugs.otrs.org/show_bug.cgi?id=8631) - "ghost" tickets after merge.
+ - 2016-03-02 Fixed bug#[8313](http://bugs.otrs.org/show_bug.cgi?id=8313) - No such package: package-x.x.x message in package installation.
+ - 2016-03-02 Fixed bug#[8055](http://bugs.otrs.org/show_bug.cgi?id=8055) - Disable Add/Edit customers when usign LDAP.
  - 2016-03-01 Updated CPAN module Net::SSLGlue to version 1.055.
  - 2016-03-01 Fixed bug#[11858](http://bugs.otrs.org/show_bug.cgi?id=11858) - Queues can just choose between 50 Calendar.
  - 2016-03-01 Fixed bug#[939](http://bugs.otrs.org/show_bug.cgi?id=939) - Change title to another text to distinguish it in other languages.
@@ -17,6 +20,14 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.8 2016-??-??
+ - 2016-03-02 Fixed bug#[11877](http://bugs.otrs.org/show_bug.cgi?id=11877) - Closing AgentLinkObject popup throws JavaScript error in IE 11.
+ - 2016-03-02 Fixed bug#[11839](http://bugs.otrs.org/show_bug.cgi?id=11839) - Generic Agent does not filter a value int text DF.
+ - 2016-03-02 Fixed bug#[11745](http://bugs.otrs.org/show_bug.cgi?id=11745) - apostrophe in email can't be searched.
+ - 2016-03-02 Fixed bug#[11873](http://bugs.otrs.org/show_bug.cgi?id=11873) - Click on disabled branches in modern inputs result provokes jquery errors.
+ - 2016-03-02 Fixed bug#[11150](http://bugs.otrs.org/show_bug.cgi?id=11150) - Handling of dashboard widget names with special characters.
+ - 2016-03-02 Fixed bug#[10117](http://bugs.otrs.org/show_bug.cgi?id=10117) - Filter in queue view for customer userID shows only customers from given backend.
+ - 2016-03-02 Fixed bug#[11810](http://bugs.otrs.org/show_bug.cgi?id=11810) - <OTRS_TICKET_State> not translated to spanish when answering from AgentTicketZoom screen.
+ - 2016-03-02 Fixed bug#[8154](http://bugs.otrs.org/show_bug.cgi?id=8154) - Uninstall button can be pressed twice.
  - 2016-03-01 Fixed bug#[11835](http://bugs.otrs.org/show_bug.cgi?id=11835) - Events Ticket Calendar disappears when EndTime before StartTime.
  - 2016-03-01 Fixed bug#[11901](http://bugs.otrs.org/show_bug.cgi?id=11901) - Process Configuration ist destroyed in IE11 if changing data in e.g. Activity popup.
  - 2016-03-01 Fixed bug#[11804](http://bugs.otrs.org/show_bug.cgi?id=11804) - Too much whitespace in AgentTicketCustomer popup.
@@ -30,7 +41,6 @@
  - 2016-03-01 Fixed bug#[11897](http://bugs.otrs.org/show_bug.cgi?id=11897) - Text in the Queue View is not translateable.
  - 2016-03-01 Fixed bug#[11900](http://bugs.otrs.org/show_bug.cgi?id=11900) - Browser zoom: Link page design broken.
  - 2016-03-01 Fixed bug#[11234](http://bugs.otrs.org/show_bug.cgi?id=11234) - Attachments lost due to filename collision in ArticleStorageFS.
- - 2015-03-01 Fixed bug#[11327](http://bugs.otrs.org/show_bug.cgi?id=11327) - DropDown field content is not sorted alphabetically if treeview is active.
  - 2016-03-01 Fixed bug#[11866](http://bugs.otrs.org/show_bug.cgi?id=11866) - Customer history destroys the customer information.
  - 2016-02-29 Fixed bug#[11874](http://bugs.otrs.org/show_bug.cgi?id=11874) - Restrict service based on state when posting a note.
  - 2016-02-29 Fixed bug#[11693](http://bugs.otrs.org/show_bug.cgi?id=11693) - Display issues with new style fields filters with many entries.
@@ -149,7 +159,6 @@
  - 2015-11-20 Fixed bug#[10938](http://bugs.otrs.org/show_bug.cgi?id=10938) - Missing translation 'Linked As' in OTRS Interface.
  - 2015-11-20 Fixed bug#[11607](http://bugs.otrs.org/show_bug.cgi?id=11607) - charset string in body gets replaced.
  - 2015-11-20 Add possibility to XMLExecute command to only run pre or post SQL, thanks to Elias Probst.
- - 2015-11-19 Fixed bug#[8055](http://bugs.otrs.org/show_bug.cgi?id=8055) - Disable Add/Edit customers when usign LDAP.
  - 2015-11-19 Fixed bug#[11168](http://bugs.otrs.org/show_bug.cgi?id=11168) - Lost condition in AgentTicketSearch, thanks to Norihiro Tanaka.
  - 2015-11-18 Don't show warning about running otrs.Console.pl --allow-root as root as this changes the output stream.
  - 2015-11-17 Fixed bug#[7987](http://bugs.otrs.org/show_bug.cgi?id=7987) - Ticket dashboard modules not working with unlocked tickets attributes, thanks to S7.
