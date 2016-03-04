@@ -1070,6 +1070,7 @@ sub MaskAgentZoom {
         $Param{MoveQueuesStrg} = $LayoutObject->AgentQueueListOption(
             Name           => 'DestQueueID',
             Data           => \%MoveQueues,
+            Class          => 'Modernize Small',
             CurrentQueueID => $Ticket{QueueID},
         );
     }
@@ -2874,9 +2875,10 @@ sub _ArticleMenu {
 
                 # build HTML string
                 my $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                    Name => 'ResponseID',
-                    ID   => 'ResponseID',
-                    Data => \@StandardResponseArray,
+                    Name  => 'ResponseID',
+                    ID    => 'ResponseID',
+                    Class => 'Modernize Small',
+                    Data  => \@StandardResponseArray,
                 );
 
                 push @MenuItems, {
@@ -2931,9 +2933,10 @@ sub _ArticleMenu {
                     );
 
                     $StandardResponsesStrg = $LayoutObject->BuildSelection(
-                        Name => 'ResponseID',
-                        ID   => 'ResponseIDAll' . $Article{ArticleID},
-                        Data => \@StandardResponseArrayReplyAll,
+                        Name  => 'ResponseID',
+                        ID    => 'ResponseIDAll' . $Article{ArticleID},
+                        Class => 'Modernize Small',
+                        Data  => \@StandardResponseArrayReplyAll,
                     );
 
                     push @MenuItems, {
@@ -3016,9 +3019,10 @@ sub _ArticleMenu {
 
                     # build HTML string
                     my $StandardForwardsStrg = $LayoutObject->BuildSelection(
-                        Name => 'ForwardTemplateID',
-                        ID   => 'ForwardTemplateID',
-                        Data => \@StandardForwardArray,
+                        Name  => 'ForwardTemplateID',
+                        ID    => 'ForwardTemplateID',
+                        Class => 'Modernize Small',
+                        Data  => \@StandardForwardArray,
                     );
 
                     push @MenuItems, {

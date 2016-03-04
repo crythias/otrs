@@ -164,13 +164,21 @@ sub Run {
                 );
 
                 # check if start time is after end time
-                if ($StartTime > $EndTime) {
+                if ( $StartTime > $EndTime ) {
 
                     # turn start and end time around for the calendar view
                     my $NewStartTime = $EndTime;
                     my $NewEndTime   = $StartTime;
-                    $StartTime       = $NewStartTime;
-                    $EndTime         = $NewEndTime;
+                    $StartTime = $NewStartTime;
+                    $EndTime   = $NewEndTime;
+
+                    # we also need to turn the time in the tooltip around, otherwiese the time bar display would be wrong
+                    $TicketDetail{ 'DynamicField_' . $StartTimeDynamicField } = $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $StartTime,
+                    );
+                    $TicketDetail{ 'DynamicField_' . $EndTimeDynamicField } = $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $EndTime,
+                    );
 
                     # show a notification bar to indicate that the start and end time are set in a wrong way
                     $Content .= $LayoutObject->Notify(
@@ -303,6 +311,20 @@ sub Run {
                         elsif ( $Self->{DynamicFieldLookup}->{$Item}->{FieldType} eq 'Date' ) {
                             $InfoValue
                                 = $LayoutObject->{LanguageObject}->FormatTimeString( $InfoValue, 'DateFormatShort' );
+                        }
+                        elsif ( $Self->{DynamicFieldLookup}->{$Item}->{FieldType} eq 'Dropdown' ) {
+
+                            my $DynamicFieldConfig = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldGet(
+                                Name => $Item,
+                            );
+
+                            # get possible values
+                            my $PossibleValues
+                                = $Kernel::OM->Get('Kernel::System::DynamicField::Backend')->PossibleValuesGet(
+                                DynamicFieldConfig => $DynamicFieldConfig,
+                                );
+
+                            $InfoValue = $PossibleValues->{$InfoValue} || $InfoValue;
                         }
                         elsif ( $Self->{DynamicFieldLookup}->{$Item}->{FieldType} eq 'Multiselect' ) {
                             if ( IsArrayRefWithData($InfoValue) ) {
