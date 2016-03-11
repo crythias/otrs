@@ -14,9 +14,6 @@ use vars (qw($Self));
 use Kernel::System::ObjectManager;
 
 local $Kernel::OM = Kernel::System::ObjectManager->new(
-    'Kernel::System::Stats' => {
-        UserID => 1,
-    },
     'Kernel::System::PostMaster' => {
         Email => [],
     },
@@ -108,10 +105,13 @@ for my $Directory ( sort @DirectoriesToSearch ) {
                 "$Module | $1->$2()",
             );
 
-            # remember the already checked  operation
+            # remember the already checked operation
             $OperationChecked{"$1->$2()"} = 1;
         }
     }
 }
+
+# cleanup cache
+$Kernel::OM->Get('Kernel::System::Cache')->CleanUp();
 
 1;
