@@ -9,7 +9,6 @@
  - 2016-03-02 Fixed bug#[8055](http://bugs.otrs.org/show_bug.cgi?id=8055) - Disable Add/Edit customers when usign LDAP.
  - 2016-03-01 Updated CPAN module Net::SSLGlue to version 1.055.
  - 2016-03-01 Fixed bug#[11858](http://bugs.otrs.org/show_bug.cgi?id=11858) - Queues can just choose between 50 Calendar.
- - 2016-03-01 Fixed bug#[939](http://bugs.otrs.org/show_bug.cgi?id=939) - Change title to another text to distinguish it in other languages.
  - 2016-02-19 Fixed bug#[11468](http://bugs.otrs.org/show_bug.cgi?id=11468) - Using SVG images for Agent and Customer logo requires additional CSS.
  - 2016-02-19 Added dynamic filter fields to several admin frontends, thanks to Nils Leideck.
  - 2016-02-19 Fixed bug#[8298](http://bugs.otrs.org/show_bug.cgi?id=8298) - Made use of "Submit" and "Save" buttons more consistent, thanks to Niels Dimmers.
@@ -25,6 +24,14 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.10 2016-??-??
+ - 2016-04-05 Fixed bug#[11980](http://bugs.otrs.org/show_bug.cgi?id=11980) - Priority sorting in dashboard widgets not working for a custom column.
+ - 2016-04-04 Fixed bug#[11973](http://bugs.otrs.org/show_bug.cgi?id=11973) - Mapping backend "Simple" can't get initialized multiple times. Thanks to Thorsten Eckel.
+ - 2016-04-04 Fixed bug#[11353](http://bugs.otrs.org/show_bug.cgi?id=11353) - Not able to filter for CustomerID with brackets () at TicketViews.
+ - 2016-04-04 Fixed bug#[11982](http://bugs.otrs.org/show_bug.cgi?id=11982) - Labels overlap each other on stacked area charts.
+ - 2016-04-04 Fixed bug#[11978](http://bugs.otrs.org/show_bug.cgi?id=11978) - Something missing from PreferencesGroups###TicketOverviewFilterSettings description.
+ - 2016-04-04 Fixed bug#[11979](http://bugs.otrs.org/show_bug.cgi?id=11979) - When OpenMainMenuOnHover is disabled, overlays open twice.
+ - 2016-04-04 Fixed bug#[939](http://bugs.otrs.org/show_bug.cgi?id=939) - Change title to another text to distinguish it in other languages.
+ - 2016-04-04 Fixed bug#[11948](http://bugs.otrs.org/show_bug.cgi?id=11948) - Dest preselect by URI in CustomerTicketMessage.
  - 2016-04-04 Fixed bug#[11966](http://bugs.otrs.org/show_bug.cgi?id=11966) - Creation of new LDAP-Users not working with GoogleAuthenticator activated.
  - 2016-03-30 Fixed bug#[11922](http://bugs.otrs.org/show_bug.cgi?id=11922) - Notification to non RealCustomer.
 
