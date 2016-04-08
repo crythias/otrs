@@ -1,4 +1,5 @@
 #6.0.0.beta1 2016-??-??
+ - 2016-04-08 Removed dummy 'Reply All' and 'Forward' options to align with 'Reply' select, thanks to Nils Leideck.
  - 2016-04-01 Fixed dropdown for CustomerTicketOverview.
  - 2016-04-01 Changed reply template selection to not include -Reply- anymore but a label instead, thanks to Nils Leideck.
  - 2016-03-29 Added possibility to configure default headers for outgoing emails (Sendmail::DefaultHeaders), thanks to Renée Bäcker.
@@ -24,6 +25,8 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.10 2016-??-??
+ - 2016-04-08 Fixed bug#[11842](http://bugs.otrs.org/show_bug.cgi?id=11842) - Restful API with data type Boolean.
+ - 2016-04-08 Fixed bug#[4640](http://bugs.otrs.org/show_bug.cgi?id=4640) - Wrong variable <OTRS_CUSTOMER_REALNAME> in Auto Responses.
  - 2016-04-06 Fixed bug#[11975](http://bugs.otrs.org/show_bug.cgi?id=11975) - Use of uninitialized value $NotUseTag in /opt/otrs/Kernel/System/Package.pm.
  - 2016-04-05 Fixed bug#[11918](http://bugs.otrs.org/show_bug.cgi?id=11918) - Placement of activities and other elements shifted.
  - 2016-04-05 Fixed bug#[11980](http://bugs.otrs.org/show_bug.cgi?id=11980) - Priority sorting in dashboard widgets not working for a custom column.
