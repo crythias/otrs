@@ -18,8 +18,16 @@ my $CommandObject      = $Kernel::OM->Get('Kernel::System::Console::Command::Mai
 my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
 my $DBObject           = $Kernel::OM->Get('Kernel::System::DB');
 
+$Kernel::OM->ObjectParamAdd(
+    'Kernel::System::UnitTest::Helper' => {
+        RestoreDatabase => 1,
+    },
+);
+my $Helper   = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $RandomID = $Helper->GetRandomID();
+
 # add system address
-my $SystemAddressNameRand = 'SystemAddress' . int rand 1000000;
+my $SystemAddressNameRand = 'SystemAddress' . $RandomID;
 my $SystemAddressID       = $Kernel::OM->Get('Kernel::System::SystemAddress')->SystemAddressAdd(
     Name     => $SystemAddressNameRand . '@example.com',
     Realname => $SystemAddressNameRand,
@@ -34,7 +42,7 @@ $Self->True(
 );
 
 # add queue
-my $QueueNameRand = 'Queue' . int rand 1000000;
+my $QueueNameRand = 'Queue' . $RandomID;
 my $QueueID       = $Kernel::OM->Get('Kernel::System::Queue')->QueueAdd(
     Name            => $QueueNameRand,
     ValidID         => 1,
@@ -51,7 +59,7 @@ $Self->True(
 );
 
 # add auto response
-my $AutoResponseNameRand0 = 'AutoResponse' . int rand 1000000;
+my $AutoResponseNameRand0 = 'AutoResponse' . $RandomID;
 
 my $AutoResponseID = $AutoResponseObject->AutoResponseAdd(
     Name        => $AutoResponseNameRand0,
@@ -115,12 +123,7 @@ for my $Test (@Tests) {
         open STDOUT, '>:utf8', \$Result;          ## no critic
 
         $ExitCode = $CommandObject->Execute( '--target-queue', $QueueNameRand, '--debug' );
-
-        # reset CGI object from previous runs
-        CGI::initialize_globals();
-
-        # discard Web::Request from OM to prevent duplicated entries
-        $Kernel::OM->ObjectsDiscard('Kernel::System::Web::Request');
+        $Kernel::OM->ObjectsDiscard( Objects => ['Kernel::System::PostMaster'] );
     }
 
     $Self->Is(
@@ -146,7 +149,7 @@ for my $Test (@Tests) {
     );
 
     # check auto response article values
-    for my $Key ( sort keys $Test->{Result} ) {
+    for my $Key ( sort keys %{ $Test->{Result} } ) {
 
         $Self->Is(
             $ArticleAutoResponse{$Key},
@@ -154,43 +157,6 @@ for my $Test (@Tests) {
             "$Test->{Name}, tag $Key",
         );
     }
-
-    # delete test created ticket
-    $Success = $TicketObject->TicketDelete(
-        TicketID => $TicketID,
-        UserID   => 1,
-    );
-    $Self->True(
-        $Success,
-        "TicketID $TicketID - deleted",
-    );
 }
-
-# delete auto response - queue relation
-$Success = $DBObject->Do(
-    SQL => "DELETE FROM queue_auto_response WHERE queue_id = $QueueID",
-);
-$Self->True(
-    $Success,
-    "AutoResponse Queue relation - deleted",
-);
-
-# delete test auto response
-$Success = $DBObject->Do(
-    SQL => "DELETE FROM auto_response WHERE id = $AutoResponseID",
-);
-$Self->True(
-    $Success,
-    "AutoResponseID $AutoResponseID - deleted",
-);
-
-# delete test queue
-$Success = $DBObject->Do(
-    SQL => "DELETE FROM queue WHERE id = $QueueID",
-);
-$Self->True(
-    $Success,
-    "QueueID $QueueID - deleted",
-);
 
 1;
