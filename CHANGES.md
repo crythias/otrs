@@ -1,5 +1,7 @@
 #6.0.0.beta1 2016-??-??
- - 2016-04-25 Fixed parsing CSV data with quoted values containing newlines, thanks to Pawel Boguslawski.
+ - 2016-04-29 Reduced error log noise by reducing the log level of less important messages, thanks to Pawel Boguslawski.
+ - 2016-04-29 Fixed parsing CSV data with quoted values containing newlines, thanks to Pawel Boguslawski.
+ - 2016-04-29 Added support for real time zones like Europe/Berlin. Dropped support for time offsets like +2.
  - 2016-04-26 Added possibility to push custom data directly from Perl code to JavaScript without having to embed it into templates.
  - 2016-04-26 Added possibility to translate strings directly in JavaScript files.
  - 2016-04-22 Added possibility to set the ticket title in Postmaster filters, thanks to Renée Bäcker.
@@ -9,6 +11,7 @@
  - 2016-04-01 Changed reply template selection to not include -Reply- anymore but a label instead, thanks to Nils Leideck.
  - 2016-03-29 Added possibility to configure default headers for outgoing emails (Sendmail::DefaultHeaders), thanks to Renée Bäcker.
  - 2016-03-04 Fixed bug#[11787](http://bugs.otrs.org/show_bug.cgi?id=11787) - No Ticket::StateAfterPending found with manual state update.
+ - 2016-03-03 Fixed bug#[7542](http://bugs.otrs.org/show_bug.cgi?id=7542) - Results of HistoryTicketStatusGet() are slightly wrong (and don't take time zones into account)
  - 2016-03-03 Fixed bug#[11872](http://bugs.otrs.org/show_bug.cgi?id=11872) - TicketGet function returns SolutionTime variable.
  - 2016-03-03 Fixed bug#[8631](http://bugs.otrs.org/show_bug.cgi?id=8631) - "ghost" tickets after merge.
  - 2016-03-02 Fixed bug#[8313](http://bugs.otrs.org/show_bug.cgi?id=8313) - No such package: package-x.x.x message in package installation.
@@ -30,6 +33,9 @@
  - 2015-11-27 Improved command Maint::Ticket::InvalidUserCleanup. It can now now both unlock tickets of invalid users and also (optionally) change their state to make sure they will not be overlooked. Thanks to Moritz Lenz @ noris networks.
 
 #5.0.10 2016-??-??
+ - 2016-04-29 Fixed bug#[11614](http://bugs.otrs.org/show_bug.cgi?id=11614) - LDAP Auth loses Agent-Group relationships every 2nd login.
+ - 2016-04-29 Fixed bug#[12036](http://bugs.otrs.org/show_bug.cgi?id=12036) - Escalation Notification % does not work for short intervals.
+ - 2016-04-29 Fixed bug#[12033](http://bugs.otrs.org/show_bug.cgi?id=12033) - Wrong value selected automatically for Responsible in Bulk action..
  - 2016-04-29 Fixed bug#[12039](http://bugs.otrs.org/show_bug.cgi?id=12039) - Wrong default article type in reply.
  - 2016-04-27 Fixed bug#[11783](http://bugs.otrs.org/show_bug.cgi?id=11783) - EscalationsCheck alwasy triggers every Event.
  - 2016-04-26 Improved the way user last used zoom view type is stored for Timeline view in OTRS Business Solution™.
