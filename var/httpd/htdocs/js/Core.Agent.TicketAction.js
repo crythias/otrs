@@ -209,7 +209,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
                     Core.App.Publish('Event.Agent.TicketAction.NeedSpellCheck', [$('#RichText')]);
                     Core.UI.Dialog.ShowContentDialog('<p>' + Core.Config.Get('SpellCheckNeededMsg') + '</p>', '', '150px', 'Center', true, [
                         {
-                            Label: '<span>' + Core.Config.Get('DialogCloseMsg') + '</span>',
+                            Label: '<span>' + Core.Language.Translate('Close this dialog') + '</span>',
                             Function: function () {
                                 Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                                 Core.Form.EnableForm($('#RichText').closest('form'));
@@ -451,7 +451,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
         // if content already exists let user confirm to really overwrite that content with a template
         if (
             Content.length &&
-            !window.confirm(Core.Config.Get('TicketActionTemplateOverwrite') + ' ' + Core.Config.Get('TicketActionTemplateOverwriteConfirm')))
+            !window.confirm(Core.Language.Translate('Setting a template will overwrite any text or attachment.') + ' ' + Core.Language.Translate('Do you really want to continue?')))
             {
                 // if user cancels confirmation, reset template selection
                 $TemplateSelect.val(LastValue).trigger('redraw');
