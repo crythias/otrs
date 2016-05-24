@@ -625,7 +625,10 @@ sub Run {
     }
 
     # generate output
-    my $Output = $LayoutObject->Header( Value => $Ticket{TicketNumber} );
+    my $Output = $LayoutObject->Header(
+        Value    => $Ticket{TicketNumber},
+        TicketID => $Ticket{TicketID},
+    );
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $Self->MaskAgentZoom(
         Ticket    => \%Ticket,
@@ -1359,12 +1362,12 @@ sub MaskAgentZoom {
                                     %Ticket,
 
                                     # alias for ticket title, Title will be overwritten
-                                    TicketTitle       => $Ticket{Title},
-                                    Value             => $Field->{Value},
-                                    Title             => $Field->{Title},
-                                    Link              => $Field->{Link},
-                                    LinkPreview       => $Field->{LinkPreview},
-                                    $Field->{Name}    => $Field->{Title},
+                                    TicketTitle    => $Ticket{Title},
+                                    Value          => $Field->{Value},
+                                    Title          => $Field->{Title},
+                                    Link           => $Field->{Link},
+                                    LinkPreview    => $Field->{LinkPreview},
+                                    $Field->{Name} => $Field->{Title},
                                 },
                             );
                         }
@@ -2451,7 +2454,7 @@ sub _ArticleItem {
     for my $Key (qw(From To Cc)) {
         next KEY if !$Article{$Key};
 
-        my $DisplayType = $Key eq 'From'             ? $SenderDisplayType : $RecipientDisplayType;
+        my $DisplayType = $Key         eq 'From'     ? $SenderDisplayType : $RecipientDisplayType;
         my $HiddenType  = $DisplayType eq 'Realname' ? 'Value'            : 'Realname';
         $LayoutObject->Block(
             Name => 'RowRecipient',
@@ -3228,7 +3231,7 @@ sub _ArticleCollectMeta {
         my @Matches;
         for my $RegExp ( @{ $Filter->{RegExp} } ) {
 
-            my @Count    = $RegExp =~ m{\(}gx;
+            my @Count = $RegExp =~ m{\(}gx;
             my $Elements = scalar @Count;
 
             if ( my @MatchData = $Article{Body} =~ m{([\s:]$RegExp)}gxi ) {
@@ -3266,26 +3269,26 @@ sub _ArticleCollectMeta {
             for my $Match (@Matches) {
 
                 my $MatchQuote = $LayoutObject->Ascii2Html( Text => $Match->{Name} );
-                my $URL = $Filter->{Meta}->{URL};
+                my $URL        = $Filter->{Meta}->{URL};
                 my $URLPreview = $Filter->{Meta}->{URLPreview};
 
                 # replace the whole keyword
                 my $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Name} );
-                $URL =~ s/<MATCH>/$MatchLinkEncode/g;
+                $URL        =~ s/<MATCH>/$MatchLinkEncode/g;
                 $URLPreview =~ s/<MATCH>/$MatchLinkEncode/g;
 
                 # replace the keyword components
                 for my $Part ( sort keys %{ $Match->{Parts} || {} } ) {
                     $MatchLinkEncode = $LayoutObject->LinkEncode( $Match->{Parts}->{$Part} );
-                    $URL =~ s/<MATCH$Part>/$MatchLinkEncode/g;
+                    $URL        =~ s/<MATCH$Part>/$MatchLinkEncode/g;
                     $URLPreview =~ s/<MATCH$Part>/$MatchLinkEncode/g;
                 }
 
                 push @{ $FilterData{Matches} }, {
-                    Text              => $Match->{Name},
-                    URL               => $URL,
-                    URLPreview        => $URLPreview,
-                    Target            => $Filter->{Meta}->{Target} || '_blank',
+                    Text       => $Match->{Name},
+                    URL        => $URL,
+                    URLPreview => $URLPreview,
+                    Target     => $Filter->{Meta}->{Target} || '_blank',
                 };
             }
             push @Data, \%FilterData;
