@@ -67,7 +67,7 @@ Core.UI = (function (TargetNS) {
                         Core.App.Publish('Event.UI.ToggleWidget', [$WidgetElement]);
                 }
 
-                if (Animate && Core.Config.Get('AnimationEnabled')) {
+                if (Animate) {
                     $WidgetElement.addClass('AnimationRunning').find('.Content').slideToggle("fast", function () {
                         ToggleWidget();
                         $WidgetElement.removeClass('AnimationRunning');
