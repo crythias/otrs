@@ -9083,6 +9083,9 @@
                     <Block>Queue</Block>
                     <Prio>300</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.QueueTemplates.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9146,6 +9149,9 @@
                     <Block>Queue</Block>
                     <Prio>600</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Attachment.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9166,6 +9172,9 @@
                     <Block>Queue</Block>
                     <Prio>700</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.TemplateAttachment.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -9186,6 +9195,9 @@
                     <Block>Queue</Block>
                     <Prio>800</Prio>
                 </NavBarModule>
+                <Loader>
+                    <JavaScript>Core.Agent.Admin.Salutation.js</JavaScript>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
