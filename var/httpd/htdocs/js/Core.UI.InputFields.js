@@ -35,7 +35,6 @@ Core.UI.InputFields = (function (TargetNS) {
         ErrorClass: 'Error',
         ServerErrorClass: 'ServerError',
         FadeDuration: 150,
-        SelectionNotAvailable: ' -',
         ResizeEvent: 'onorientationchange' in window ? 'orientationchange' : 'resize',
         ResizeTimeout: 0,
         SafeMargin: 30,
@@ -302,15 +301,15 @@ Core.UI.InputFields = (function (TargetNS) {
         {
 
             // Disable the field, add the tooltip and dash string
-            $SearchObj.data('disabled', 'disabled')
-                .attr('title', Core.Language.Translate('Not available'))
-                .val(Config.SelectionNotAvailable);
+            $SearchObj
+                .attr('readonly', 'readonly')
+                .attr('title', Core.Language.Translate('Not available'));
         }
         else {
 
             // Enable the field, remove the tooltip and dash string
-            $SearchObj.data('disabled', '')
-                .removeAttr('title')
+            $SearchObj
+                .removeAttr('readonly title')
                 .val('');
         }
     }
@@ -377,7 +376,7 @@ Core.UI.InputFields = (function (TargetNS) {
         if ($SearchObj.attr('aria-expanded')) return;
 
         // Give up is field is disabled
-        if ($SearchObj.data('disabled')) return;
+        if ($SearchObj.attr('readonly')) return;
 
         // Remove any existing boxes in supplied container
         $InputContainerObj.find('.InputField_Selection').remove();
@@ -594,7 +593,7 @@ Core.UI.InputFields = (function (TargetNS) {
         }
 
         // Clear search field
-        if ($SearchObj.val() !== Config.SelectionNotAvailable && !$SearchObj.data('disabled')) {
+        if (!$SearchObj.attr('readonly')) {
             $SearchObj.val('');
         }
 
@@ -1285,7 +1284,7 @@ Core.UI.InputFields = (function (TargetNS) {
                     }
 
                     // Do nothing if disabled
-                    if ($SearchObj.data('disabled')) {
+                    if ($SearchObj.attr('readonly')) {
                         return false;
                     }
 
