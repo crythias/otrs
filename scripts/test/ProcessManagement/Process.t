@@ -99,14 +99,40 @@ $Self->IsNot(
     "QueueAdd() - Added queue '$QueueData3{Name}' for ACL check - should not be undef"
 );
 
+my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate();
+
+# Get ServiceObject.
+my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
+
+my $ServiceID = $ServiceObject->ServiceAdd(
+    Name    => $RandomID,
+    ValidID => 1,
+    UserID  => 1,
+);
+
+$ServiceObject->CustomerUserServiceMemberAdd(
+    CustomerUserLogin => $TestCustomerUserLogin,
+    ServiceID         => $ServiceID,
+    Active            => 1,
+    UserID            => 1,
+);
+
+my $SLAID = $Kernel::OM->Get('Kernel::System::SLA')->SLAAdd(
+    ServiceIDs => [$ServiceID],
+    Name       => $RandomID,
+    ValidID    => 1,
+    UserID     => 1,
+);
+
 my $TicketID = $CommonObject{TicketObject}->TicketCreate(
-    Title    => 'Process Unittest Testticket',
-    Queue    => $QueueData3{Name},
-    Lock     => 'unlock',
-    Priority => '3 normal',
-    State    => 'new',
-    OwnerID  => 1,
-    UserID   => 1,
+    Title        => 'Process Unittest Testticket',
+    Queue        => $QueueData3{Name},
+    Lock         => 'unlock',
+    Priority     => '3 normal',
+    State        => 'new',
+    OwnerID      => 1,
+    CustomerUser => $TestCustomerUserLogin,
+    UserID       => 1,
 );
 $Self->True(
     $TicketID || 0,
@@ -1853,68 +1879,185 @@ my @Tests = (
             TestType => 'True',
             }
     },
+
+ # Transition + TicketServiceSet + TicketSLASet TransitionAction on matching Transition change Service and SLA on Ticket
+    {
+        ProcessTransition => {
+            Config => {
+                'Process::Transition' => {
+                    'T1' => {
+                        Name      => 'Transition 1',
+                        Condition => {
+                            Cond1 => {
+                                Fields => {
+                                    TicketID => $TicketID,
+                                    Title    => 'Process Unittest Testticket',
+                                    TypeID   => '1',
+                                },
+                            },
+                        },
+                    },
+                },
+                'Process' => {
+                    'P1' => {
+                        Name                => 'Book Orders',
+                        CreateTime          => '16-02-2012 13:37:00',
+                        CreateBy            => '1',
+                        ChangeTime          => '17-02-2012 13:37:00',
+                        ChangeBy            => '1',
+                        State               => 'Active',
+                        StartActivity       => 'A1',
+                        StartActivityDialog => 'AD1',
+                        Path                => {
+                            'A1' => {
+                                'T1' => {
+                                    ActivityEntityID => 'A2',
+                                    TransitionAction => [ 'TA1', 'TA2' ],
+                                },
+                            },
+                            'A2' => {},
+                        },
+                    },
+                },
+                'Process::Activity' => {
+                    'A1' => {
+                        Name           => 'Activity 1 optional',
+                        CreateTime     => '16-02-2012 13:37:00',
+                        CreateBy       => '1',
+                        ChangeTime     => '17-02-2012 13:37:00',
+                        ChangeBy       => '1',
+                        ActivityDialog => [
+                            'AD1',
+                            'AD2',
+                        ],
+                    },
+                    'A2' => {
+                        Name           => 'Activity 2 optional',
+                        CreateTime     => '16-02-2012 13:37:00',
+                        CreateBy       => '1',
+                        ChangeTime     => '17-02-2012 13:37:00',
+                        ChangeBy       => '1',
+                        ActivityDialog => [
+                            'AD1',
+                            'AD2',
+                        ],
+                    },
+
+                },
+                'Process::TransitionAction' => {
+                    'TA1' => {
+                        Name => 'Service Set',
+                        Module =>
+                            'Kernel::System::ProcessManagement::TransitionAction::TicketServiceSet',
+                        Config => {
+                            ServiceID => $ServiceID,
+                        },
+
+                    },
+                    'TA2' => {
+                        Name => 'SLA Set',
+                        Module =>
+                            'Kernel::System::ProcessManagement::TransitionAction::TicketSLASet',
+                        Config => {
+                            SLAID => $SLAID,
+                        },
+                    },
+                },
+            },
+            ProcessEntityID  => 'P1',
+            ActivityEntityID => 'A1',
+            TicketID         => $TicketID,
+            UserID           => 1,
+            CheckOnly        => 0,
+            Message =>
+                'ProcessTransition() (matching Transition Actions Service Set and SLA Set)',
+            TestType       => 'TicketValues',
+            ExpectedResult => {
+                ServiceID => $ServiceID,
+                SLAID     => $SLAID,
+            },
+        },
+    },
 );
+
 for my $Test (@Tests) {
     if ( $Test->{ProcessTransition} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessTransition}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessTransition}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessTransition}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessTransition}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessTransition}{Config}{$Config},
+                    Value => $Test->{ProcessTransition}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessTransition}{Debug} ) {
+        if ( $Test->{ProcessTransition}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessTransition}{Debug},
+                Debug        => $Test->{ProcessTransition}->{Debug},
             );
         }
 
         # excuse process object call
         my $Result = $ProcessObject->ProcessTransition( %{ $Test->{ProcessTransition} } );
 
-        if ( $Test->{ProcessTransition}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessTransition}->{TestType} eq 'False' ) {
 
             # ProcessTransition - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessTransition}{Message},
+                $Test->{ProcessTransition}->{Message},
             );
         }
-        elsif ( $Test->{ProcessTransition}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessTransition}->{TestType} eq 'True' ) {
 
             # ProcessTransition - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessTransition}{Message},
+                $Test->{ProcessTransition}->{Message},
             );
         }
-        elsif ( $Test->{ProcessTransition}{TestType} eq 'Result' ) {
-            my $ExpectedResult = $Test->{ProcessTransition}{Result};
+        elsif ( $Test->{ProcessTransition}->{TestType} eq 'Result' ) {
+            my $ExpectedResult = $Test->{ProcessTransition}->{Result};
 
             # ProcessTransition - Check given and expected result
             $Self->IsDeeply(
                 $Result,
                 $ExpectedResult,
-                $Test->{ProcessTransition}{Message},
+                $Test->{ProcessTransition}->{Message},
             );
+        }
+        elsif ( $Test->{ProcessTransition}->{TestType} eq 'TicketValues' ) {
+
+            # ProcessTrnsition - Check ticket values after all transition actions
+            my %Ticket = $CommonObject{TicketObject}->TicketGet(
+                TicketID      => $TicketID,
+                DynamicFields => 1,
+                UserID        => 1,
+            );
+
+            for my $Attribute ( sort keys %{ $Test->{ProcessTransition}->{ExpectedResult} } ) {
+                $Self->Is(
+                    $Ticket{$Attribute} // '',
+                    $Test->{ProcessTransition}->{ExpectedResult}->{$Attribute},
+                    "$Test->{ProcessTransition}->{Message} - Ticket $Attribute",
+                );
+            }
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessTransition}{Debug} ) {
+        if ( $Test->{ProcessTransition}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
@@ -1926,53 +2069,53 @@ for my $Test (@Tests) {
     elsif ( $Test->{ProcessTicketProcessSet} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessTicketProcessSet}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessTicketProcessSet}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessTicketProcessSet}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessTicketProcessSet}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessTicketProcessSet}{Config}{$Config},
+                    Value => $Test->{ProcessTicketProcessSet}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessTicketProcessSet}{Debug} ) {
+        if ( $Test->{ProcessTicketProcessSet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessTicketProcessSet}{Debug},
+                Debug        => $Test->{ProcessTicketProcessSet}->{Debug},
             );
         }
 
         # execute process object call
         my $Result = $ProcessObject->ProcessTicketProcessSet( %{ $Test->{ProcessTicketProcessSet} } );
 
-        if ( $Test->{ProcessTicketProcessSet}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessTicketProcessSet}->{TestType} eq 'False' ) {
 
             # ProcessTicketProcessSet - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessTicketProcessSet}{Message},
+                $Test->{ProcessTicketProcessSet}->{Message},
             );
         }
-        elsif ( $Test->{ProcessTicketProcessSet}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessTicketProcessSet}->{TestType} eq 'True' ) {
 
             # ProcessTicketProcessSet - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessTicketProcessSet}{Message},
+                $Test->{ProcessTicketProcessSet}->{Message},
             );
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessTicketProcessSet}{Debug} ) {
+        if ( $Test->{ProcessTicketProcessSet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
@@ -1984,53 +2127,53 @@ for my $Test (@Tests) {
     elsif ( $Test->{ProcessTicketActivitySet} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessTicketActivitySet}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessTicketActivitySet}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessTicketActivitySet}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessTicketActivitySet}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessTicketActivitySet}{Config}{$Config},
+                    Value => $Test->{ProcessTicketActivitySet}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessTicketActivitySet}{Debug} ) {
+        if ( $Test->{ProcessTicketActivitySet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessTicketActivitySet}{Debug},
+                Debug        => $Test->{ProcessTicketActivitySet}->{Debug},
             );
         }
 
         # execute process object call
         my $Result = $ProcessObject->ProcessTicketActivitySet( %{ $Test->{ProcessTicketActivitySet} } );
 
-        if ( $Test->{ProcessTicketActivitySet}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessTicketActivitySet}->{TestType} eq 'False' ) {
 
             # ProcessTicketActivitySet - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessTicketActivitySet}{Message},
+                $Test->{ProcessTicketActivitySet}->{Message},
             );
         }
-        elsif ( $Test->{ProcessTicketActivitySet}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessTicketActivitySet}->{TestType} eq 'True' ) {
 
             # ProcessTicketActivitySet - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessTicketActivitySet}{Message},
+                $Test->{ProcessTicketActivitySet}->{Message},
             );
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessTicketActivitySet}{Debug} ) {
+        if ( $Test->{ProcessTicketActivitySet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
@@ -2042,63 +2185,63 @@ for my $Test (@Tests) {
     elsif ( $Test->{ProcessList} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessList}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessList}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessList}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessList}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessList}{Config}{$Config},
+                    Value => $Test->{ProcessList}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessList}{Debug} ) {
+        if ( $Test->{ProcessList}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessList}{Debug},
+                Debug        => $Test->{ProcessList}->{Debug},
             );
         }
 
         # execute process object call
         my $Result = $ProcessObject->ProcessList( %{ $Test->{ProcessList} } );
 
-        if ( $Test->{ProcessList}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessList}->{TestType} eq 'False' ) {
 
             # ProcessList - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessList}{Message},
+                $Test->{ProcessList}->{Message},
             );
         }
-        elsif ( $Test->{ProcessList}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessList}->{TestType} eq 'True' ) {
 
             # ProcessList - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessList}{Message},
+                $Test->{ProcessList}->{Message},
             );
         }
-        elsif ( $Test->{ProcessList}{TestType} eq 'Result' ) {
-            my $ExpectedResult = $Test->{ProcessList}{Result};
+        elsif ( $Test->{ProcessList}->{TestType} eq 'Result' ) {
+            my $ExpectedResult = $Test->{ProcessList}->{Result};
 
             # ProcessList - Check given and expected result
             $Self->IsDeeply(
                 $Result,
                 $ExpectedResult,
-                $Test->{ProcessList}{Message},
+                $Test->{ProcessList}->{Message},
             );
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessList}{Debug} ) {
+        if ( $Test->{ProcessList}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
@@ -2110,63 +2253,63 @@ for my $Test (@Tests) {
     elsif ( $Test->{ProcessGet} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessGet}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessGet}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessGet}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessGet}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessGet}{Config}{$Config},
+                    Value => $Test->{ProcessGet}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessGet}{Debug} ) {
+        if ( $Test->{ProcessGet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessGet}{Debug},
+                Debug        => $Test->{ProcessGet}->{Debug},
             );
         }
 
         # execute process object call
         my $Result = $ProcessObject->ProcessGet( %{ $Test->{ProcessGet} } );
 
-        if ( $Test->{ProcessGet}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessGet}->{TestType} eq 'False' ) {
 
             # ProcessGet - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessGet}{Message},
+                $Test->{ProcessGet}->{Message},
             );
         }
-        elsif ( $Test->{ProcessGet}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessGet}->{TestType} eq 'True' ) {
 
             # ProcessGet - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessGet}{Message},
+                $Test->{ProcessGet}->{Message},
             );
         }
-        elsif ( $Test->{ProcessGet}{TestType} eq 'Result' ) {
-            my $ExpectedResult = $Test->{ProcessGet}{Result};
+        elsif ( $Test->{ProcessGet}->{TestType} eq 'Result' ) {
+            my $ExpectedResult = $Test->{ProcessGet}->{Result};
 
             # ProcessGet - Check given and expected result
             $Self->IsDeeply(
                 $Result,
                 $ExpectedResult,
-                $Test->{ProcessGet}{Message},
+                $Test->{ProcessGet}->{Message},
             );
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessList}{Debug} ) {
+        if ( $Test->{ProcessList}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
@@ -2178,53 +2321,53 @@ for my $Test (@Tests) {
     elsif ( $Test->{ProcessStartpointGet} ) {
 
         # Set Config
-        if ( IsHashRefWithData( $Test->{ProcessStartpointGet}{Config} ) ) {
-            for my $Config ( sort keys %{ $Test->{ProcessStartpointGet}{Config} } ) {
+        if ( IsHashRefWithData( $Test->{ProcessStartpointGet}->{Config} ) ) {
+            for my $Config ( sort keys %{ $Test->{ProcessStartpointGet}->{Config} } ) {
                 $ConfigObject->Set(
                     Key   => $Config,
                     Value => {},
                 );
                 $ConfigObject->Set(
                     Key   => $Config,
-                    Value => $Test->{ProcessStartpointGet}{Config}{$Config},
+                    Value => $Test->{ProcessStartpointGet}->{Config}->{$Config},
                 );
             }
         }
 
         # If we have a test with debug on, we need a new ProcessObject
         # with Debug turned on
-        if ( $Test->{ProcessStartpointGet}{Debug} ) {
+        if ( $Test->{ProcessStartpointGet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
                 %CommonObject,
                 ConfigObject => $ConfigObject,
-                Debug        => $Test->{ProcessStartpointGet}{Debug},
+                Debug        => $Test->{ProcessStartpointGet}->{Debug},
             );
         }
 
         # execute process object call
         my $Result = $ProcessObject->ProcessStartpointGet( %{ $Test->{ProcessStartpointGet} } );
 
-        if ( $Test->{ProcessStartpointGet}{TestType} eq 'False' ) {
+        if ( $Test->{ProcessStartpointGet}->{TestType} eq 'False' ) {
 
             # ProcessStartpointGet - Check on False
             $Self->False(
                 $Result,
-                $Test->{ProcessStartpointGet}{Message},
+                $Test->{ProcessStartpointGet}->{Message},
             );
         }
-        elsif ( $Test->{ProcessStartpointGet}{TestType} eq 'True' ) {
+        elsif ( $Test->{ProcessStartpointGet}->{TestType} eq 'True' ) {
 
             # ProcessStartpointGet - Check on True
             $Self->True(
                 $Result,
-                $Test->{ProcessStartpointGet}{Message},
+                $Test->{ProcessStartpointGet}->{Message},
             );
         }
 
         # If we had a test with debug on, restore ProcessObject to default
-        if ( $Test->{ProcessStartpointGet}{Debug} ) {
+        if ( $Test->{ProcessStartpointGet}->{Debug} ) {
             $ProcessObject = undef;
             $ProcessObject = Kernel::System::ProcessManagement::Process->new(
                 %{$Self},
