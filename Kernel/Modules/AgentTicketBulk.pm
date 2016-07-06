@@ -45,7 +45,7 @@ sub Run {
         if ( !@TicketIDs ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Can\'t lock Tickets, no TicketIDs are given!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -1216,11 +1216,9 @@ sub _Mask {
             $URL .= ';' . $Self->{SessionName} . '=' . $Self->{SessionID};
         }
 
-        $LayoutObject->Block(
-            Name => 'ParentReload',
-            Data => {
-                URL => $URL,
-            },
+        $LayoutObject->AddJSData(
+            Key   => 'TicketBulkURL',
+            Value => $LayoutObject->{Baselink} . $URL,
         );
 
         # show undo&close link
