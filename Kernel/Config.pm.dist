@@ -93,6 +93,7 @@ sub Load {
 # needed system stuff (don't edit this)                #
 # ---------------------------------------------------- #
 
+use Kernel::Config::Defaults; # import Translatable()
 use base qw(Kernel::Config::Defaults);
 
 # -----------------------------------------------------#
