@@ -131,7 +131,7 @@
     <div class="Headline">
         <div class="Flag" title="[% Translate(Data.Priority) | html %]"><span class="PriorityID-[% Data.PriorityID | html %]">[% Translate(Data.Priority) | html %]</span></div>
         <h1>
-            [% Data.Hook %][% Data.TicketNumber %] &mdash; [% Data.Title | html %]
+            [% Data.Hook %][% Config('Ticket::HookDivider') %][% Data.TicketNumber %] &mdash; [% Data.Title | html %]
         </h1>
     </div>
 
@@ -271,7 +271,7 @@ $('.ShowFieldInfoOverlay').bind('click', function() {
         Buttons: [
             {
                 Type: 'Close',
-                Label: [% Translate("Close") | JSON %],
+                Label: [% Translate("Close dialog") | JSON %],
                 Function: function() {
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                     Core.Form.EnableForm($('form[name="compose"]'));
